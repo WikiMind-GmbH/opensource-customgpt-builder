@@ -11,11 +11,11 @@ Run `npm i` from the forntend folder on your machinge
 #### Then install everything in the container
 Everything is designed to run inside Docker containers.
 
-When installing new npm libraries, start the frontend using its `docker-compose.dev.yaml` configuration:
+The npm libraries present in package.json will automatically be installed by the dockerfile.
 
-```sh
-docker-compose -f docker-compose.dev.yaml up
-```
+If you want to add new ones, you can connect to the docker container and then run `npm i ${some_package}` from there:
+
+Make sure that the container is up and running.
 
 Then, open a shell inside the running frontend container:
 
@@ -26,9 +26,19 @@ docker-compose -f docker-compose.dev.yaml exec frontend /bin/sh
 This gives you access to the container environment where you can safely run npm commands (e.g. `npm install some-package`).
 
 ### Generate client from openapi definition of backend
+
+#### Assure that you can run makefiles
+On macOS, you don't need to install anything
+
+On Windows, *you need to use Git Bash* not the powershell or cmd.exe.
+
+In the git bash, use chocolately to install `choco install make`
+
+#### Generate the client
+
 To generate a TypeScript client from the FastAPI backend:
 
-1. If the FastAPI app is waiting for a debugger, start the debugger or set in the `.env` the following: `WAIT_FOR_DEBUGGER_IN_BACKEND=false`
+1. Make sure that both front- and backend containers are up and running
 
 2. Run the following Makefile command from the root of the full project:
 
