@@ -11,8 +11,8 @@ services:
       - DEBUG=true
     volumes:
       - ./backend:/app
-      - loaded_images:${LOADED_IMAGES_PATH}
-      - prompt_files:${PROMPT_FILES_PATH}
+      # - loaded_images:${LOADED_IMAGES_PATH}
+      # - prompt_files:${PROMPT_FILES_PATH}
     ports:
       - "5678:5678"
     tty: true
