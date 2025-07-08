@@ -3,6 +3,23 @@ The frontend utilizes react with javascript. Using typescript in the future is t
 
 ## Development
 
+### Installing new npm libraries (Docker workflow)
+Everything is designed to run inside Docker containers.
+
+When installing new npm libraries, start the frontend using its `docker-compose.dev.yaml` configuration:
+
+```sh
+docker-compose -f docker-compose.dev.yaml up
+```
+
+Then, open a shell inside the running frontend container:
+
+```sh
+docker-compose -f docker-compose.dev.yaml exec frontend /bin/sh
+```
+
+This gives you access to the container environment where you can safely run npm commands (e.g. `npm install some-package`).
+
 ### Generate client from openapi definition of backend
 To generate a TypeScript client from the FastAPI backend:
 
@@ -169,19 +186,3 @@ The Makefile script `generate-client-prod` automates this process:
 This keeps the frontend client in sync with the backend API automatically.
 
 
-### Installing new npm libraries (Docker workflow)
-Everything is designed to run inside Docker containers.
-
-When installing new npm libraries, start the frontend using its `docker-compose.dev.yaml` configuration:
-
-```sh
-docker-compose -f docker-compose.dev.yaml up
-```
-
-Then, open a shell inside the running frontend container:
-
-```sh
-docker-compose -f docker-compose.dev.yaml exec frontend /bin/sh
-```
-
-This gives you access to the container environment where you can safely run npm commands (e.g. `npm install some-package`).
