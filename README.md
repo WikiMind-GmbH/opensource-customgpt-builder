@@ -20,7 +20,7 @@ This project uses Docker Compose for managing development and production environ
 You must install mkcert for https to work. See nginx/README.md on how to do it.
 
 
-(*All `sh`/`bash` commands must be executed from the repo root path (`mudita-full`)*)
+(*All `sh`/`bash` commands must be executed from the repo root path*)
 
 Start the application via the `docker-compose.dev.yaml` file.    
 
@@ -28,14 +28,11 @@ Start the application via the `docker-compose.dev.yaml` file.
 docker-compose -f docker-compose.dev.yaml up -d
 ```
 
-For VSCode, debugging configs are provided in the `.vscode` folder. Please use them when debugging front or backend. You must open the root folder of the repo (the parent folder of this readme) for vscode to automatically detect and provide them.
+For VSCode, debugging configs are provided in the `.vscode` folder. Please use them when debugging front- or backend. You must open the root folder of the repo (the parent folder of this readme) for vscode to automatically detect and provide them.
 
-Live reloading & bind mounts are set up for back and frontend. The changes you make in the code locally will be reflected immediatly after saving in the app.
+Live reloading & bind mounts are set up for back- and frontend. The changes you make in the code locally will be reflected immediatly after saving in the app.
 
 Use the React debugging config of launch.json to makes sure that you will not use a cached version of the frontend.
-
-You can set in the `.env` file if you want the backend debugger to wait for connections. If you set `WAIT_FOR_DEBUGGER_IN_BACKEND` in `.env` to true, the server will not start until you connect to the debugger (e.g via the `launch.json` config `Backend debugger`)
-Generelly, this is not necessary.
 
 *Keep the automatically generated frontend client up-to-date and use it!*    
 If you add or change endpoints in the backend, you need to run the makefile and change the base path in `OpenAPI.ts`. In this way, the client will always expect the correct properties/body structure of backend answers, query parameters,  request body.
