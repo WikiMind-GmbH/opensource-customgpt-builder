@@ -2,6 +2,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from schemas.common import CommonResponse
+
 
 app = FastAPI(
     root_path="/api",  # Explanation: While the proxy strips the /api prefix, we stil need this here: https://fastapi.tiangolo.com/advanced/behind-a-proxy/#proxy-with-a-stripped-path-prefix
@@ -20,9 +22,10 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-
-
-
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+@app.post("/test_first", operation_id="test")
+async def test_first(req: CommonResponse):
+    return {"message": "This is the first test endpoint"}
