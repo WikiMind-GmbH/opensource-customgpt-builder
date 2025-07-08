@@ -1,16 +1,14 @@
 # Project Setup
 
 This project uses Docker Compose for managing development and production environments.
-Git submodules 
 
 ## Prerequisites
 
 - [Docker](https://www.docker.com/get-started) installed on your system.
 - [Docker Compose](https://docs.docker.com/compose/) installed.
-- Read the Git section further down the repo to know how to retreive all the files and folders from the submodules.
 - It is advised to use VSCode and to install all the necessary extensions published by Microsoft for Docker (Docker, Container Tools) and the Python Debugger extension. These change from time to time -check the VSCode Pop Ups which recommend fitting extensions.
 - Please also install the VSCode black formatter extension from Microsoft and use it to format the python code with it. For JS/TS and CSS use the Prettier Formatter extension from Prettier.
-- For local development, mkcert must be used to create ssl certs. The readme in the nginx folder explains how to do this.
+- For local development, mkcert must be used to create ssl certs. The Readme.md in the nginx folder explains how to do this.
 - The frontend uses a client generated from the fastapi openapi documentation to reach the endpoints and provide interfaces detailing the expected structure of the bodys. When changing endpoint signatures or adding new endpoints, you must use `make generate-client-prod`
 
 ## Environment Setup
