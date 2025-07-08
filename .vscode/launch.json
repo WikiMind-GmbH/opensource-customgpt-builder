@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "React debugger",
+            "type": "msedge", //you could also use "chrome" 
+            "request": "launch",
+            "url": "http://localhost:80", //where can I reach my frontend app
+            "webRoot": "${workspaceFolder}/frontend", //where to find the src files relative to the folder opened in vscode
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**"], //A list of files to ignore when stepping through the debugger
+            "runtimeArgs": [
+                "--disable-cache",
+                "--disable-application-cache",
+                "--incognito"
+            ],
+            "userDataDir": "${workspaceFolder}/.vscode/edge-user-data", //forces edge to use a new user data directory, preventing the use of previous cached files. Also no new caches are created thanks to the args further down
+        },
+        {
+            "name": "Backend debugger",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                "localRoot": "${workspaceFolder}/backend",
+                "remoteRoot": "/app"
+                }
+            ],
+            // "justMyCode": false,               // ← step into site-packages
+        }
+    ]
+}

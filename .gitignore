@@ -1,0 +1,10 @@
+.env
+NOTES
+edge-user-data
+dev.crt
+dev.key
+.htpasswd
+.DS_Store
+.vscode/edge-user-data
+/.venv
+/.vscode/edge-user-data

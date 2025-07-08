@@ -1,0 +1,63 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile.dev
+    container_name: backend
+    # Pass in environment variables from the .env file (avoid baking secrets)
+    env_file:
+      - ./.env
+    environment:
+      - DEBUG=true
+    volumes:
+      - ./backend:/app
+      - loaded_images:${LOADED_IMAGES_PATH}
+      - prompt_files:${PROMPT_FILES_PATH}
+    ports:
+      - "5678:5678"
+    tty: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:5173/openapi.json"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile.dev
+      args:
+        VITE_APP_DOMAIN: ${APP_DOMAIN}
+
+    environment:
+      VITE_APP_DOMAIN: ${APP_DOMAIN}
+      CHOKIDAR_USEPOLLING: true
+      # NODE_ENV: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules #decouples node_module in container from frontend so we can have
+      
+    container_name: frontend
+    stdin_open: true
+    tty: true
+
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: ./Dockerfile.dev
+    container_name: nginx-template
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - ./nginx/certs:/etc/nginx/certs:ro
+
+volumes:
+  frontend_build:
+  loaded_images:
+  prompt_files:
+  certs:

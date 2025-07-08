@@ -1,0 +1,33 @@
+# mudita/Dockerfile
+FROM python:3.13-slim
+
+# Curl install is needed for health check
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+ENV PYTHONPATH="${PYTHONPATH}:/app"
+
+#This will enable us to see print statements in the docker logs
+ENV PYTHONUNBUFFERED=1 
+
+
+# Copy the requirements file (adjust the path if needed)
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy your FastAPI application code
+COPY . .
+
+# Optionally, if you’d like the .env file inside the container (for development only)
+# In production, pass environment variables via docker-compose using env_file.
+
+# Expose the port FastAPI will run on
+EXPOSE 5173
+
+# Start the app using uvicorn
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5173", "--reload"]
+

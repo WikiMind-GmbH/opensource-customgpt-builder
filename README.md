@@ -1,0 +1,250 @@
+# Project Setup
+
+This project uses Docker Compose for managing development and production environments.
+Git submodules 
+
+## Prerequisites
+
+- [Docker](https://www.docker.com/get-started) installed on your system.
+- [Docker Compose](https://docs.docker.com/compose/) installed.
+- Read the Git section further down the repo to know how to retreive all the files and folders from the submodules.
+- It is advised to use VSCode and to install all the necessary extensions published by Microsoft for Docker (Docker, Container Tools) and the Python Debugger extension. These change from time to time -check the VSCode Pop Ups which recommend fitting extensions.
+- Please also install the VSCode black formatter extension from Microsoft and use it to format the python code with it. For JS/TS and CSS use the Prettier Formatter extension from Prettier.
+- For local development, mkcert must be used to create ssl certs. The readme in the nginx folder explains how to do this.
+- The frontend uses a client generated from the fastapi openapi documentation to reach the endpoints and provide interfaces detailing the expected structure of the bodys. When changing endpoint signatures or adding new endpoints, you must use `make generate-client-prod`
+
+## Environment Setup
+
+- The project uses a single `.env` file for environment variables. Ensure that it is correctly set up before running the containers. Copy the `.env.example`, paste it in the same folder, rename the copy to `.env` and fill in the values that are not defaults. Some values are only needed for the prod environment, no need to set them for development.
+
+
+## Development
+You must install mkcert for https to work. See nginx/README.md on how to do it.
+
+
+(*All `sh`/`bash` commands must be executed from the repo root path (`mudita-full`)*)
+
+Start the application via the `docker-compose.dev.yaml` file.    
+
+```sh
+docker-compose -f docker-compose-dev.yaml up -d
+```
+
+For VSCode, debugging configs are provided in the `.vscode` folder. Please use them when debugging front or backend. You must open the root folder of the repo (the parent folder of this readme) for vscode to automatically detect and provide them.
+
+Live reloading & bind mounts are set up for back and frontend. The changes you make in the code locally will be reflected immediatly after saving in the app.
+
+Use the React debugging config of launch.json to makes sure that you will not use a cached version of the frontend.
+
+You can set in the `.env` file if you want the backend debugger to wait for connections. If you set `WAIT_FOR_DEBUGGER_IN_BACKEND` in `.env` to true, the server will not start until you connect to the debugger (e.g via the `launch.json` config `Backend debugger`)
+Generelly, this is not necessary.
+
+*Keep the automatically generated frontend client up-to-date and use it!*    
+If you add or change endpoints in the backend, you need to run the makefile and change the base path in `OpenAPI.ts`. In this way, the client will always expect the correct properties/body structure of backend answers, query parameters,  request body.
+
+
+## Production
+
+To start the production environment
+
+### Utilizing VSCodes UI features and quality of life improvements on the remote server
+Connect via vscode+ssh to the server.
+
+Installing the docker extension inside the server.
+
+-> Control docker via vscode UI instead of cmd tool. No manual docker &docker-compose install needed either
+
+Utilize the Version Control UI in VSCoder -> Vscode authenticates you to git, no set up of ssh key & manual setup needed
+
+### Set up the Certificates
+1. Correctly fill out the following files:
+a) `.env`
+For example:
+```sh
+CERTBOT_DOMAINS="-d url.de -d www.albert.wikimind.de"
+CERTBOT_EMAIL=albert.sandritter@wikimind.de
+```
+b) nginx_lets_encrypt_setup.conf + nginx_prod.conf
+```
+
+server {
+    listen 80;
+    server_name albert-test.wikimind.de www.albert-test.wikimind.de;
+}
+```
+```
+server {
+    listen 80;
+    server_name ${DOMAIN} www.${DOMAIN}; <---- !!!
+    # ACME challenge (Let’s Encrypt)
+    ...
+}
+
+server {
+    listen 443 ssl ;
+    http2 on;
+    server_name ${DOMAIN}; <---- !!!
+
+    ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem; <---- !!!
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem; <---- !!!
+```
+2. from the repo root, spin up the `docker-compose.letsencryptsetup.yaml`
+```sh
+docker compose -f docker-compose.letsencryptsetup.yaml up
+```
+3. Check the logs of the certbot container if it worked.
+```sh
+docker ps -a # check the name of the certbot container
+docker logs ${name_of_certbot_container}
+```
+It should read like this:
+```sh
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Account registered.
+Requesting a certificate for albert.wikimind.de and www.albert.wikimind.de
+
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/albert.wikimind.de/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/albert.wikimind.de/privkey.pem
+This certificate expires on 2025-08-17.
+These files will be updated when the certificate renews.
+NEXT STEPS:
+- The certificate will need to be renewed before it expires. Certbot can automatically renew the certificate in the background, but you may need to take steps to enable that functionality. See https://certbot.org/renewal-setup for instructions.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you like Certbot, please consider supporting our work by:
+ * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+ * Donating to EFF:                    https://eff.org/donate-le
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+```
+4. Shut down the containers with 
+```sh
+docker-compose -f docker-compose.letsencryptsetup.yaml down
+```
+
+5. Set up Basic Auth
+Install apache2-utils to get htpasswd
+```bash
+sudo apt update
+sudo apt install apache2-utils
+```
+Create the .htpasswd file
+```sh
+htpasswd -c ./nginx/.htpasswd ${userName}
+```
+Create a password, write it down
+
+
+### If the certificates & `.htpasswd` were created, start the prod docker compose
+1. Start up the prod docker compose
+```sh
+docker-compose -f docker-compose.prod.yaml up -d
+```
+
+2. Make sure to correctly set the `BASE_PATH` in `OpenApi.ts`
+```ts
+export const OpenAPI: OpenAPIConfig = {
+    BASE: 'https://${hostname}/api',
+```
+
+
+
+## Nginx Configuration
+
+For production, set the `server_name` in `nginx_prod.conf` to match your domain or IP address.
+
+## Best practices
+The FastAPI backend API must be documented in enought detail to understand all endpoints and their functionality soley by reading the openapi config/looking at the swag ui API documenttation at `app/docs`
+
+
+
+## Additional Notes
+
+- Make sure to update `nginx_prod.conf` before deploying in production.
+- The same `.env` file is used across both environments.
+- If needed, modify the `docker-compose` files to suit your setup.
+
+# Git setup
+## Pull with git submodules
+
+When working with **Git submodules**, you need to ensure that updates to both the **main repository** and its **submodules** are pulled correctly. 
+
+---
+
+## **✅ Recommended Way: Pulling Including Submodule Updates**
+In **Terminal**, run:
+```sh
+git pull --recurse-submodules
+git submodule update --init --recursive
+```
+### **Explanation**
+- `git pull --recurse-submodules` → Pulls changes from the main repo **and submodules**.
+- `git submodule update --init --recursive` → Ensures submodules are properly initialized and updated.
+
+---
+
+## **⚡ Best Workflow for Keeping Submodules Updated**
+### **1️⃣ Pull with Submodules**
+Inside VS Code's terminal:
+```sh
+git pull --recurse-submodules
+```
+
+### **2️⃣ Ensure Submodules are Updated**
+After pulling, always run:
+```sh
+git submodule update --init --recursive
+```
+This makes sure:
+- New submodules are initialized (`--init`).
+- Submodules are updated to the correct commit (`--recursive` ensures nested submodules are also updated).
+
+### **3️⃣ If the Submodules Need to be on the Latest Commit**
+By default, submodules are **checked out at a specific commit**, not the latest branch. To get the latest version:
+```sh
+git submodule foreach git pull origin main
+```
+*(Replace `main` with the actual branch name of the submodule.)*
+
+---
+
+## **🌟 Bonus: Git Commands in VS Code GUI**
+If you prefer **not using the terminal**, you can:
+1. **Open the Git panel (Source Control)** in VS Code (`Ctrl + Shift + G`).
+2. Click on the **three-dot menu (`...`)**.
+3. Select **"Pull (Rebase) from..."** → This doesn’t update submodules by default, so you’ll still need to run:
+   ```sh
+   git submodule update --init --recursive
+   ```
+
+---
+
+## **🚀 Quick One-Liner to Always Keep Everything Updated**
+If you want a **single command** that does everything:
+```sh
+git pull --recurse-submodules && git submodule update --init --recursive
+```
+Or, if you also want to **pull the latest commit** in submodules:
+```sh
+git pull --recurse-submodules && git submodule update --init --recursive && git submodule foreach git pull origin main
+```
+
+---
+
+## **🔍 Final Check: Verify Submodules Are Correct**
+To check **submodule status**:
+```sh
+git submodule status
+```
+- **A `-` before a submodule** means it hasn’t been initialized yet.
+- **A `+` means the submodule is on a different commit than expected.**
+
+---
+
+### **📌 Summary**
+✅ **Use `git pull --recurse-submodules` to pull everything**  
+✅ **Run `git submodule update --init --recursive` after pulling**  
+✅ **If you want the latest commit, use `git submodule foreach git pull origin main`**  
+✅ **In VS Code GUI, pull first, then update submodules manually**  
+
+

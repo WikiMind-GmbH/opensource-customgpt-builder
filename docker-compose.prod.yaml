@@ -1,0 +1,92 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile.prod
+    container_name: backend
+    # Pass in environment variables from the .env file (avoid baking secrets)
+    env_file:
+      - ./.env
+    volumes:
+      - ./backend:/app
+      - loaded_images:${LOADED_IMAGES_PATH}
+    # networks:
+    #   - nginx_network
+    deploy:
+      resources:
+        limits:
+          memory: 1024MB  # Limit to 512MB RAM
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://${APP_DOMAIN}:5173/openapi.json"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  frontend:
+    build: 
+      context: .
+      dockerfile: ./frontend/Dockerfile.prod
+      args:
+        VITE_APP_DOMAIN: ${APP_DOMAIN}
+
+    environment:
+      VITE_APP_DOMAIN: ${APP_DOMAIN}
+    volumes:
+      - frontend_build:/app/dist
+      - /app/node_modules #decouples node_module in container from frontend so we can have
+      
+    container_name: frontend
+    # networks:
+    #   - nginx_network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: ./Dockerfile.prod
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - frontend_build:/usr/share/nginx/html:ro
+      - letsencrypt:/etc/letsencrypt:ro          # live certs (NEW)
+      - certbot_www:/var/www/certbot:ro          # ACME challenge dir (NEW)
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+    # networks:
+    #   - nginx_network
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+  
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - letsencrypt:/etc/letsencrypt            # read/write
+      - certbot_www:/var/www/certbot
+      - /var/run/docker.sock:/var/run/docker.sock # opens the docker api to the container -> kinda sketchy, but acceptable
+    entrypoint: >
+      sh -c "trap exit TERM;
+             while :; do
+               certbot renew --webroot -w /var/www/certbot --quiet;
+               docker exec nginx nginx -s reload;
+               sleep 12h;
+             done"
+
+volumes:
+  frontend_build:
+  loaded_images:
+  certbot_www:
+  letsencrypt:
+
+# networks:
+#   nginx_network:

@@ -1,0 +1,21 @@
+# frontend/Dockerfile
+
+###############################
+# Stage 1: Build the App
+###############################
+FROM node:23-alpine
+WORKDIR /app
+
+# Copy package management files and install dependencies
+# For rebuilt optimization, this partial copy + install is done before the whole copy
+COPY ./frontend/package.json .
+RUN npm install
+
+COPY frontend/ .
+ARG VITE_APP_DOMAIN
+ENV VITE_APP_DOMAIN=${VITE_APP_DOMAIN}
+RUN echo $VITE_APP_DOMAIN
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
