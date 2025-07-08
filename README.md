@@ -27,7 +27,7 @@ You must install mkcert for https to work. See nginx/README.md on how to do it.
 Start the application via the `docker-compose.dev.yaml` file.    
 
 ```sh
-docker-compose -f docker-compose-dev.yaml up -d
+docker-compose -f docker-compose.dev.yaml up -d
 ```
 
 For VSCode, debugging configs are provided in the `.vscode` folder. Please use them when debugging front or backend. You must open the root folder of the repo (the parent folder of this readme) for vscode to automatically detect and provide them.

@@ -4,6 +4,11 @@ The frontend utilizes react with javascript. Using typescript in the future is t
 ## Development
 
 ### Installing new npm libraries (Docker workflow)
+
+#### Install them locally for intellisense functionality
+Run `npm i` from the forntend folder on your machinge
+
+#### Then install everything in the container
 Everything is designed to run inside Docker containers.
 
 When installing new npm libraries, start the frontend using its `docker-compose.dev.yaml` configuration:
