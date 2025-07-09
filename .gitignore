@@ -8,3 +8,4 @@ dev.key
 .vscode/edge-user-data
 /.venv
 /.vscode/edge-user-data
+/frontend/node_modules
