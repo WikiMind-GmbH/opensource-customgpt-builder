@@ -1,7 +1,7 @@
 from schemas.common import AssistantMessage, SimplifiedMessage, UserMessageRequest, Role
 
 
-async def generate_chatbot_response(
+async def send_user_message_helper(
     user_request: UserMessageRequest,
 ) -> AssistantMessage:
     """Calls the OpenAI model api using user message as input and generates OpenAI model's response as output

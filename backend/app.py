@@ -1,16 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import debugpy
-from services.chatbot_service import generate_chatbot_response
+from services.chatbot_service import send_user_message_helper
 from services.chats_service import (
-    retrieve_chat_history_by_id,
-    retrieve_chat_summaries_list,
+    get_chat_history_helper,
+    get_chat_summaries_helper,
 )
 from services.custom_gpt_service import (
-    delete_existing_custom_gpt,
-    get_all_custom_gpts,
-    retrieve_custom_gpt_by_id,
-    send_custom_gpt_info,
+    delete_custom_gpt_helper,
+    retreive_all_custom_gpts_helper,
+    get_custom_gpt_by_id_helper,
+    create_or_custom_gpt_helper,
 )
 
 # from services.chatbot_service import generate_chatbot_response
@@ -53,7 +53,7 @@ app.add_middleware(
     operation_id="getChatHistoryByID",
 )
 async def get_chat_history(chat_id: int) -> ChatHistory:
-    response = await retrieve_chat_history_by_id(chat_id)
+    response = await get_chat_history_helper(chat_id)
     return response
 
 
@@ -67,7 +67,7 @@ async def get_chat_history(chat_id: int) -> ChatHistory:
     operation_id="getChatSummaries",
 )
 async def get_chat_summaries() -> list[ChatSummary]:
-    response = await retrieve_chat_summaries_list()
+    response = await get_chat_summaries_helper()
     return response
 
 
@@ -81,7 +81,7 @@ async def get_chat_summaries() -> list[ChatSummary]:
     operation_id="sendUserMessage",
 )
 async def send_user_message(request: UserMessageRequest) -> AssistantMessage:
-    response = await generate_chatbot_response(request)
+    response = await send_user_message_helper(request)
     return response
 
 
@@ -95,7 +95,7 @@ async def send_user_message(request: UserMessageRequest) -> AssistantMessage:
     operation_id="retreiveAllCustomGPTs",
 )
 async def retreive_all_custom_gpts() -> list[ExistingCustomGPT]:
-    custom_gpt_names_list = await get_all_custom_gpts()
+    custom_gpt_names_list = await retreive_all_custom_gpts_helper()
     return custom_gpt_names_list
 
 
@@ -109,7 +109,7 @@ async def retreive_all_custom_gpts() -> list[ExistingCustomGPT]:
     operation_id="getCustomGPTInfos",
 )
 async def get_custom_gpt_by_id(custom_gpt_id: int):
-    custom_gpt_info = await retrieve_custom_gpt_by_id(custom_gpt_id)
+    custom_gpt_info = await get_custom_gpt_by_id_helper(custom_gpt_id)
     return custom_gpt_info
 
 # Deletes the Custom GPT By ID
@@ -121,7 +121,7 @@ async def get_custom_gpt_by_id(custom_gpt_id: int):
     operation_id="deleteCustomGPT",
 )
 async def delete_custom_gpt(custom_gpt_id: int) -> DeleteCustomGPTStatus:
-    response_deletion = await delete_existing_custom_gpt(custom_gpt_id=custom_gpt_id)
+    response_deletion = await delete_custom_gpt_helper(custom_gpt_id=custom_gpt_id)
     return response_deletion
 
 
@@ -134,8 +134,8 @@ async def delete_custom_gpt(custom_gpt_id: int) -> DeleteCustomGPTStatus:
     response_model=CreateOrEditCustomGPTStatus,
     operation_id="createOrEditCustomGPT",
 )
-async def create_custom_gpt(
+async def create_or_custom_gpt(
     custom_gpt_infos: CustomGptToCreateOrEdit,
 ) -> CreateOrEditCustomGPTStatus:
-    created_gpt_status = await send_custom_gpt_info(custom_gpt_infos=custom_gpt_infos)
+    created_gpt_status = await create_or_custom_gpt_helper(custom_gpt_infos=custom_gpt_infos)
     return created_gpt_status

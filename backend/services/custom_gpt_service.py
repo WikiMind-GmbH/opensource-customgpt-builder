@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def retrieve_custom_gpt_by_id(custom_gpt_id: int) -> ExistingCustomGPT:
+async def get_custom_gpt_by_id_helper(custom_gpt_id: int) -> ExistingCustomGPT:
     """Retrieves the Custom GPT by ID for reaching to the chat page with information
     Args:
         id (int): ID for Custom GPT accessed by the user
@@ -21,11 +21,17 @@ async def retrieve_custom_gpt_by_id(custom_gpt_id: int) -> ExistingCustomGPT:
     logger.info(f"Retrieving custom gpt by  custom_gpt_id = {custom_gpt_id}")
 
     try:
-        response_status = 200
+        response_status = 200  #HARDCODED VALUE HAS TO CHANGE
+
+        # TODO: BACKEND LOGIC HERE -------------------------------
+         
+         #SAMPLE CODE
+
+        #-------------------------------------------
 
         if response_status != 200:
             raise HTTPException(status_code=404, detail="Custom GPT By ID not found")
-
+        
         response_retrived = ExistingCustomGPT(
             custom_gpt_id=custom_gpt_id,
             created_at=None,
@@ -46,7 +52,7 @@ async def retrieve_custom_gpt_by_id(custom_gpt_id: int) -> ExistingCustomGPT:
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
+async def retreive_all_custom_gpts_helper() -> list[ExistingCustomGPT]:
     """Retrieves the Custom GPT information by ID
 
     Returns:
@@ -55,7 +61,15 @@ async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
     logger.info(f"Retrieving all custom gpts list")
 
     try:
-        response_status = 200
+        
+        response_status = 200 #HARDCODED VALUE HAS TO CHANGE
+
+
+        # TODO: BACKEND LOGIC HERE -------------------------------
+         
+         #SAMPLE CODE
+
+        #-------------------------------------------
 
         if response_status != 200:
             raise HTTPException(
@@ -91,7 +105,7 @@ async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-async def send_custom_gpt_info(
+async def create_or_custom_gpt_helper(
     custom_gpt_infos: CustomGptToCreateOrEdit,
 ) -> CreateOrEditCustomGPTStatus:
     """Send the complete information (Name, Desription and Instructions) for creating a custom GPT
@@ -103,12 +117,22 @@ async def send_custom_gpt_info(
     logger.info(f"The information for creating a new custom gpt:", custom_gpt_infos)
 
     try:
-        response_status = 200
+        response_status = 200 #HARDCODED VALUE HAS TO CHANGE
+
+        
+        # TODO: BACKEND LOGIC HERE -------------------------------
+         
+         #SAMPLE CODE
+
+        #-------------------------------------------
+
 
         if response_status != 200:
             raise HTTPException(
                 status_code=404, detail="Error in sending custom gpt info"
             )
+        
+        
         return CreateOrEditCustomGPTStatus(custom_gpt_id=1, status=True)
 
     except HTTPException as http_err:
@@ -123,7 +147,7 @@ async def send_custom_gpt_info(
 
 
 # delete the custom gpt
-async def delete_existing_custom_gpt(custom_gpt_id: int) -> DeleteCustomGPTStatus:
+async def delete_custom_gpt_helper(custom_gpt_id: int) -> DeleteCustomGPTStatus:
     """Deletes the existing custom GPT by ID
 
     Args:
@@ -136,7 +160,14 @@ async def delete_existing_custom_gpt(custom_gpt_id: int) -> DeleteCustomGPTStatu
     logger.info(f"Deleting custom gpt by custom_gpt_id = {custom_gpt_id}")
 
     try:
-        response_status = 200
+        response_status = 200  #HARDCODED VALUE HAS TO CHANGE
+
+        
+        # TODO: BACKEND LOGIC HERE -------------------------------
+         
+         #SAMPLE CODE
+
+        #-------------------------------------------
 
         if response_status != 200:
             raise HTTPException(status_code=404, detail="Custom GPT  By ID Not found")
