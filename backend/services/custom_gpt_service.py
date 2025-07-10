@@ -1,26 +1,47 @@
 from schemas.common import (
-    CreateOrEditCustomGPTResponse,
-    CustomGptToCreate,
-    CustomGptToEdit,
+    CreateOrEditCustomGPTStatus,
+    CustomGptToCreateOrEdit,
+    DeleteCustomGPTStatus,
     ExistingCustomGPT,
 )
+from fastapi import HTTPException
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-async def get_custom_gpt_by_id(custom_gpt_id: int) -> ExistingCustomGPT:
+async def retrieve_custom_gpt_by_id(custom_gpt_id: int) -> ExistingCustomGPT:
     """Retrieves the Custom GPT by ID for reaching to the chat page with information
     Args:
         id (int): ID for Custom GPT accessed by the user
     Returns:
         ExistingCustomGPT: Information of ExistingCustomGPT
     """
-    response_retrived = ExistingCustomGPT(
-        custom_gpt_id=custom_gpt_id,
-        created_at=None,
-        custom_gpt_description="Desc",
-        custom_gpt_name="name",
-        custom_gpt_instructions="instructions",
-    )
-    return response_retrived
+    logger.info(f"Retrieving custom gpt by  custom_gpt_id = {custom_gpt_id}")
+
+    try:
+        response_status = 200
+
+        if response_status != 200:
+            raise HTTPException(status_code=404, detail="Custom GPT By ID not found")
+
+        response_retrived = ExistingCustomGPT(
+            custom_gpt_id=custom_gpt_id,
+            created_at=None,
+            custom_gpt_description="Desc",
+            custom_gpt_name="name",
+            custom_gpt_instructions="instructions",
+        )
+        return response_retrived
+
+    except HTTPException as http_err:
+        logger.error(f"HTTP error: {http_err.detail}")
+        raise
+
+    except Exception as err:
+        logger.exception("Unexpected error occurred while retrieving chat history", err)
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
@@ -48,33 +69,12 @@ async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
     return response_retrived
 
 
-# editing the custom gpt
-async def update_custom_gpt(
-    custom_gpt_info: CustomGptToEdit,
-) -> CreateOrEditCustomGPTResponse:
-    """Edit the existing Custom GPT information
-     Args:
-        custom_gpt_id (int): Custom GPT with edited information
-    Returns:
-        CreateOrEditCustomGPTResponse: Success or Error
-    """
-    print("New Name: ", custom_gpt_info.custom_gpt_name)
-    response = 200
-
-    if response == 200:
-        return CreateOrEditCustomGPTResponse(
-            custom_gpt_id=custom_gpt_info.custom_gpt_id, status=True
-        )
-    else:
-        return CreateOrEditCustomGPTResponse(custom_gpt_id=None, status=False)
-
-
 async def send_custom_gpt_info(
-    custom_gpt_infos: CustomGptToCreate,
-) -> CreateOrEditCustomGPTResponse:
+    custom_gpt_infos: CustomGptToCreateOrEdit,
+) -> CreateOrEditCustomGPTStatus:
     """Send the complete information (Name, Desription and Instructions) for creating a custom GPT
     Args:
-        gpt_information (CustomGptToCreate): Custom GPT information
+        gpt_information (CustomGptToCreateOrEdit): Custom GPT information
     Returns:
         StatusOfStandardResponse: Response of the model api
     """
@@ -82,6 +82,37 @@ async def send_custom_gpt_info(
     response = 200
 
     if response == 200:
-        return CreateOrEditCustomGPTResponse(custom_gpt_id=1, status=True)
+        return CreateOrEditCustomGPTStatus(custom_gpt_id=1, status=True)
     else:
-        return CreateOrEditCustomGPTResponse(custom_gpt_id=None, status=False)
+        return CreateOrEditCustomGPTStatus(custom_gpt_id=None, status=False)
+
+
+# delete the custom gpt
+async def delete_existing_custom_gpt(custom_gpt_id: int) -> DeleteCustomGPTStatus:
+    """Deletes the existing custom GPT by ID
+
+    Args:
+        custom_gpt_id (int): Id of the existing Custom GPT
+
+    Returns:
+        StatusOfStandardResponse: Returns the status of deletion operation
+    """
+
+    logger.info(f"Deleting custom gpt by custom_gpt_id = {custom_gpt_id}")
+
+    try:
+        response_status = 200
+
+        if response_status != 200:
+            raise HTTPException(status_code=404, detail="Custom GPT  By ID Not found")
+
+        status = DeleteCustomGPTStatus(custom_gpt_id=custom_gpt_id, status=True)
+        return status
+
+    except HTTPException as http_err:
+        logger.error(f"HTTP error: {http_err.detail}")
+        raise
+
+    except Exception as err:
+        logger.exception("Unexpected error occurred while deleting", err)
+        raise HTTPException(status_code=500, detail="Internal server error")
