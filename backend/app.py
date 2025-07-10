@@ -40,7 +40,7 @@ async def root():
 
 
 @app.post(
-    "/chat_history_by_id",
+    "/chat-history-by-id",
     tags=["chatHistory"],
     summary="Fetches the history of a particular chat id. Identifier = 5",
     response_description="retrives the list of messages and Model ID (0: ChatGPT40, -1: Error, 1/custom_gpt_id: CustomGPTName)",
@@ -52,13 +52,11 @@ async def get_chat_history(chat_id: int) -> ChatHistory:
     return response
 
 
-# @app.get("/chat_summary",
+# @app.get("/chat-summary",
 #          tags=["chatSummary"],
-#          summary="One Liner summary of all chats in the List.  Identifier = 4",
+#          summary="One Liner summary of all chats in the List.  Identifier = 3",
 #          response_description="List of chats summary in one line with a Chat_id",
-#          response_model=ChatSummary
-
-#          )
+#          response_model=ChatSummary)
 # async def get_chats_one_liner() -> ChatSummary:
 #     response = get_chat_summaries()
 #     return {"one_liners": "text containing one liner of existing chats"}
@@ -103,7 +101,7 @@ async def display_all_custom_gpts() -> list[ExistingCustomGPT]:
 
 # create custom gpt
 @app.post(
-    "/create_custom_gpt",
+    "/create-custom-gpt",
     tags=["customGPT"],
     summary="Takes the input from user to create a custom gpt (Name, instruction), Indentfier = 10",
     response_description="Responds the status of custom gpt created successfully(true) or failure(false) with custom_gpt_id",
