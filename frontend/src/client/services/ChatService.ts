@@ -9,7 +9,7 @@ import type { UserMessageRequest } from '../models/UserMessageRequest';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class ChatServiceService {
+export class ChatService {
     /**
      * Fetches the history of a particular chat id. Identifier = 5
      * @param chatId

@@ -9,7 +9,7 @@ import type { ExistingCustomGPT } from '../models/ExistingCustomGPT';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
-export class CustomGptServiceService {
+export class CustomGpTsService {
     /**
      * Dispalys all the custom GPTs created, Indentfier = 4
      * @returns ExistingCustomGPT Returns a list of custom gpts created

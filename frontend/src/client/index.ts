@@ -20,5 +20,5 @@ export type { SimplifiedMessage } from './models/SimplifiedMessage';
 export type { UserMessageRequest } from './models/UserMessageRequest';
 export type { ValidationError } from './models/ValidationError';
 
-export { ChatServiceService } from './services/ChatServiceService';
-export { CustomGptServiceService } from './services/CustomGptServiceService';
+export { ChatService } from './services/ChatService';
+export { CustomGpTsService } from './services/CustomGpTsService';
