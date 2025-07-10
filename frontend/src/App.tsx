@@ -10,8 +10,8 @@ function App(): JSX.Element {
 
   useEffect(() => {
     // Call the backend endpoint on component mount
-      const body: CommonResponse = {test: "Hello" }
-      const res =DefaultService.testFirstTestFirstPost(body);
+    
+
   }, []);
 
   return (
