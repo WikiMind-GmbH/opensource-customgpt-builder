@@ -10,7 +10,7 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class CustomGptService {
     /**
-     * Dispalys all the custom GPTs created
+     * Dispalys all the custom GPTs created, Indentfier = 4
      * @returns ExistingCustomGPT Returns a list of custom gpts created
      * @throws ApiError
      */
@@ -21,7 +21,7 @@ export class CustomGptService {
         });
     }
     /**
-     * Takes the input from user to create a custom gpt (Name, instruction)
+     * Takes the input from user to create a custom gpt (Name, instruction), Indentfier = 10
      * @param requestBody
      * @returns CreateCustomGPTResponse Responds the status of custom gpt created successfully(true) or failure(false) with custom_gpt_id
      * @throws ApiError
