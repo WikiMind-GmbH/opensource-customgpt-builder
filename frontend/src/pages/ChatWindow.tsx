@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useState } from "react";
 import "./ChatWindow.css";
 import { List } from "lodash";
@@ -18,7 +18,8 @@ export interface ChatMessage {
 export default function ChatWindow() {
   /* 1 ▸ read optional id from URL  e.g.  /chatWindow/123 */
   const { idOfChat } = useParams<{ idOfChat?: string }>();
-
+  const { state } = useLocation();
+  const gptId = (state as { gptId?: number } | null)?.gptId ?? 0; // id 0 will be default gpt version
   /* 2 ▸ local component state */
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>("");
