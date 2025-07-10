@@ -13,7 +13,7 @@ async def retrieve_chat_history_by_id(chat_id: int) -> ChatHistory:
     print("id =", chat_id)
     response = 200
     chat_history_list = ChatHistory(
-        model_id= 0,
+        custom_gpt_id= 0,
         messages=[
             SimplifiedMessage(role=Role.user, message="Hello"),
             SimplifiedMessage(role=Role.assistant, message="Hi, how can I help you?")
@@ -23,6 +23,6 @@ async def retrieve_chat_history_by_id(chat_id: int) -> ChatHistory:
     if response == 200:
         return chat_history_list
     else:
-        return ChatHistory(model_id= -1 , messages= [])
+        return ChatHistory(custom_gpt_id= -1 , messages= [])
     
     

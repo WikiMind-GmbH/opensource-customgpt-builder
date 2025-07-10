@@ -77,7 +77,11 @@ async def get_chat_history(chat_id: int) -> ChatHistory:
 
 
 # Retrieve All Custom GPTs (List)
-@app.get("/display-all-custom-gpts")
+@app.get("/display-all-custom-gpts",
+         tags=["customGPT"],
+         summary="Dispalys all the custom GPTs created",
+         response_description="Returns a list of custom gpts created"
+         )
 async def display_all_custom_gpts() -> list[ExistingCustomGPT]:
     custom_gpt_names_list = await get_all_custom_gpts()
     return custom_gpt_names_list

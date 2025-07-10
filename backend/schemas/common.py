@@ -14,10 +14,6 @@ class ChatHistory(BaseModel):
     custom_gpt_id: int
     messages: list[SimplifiedMessage]
 
-class RetreiveChatHistory(BaseModel):
-    chat_id: int
-
-
 class StatusOfStandardResponse(StrEnum):
     success = "success"
     error = "error"

@@ -1,18 +1,8 @@
 from schemas.common import (
     CreateCustomGPTResponse,
     CustomGPTInfos,
-    ExistingCustomGPT,
-    StatusOfStandardResponse,
+    ExistingCustomGPT
 )
-
-
-async def get_custom_gpts_list():
-    """Retrieves the list of Custom GPTs
-
-    Returns:
-        CustomGPTNamesList: List[str] of names
-    """
-    print("Get custom gpts list")
 
 
 async def get_custom_gpt_by_id(id: int) -> ExistingCustomGPT:
@@ -38,7 +28,7 @@ async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
     """Retrieves the Custom GPT by ID
 
     Returns:
-        ExistingCustomGPT: Information of list of ExistingCustomGPTs
+        list[ExistingCustomGPT]: Information of list of ExistingCustomGPTs
     """
     response_retrived = [
         ExistingCustomGPT(
@@ -60,20 +50,20 @@ async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
 
 
 # editing the custom gpt
-async def update_custom_gpt(
-    edited_information: ExistingCustomGPT,
-) -> StatusOfStandardResponse:
-    """Edit the Custom GPT
+# async def update_custom_gpt(
+#     edited_information: ExistingCustomGPT,
+# ) -> StatusOfStandardResponse:
+#     """Edit the Custom GPT
 
-    Args:
-        edited_information (CustomGPT): Custom GPT with edited information
+#     Args:
+#         edited_information (CustomGPT): Custom GPT with edited information
 
-    Returns:
-        StatusOfStandardResponse: Success or Error
-    """
-    print("Use the information to update the custom gpt ---", edited_information)
-    response = StatusOfStandardResponse.success
-    return response
+#     Returns:
+#         StatusOfStandardResponse: Success or Error
+#     """
+#     print("Use the information to update the custom gpt ---", edited_information)
+#     response = StatusOfStandardResponse.success
+#     return response
 
 
 async def send_custom_gpt_info(
