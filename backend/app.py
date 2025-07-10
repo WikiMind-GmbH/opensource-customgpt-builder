@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import debugpy
 
 from services.chat_history import retrieve_chat_history_by_id
 from services.custom_gpt_service import (

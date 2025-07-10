@@ -36,12 +36,7 @@ https://ftp.mozilla.org/pub/security/nss/releases/
 Copy the file into a folder where you can keep it.
 Extracted via `tar -xvzf ${yourfile}.tar.gz`
 
-Run from the root of the repo the following command:
-```
-mkcert -key-file nginx/certs/dev.key \
-       -cert-file nginx/certs/dev.crt \
-       localhost 127.0.0.1
-```
+
 
 
 ### 1. Install mkcert
@@ -66,3 +61,13 @@ run
 | **Linux – Arch** | ```bash sudo pacman -S mkcert nss ``` |
 
 > **Firefox users (any OS):** you need the extra `nss`/`libnss3-tools` package; Chrome/Edge/Safari pick up the cert from the OS store automatically.
+
+### 2. Install the certificates
+Create a `certs` folder inside the `nginx` folder. So you have `nginx/cerst`
+
+Then run from the root of the repo the following command:
+```
+mkcert -key-file nginx/certs/dev.key \
+       -cert-file nginx/certs/dev.crt \
+       localhost 127.0.0.1
+```
