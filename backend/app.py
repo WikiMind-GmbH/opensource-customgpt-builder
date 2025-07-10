@@ -112,7 +112,6 @@ async def get_custom_gpt_by_id(custom_gpt_id: int):
     custom_gpt_info = await retrieve_custom_gpt_by_id(custom_gpt_id)
     return custom_gpt_info
 
-
 # Deletes the Custom GPT By ID
 @app.delete(
     "/delete-custom-gpt",

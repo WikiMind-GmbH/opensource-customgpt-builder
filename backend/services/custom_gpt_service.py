@@ -40,7 +40,9 @@ async def retrieve_custom_gpt_by_id(custom_gpt_id: int) -> ExistingCustomGPT:
         raise
 
     except Exception as err:
-        logger.exception("Unexpected error occurred while retrieving chat history", err)
+        logger.exception(
+            "Unexpected error occurred while retrieving custom gpt by id", err
+        )
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
@@ -50,23 +52,43 @@ async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
     Returns:
         list[ExistingCustomGPT]: Information of list of ExistingCustomGPTs
     """
-    response_retrived = [
-        ExistingCustomGPT(
-            custom_gpt_id=1,
-            created_at=None,
-            custom_gpt_description="Desc",
-            custom_gpt_name="name",
-            custom_gpt_instructions="instructions",
-        ),
-        ExistingCustomGPT(
-            custom_gpt_id=2,
-            created_at=None,
-            custom_gpt_description="Desc2",
-            custom_gpt_name="name2",
-            custom_gpt_instructions="instructions2",
-        ),
-    ]
-    return response_retrived
+    logger.info(f"Retrieving all custom gpts list")
+
+    try:
+        response_status = 200
+
+        if response_status != 200:
+            raise HTTPException(
+                status_code=404, detail="Error in fetching all custom gpts list"
+            )
+
+        response_retrived = [
+            ExistingCustomGPT(
+                custom_gpt_id=1,
+                created_at=None,
+                custom_gpt_description="Desc",
+                custom_gpt_name="name",
+                custom_gpt_instructions="instructions",
+            ),
+            ExistingCustomGPT(
+                custom_gpt_id=2,
+                created_at=None,
+                custom_gpt_description="Desc2",
+                custom_gpt_name="name2",
+                custom_gpt_instructions="instructions2",
+            ),
+        ]
+        return response_retrived
+
+    except HTTPException as http_err:
+        logger.error(f"HTTP error: {http_err.detail}")
+        raise
+
+    except Exception as err:
+        logger.exception(
+            "Unexpected error occurred while retrieving all custom gpts", err
+        )
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 async def send_custom_gpt_info(
@@ -78,13 +100,26 @@ async def send_custom_gpt_info(
     Returns:
         StatusOfStandardResponse: Response of the model api
     """
-    print("the information for creating a new custom gpt: ", custom_gpt_infos)
-    response = 200
+    logger.info(f"The information for creating a new custom gpt:", custom_gpt_infos)
 
-    if response == 200:
+    try:
+        response_status = 200
+
+        if response_status != 200:
+            raise HTTPException(
+                status_code=404, detail="Error in sending custom gpt info"
+            )
         return CreateOrEditCustomGPTStatus(custom_gpt_id=1, status=True)
-    else:
-        return CreateOrEditCustomGPTStatus(custom_gpt_id=None, status=False)
+
+    except HTTPException as http_err:
+        logger.error(f"HTTP error: {http_err.detail}")
+        raise
+
+    except Exception as err:
+        logger.exception(
+            "Unexpected error occurred while retrieving all custom gpts", err
+        )
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 # delete the custom gpt
