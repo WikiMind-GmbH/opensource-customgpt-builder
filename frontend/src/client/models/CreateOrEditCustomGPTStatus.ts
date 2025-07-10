@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CreateOrEditCustomGPTResponse = {
+export type CreateOrEditCustomGPTStatus = {
     custom_gpt_id: (number | null);
     status: boolean;
 };

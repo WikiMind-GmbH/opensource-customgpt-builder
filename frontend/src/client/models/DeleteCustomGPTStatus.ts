@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CustomGptToCreate = {
-    custom_gpt_name: string;
-    custom_gpt_description: string;
-    custom_gpt_instructions: string;
+export type DeleteCustomGPTStatus = {
+    custom_gpt_id: (number | null);
+    status: boolean;
 };
 

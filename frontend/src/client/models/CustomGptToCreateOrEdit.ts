@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CustomGptToEdit = {
-    custom_gpt_id: number;
+export type CustomGptToCreateOrEdit = {
+    custom_gpt_id: (number | null);
     custom_gpt_name: string;
     custom_gpt_description: string;
     custom_gpt_instructions: string;
