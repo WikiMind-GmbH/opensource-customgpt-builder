@@ -9,3 +9,6 @@ dev.key
 /backend/.venv
 /.venv
 /.vscode/edge-user-data
+.venv
+node_modules
+__pycache__
