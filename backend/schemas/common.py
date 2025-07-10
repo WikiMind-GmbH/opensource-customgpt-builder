@@ -21,13 +21,20 @@ class StatusOfStandardResponse(StrEnum):
 # response: response from assistant model
 class AssistantMessage(BaseModel):
     conversation_id: int
-    response_message: str
+    response_message: SimplifiedMessage
 
 class UserMessageRequest(BaseModel):
-    message: str
-    model_id: int
+    conversation_id: int | None
+    request_message: SimplifiedMessage
+    custom_gpt_id: int
 
 class CustomGptToCreate(BaseModel):
+    custom_gpt_name: str
+    custom_gpt_description: str
+    custom_gpt_instructions: str
+
+class CustomGptToEdit(BaseModel):
+    custom_gpt_id: int
     custom_gpt_name: str
     custom_gpt_description: str
     custom_gpt_instructions: str
@@ -45,9 +52,10 @@ class ExistingCustomGPTOverview(BaseModel):
     custom_gpt_id: int
     custom_gpt_name: str
 
-class CreateCustomGPTResponse(BaseModel):
+class CreateOrEditCustomGPTResponse(BaseModel):
     custom_gpt_id: int | None
     status: bool
+    
 
 
 

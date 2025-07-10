@@ -1,4 +1,4 @@
-from schemas.common import ChatHistory, Role, SimplifiedMessage
+from schemas.common import ChatHistory, ChatSummary, Role, SimplifiedMessage
 
 
 async def retrieve_chat_history_by_id(chat_id: int) -> ChatHistory:
@@ -26,3 +26,17 @@ async def retrieve_chat_history_by_id(chat_id: int) -> ChatHistory:
         return ChatHistory(custom_gpt_id= -1 , messages= [])
     
     
+async def retrieve_chat_summaries_list()-> list[ChatSummary]:
+    """Retrieves the list of chat summaries in one liner
+
+    Returns:
+        list[ChatSummary]: Returns Chat summaries with chat_id
+    """
+    response = 200
+    chat_summary = [ChatSummary(chat_id=1, chat_summary="summary1"),
+                    ChatSummary(chat_id=2, chat_summary="summary2"),
+                    ChatSummary(chat_id=3, chat_summary="summary3")]
+    if response == 200: 
+        return chat_summary
+    else:
+        return []

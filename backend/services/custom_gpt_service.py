@@ -1,21 +1,20 @@
 from schemas.common import (
-    CreateCustomGPTResponse,
+    CreateOrEditCustomGPTResponse,
     CustomGptToCreate,
-    ExistingCustomGPT
+    CustomGptToEdit,
+    ExistingCustomGPT,
 )
 
 
-async def get_custom_gpt_by_id(id: int) -> ExistingCustomGPT:
-    """Retrieves the Custom GPT by ID
-
+async def get_custom_gpt_by_id(custom_gpt_id: int) -> ExistingCustomGPT:
+    """Retrieves the Custom GPT by ID for reaching to the chat page with information
     Args:
-        id (int): ID for Custom GPT
-
+        id (int): ID for Custom GPT accessed by the user
     Returns:
-        ExistingCustomGPT: Information of ExistingCustomGPT Retrieved
+        ExistingCustomGPT: Information of ExistingCustomGPT
     """
     response_retrived = ExistingCustomGPT(
-        custom_gpt_id=id,
+        custom_gpt_id=custom_gpt_id,
         created_at=None,
         custom_gpt_description="Desc",
         custom_gpt_name="name",
@@ -50,25 +49,29 @@ async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
 
 
 # editing the custom gpt
-# async def update_custom_gpt(
-#     edited_information: ExistingCustomGPT,
-# ) -> StatusOfStandardResponse:
-#     """Edit the Custom GPT
+async def update_custom_gpt(
+    custom_gpt_info: CustomGptToEdit,
+) -> CreateOrEditCustomGPTResponse:
+    """Edit the existing Custom GPT information
+     Args:
+        custom_gpt_id (int): Custom GPT with edited information
+    Returns:
+        CreateOrEditCustomGPTResponse: Success or Error
+    """
+    print("New Name: ", custom_gpt_info.custom_gpt_name)
+    response = 200
 
-#     Args:
-#         edited_information (CustomGPT): Custom GPT with edited information
-
-#     Returns:
-#         StatusOfStandardResponse: Success or Error
-#     """
-#     print("Use the information to update the custom gpt ---", edited_information)
-#     response = StatusOfStandardResponse.success
-#     return response
+    if response == 200:
+        return CreateOrEditCustomGPTResponse(
+            custom_gpt_id=custom_gpt_info.custom_gpt_id, status=True
+        )
+    else:
+        return CreateOrEditCustomGPTResponse(custom_gpt_id=None, status=False)
 
 
 async def send_custom_gpt_info(
     custom_gpt_infos: CustomGptToCreate,
-) -> CreateCustomGPTResponse:
+) -> CreateOrEditCustomGPTResponse:
     """Send the complete information (Name, Desription and Instructions) for creating a custom GPT
     Args:
         gpt_information (CustomGptToCreate): Custom GPT information
@@ -79,6 +82,6 @@ async def send_custom_gpt_info(
     response = 200
 
     if response == 200:
-        return CreateCustomGPTResponse(custom_gpt_id=1, status=True)
+        return CreateOrEditCustomGPTResponse(custom_gpt_id=1, status=True)
     else:
-        return CreateCustomGPTResponse(custom_gpt_id=None, status=False)
+        return CreateOrEditCustomGPTResponse(custom_gpt_id=None, status=False)
