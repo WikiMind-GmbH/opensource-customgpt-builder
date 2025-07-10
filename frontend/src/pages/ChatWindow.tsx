@@ -2,19 +2,8 @@ import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./ChatWindow.css";
 import { List } from "lodash";
-import { CustomGptService } from "../client";
+import { ChatHistory, ChatHistoryService, CustomGptService, ExistingCustomGPT, Role, SimplifiedMessage } from "../client";
 
-/* --- domain types -------------------------------------------------------- */
-export enum Role {
-  USER = "user",
-  CHATBOT_RESPONSE_FOR_USER = "chatbotResponseForUser",
-}
-
-export interface ChatMessage {
-  role: Role;
-  text: string;
-}
-/* ------------------------------------------------------------------------ */
 
 export default function ChatWindow() {
   /* 1 ▸ read optional id from URL  e.g.  /chatWindow/123 */
@@ -27,49 +16,60 @@ export default function ChatWindow() {
   const [error, setError] = useState<string | null>(null);
 
   /* 2 ▸ local component state */
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<SimplifiedMessage[]>([]);
   const [input, setInput] = useState<string>("");
+  const [currentGpt, setCurrentGpt] = useState<number | null>(null)
+  const [currentGptName, setCurrentGptName] = useState<string | null>(null)
 
-  // useEffect(() => {
-  //     async function loadChatContentIfExisting() {
-  //       if(conversationIdOrNullIfNewConversation)
-  //       try {
-  //         const conversation = await CustomGptService.
-  //       } catch (err: unknown) {
-  //         setError((err as Error).message);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     }
-  //     loadChatContentIfExisting();
-  //   }, []);
 
-  /* 3 ▸ send handler */
+  async function loadChatContentIfExisting() {
+        if(conversationIdOrNullIfNewConversation)
+        try {
+          const conversation: ChatHistory = await ChatHistoryService.getChatHistoryById(conversationIdOrNullIfNewConversation);
+          setMessages(conversation.messages);
+        } catch (err: unknown) {
+          setError((err as Error).message);
+        } finally {
+          setLoading(false);
+        }
+      }
+  
+  async function setNameOfGPT() {
+        if(gptIdOrNullIfDefault){
+          try {
+              const all_gpts: ExistingCustomGPT[] = await CustomGptService.dispalyAllCustomGpTs()
+              const name =
+                all_gpts.find(
+                  ({ custom_gpt_id }) => custom_gpt_id === gptIdOrNullIfDefault,
+                )?.custom_gpt_name ?? "Unknown GPT"; // fallback
+              setCurrentGptName(name);
+            } catch (err: unknown) {
+              setError((err as Error).message);
+            } finally {
+              setLoading(false);
+          }
+        }
+        setCurrentGptName("Default GPT")
+        
+      }
 
-  // function getAndSetMessages(){
-  //   if(idOfChat==null){
-  //     alert("Should only be");
-  //   }
-  //   const messages: List[ChatMessage] = await getMessagesById(idOfChat)
-  // }
+
+
+  useEffect(() => {
+      loadChatContentIfExisting();
+      setNameOfGPT();
+    }, []);
+  
 
   function handleSend() {
     if (!input.trim()) return;
 
     // push user message
-    setMessages((prev) => [...prev, { role: Role.USER, text: input }]);
+    setMessages((prev) => [...prev, { role: Role.USER, message: input }]);
     setInput("");
 
     // TODO: replace with real backend / WebSocket call
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: Role.CHATBOT_RESPONSE_FOR_USER,
-          text: `Echo: ${input}`,
-        },
-      ]);
-    }, 500);
+    const res = 
   }
 
   /* 4 ▸ UI */
