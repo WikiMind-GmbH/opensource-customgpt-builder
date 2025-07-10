@@ -36,14 +36,18 @@ class UserMessageRequest(BaseModel):
 
 
 class CustomGptToCreateOrEdit(BaseModel):
-    custom_gpt_id: int | None
+    custom_gpt_id: int | None = None
     custom_gpt_name: str
     custom_gpt_description: str
     custom_gpt_instructions: str
 
-class ExistingCustomGPT(CustomGptToCreateOrEdit):
-    custom_gpt_id: int
-    created_at: datetime | None
+
+class ExistingCustomGPT(BaseModel):
+    custom_gpt_id: int  # Required and not nullable
+    custom_gpt_name: str
+    custom_gpt_description: str
+    custom_gpt_instructions: str
+    created_at: datetime | None = None
 
 
 class ChatSummary(BaseModel):
@@ -59,6 +63,7 @@ class ExistingCustomGPTOverview(BaseModel):
 class CreateOrEditCustomGPTStatus(BaseModel):
     custom_gpt_id: int | None
     status: bool
+
 
 class DeleteCustomGPTStatus(BaseModel):
     custom_gpt_id: int | None
