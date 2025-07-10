@@ -18,7 +18,7 @@ class ModelInfo(ModelName):
     model_id: int
     
 class ChatHistory(BaseModel):
-    model_info: ModelInfo
+    model_id: int
     messages: list[SimplifiedMessage]
 
 class RetreiveChatHistory(BaseModel):
@@ -45,7 +45,6 @@ class UserMessageRequest(BaseModel):
     model_id: int
 
 class CustomGPTInfos(BaseModel):
-
     custom_gpt_name: str
     custom_gpt_description: str
     custom_gpt_instructions: str
@@ -59,7 +58,6 @@ class ChatSummary(BaseModel):
     chat_id: int
     chat_summary: str
     
-
 class ExistingCustomGPTOverview(BaseModel):
     custom_gpt_id: int
     custom_gpt_name: str

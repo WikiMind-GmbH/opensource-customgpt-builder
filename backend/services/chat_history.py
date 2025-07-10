@@ -1,11 +1,19 @@
-from schemas.common import ChatHistory, ModelInfo, RetreiveChatHistory, Role, SimplifiedMessage
+from schemas.common import ChatHistory, Role, SimplifiedMessage
 
 
-async def retrieve_chat_history_by_id(info: RetreiveChatHistory) -> ChatHistory:
-    print("id =", info.chat_id)
+async def retrieve_chat_history_by_id(chat_id: int) -> ChatHistory:
+    """Retreives the history of chat messages for a particular chat_id
+
+    Args:
+        chat_id (int): id of a selected chat from the chat list
+
+    Returns:
+        ChatHistory: Returns Model ID and list of Messages 
+    """
+    print("id =", chat_id)
     response = 200
     chat_history_list = ChatHistory(
-        model_info=ModelInfo(model_id=1, base_model_name="ChatGPT4o", custom_gpt_name=None),
+        model_id= 0,
         messages=[
             SimplifiedMessage(role=Role.user, message="Hello"),
             SimplifiedMessage(role=Role.assistant, message="Hi, how can I help you?")
@@ -15,5 +23,6 @@ async def retrieve_chat_history_by_id(info: RetreiveChatHistory) -> ChatHistory:
     if response == 200:
         return chat_history_list
     else:
-        default_model_info = ModelInfo(model_id=-1, base_model_name="unknown", custom_gpt_name=None)
-        return ChatHistory(model_info= default_model_info , messages= [])
+        return ChatHistory(model_id= -1 , messages= [])
+    
+    

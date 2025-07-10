@@ -2,7 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from services.chat_history import retrieve_chat_history_by_id
-from services.custom_gpt_service import get_custom_gpt_by_id,  send_custom_gpt_info, update_custom_gpt
+from services.custom_gpt_service import (
+    get_all_custom_gpts,
+    get_custom_gpt_by_id,
+    send_custom_gpt_info,
+    update_custom_gpt,
+)
 from services.chatbot_service import generate_chatbot_response
 from schemas.common import (
     AssistantMessage,
@@ -11,7 +16,6 @@ from schemas.common import (
     CustomGPTInfos,
     ExistingCustomGPT,
     ModelName,
-    RetreiveChatHistory,
     StatusOfStandardResponse,
     UserMessageRequest,
 )
@@ -39,14 +43,30 @@ app.add_middleware(
 async def root():
     return {"message": "Hello World"}
 
-@app.post("/chat_history_by_id")
-async def get_chat_history(info: RetreiveChatHistory) -> ChatHistory:
-    response = await retrieve_chat_history_by_id(info)
+
+@app.post(
+    "/chat_history_by_id",
+    tags=["chatHistory"],
+    summary="Fetches the history of a particular chat id. Identifier = 5",
+    response_description="retrives the list of messages and Model ID (0: ChatGPT40, -1: Error, 1/custom_gpt_id: CustomGPTName)",
+    response_model=ChatHistory,
+    operation_id="getChatHistoryByID",
+)
+async def get_chat_history(chat_id: int) -> ChatHistory:
+    response = await retrieve_chat_history_by_id(chat_id)
     return response
 
-@app.get("/chats_list_by_one_liner")
-async def get_chats_one_liner():
-    return {"one_liners": "text containing one liner of existing chats"}
+
+# @app.get("/chat_summary",
+#          tags=["chatSummary"],
+#          summary="One Liner summary of all chats in the List.  Identifier = 4",
+#          response_description="List of chats summary in one line with a Chat_id",
+#          response_model=ChatSummary
+
+#          )
+# async def get_chats_one_liner() -> ChatSummary:
+#     response = get_chat_summaries()
+#     return {"one_liners": "text containing one liner of existing chats"}
 
 
 @app.get("/get_model_name")
@@ -57,33 +77,39 @@ async def get_model_name(model_name: ModelName):
 @app.post("/send_user_message", response_model=AssistantMessage)
 async def send_user_message(request: UserMessageRequest) -> AssistantMessage:
 
-    response = await generate_chatbot_response(
-     request
-    )
+    response = await generate_chatbot_response(request)
     return response
 
 
 # Retrieve All Custom GPTs (List)
-# @app.get("/retrieve_custom_gpts_list", response_model=)
-# async def read_custom_gpt_list():
-#     custom_gpt_names_list = get_custom_gpts_list()
-#     return custom_gpt_names_list
+@app.get("/display-all-custom-gpts")
+async def display_all_custom_gpts() -> list[ExistingCustomGPT]:
+    custom_gpt_names_list = await get_all_custom_gpts()
+    return custom_gpt_names_list
 
 
-#custom gpt by id
+# custom gpt by id
 @app.get("/retrieve_custom_gpt_by_id", response_model=ExistingCustomGPT)
 async def read_custom_gpt_by_id(id: int):
     custom_gpt_info = get_custom_gpt_by_id(id)
     return custom_gpt_info
 
-#edit custom gpt
-@app.post("/edit_custom_gpt", response_model= StatusOfStandardResponse)
+
+# edit custom gpt
+@app.post("/edit_custom_gpt", response_model=StatusOfStandardResponse)
 async def edit_custom_gpt(edited_information: ExistingCustomGPT):
     edit_custom_gpt_status = update_custom_gpt(edited_information=edited_information)
     return edit_custom_gpt_status
 
-# create custom gpt 
-@app.post("/create_custom_gpt")
-async def create_custom_gpt(custom_gpt_infos: CustomGPTInfos) -> CreateCustomGPTResponse:
+
+# create custom gpt
+@app.post(
+    "/create_custom_gpt",
+    tags=["customGPT"],
+    summary="Takes the input from user to create a custom gpt (Name, instruction)",
+)
+async def create_custom_gpt(
+    custom_gpt_infos: CustomGPTInfos,
+) -> CreateCustomGPTResponse:
     created_gpt_status = await send_custom_gpt_info(custom_gpt_infos=custom_gpt_infos)
     return created_gpt_status
