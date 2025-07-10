@@ -10,9 +10,8 @@ export const router = createBrowserRouter([
     element: <Layout />,              // sidebar lives inside Layout
     children: [
       { index: true, element: <ChatWindow /> }, 
-      { path: "chatWindow/:idOfChat", element: <ChatWindow /> },
-      { path: "createOrEditCustomGPT", element: <CreateOrEditCustomGPT /> },
-      { path: "createOrEditCustomGPT/:idOfCustomGPT", element: <CreateOrEditCustomGPT /> },
+      { path: "chatWindow/:conversationIdOrUndefinedfNewConversation?", element: <ChatWindow /> },
+      { path: "createOrEditCustomGPT/:idOfCustomGptOrUndefined?", element: <CreateOrEditCustomGPT /> },
       { path: "displayCustomGPTs", element: <DisplayCustomGPTs /> }, 
     ],
   },

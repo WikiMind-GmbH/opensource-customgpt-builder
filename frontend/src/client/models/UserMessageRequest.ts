@@ -6,6 +6,6 @@ import type { SimplifiedMessage } from './SimplifiedMessage';
 export type UserMessageRequest = {
     conversation_id: (number | null);
     request_message: SimplifiedMessage;
-    custom_gpt_id: number;
+    custom_gpt_id: (number | null);
 };
 

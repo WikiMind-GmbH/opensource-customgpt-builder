@@ -32,7 +32,7 @@ class AssistantMessage(BaseModel):
 class UserMessageRequest(BaseModel):
     conversation_id: int | None
     request_message: SimplifiedMessage
-    custom_gpt_id: int
+    custom_gpt_id: int | None
 
 
 class CustomGptToCreateOrEdit(BaseModel):
@@ -42,6 +42,7 @@ class CustomGptToCreateOrEdit(BaseModel):
     custom_gpt_instructions: str
 
 class ExistingCustomGPT(CustomGptToCreateOrEdit):
+    custom_gpt_id: int
     created_at: datetime | None
 
 

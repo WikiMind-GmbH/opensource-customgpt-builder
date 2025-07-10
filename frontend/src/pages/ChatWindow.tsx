@@ -1,79 +1,114 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./ChatWindow.css";
 import { List } from "lodash";
-import { ChatHistory, ChatService, CustomGpTsService, ExistingCustomGPT, Role, SimplifiedMessage, UserMessageRequest } from "../client";
-
+import {
+  AssistantMessage,
+  ChatHistory,
+  ChatService,
+  CustomGpTsService,
+  ExistingCustomGPT,
+  Role,
+  SimplifiedMessage,
+  UserMessageRequest,
+} from "../client";
 
 export default function ChatWindow() {
   /* 1 ▸ read optional id from URL  e.g.  /chatWindow/123 */
-  const { idOfChat } = useParams<{ idOfChat?: string }>();
+  const { conversationIdOrUndefinedfNewConversation }= useParams<{
+    conversationIdOrUndefinedfNewConversation?: string;
+  }>();
   const { state } = useLocation();
-  const gptIdOrNullIfDefault = (state as { gptIdOrNullIfDefault?: number } | null)?.gptIdOrNullIfDefault ?? null; // id null will be default gpt version
-  const conversationIdOrNullIfNewConversation = (state as { conversationIdOrNullIfNewConversation?: number } | null)?.conversationIdOrNullIfNewConversation ?? null; // id 0 will be default gpt version
-  
-  const [loading, setLoading] = useState(true);
+  const gptIdOrNullIfDefault =
+    (state as { gptIdOrNullIfDefault?: number } | null)?.gptIdOrNullIfDefault ??
+    null; // id null will be default gpt version
+
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   /* 2 ▸ local component state */
   const [messages, setMessages] = useState<SimplifiedMessage[]>([]);
   const [input, setInput] = useState<string>("");
-  const [currentGpt, setCurrentGpt] = useState<number | null>(null)
-  const [currentGptName, setCurrentGptName] = useState<string | null>(null)
-
+  const [currentGptName, setCurrentGptName] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   async function loadChatContentIfExisting() {
-        if(conversationIdOrNullIfNewConversation)
-        try {
-          const conversation: ChatHistory = await ChatService.getChatHistoryById(conversationIdOrNullIfNewConversation);
-          setMessages(conversation.messages);
-        } catch (err: unknown) {
-          setError((err as Error).message);
-        } finally {
-          setLoading(false);
-        }
+    if (conversationIdOrUndefinedfNewConversation !== undefined)
+      try {
+        const conversation: ChatHistory = await ChatService.getChatHistoryById(
+          Number(conversationIdOrUndefinedfNewConversation)
+        );
+        setMessages(conversation.messages);
+      } catch (err: unknown) {
+        setError((err as Error).message);
+      } finally {
+        // setLoading(false);
       }
-  
+  }
+
   async function setNameOfGPT() {
-        if(gptIdOrNullIfDefault){
-          try {
-              const gptInfos: ExistingCustomGPT = await CustomGpTsService.getCustomGptInfos(gptIdOrNullIfDefault)
-              setCurrentGptName(gptInfos.custom_gpt_name);
-            } catch (err: unknown) {
-              setError((err as Error).message);
-            } finally {
-              setLoading(false);
-          }
-        }
-        setCurrentGptName("Default GPT")
-        
-
-
+    if (gptIdOrNullIfDefault !== null) {
+      try {
+        const gptInfos: ExistingCustomGPT =
+          await CustomGpTsService.getCustomGptInfos(gptIdOrNullIfDefault);
+        setCurrentGptName(gptInfos.custom_gpt_name);
+      } catch (err: unknown) {
+        setError((err as Error).message);
+      } finally {
+        // setLoading(false);
+      }
+    } else {
+      setCurrentGptName("Default GPT");
+      // setLoading(false);
+    }
+  }
 
   useEffect(() => {
-      loadChatContentIfExisting();
-      setNameOfGPT();
-    }, []);
-  
+    loadChatContentIfExisting();
+    setNameOfGPT();
+  }, []);
 
-  function handleSend() {
+  async function handleSend() {
     if (!input.trim()) return;
 
     // push user message
     setMessages((prev) => [...prev, { role: Role.USER, message: input }]);
     setInput("");
-    const req: UserMessageRequest = 
-    const response = await ChatService.sendUserMessage()
+    const req: UserMessageRequest = {
+      conversation_id:
+        conversationIdOrUndefinedfNewConversation !== undefined
+          ? Number(conversationIdOrUndefinedfNewConversation)
+          : null,
+      request_message: { role: Role.USER, message: input },
+      custom_gpt_id: gptIdOrNullIfDefault,
+    };
+    const response: AssistantMessage = await ChatService.sendUserMessage(req);
+    const response_text: string = response.response_message.message;
+    const convId = response.conversation_id;
+    if (conversationIdOrUndefinedfNewConversation !== undefined) {
+      setMessages((prev) => [
+        ...prev,
+        { role: Role.ASSISTANT, message: response_text },
+      ]);
+    } else {
+      navigate(`/chatWindow/:${conversationIdOrUndefinedfNewConversation}`, {
+        state: { gptIdOrNullIfDefault: gptIdOrNullIfDefault },
+      });
+    }
 
-    // TODO: replace with real backend / WebSocket call
-    const res = 
+    // Check if currently response_text conversationIdOrUndefinedfNewConversation is null then navigate, otherwise nothing
   }
 
   /* 4 ▸ UI */
+
+  // if (loading) return <p className="center">Loading…</p>;
+  if (error) return <p className="center">Error: {error}</p>;
   return (
     <div className="chat-root">
       <h2 className="chat-title">
-        {idOfChat ? `Conversation #${idOfChat}` : "New Conversation"}
+        {gptIdOrNullIfDefault !== null
+          ? `${currentGptName}`
+          : "Vanilla ChatGPT"}
       </h2>
 
       <div className="chat-messages">
@@ -82,7 +117,7 @@ export default function ChatWindow() {
             key={i}
             className={`chat-msg ${m.role === Role.USER ? "right" : "left"}`}
           >
-            {m.text}
+            {m.message}
           </div>
         ))}
       </div>

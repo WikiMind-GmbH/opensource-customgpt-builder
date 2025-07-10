@@ -1,48 +1,74 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./CreateOrEditCustomGPT.css";
 import { CreateOrEditCustomGPTForm } from "../interfaces/interfaces";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  CreateCustomGPTResponse,
-  CustomGptService,
-  CustomGptToCreate,
+  CreateOrEditCustomGPTStatus,
+  CustomGpTsService,
+  CustomGptToCreateOrEdit,
+  ExistingCustomGPT,
 } from "../client";
 
 export default function CreateOrEditCustomGPT() {
-  const { idOfCustomGPT } = useParams<{ idOfCustomGPT?: string }>();
-  const [form, setForm] = useState<CustomGptToCreate>({
+  const { idOfCustomGptOrUndefined } = useParams<{
+    idOfCustomGptOrUndefined?: string;
+  }>();
+  const [form, setForm] = useState<CreateOrEditCustomGPTForm>({
     custom_gpt_name: "",
     custom_gpt_description: "",
     custom_gpt_instructions: "",
   });
+  const navigate = useNavigate();
   // ToDo: add Endpoint for this, functions
   function handleChangeToFormFields(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
-
+  
   async function createOrEditCustomGPT() {
-    console.log("Saving…", form);
-    alert("Changes saved (check console)");
-    if (idOfCustomGPT == null) {
-      // call the createCustomGPT endpoint
-      const res: CreateCustomGPTResponse =
-        await CustomGptService.createCustomGptCreateCustomGptPost(form);
-      // const navigate = useNavigate();
-      // navigate(`/createCustomGPTs/${res.custom_gpt_id}`);
-      // show feedback
+    if (idOfCustomGptOrUndefined === undefined) {
+      const body: CustomGptToCreateOrEdit = { custom_gpt_id: null, ...form };
+      const res: CreateOrEditCustomGPTStatus =
+        await CustomGpTsService.createOrEditCustomGpt(body);
+      navigate(`/createOrEditCustomGPT/${res.custom_gpt_id}`);
     } else {
-      // call editCustomGPT endpoint
-      // show feedback
+      const body: CustomGptToCreateOrEdit = {
+        custom_gpt_id: Number(idOfCustomGptOrUndefined),
+        ...form,
+      };
+      const res: CreateOrEditCustomGPTStatus =
+        await CustomGpTsService.createOrEditCustomGpt(body);
     }
   }
+
+  useEffect(() => {
+    async function load() {
+      if (idOfCustomGptOrUndefined) {
+        const infosOfCustomGpt: ExistingCustomGPT =
+          await CustomGpTsService.getCustomGptInfos(
+            Number(idOfCustomGptOrUndefined)
+          ); // ⬅️ adjust endpoint
+        const customGptInfosForForms: CreateOrEditCustomGPTForm = (({
+          custom_gpt_name,
+          custom_gpt_description,
+          custom_gpt_instructions,
+        }: ExistingCustomGPT) => ({
+          custom_gpt_name,
+          custom_gpt_description,
+          custom_gpt_instructions,
+        }))(infosOfCustomGpt);
+        setForm(customGptInfosForForms);
+      }
+    }
+    load();
+  }, []);
 
   return (
     <div className="editor">
       <label className="field">
         <span className="title">Name</span>
         <input
-          name="name"
+          name="custom_gpt_name"
           type="text"
           value={form.custom_gpt_name}
           onChange={handleChangeToFormFields}
@@ -53,7 +79,7 @@ export default function CreateOrEditCustomGPT() {
       <label className="field">
         <span className="title">Description</span>
         <textarea
-          name="description"
+          name="custom_gpt_description"
           rows={4}
           value={form.custom_gpt_description}
           onChange={handleChangeToFormFields}
@@ -64,7 +90,7 @@ export default function CreateOrEditCustomGPT() {
       <label className="field">
         <span className="title">Instruction</span>
         <textarea
-          name="instruction"
+          name="custom_gpt_instructions"
           rows={8}
           value={form.custom_gpt_instructions}
           onChange={handleChangeToFormFields}

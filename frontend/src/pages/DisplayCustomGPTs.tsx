@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DisplayCustomGPTs.css";
-import { CustomGptService, ExistingCustomGPT } from "../client";
+import { CustomGpTsService, DeleteCustomGPTStatus, ExistingCustomGPT } from "../client";
+import { CustomGptInfo } from "../interfaces/interfaces";
 
-/* --- DTO type that matches backend response ------------------ */
-type CustomGptInfo = {
-  customgptIdOrNullIfDefault: number;
-  customGptName: string;
-};
-/* ------------------------------------------------------------- */
 
 export default function DisplayCustomGPTs() {
   const [gpts, setGpts] = useState<CustomGptInfo[]>([]);
@@ -21,7 +16,7 @@ export default function DisplayCustomGPTs() {
     async function load() {
       try {
         const existingGPTList: ExistingCustomGPT[] =
-          await CustomGptService.displayAllCustomGptsDisplayAllCustomGptsGet(); // ⬅️ adjust endpoint
+          await CustomGpTsService.retreiveAllCustomGpTs(); // ⬅️ adjust endpoint
         const customGptInfos: CustomGptInfo[] = existingGPTList.map(
           ({ custom_gpt_id: customgptIdOrNullIfDefault, custom_gpt_name: customGptName }) => ({
             customgptIdOrNullIfDefault,
@@ -42,12 +37,10 @@ export default function DisplayCustomGPTs() {
     if (!confirm("Delete this GPT?")) return;
 
     try {
-      const res = await fetch(`/api/custom-gpts/${id}`, { method: "DELETE" });
+      const res: DeleteCustomGPTStatus = await CustomGpTsService.deleteCustomGpt(id);
 
-      if (!res.ok) {
-        /* backend replied 4xx/5xx → show message and keep the item */
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail ?? `HTTP ${res.status}`);
+      if (!res.status) {
+        throw new Error("Error deleting customgpt");
       }
 
       /* success → update UI */
@@ -84,7 +77,7 @@ export default function DisplayCustomGPTs() {
             </button>
             <button
               type="button"
-              onClick={() => navigate(`/createCustomGPTs/${customgptIdOrNullIfDefault}`)}
+              onClick={() => navigate(`/createOrEditCustomGPT/${customgptIdOrNullIfDefault}`)}
               className="btn secondary"
             >
               Edit
