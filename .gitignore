@@ -6,5 +6,6 @@ dev.key
 .htpasswd
 .DS_Store
 .vscode/edge-user-data
+/backend/.venv
 /.venv
 /.vscode/edge-user-data
