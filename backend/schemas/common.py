@@ -11,7 +11,7 @@ class SimplifiedMessage(BaseModel):
     message: str
     
 class ChatHistory(BaseModel):
-    custom_gpt_id: int
+    custom_gpt_id: int | None
     messages: list[SimplifiedMessage]
 
 class StatusOfStandardResponse(StrEnum):
@@ -27,12 +27,12 @@ class UserMessageRequest(BaseModel):
     message: str
     model_id: int
 
-class CustomGPTInfos(BaseModel):
+class CustomGptToCreate(BaseModel):
     custom_gpt_name: str
     custom_gpt_description: str
     custom_gpt_instructions: str
 
-class ExistingCustomGPT(CustomGPTInfos):
+class ExistingCustomGPT(CustomGptToCreate):
     custom_gpt_id: int
     created_at: datetime | None
 

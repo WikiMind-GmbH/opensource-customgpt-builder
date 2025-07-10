@@ -12,7 +12,7 @@ from services.custom_gpt_service import (
 from schemas.common import (
     ChatHistory,
     CreateCustomGPTResponse,
-    CustomGPTInfos,
+    CustomGptToCreate,
     ExistingCustomGPT,
 )
 
@@ -79,7 +79,7 @@ async def get_chat_history(chat_id: int) -> ChatHistory:
 # Retrieve All Custom GPTs (List)
 @app.get("/display-all-custom-gpts",
          tags=["customGPT"],
-         summary="Dispalys all the custom GPTs created",
+         summary="Dispalys all the custom GPTs created, Indentfier = 4",
          response_description="Returns a list of custom gpts created"
          )
 async def display_all_custom_gpts() -> list[ExistingCustomGPT]:
@@ -87,8 +87,8 @@ async def display_all_custom_gpts() -> list[ExistingCustomGPT]:
     return custom_gpt_names_list
 
 
-# # custom gpt by id
-# @app.get("/retrieve_custom_gpt_by_id", response_model=ExistingCustomGPT)
+# # chat with custom gpt by id
+# @app.get("/display-custom-gpt-by-id", response_model=ExistingCustomGPT)
 # async def read_custom_gpt_by_id(id: int):
 #     custom_gpt_info = get_custom_gpt_by_id(id)
 #     return custom_gpt_info
@@ -105,12 +105,12 @@ async def display_all_custom_gpts() -> list[ExistingCustomGPT]:
 @app.post(
     "/create_custom_gpt",
     tags=["customGPT"],
-    summary="Takes the input from user to create a custom gpt (Name, instruction)",
+    summary="Takes the input from user to create a custom gpt (Name, instruction), Indentfier = 10",
     response_description="Responds the status of custom gpt created successfully(true) or failure(false) with custom_gpt_id",
     response_model=CreateCustomGPTResponse,
 )
 async def create_custom_gpt(
-    custom_gpt_infos: CustomGPTInfos,
+    custom_gpt_infos: CustomGptToCreate,
 ) -> CreateCustomGPTResponse:
     created_gpt_status = await send_custom_gpt_info(custom_gpt_infos=custom_gpt_infos)
     return created_gpt_status

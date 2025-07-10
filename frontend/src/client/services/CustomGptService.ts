@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CreateCustomGPTResponse } from '../models/CreateCustomGPTResponse';
-import type { CustomGPTInfos } from '../models/CustomGPTInfos';
+import type { CustomGptToCreate } from '../models/CustomGptToCreate';
 import type { ExistingCustomGPT } from '../models/ExistingCustomGPT';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
@@ -27,7 +27,7 @@ export class CustomGptService {
      * @throws ApiError
      */
     public static createCustomGptCreateCustomGptPost(
-        requestBody: CustomGPTInfos,
+        requestBody: CustomGptToCreate,
     ): CancelablePromise<CreateCustomGPTResponse> {
         return __request(OpenAPI, {
             method: 'POST',

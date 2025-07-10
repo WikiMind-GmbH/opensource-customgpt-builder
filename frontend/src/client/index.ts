@@ -9,7 +9,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { ChatHistory } from './models/ChatHistory';
 export type { CreateCustomGPTResponse } from './models/CreateCustomGPTResponse';
-export type { CustomGPTInfos } from './models/CustomGPTInfos';
+export type { CustomGptToCreate } from './models/CustomGptToCreate';
 export type { ExistingCustomGPT } from './models/ExistingCustomGPT';
 export type { HTTPValidationError } from './models/HTTPValidationError';
 export { Role } from './models/Role';

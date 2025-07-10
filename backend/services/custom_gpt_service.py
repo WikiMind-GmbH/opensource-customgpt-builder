@@ -1,6 +1,6 @@
 from schemas.common import (
     CreateCustomGPTResponse,
-    CustomGPTInfos,
+    CustomGptToCreate,
     ExistingCustomGPT
 )
 
@@ -25,7 +25,7 @@ async def get_custom_gpt_by_id(id: int) -> ExistingCustomGPT:
 
 
 async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
-    """Retrieves the Custom GPT by ID
+    """Retrieves the Custom GPT information by ID
 
     Returns:
         list[ExistingCustomGPT]: Information of list of ExistingCustomGPTs
@@ -67,11 +67,11 @@ async def get_all_custom_gpts() -> list[ExistingCustomGPT]:
 
 
 async def send_custom_gpt_info(
-    custom_gpt_infos: CustomGPTInfos,
+    custom_gpt_infos: CustomGptToCreate,
 ) -> CreateCustomGPTResponse:
     """Send the complete information (Name, Desription and Instructions) for creating a custom GPT
     Args:
-        gpt_information (CustomGPTInfos): Custom GPT information
+        gpt_information (CustomGptToCreate): Custom GPT information
     Returns:
         StatusOfStandardResponse: Response of the model api
     """
