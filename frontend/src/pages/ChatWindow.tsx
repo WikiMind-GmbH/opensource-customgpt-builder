@@ -1,7 +1,8 @@
 import { useLocation, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./ChatWindow.css";
 import { List } from "lodash";
+import { CustomGptService } from "../client";
 
 /* --- domain types -------------------------------------------------------- */
 export enum Role {
@@ -19,12 +20,32 @@ export default function ChatWindow() {
   /* 1 ▸ read optional id from URL  e.g.  /chatWindow/123 */
   const { idOfChat } = useParams<{ idOfChat?: string }>();
   const { state } = useLocation();
-  const gptId = (state as { gptId?: number } | null)?.gptId ?? 0; // id 0 will be default gpt version
+  const gptIdOrNullIfDefault = (state as { gptIdOrNullIfDefault?: number } | null)?.gptIdOrNullIfDefault ?? null; // id null will be default gpt version
+  const conversationIdOrNullIfNewConversation = (state as { conversationIdOrNullIfNewConversation?: number } | null)?.conversationIdOrNullIfNewConversation ?? null; // id 0 will be default gpt version
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   /* 2 ▸ local component state */
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>("");
 
+  // useEffect(() => {
+  //     async function loadChatContentIfExisting() {
+  //       if(conversationIdOrNullIfNewConversation)
+  //       try {
+  //         const conversation = await CustomGptService.
+  //       } catch (err: unknown) {
+  //         setError((err as Error).message);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     }
+  //     loadChatContentIfExisting();
+  //   }, []);
+
   /* 3 ▸ send handler */
+
   // function getAndSetMessages(){
   //   if(idOfChat==null){
   //     alert("Should only be");

@@ -1,16 +1,19 @@
 import { useState } from "react";
-import "./CreateOrEditCustomGPT.css"
+import "./CreateOrEditCustomGPT.css";
 import { CreateOrEditCustomGPTForm } from "../interfaces/interfaces";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  CreateCustomGPTResponse,
+  CustomGptService,
+  CustomGptToCreate,
+} from "../client";
 
-
-
-export default function CreateOrEditCustomGPT(){
-    const { idOfCustomGPT } = useParams<{ idOfCustomGPT?: string }>();
-    const [form, setForm] = useState<CreateOrEditCustomGPTForm>({
+export default function CreateOrEditCustomGPT() {
+  const { idOfCustomGPT } = useParams<{ idOfCustomGPT?: string }>();
+  const [form, setForm] = useState<CustomGptToCreate>({
     custom_gpt_name: "",
-    description: "",
-    instruction: "",
+    custom_gpt_description: "",
+    custom_gpt_instructions: "",
   });
   // ToDo: add Endpoint for this, functions
   function handleChangeToFormFields(e) {
@@ -18,21 +21,21 @@ export default function CreateOrEditCustomGPT(){
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function createOrEditCustomGPT() {
+  async function createOrEditCustomGPT() {
     console.log("Saving…", form);
     alert("Changes saved (check console)");
-    if (idOfCustomGPT== null){
-    // call the createCustomGPT endpoint
-    // const res = await createOrEditCustomGPT()
-    // const navigate = useNavigate();
-    // navigate(`/createCustomGPTs/${res.idOfChat}`);
-    // show feedback
-    } else{
-    // call editCustomGPT endpoint
-    // show feedback
+    if (idOfCustomGPT == null) {
+      // call the createCustomGPT endpoint
+      const res: CreateCustomGPTResponse =
+        await CustomGptService.createCustomGptCreateCustomGptPost(form);
+      // const navigate = useNavigate();
+      // navigate(`/createCustomGPTs/${res.custom_gpt_id}`);
+      // show feedback
+    } else {
+      // call editCustomGPT endpoint
+      // show feedback
     }
   }
-
 
   return (
     <div className="editor">
@@ -52,7 +55,7 @@ export default function CreateOrEditCustomGPT(){
         <textarea
           name="description"
           rows={4}
-          value={form.description}
+          value={form.custom_gpt_description}
           onChange={handleChangeToFormFields}
           className="medium"
         />
@@ -63,7 +66,7 @@ export default function CreateOrEditCustomGPT(){
         <textarea
           name="instruction"
           rows={8}
-          value={form.instruction}
+          value={form.custom_gpt_instructions}
           onChange={handleChangeToFormFields}
           className="large"
         />

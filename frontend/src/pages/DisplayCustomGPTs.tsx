@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DisplayCustomGPTs.css";
+import { CustomGptService, ExistingCustomGPT } from "../client";
 
 /* --- DTO type that matches backend response ------------------ */
 type CustomGptInfo = {
-  customGptId: number;
+  customgptIdOrNullIfDefault: number;
   customGptName: string;
 };
 /* ------------------------------------------------------------- */
@@ -19,10 +20,15 @@ export default function DisplayCustomGPTs() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("/api/custom-gpts");  // ⬅️ adjust endpoint
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: CustomGptInfo[] = await res.json();
-        setGpts(data);
+        const existingGPTList: ExistingCustomGPT[] =
+          await CustomGptService.displayAllCustomGptsDisplayAllCustomGptsGet(); // ⬅️ adjust endpoint
+        const customGptInfos: CustomGptInfo[] = existingGPTList.map(
+          ({ custom_gpt_id: customgptIdOrNullIfDefault, custom_gpt_name: customGptName }) => ({
+            customgptIdOrNullIfDefault,
+            customGptName,
+          })
+        );
+        setGpts(customGptInfos);
       } catch (err: unknown) {
         setError((err as Error).message);
       } finally {
@@ -33,26 +39,26 @@ export default function DisplayCustomGPTs() {
   }, []);
 
   async function handleDelete(id: number) {
-  if (!confirm("Delete this GPT?")) return;
+    if (!confirm("Delete this GPT?")) return;
 
-  try {
-    const res = await fetch(`/api/custom-gpts/${id}`, { method: "DELETE" });
+    try {
+      const res = await fetch(`/api/custom-gpts/${id}`, { method: "DELETE" });
 
-    if (!res.ok) {
-      /* backend replied 4xx/5xx → show message and keep the item */
-      const data = await res.json().catch(() => ({}));
-      throw new Error(data.detail ?? `HTTP ${res.status}`);
+      if (!res.ok) {
+        /* backend replied 4xx/5xx → show message and keep the item */
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail ?? `HTTP ${res.status}`);
+      }
+
+      /* success → update UI */
+      setGpts((prev) => prev.filter((g) => g.customgptIdOrNullIfDefault !== id));
+    } catch (err: unknown) {
+      alert(`Delete failed: ${(err as Error).message}`);
     }
-
-    /* success → update UI */
-    setGpts((prev) => prev.filter((g) => g.customGptId !== id));
-  } catch (err: unknown) {
-    alert(`Delete failed: ${(err as Error).message}`);
   }
-}
 
   if (loading) return <p className="center">Loading…</p>;
-  if (error)   return <p className="center">Error: {error}</p>;
+  if (error) return <p className="center">Error: {error}</p>;
 
   return (
     <div className="gpt-list-root">
@@ -62,28 +68,30 @@ export default function DisplayCustomGPTs() {
         <p className="center">You have no custom GPTs yet.</p>
       )}
 
-      {gpts.map(({ customGptId, customGptName }) => (
-        <div key={customGptId} className="gpt-row">
+      {gpts.map(({ customgptIdOrNullIfDefault, customGptName }) => (
+        <div key={customgptIdOrNullIfDefault} className="gpt-row">
           <span className="gpt-name">{customGptName}</span>
 
           <div className="btn-group">
             <button
               type="button"
-              onClick={() => navigate("/chatWindow", { state: { gptId: customGptId } })}
+              onClick={() =>
+                navigate("/chatWindow", { state: { gptIdOrNullIfDefault: customgptIdOrNullIfDefault, chatId: null } })
+              }
               className="btn primary"
             >
-                Chat
+              Chat
             </button>
             <button
               type="button"
-              onClick={() => navigate(`/createCustomGPTs/${customGptId}`)}
+              onClick={() => navigate(`/createCustomGPTs/${customgptIdOrNullIfDefault}`)}
               className="btn secondary"
             >
               Edit
             </button>
             <button
               type="button"
-              onClick={() => handleDelete(customGptId)}
+              onClick={() => handleDelete(customgptIdOrNullIfDefault)}
               className="btn danger"
             >
               Delete
