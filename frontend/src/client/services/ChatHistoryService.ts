@@ -18,7 +18,7 @@ export class ChatHistoryService {
     ): CancelablePromise<ChatHistory> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/chat_history_by_id',
+            url: '/chat-history-by-id',
             query: {
                 'chat_id': chatId,
             },

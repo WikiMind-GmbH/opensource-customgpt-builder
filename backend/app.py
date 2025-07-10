@@ -1,19 +1,28 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import debugpy
-
-from services.chat_history import retrieve_chat_history_by_id
+from services.chatbot_service import generate_chatbot_response
+from services.chats_service import (
+    retrieve_chat_history_by_id,
+    retrieve_chat_summaries_list,
+)
 from services.custom_gpt_service import (
     get_all_custom_gpts,
+    get_custom_gpt_by_id,
     send_custom_gpt_info,
+    update_custom_gpt,
 )
 
 # from services.chatbot_service import generate_chatbot_response
 from schemas.common import (
+    AssistantMessage,
     ChatHistory,
-    CreateCustomGPTResponse,
+    ChatSummary,
+    CreateOrEditCustomGPTResponse,
     CustomGptToCreate,
+    CustomGptToEdit,
     ExistingCustomGPT,
+    UserMessageRequest,
 )
 
 app = FastAPI(
@@ -52,63 +61,104 @@ async def get_chat_history(chat_id: int) -> ChatHistory:
     return response
 
 
-# @app.get("/chat-summary",
-#          tags=["chatSummary"],
-#          summary="One Liner summary of all chats in the List.  Identifier = 3",
-#          response_description="List of chats summary in one line with a Chat_id",
-#          response_model=ChatSummary)
-# async def get_chats_one_liner() -> ChatSummary:
-#     response = get_chat_summaries()
-#     return {"one_liners": "text containing one liner of existing chats"}
+@app.get(
+    "/get-chat-summaries",
+    tags=["chatSummary"],
+    summary="One Liner summary of all chats in the Chat List.  Identifier = 3",
+    response_description="List of chats summary in one line with a Chat ID",
+    response_model=list[ChatSummary],
+    operation_id="getChatSummaries"
+)
+async def get_chat_summaries() -> list[ChatSummary]:
+    response = await retrieve_chat_summaries_list()
+    return response
 
 
-# @app.get("/get_model_name")
-# async def get_model_name(model_name: ModelName):
-#     return {"model_name": model_name.base_model_name}
-
-
-# @app.post("/send_user_message", response_model=AssistantMessage)
-# async def send_user_message(request: UserMessageRequest) -> AssistantMessage:
-
-#     response = await generate_chatbot_response(request)
-#     return response
+@app.post(
+    "/send-user-message",
+    tags=["userMessage"],
+    summary="Process the user chat message and send response back from the Model selected, Indentifier = 8",
+    response_description="Generates the response from the assistant with a conversation ID",
+    response_model=AssistantMessage,
+    operation_id="sendUserMessage"
+)
+async def send_user_message(request: UserMessageRequest) -> AssistantMessage:
+    response = await generate_chatbot_response(request)
+    return response
 
 
 # Retrieve All Custom GPTs (List)
-@app.get("/display-all-custom-gpts",
-         tags=["customGPT"],
-         summary="Dispalys all the custom GPTs created, Indentfier = 4",
-         response_description="Returns a list of custom gpts created"
-         )
+@app.get(
+    "/display-all-custom-gpts",
+    tags=["customGPT"],
+    summary="Dispalys all the custom GPTs created, Indentfier = 4",
+    response_description="Returns a list of custom gpts created",
+    response_model=list[ExistingCustomGPT],
+    operation_id="dispalyAllCustomGPTs"
+)
 async def display_all_custom_gpts() -> list[ExistingCustomGPT]:
     custom_gpt_names_list = await get_all_custom_gpts()
     return custom_gpt_names_list
 
 
-# # chat with custom gpt by id
-# @app.get("/display-custom-gpt-by-id", response_model=ExistingCustomGPT)
-# async def read_custom_gpt_by_id(id: int):
-#     custom_gpt_info = get_custom_gpt_by_id(id)
-#     return custom_gpt_info
+# chat with custom gpt by id
+@app.get("/chat-with-custom-gpt", 
+         tags=["customGPT"],
+         summary="User chats with Custom GPT, indetifier = 13",
+         response_description="Information of Custom GPT so as to the Navigate to its Chat Page",
+         response_model=ExistingCustomGPT,
+         operation_id="chatWithCustomGPT"
+         )
+async def chat_with_custom_gpt(custom_gpt_id: int):
+    custom_gpt_info = await get_custom_gpt_by_id(custom_gpt_id)
+    return custom_gpt_info
 
 
-# # edit custom gpt
-# @app.post("/edit_custom_gpt", response_model=StatusOfStandardResponse)
-# async def edit_custom_gpt(edited_information: ExistingCustomGPT):
-#     edit_custom_gpt_status = update_custom_gpt(edited_information=edited_information)
-#     return edit_custom_gpt_status
+# navigate to the edit custom gpt
+@app.post("/navigate-to-edit-custom-gpt", 
+          tags=["customGPT"],
+          summary="Edit the existing custom GPT by navigating to CreateGPT Page with Existing Custom GPT Info, identifier: 14",
+          response_description="Send the information about Existing GPT",
+          response_model= ExistingCustomGPT,
+          operation_id="navigateToEditCustomGPT")
+async def edit_custom_gpt(custom_gpt_id: int) -> ExistingCustomGPT:
+    existing_custom_gpt_info = await get_custom_gpt_by_id(custom_gpt_id=custom_gpt_id)
+    return existing_custom_gpt_info
+
+@app.delete("/delete-custom-gpt-by-id",
+            tags=["customGPT"],
+            summary="delete the existing custom GPT by ID, identifier = 15",
+            response_description="Send the status of deleted successfully(true) or failure(false)",
+            operation_id="deleteExistingCustomGPT")
+async def delete_custom_gpt(custom_gpt_id: int) -> bool:
+    return True
+
+# edit the information of existing custom gpt
+@app.put("/update-custom-gpt",
+          tags=["customGPT"],
+          summary="Edit the information of existing Custom GPT, identifier = 11/update",
+          response_description="Responds the status of custom gpt updated successfully(true) " \
+          "or failed(false) with custom gpt id",
+          response_model=CreateOrEditCustomGPTResponse,
+          operation_id="updateExistingCustomGPT"
+          )
+async def update_existing_custom_gpt(custom_gpt_info: CustomGptToEdit) -> CreateOrEditCustomGPTResponse:
+    update_gpt_status = await update_custom_gpt(custom_gpt_info=custom_gpt_info)
+    return update_gpt_status
 
 
 # create custom gpt
 @app.post(
     "/create-custom-gpt",
     tags=["customGPT"],
-    summary="Takes the input from user to create a custom gpt (Name, instruction), Indentfier = 10",
-    response_description="Responds the status of custom gpt created successfully(true) or failure(false) with custom_gpt_id",
-    response_model=CreateCustomGPTResponse,
+    summary="Takes the input from user to create a custom gpt (Name, instruction), Indentfier = 11/ create",
+    response_description="Responds the status of custom gpt created successfully(true) or failed(false) with custom_gpt_id",
+    response_model=CreateOrEditCustomGPTResponse,
+    operation_id="createNewCustomGPT"
 )
 async def create_custom_gpt(
     custom_gpt_infos: CustomGptToCreate,
-) -> CreateCustomGPTResponse:
+) -> CreateOrEditCustomGPTResponse:
     created_gpt_status = await send_custom_gpt_info(custom_gpt_infos=custom_gpt_infos)
     return created_gpt_status
+
