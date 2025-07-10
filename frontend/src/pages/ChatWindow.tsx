@@ -2,7 +2,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./ChatWindow.css";
 import { List } from "lodash";
-import { ChatHistory, ChatHistoryService, CustomGptService, ExistingCustomGPT, Role, SimplifiedMessage } from "../client";
+import { ChatHistory, ChatService, CustomGpTsService, ExistingCustomGPT, Role, SimplifiedMessage, UserMessageRequest } from "../client";
 
 
 export default function ChatWindow() {
@@ -25,7 +25,7 @@ export default function ChatWindow() {
   async function loadChatContentIfExisting() {
         if(conversationIdOrNullIfNewConversation)
         try {
-          const conversation: ChatHistory = await ChatHistoryService.getChatHistoryById(conversationIdOrNullIfNewConversation);
+          const conversation: ChatHistory = await ChatService.getChatHistoryById(conversationIdOrNullIfNewConversation);
           setMessages(conversation.messages);
         } catch (err: unknown) {
           setError((err as Error).message);
@@ -37,12 +37,8 @@ export default function ChatWindow() {
   async function setNameOfGPT() {
         if(gptIdOrNullIfDefault){
           try {
-              const all_gpts: ExistingCustomGPT[] = await CustomGptService.dispalyAllCustomGpTs()
-              const name =
-                all_gpts.find(
-                  ({ custom_gpt_id }) => custom_gpt_id === gptIdOrNullIfDefault,
-                )?.custom_gpt_name ?? "Unknown GPT"; // fallback
-              setCurrentGptName(name);
+              const gptInfos: ExistingCustomGPT = await CustomGpTsService.getCustomGptInfos(gptIdOrNullIfDefault)
+              setCurrentGptName(gptInfos.custom_gpt_name);
             } catch (err: unknown) {
               setError((err as Error).message);
             } finally {
@@ -51,7 +47,6 @@ export default function ChatWindow() {
         }
         setCurrentGptName("Default GPT")
         
-      }
 
 
 
@@ -67,6 +62,8 @@ export default function ChatWindow() {
     // push user message
     setMessages((prev) => [...prev, { role: Role.USER, message: input }]);
     setInput("");
+    const req: UserMessageRequest = 
+    const response = await ChatService.sendUserMessage()
 
     // TODO: replace with real backend / WebSocket call
     const res = 
