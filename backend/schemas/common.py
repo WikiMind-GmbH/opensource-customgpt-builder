@@ -9,31 +9,18 @@ class Role(StrEnum):
 class SimplifiedMessage(BaseModel):
     role: Role
     message: str
-
-class ModelName(BaseModel):
-    base_model_name: str | None
-    custom_gpt_name: str | None
-
-class ModelInfo(ModelName):
-    model_id: int
     
 class ChatHistory(BaseModel):
-    model_id: int
+    custom_gpt_id: int
     messages: list[SimplifiedMessage]
 
 class RetreiveChatHistory(BaseModel):
     chat_id: int
 
-# structure of the name of model
-    
-class CommonResponse(BaseModel):
-    test: str
-
 
 class StatusOfStandardResponse(StrEnum):
     success = "success"
     error = "error"
-
 
 # response: response from assistant model
 class AssistantMessage(BaseModel):
