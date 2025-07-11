@@ -1,0 +1,8 @@
+html, body, #root { height:100%; margin:0; font-family:system-ui; }
+.app      { display:flex; height:100%; }
+.sidebar  { width:220px; background:#1e293b; color:#fff; padding:1rem; }
+.title    { margin:0 0 .5rem; }
+.nav      { display:flex; flex-direction:column; gap:.5rem; }
+.navlink  { color:#cbd5e1; text-decoration:none; }
+.navlink.active { color:#fff; font-weight:600; }
+.content  { flex:1; padding:1.5rem; overflow:auto; }

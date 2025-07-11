@@ -5,6 +5,8 @@ dev.crt
 dev.key
 .htpasswd
 .DS_Store
-.vscode/edge-user-data
-/.venv
-/.vscode/edge-user-data
+.venv
+node_modules
+__pycache__
+__pycache__
+prompt.txt

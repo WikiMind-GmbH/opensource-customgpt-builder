@@ -15,7 +15,8 @@
     "openapi-typescript-codegen": "^0.29.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-dropzone": "^14.3.8"
+    "react-dropzone": "^14.3.8",
+    "react-router-dom": "^7.6.3"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.16",
