@@ -11,23 +11,23 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class CustomGpTsService {
     /**
-     * Dispalys all the custom GPTs created, Indentfier = 4
-     * @returns ExistingCustomGPT Returns a list of custom gpts created
+     * Retreive All Custom Gpts
+     * @returns ExistingCustomGPT Successful Response
      * @throws ApiError
      */
-    public static retreiveAllCustomGpTs(): CancelablePromise<Array<ExistingCustomGPT>> {
+    public static retreiveAllCustomGptsRetreiveAllCustomGptsGet(): CancelablePromise<Array<ExistingCustomGPT>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/retreive-all-custom-gpts',
         });
     }
     /**
-     * User chats with Custom GPT, indetifier = 13
+     * Get Custom Gpt By Id
      * @param customGptId
-     * @returns ExistingCustomGPT Information of Custom GPT so as to the Navigate to its Chat Page
+     * @returns ExistingCustomGPT Successful Response
      * @throws ApiError
      */
-    public static getCustomGptInfos(
+    public static getCustomGptByIdGetCustomGptInfosGet(
         customGptId: number,
     ): CancelablePromise<ExistingCustomGPT> {
         return __request(OpenAPI, {
@@ -42,12 +42,12 @@ export class CustomGpTsService {
         });
     }
     /**
-     * delete the existing custom GPT by ID, identifier = 15
+     * Delete Custom Gpt Endpoint
      * @param customGptId
-     * @returns DeleteCustomGPTStatus Send the status of deleted successfully(true) or failure(false)
+     * @returns DeleteCustomGPTStatus Successful Response
      * @throws ApiError
      */
-    public static deleteCustomGpt(
+    public static deleteCustomGptEndpointDeleteCustomGptDelete(
         customGptId: number,
     ): CancelablePromise<DeleteCustomGPTStatus> {
         return __request(OpenAPI, {
@@ -62,12 +62,12 @@ export class CustomGpTsService {
         });
     }
     /**
-     * Takes the input from user to create a custom gpt (Name, instruction), Indentfier = 11/ create
+     * Create Custom Gpt
      * @param requestBody
-     * @returns CreateOrEditCustomGPTStatus Responds the status of custom gpt created successfully(true) or failed(false) with custom_gpt_id
+     * @returns CreateOrEditCustomGPTStatus Successful Response
      * @throws ApiError
      */
-    public static createOrEditCustomGpt(
+    public static createCustomGptCreateOrEditCustomGptPost(
         requestBody: CustomGptToCreateOrEdit,
     ): CancelablePromise<CreateOrEditCustomGPTStatus> {
         return __request(OpenAPI, {

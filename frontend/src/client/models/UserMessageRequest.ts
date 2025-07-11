@@ -4,8 +4,8 @@
 /* eslint-disable */
 import type { SimplifiedMessage } from './SimplifiedMessage';
 export type UserMessageRequest = {
-    conversation_id: (number | null);
+    conversation_id?: (number | null);
     request_message: SimplifiedMessage;
-    custom_gpt_id: (number | null);
+    custom_gpt_id?: (number | null);
 };
 

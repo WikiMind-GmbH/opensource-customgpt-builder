@@ -4,6 +4,5 @@
 /* eslint-disable */
 export type DeleteCustomGPTStatus = {
     custom_gpt_id: (number | null);
-    status: boolean;
 };
 

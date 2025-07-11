@@ -11,12 +11,12 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class ChatService {
     /**
-     * Fetches the history of a particular chat id. Identifier = 5
+     * Get Chat History
      * @param chatId
-     * @returns ChatHistory retrives the list of messages and Model ID (0: ChatGPT40, -1: Error, 1/custom_gpt_id: CustomGPTName)
+     * @returns ChatHistory Successful Response
      * @throws ApiError
      */
-    public static getChatHistoryById(
+    public static getChatHistoryChatHistoryByIdPost(
         chatId: number,
     ): CancelablePromise<ChatHistory> {
         return __request(OpenAPI, {
@@ -31,23 +31,23 @@ export class ChatService {
         });
     }
     /**
-     * One Liner summary of all chats in the Chat List.  Identifier = 3
-     * @returns ChatSummary List of chats summary in one line with a Chat ID
+     * Get Chat Summaries
+     * @returns ChatSummary Successful Response
      * @throws ApiError
      */
-    public static getChatSummaries(): CancelablePromise<Array<ChatSummary>> {
+    public static getChatSummariesGetChatSummariesGet(): CancelablePromise<Array<ChatSummary>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/get-chat-summaries',
         });
     }
     /**
-     * Process the user chat message and send response back from the Model selected, Indentifier = 8
+     * Send User Message
      * @param requestBody
-     * @returns AssistantMessage Generates the response from the assistant with a conversation ID
+     * @returns AssistantMessage Successful Response
      * @throws ApiError
      */
-    public static sendUserMessage(
+    public static sendUserMessageSendUserMessagePost(
         requestBody: UserMessageRequest,
     ): CancelablePromise<AssistantMessage> {
         return __request(OpenAPI, {
