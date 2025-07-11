@@ -11,14 +11,20 @@ from schemas.common import (
 
 client = OpenAI()
 
+
 def retrieve_chat_history_by_id(chat_id: int, session: Session) -> ChatHistory:
     conv = session.get(ConversationDB, chat_id)
     msgs = [
         SimplifiedMessage(role=msg.role, message=msg.content or "")
         for msg in conv.messages
-        if msg.role in ("user", "assistant")  # drop 'system' since Role enum only has user|assistant
+        if msg.role
+        in (
+            "user",
+            "assistant",
+        )  # drop 'system' since Role enum only has user|assistant
     ]
     return ChatHistory(custom_gpt_id=conv.customgpt_id, messages=msgs)
+
 
 def retrieve_chat_summaries_list(session: Session) -> list[ChatSummary]:
     stmt = select(ConversationDB)
@@ -26,9 +32,12 @@ def retrieve_chat_summaries_list(session: Session) -> list[ChatSummary]:
     summaries: list[ChatSummary] = []
     for conv in convs:
         first = next((m for m in conv.messages if m.role == "user"), None)
-        summary_text = (first.content[:50] + "...") if first and first.content else "(no messages)"
+        summary_text = (
+            (first.content[:50] + "...") if first and first.content else "(no messages)"
+        )
         summaries.append(ChatSummary(chat_id=conv.id, chat_summary=summary_text))
     return summaries
+
 
 def send_user_message_service(
     request: UserMessageRequest,
@@ -53,12 +62,20 @@ def send_user_message_service(
     session.commit()
 
     # TODO: insert system‐prompt logic for Custom GPT here
+    # Get the CustomGPT given the id from the request
+    customgpt = session.get(CustomGptsDB, customgpt_id)
+    if not customgpt:
+        raise HTTPException(status_code=404, detail="CustomGPT not found")
+    system_message_content = f"""Du bist ein CustomGPT namens {customgpt.name} und bist für folgendes zuständig: {customgpt.custom_gpt_description}. Dafür befolgst du folgende Anweisungen: {customgpt.custom_gpt_instructions}"""
 
+    system_message = [{"role": "system", "content": system_message_content}]
     # build history for OpenAI
     history = session.exec(
         select(MessageDB).where(MessageDB.conversation_id == conv.id)
     ).all()
-    messages = [{"role": m.role, "content": m.content} for m in history]
+    messages = system_message + [
+        {"role": m.role, "content": m.content} for m in history
+    ]
 
     # call OpenAI
     response = client.chat.completions.create(
@@ -78,5 +95,7 @@ def send_user_message_service(
 
     return AssistantMessage(
         conversation_id=conv.id,
-        response_message=SimplifiedMessage(role=assistant_msg.role, message=assistant_text),
+        response_message=SimplifiedMessage(
+            role=assistant_msg.role, message=assistant_text
+        ),
     )
