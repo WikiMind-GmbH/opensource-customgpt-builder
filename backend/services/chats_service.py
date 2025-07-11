@@ -69,7 +69,7 @@ def send_user_message_service(
 
     # TODO: insert system‐prompt logic for Custom GPT here
     # Get the CustomGPT given the id from the request
-    customgpt = session.get(CustomGptsDB, customgpt_id)
+    customgpt = session.get(CustomGptsDB, request.customgpt_id)
     if not customgpt:
         raise HTTPException(status_code=404, detail="CustomGPT not found")
     system_message_content = f"""Du bist ein CustomGPT namens {customgpt.name} und bist für folgendes zuständig: {customgpt.custom_gpt_description}. Dafür befolgst du folgende Anweisungen: {customgpt.custom_gpt_instructions}"""
