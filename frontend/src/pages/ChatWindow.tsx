@@ -15,7 +15,7 @@ import {
 
 export default function ChatWindow() {
   /* 1 ▸ read optional id from URL  e.g.  /chatWindow/123 */
-  const { conversationIdOrUndefinedfNewConversation }= useParams<{
+  const { conversationIdOrUndefinedfNewConversation } = useParams<{
     conversationIdOrUndefinedfNewConversation?: string;
   }>();
   const { state } = useLocation();
@@ -64,9 +64,21 @@ export default function ChatWindow() {
   }
 
   useEffect(() => {
+    // every time the convo‐ID changes...
+    if (conversationIdOrUndefinedfNewConversation === undefined) {
+      // we’re back at “new” → reset
+      setMessages([]);
+      setInput("");
+    } else {
+      // if you want, you could also reload existing when ID appears
+      loadChatContentIfExisting();
+    }
+  }, [conversationIdOrUndefinedfNewConversation]);
+
+  useEffect(() => {
     loadChatContentIfExisting();
     setNameOfGPT();
-  }, []);
+  }, [conversationIdOrUndefinedfNewConversation]);
 
   async function handleSend() {
     if (!input.trim()) return;
