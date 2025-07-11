@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
 from openai import OpenAI
-from models.models import ConversationDB, MessageDB
+from models.models import ConversationDB, CustomGptsDB, MessageDB
 from schemas.common import (
     ChatHistory,
     ChatSummary,
@@ -31,11 +31,17 @@ def retrieve_chat_summaries_list(session: Session) -> list[ChatSummary]:
     convs = session.exec(stmt).all()
     summaries: list[ChatSummary] = []
     for conv in convs:
-        first = next((m for m in conv.messages if m.role == "user"), None)
-        summary_text = (
-            (first.content[:50] + "...") if first and first.content else "(no messages)"
-        )
+        # Determine GPT name or default to "vanilla"
+        if conv.customgpt_id is None:
+            gpt_name = "vanilla"
+        else:
+            gpt = session.get(CustomGptsDB, conv.customgpt_id)
+            gpt_name = gpt.name or "vanilla"
+
+        # Build summary as "<gpt_name> <conversation_id>"
+        summary_text = f"GPT {gpt_name}: conv {conv.id}"
         summaries.append(ChatSummary(chat_id=conv.id, chat_summary=summary_text))
+
     return summaries
 
 
