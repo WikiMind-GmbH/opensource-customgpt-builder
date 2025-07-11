@@ -35,7 +35,7 @@ export default function ChatWindow() {
   async function loadChatContentIfExisting() {
     if (conversationIdOrUndefinedfNewConversation !== undefined)
       try {
-        const conversation: ChatHistory = await ChatService.getChatHistoryById(
+        const conversation: ChatHistory = await ChatService.chatHistoryById(
           Number(conversationIdOrUndefinedfNewConversation)
         );
         setMessages(conversation.messages);
@@ -91,7 +91,7 @@ export default function ChatWindow() {
         { role: Role.ASSISTANT, message: response_text },
       ]);
     } else {
-      navigate(`/chatWindow/:${conversationIdOrUndefinedfNewConversation}`, {
+      navigate(`/chatWindow/${convId}`, {
         state: { gptIdOrNullIfDefault: gptIdOrNullIfDefault },
       });
     }

@@ -16,7 +16,7 @@ export default function DisplayCustomGPTs() {
     async function load() {
       try {
         const existingGPTList: ExistingCustomGPT[] =
-          await CustomGpTsService.retreiveAllCustomGpTs(); // ⬅️ adjust endpoint
+          await CustomGpTsService.retreiveAllCustomGpts(); // ⬅️ adjust endpoint
         const customGptInfos: CustomGptInfo[] = existingGPTList.map(
           ({ custom_gpt_id: customgptIdOrNullIfDefault, custom_gpt_name: customGptName }) => ({
             customgptIdOrNullIfDefault,
@@ -38,12 +38,6 @@ export default function DisplayCustomGPTs() {
 
     try {
       const res: DeleteCustomGPTStatus = await CustomGpTsService.deleteCustomGpt(id);
-
-      if (!res.status) {
-        throw new Error("Error deleting customgpt");
-      }
-
-      /* success → update UI */
       setGpts((prev) => prev.filter((g) => g.customgptIdOrNullIfDefault !== id));
     } catch (err: unknown) {
       alert(`Delete failed: ${(err as Error).message}`);
