@@ -15,7 +15,7 @@ export class CustomGpTsService {
      * @returns ExistingCustomGPT Successful Response
      * @throws ApiError
      */
-    public static retreiveAllCustomGptsRetreiveAllCustomGptsGet(): CancelablePromise<Array<ExistingCustomGPT>> {
+    public static retreiveAllCustomGpts(): CancelablePromise<Array<ExistingCustomGPT>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/retreive-all-custom-gpts',
@@ -27,7 +27,7 @@ export class CustomGpTsService {
      * @returns ExistingCustomGPT Successful Response
      * @throws ApiError
      */
-    public static getCustomGptByIdGetCustomGptInfosGet(
+    public static getCustomGptInfos(
         customGptId: number,
     ): CancelablePromise<ExistingCustomGPT> {
         return __request(OpenAPI, {
@@ -47,7 +47,7 @@ export class CustomGpTsService {
      * @returns DeleteCustomGPTStatus Successful Response
      * @throws ApiError
      */
-    public static deleteCustomGptEndpointDeleteCustomGptDelete(
+    public static deleteCustomGpt(
         customGptId: number,
     ): CancelablePromise<DeleteCustomGPTStatus> {
         return __request(OpenAPI, {
@@ -67,7 +67,7 @@ export class CustomGpTsService {
      * @returns CreateOrEditCustomGPTStatus Successful Response
      * @throws ApiError
      */
-    public static createCustomGptCreateOrEditCustomGptPost(
+    public static createOrEditCustomGpt(
         requestBody: CustomGptToCreateOrEdit,
     ): CancelablePromise<CreateOrEditCustomGPTStatus> {
         return __request(OpenAPI, {

@@ -16,7 +16,7 @@ export class ChatService {
      * @returns ChatHistory Successful Response
      * @throws ApiError
      */
-    public static getChatHistoryChatHistoryByIdPost(
+    public static chatHistoryById(
         chatId: number,
     ): CancelablePromise<ChatHistory> {
         return __request(OpenAPI, {
@@ -35,7 +35,7 @@ export class ChatService {
      * @returns ChatSummary Successful Response
      * @throws ApiError
      */
-    public static getChatSummariesGetChatSummariesGet(): CancelablePromise<Array<ChatSummary>> {
+    public static getChatSummaries(): CancelablePromise<Array<ChatSummary>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/get-chat-summaries',
@@ -47,7 +47,7 @@ export class ChatService {
      * @returns AssistantMessage Successful Response
      * @throws ApiError
      */
-    public static sendUserMessageSendUserMessagePost(
+    public static sendUserMessage(
         requestBody: UserMessageRequest,
     ): CancelablePromise<AssistantMessage> {
         return __request(OpenAPI, {

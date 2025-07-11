@@ -51,7 +51,12 @@ def conv_id_exists(conv_id: int, session: Session = Depends(get_session)) -> int
         )
     return conv_id
 
-@app.post("/chat-history-by-id", tags=["Chat"], response_model=ChatHistory)
+@app.post(
+    "/chat-history-by-id",
+    tags=["Chat"],
+    response_model=ChatHistory,
+    operation_id="chatHistoryById",
+)
 async def get_chat_history(
     chat_id: int,
     session: Session = Depends(get_session),
@@ -63,13 +68,23 @@ async def get_chat_history(
         )
     return retrieve_chat_history_by_id(chat_id, session)
 
-@app.get("/get-chat-summaries", tags=["Chat"], response_model=list[ChatSummary])
+@app.get(
+    "/get-chat-summaries",
+    tags=["Chat"],
+    response_model=list[ChatSummary],
+    operation_id="getChatSummaries",
+)
 async def get_chat_summaries(
     session: Session = Depends(get_session),
 ) -> list[ChatSummary]:
     return retrieve_chat_summaries_list(session)
 
-@app.post("/send-user-message", tags=["Chat"], response_model=AssistantMessage)
+@app.post(
+    "/send-user-message",
+    tags=["Chat"],
+    response_model=AssistantMessage,
+    operation_id="sendUserMessage",
+)
 async def send_user_message(
     request: UserMessageRequest,
     session: Session = Depends(get_session),
@@ -82,13 +97,23 @@ async def send_user_message(
             )
     return send_user_message_service(request, session)
 
-@app.get("/retreive-all-custom-gpts", tags=["customGPTs"], response_model=list[ExistingCustomGPT])
+@app.get(
+    "/retreive-all-custom-gpts",
+    tags=["customGPTs"],
+    response_model=list[ExistingCustomGPT],
+    operation_id="retreiveAllCustomGpts",
+)
 async def retreive_all_custom_gpts(
     session: Session = Depends(get_session),
 ) -> list[ExistingCustomGPT]:
     return get_all_custom_gpts(session)
 
-@app.get("/get-custom-gpt-infos", tags=["customGPTs"], response_model=ExistingCustomGPT)
+@app.get(
+    "/get-custom-gpt-infos",
+    tags=["customGPTs"],
+    response_model=ExistingCustomGPT,
+    operation_id="getCustomGptInfos",
+)
 async def get_custom_gpt_by_id(
     custom_gpt_id: int,
     session: Session = Depends(get_session),
@@ -100,7 +125,12 @@ async def get_custom_gpt_by_id(
         )
     return retrieve_custom_gpt_by_id(custom_gpt_id, session)
 
-@app.delete("/delete-custom-gpt", tags=["customGPTs"], response_model=DeleteCustomGPTStatus)
+@app.delete(
+    "/delete-custom-gpt",
+    tags=["customGPTs"],
+    response_model=DeleteCustomGPTStatus,
+    operation_id="deleteCustomGpt",
+)
 async def delete_custom_gpt_endpoint(
     custom_gpt_id: int,
     session: Session = Depends(get_session),
@@ -112,7 +142,12 @@ async def delete_custom_gpt_endpoint(
         )
     return delete_custom_gpt(custom_gpt_id, session)
 
-@app.post("/create-or-edit-custom-gpt", tags=["customGPTs"], response_model=CreateOrEditCustomGPTStatus)
+@app.post(
+    "/create-or-edit-custom-gpt",
+    tags=["customGPTs"],
+    response_model=CreateOrEditCustomGPTStatus,
+    operation_id="createOrEditCustomGpt",
+)
 async def create_custom_gpt(
     custom_gpt_infos: CustomGptToCreateOrEdit,
     session: Session = Depends(get_session),
