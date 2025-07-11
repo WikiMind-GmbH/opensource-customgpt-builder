@@ -1,72 +1,82 @@
-from schemas.common import ChatHistory, ChatSummary, Role, SimplifiedMessage
-from fastapi import HTTPException
-import logging
+from sqlmodel import Session, select
+from openai import OpenAI
+from models.models import ConversationDB, MessageDB
+from schemas.common import (
+    ChatHistory,
+    ChatSummary,
+    SimplifiedMessage,
+    UserMessageRequest,
+    AssistantMessage,
+)
 
+client = OpenAI()
 
-# Configure logging (optional but better than print)
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+def retrieve_chat_history_by_id(chat_id: int, session: Session) -> ChatHistory:
+    conv = session.get(ConversationDB, chat_id)
+    msgs = [
+        SimplifiedMessage(role=msg.role, message=msg.content or "")
+        for msg in conv.messages
+        if msg.role in ("user", "assistant")  # drop 'system' since Role enum only has user|assistant
+    ]
+    return ChatHistory(custom_gpt_id=conv.customgpt_id, messages=msgs)
 
-async def retrieve_chat_history_by_id(chat_id: int) -> ChatHistory:
-    """Retreives the history of chat messages for a particular chat_id
+def retrieve_chat_summaries_list(session: Session) -> list[ChatSummary]:
+    stmt = select(ConversationDB)
+    convs = session.exec(stmt).all()
+    summaries: list[ChatSummary] = []
+    for conv in convs:
+        first = next((m for m in conv.messages if m.role == "user"), None)
+        summary_text = (first.content[:50] + "...") if first and first.content else "(no messages)"
+        summaries.append(ChatSummary(chat_id=conv.id, chat_summary=summary_text))
+    return summaries
 
-    Args:
-        chat_id (int): id of a selected chat from the chat list
+def send_user_message_service(
+    request: UserMessageRequest,
+    session: Session,
+) -> AssistantMessage:
+    # create or fetch conversation
+    if request.conversation_id is None:
+        conv = ConversationDB(customgpt_id=request.custom_gpt_id)
+        session.add(conv)
+        session.commit()
+        session.refresh(conv)
+    else:
+        conv = session.get(ConversationDB, request.conversation_id)
 
-    Returns:
-        ChatHistory: Returns Model ID and list of Messages
-    """
+    # persist user message
+    user_msg = MessageDB(
+        conversation_id=conv.id,
+        role=request.request_message.role.value,
+        content=request.request_message.message,
+    )
+    session.add(user_msg)
+    session.commit()
 
-    logger.info(f"Retrieving chat history for chat_id = {chat_id}")
-    
-    try:
-        response_status = 200
+    # TODO: insert system‐prompt logic for Custom GPT here
 
-        if response_status != 200:
-            raise HTTPException(status_code=404, detail="Chat history not found")
+    # build history for OpenAI
+    history = session.exec(
+        select(MessageDB).where(MessageDB.conversation_id == conv.id)
+    ).all()
+    messages = [{"role": m.role, "content": m.content} for m in history]
 
-        chat_history_list = ChatHistory(
-            custom_gpt_id=0,
-            messages=[
-                SimplifiedMessage(role=Role.user, message="Hello"),
-                SimplifiedMessage(role=Role.assistant, message="Hi, how can I help you?"),
-            ],
-        )
-        return chat_history_list
-    
-    except HTTPException as http_err:
-        logger.error(f"HTTP error: {http_err.detail}")
-        raise
+    # call OpenAI
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=messages,
+    )
+    assistant_text = response.choices[0].message.content or ""
 
-    except Exception as err:
-        logger.exception("Unexpected error occurred while retrieving chat history", err)
-        raise HTTPException(status_code=500, detail="Internal server error")
+    # persist assistant reply
+    assistant_msg = MessageDB(
+        conversation_id=conv.id,
+        role="assistant",
+        content=assistant_text,
+    )
+    session.add(assistant_msg)
+    session.commit()
 
-
-async def retrieve_chat_summaries_list() -> list[ChatSummary]:
-    """Retrieves the list of chat summaries in one liner
-
-    Returns:
-        list[ChatSummary]: Returns Chat summaries with chat_id
-    """
-    logger.info(f"Retrieving chat summaries")
-    try: 
-        response_status = 200
-
-        if response_status!= 200:
-            raise HTTPException(status_code=404, detail="Chat Summaries not found")
-         
-        chat_summary = [
-            ChatSummary(chat_id=1, chat_summary="summary1"),
-            ChatSummary(chat_id=2, chat_summary="summary2"),
-            ChatSummary(chat_id=3, chat_summary="summary3"),
-        ]
-        return chat_summary
-    
-    except HTTPException as http_err:
-        logger.error(f"HTTP error: {http_err.detail}")
-        raise
-
-    except Exception as err:
-        logger.exception("Unexpected error occurred while retrieving chat summaries list", err)
-        raise HTTPException(status_code=500, detail="Internal server error")
+    return AssistantMessage(
+        conversation_id=conv.id,
+        response_message=SimplifiedMessage(role=assistant_msg.role, message=assistant_text),
+    )

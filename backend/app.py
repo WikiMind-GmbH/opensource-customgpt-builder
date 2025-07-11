@@ -1,141 +1,120 @@
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-import debugpy
-from services.chatbot_service import generate_chatbot_response
+from sqlmodel import Session
+
+from models.models import ConversationDB, CustomGptsDB
+from services.database import create_db_and_tables, get_session
 from services.chats_service import (
     retrieve_chat_history_by_id,
     retrieve_chat_summaries_list,
+    send_user_message_service,
 )
 from services.custom_gpt_service import (
-    delete_existing_custom_gpt,
     get_all_custom_gpts,
     retrieve_custom_gpt_by_id,
-    send_custom_gpt_info,
+    delete_custom_gpt,
+    create_or_edit_custom_gpt,
 )
-
-# from services.chatbot_service import generate_chatbot_response
 from schemas.common import (
     AssistantMessage,
     ChatHistory,
     ChatSummary,
     CreateOrEditCustomGPTStatus,
-    CustomGptToCreateOrEdit,
     DeleteCustomGPTStatus,
     ExistingCustomGPT,
     UserMessageRequest,
+    CustomGptToCreateOrEdit,
 )
 
-app = FastAPI(
-    root_path="/api",  # Explanation: While the proxy strips the /api prefix, we stil need this here: https://fastapi.tiangolo.com/advanced/behind-a-proxy/#proxy-with-a-stripped-path-prefix
-)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
 
-origins = [
-    f"https://localhost",
-]
+app = FastAPI(root_path="/api", lifespan=lifespan)
 
-# Add the CORSMiddleware to your application
+origins = ["https://localhost"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Allows requests from these origins
-    allow_credentials=True,  # Allows cookies, authorization headers, etc.
-    allow_methods=["*"],  # Allows all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allows all headers
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
+def conv_id_exists(conv_id: int, session: Session = Depends(get_session)) -> int:
+    if session.get(ConversationDB, conv_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Conversation {conv_id} not found",
+        )
+    return conv_id
 
-# Retrives the history of a chat by ID
-@app.post(
-    "/chat-history-by-id",
-    tags=["Chat"],
-    summary="Fetches the history of a particular chat id. Identifier = 5",
-    response_description="retrives the list of messages and Model ID (0: ChatGPT40, -1: Error, 1/custom_gpt_id: CustomGPTName)",
-    response_model=ChatHistory,
-    operation_id="getChatHistoryByID",
-)
-async def get_chat_history(chat_id: int) -> ChatHistory:
-    response = await retrieve_chat_history_by_id(chat_id)
-    return response
+@app.post("/chat-history-by-id", tags=["Chat"], response_model=ChatHistory)
+async def get_chat_history(
+    chat_id: int,
+    session: Session = Depends(get_session),
+) -> ChatHistory:
+    if session.get(ConversationDB, chat_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Conversation {chat_id} not found",
+        )
+    return retrieve_chat_history_by_id(chat_id, session)
 
+@app.get("/get-chat-summaries", tags=["Chat"], response_model=list[ChatSummary])
+async def get_chat_summaries(
+    session: Session = Depends(get_session),
+) -> list[ChatSummary]:
+    return retrieve_chat_summaries_list(session)
 
-# Retrieves the list of Chat Summaries
-@app.get(
-    "/get-chat-summaries",
-    tags=["Chat"],
-    summary="One Liner summary of all chats in the Chat List.  Identifier = 3",
-    response_description="List of chats summary in one line with a Chat ID",
-    response_model=list[ChatSummary],
-    operation_id="getChatSummaries",
-)
-async def get_chat_summaries() -> list[ChatSummary]:
-    response = await retrieve_chat_summaries_list()
-    return response
+@app.post("/send-user-message", tags=["Chat"], response_model=AssistantMessage)
+async def send_user_message(
+    request: UserMessageRequest,
+    session: Session = Depends(get_session),
+) -> AssistantMessage:
+    if request.conversation_id is not None:
+        if session.get(ConversationDB, request.conversation_id) is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Conversation {request.conversation_id} not found",
+            )
+    return send_user_message_service(request, session)
 
+@app.get("/retreive-all-custom-gpts", tags=["customGPTs"], response_model=list[ExistingCustomGPT])
+async def retreive_all_custom_gpts(
+    session: Session = Depends(get_session),
+) -> list[ExistingCustomGPT]:
+    return get_all_custom_gpts(session)
 
-# Send the User Message to the GPT Model
-@app.post(
-    "/send-user-message",
-    tags=["Chat"],
-    summary="Process the user chat message and send response back from the Model selected, Indentifier = 8",
-    response_description="Generates the response from the assistant with a conversation ID",
-    response_model=AssistantMessage,
-    operation_id="sendUserMessage",
-)
-async def send_user_message(request: UserMessageRequest) -> AssistantMessage:
-    response = await generate_chatbot_response(request)
-    return response
+@app.get("/get-custom-gpt-infos", tags=["customGPTs"], response_model=ExistingCustomGPT)
+async def get_custom_gpt_by_id(
+    custom_gpt_id: int,
+    session: Session = Depends(get_session),
+) -> ExistingCustomGPT:
+    if session.get(CustomGptsDB, custom_gpt_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Custom GPT {custom_gpt_id} not found",
+        )
+    return retrieve_custom_gpt_by_id(custom_gpt_id, session)
 
+@app.delete("/delete-custom-gpt", tags=["customGPTs"], response_model=DeleteCustomGPTStatus)
+async def delete_custom_gpt_endpoint(
+    custom_gpt_id: int,
+    session: Session = Depends(get_session),
+) -> DeleteCustomGPTStatus:
+    if session.get(CustomGptsDB, custom_gpt_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Custom GPT {custom_gpt_id} not found",
+        )
+    return delete_custom_gpt(custom_gpt_id, session)
 
-# Retrieve All Custom GPTs (List)
-@app.get(
-    "/retreive-all-custom-gpts",
-    tags=["customGPTs"],
-    summary="Dispalys all the custom GPTs created, Indentfier = 4",
-    response_description="Returns a list of custom gpts created",
-    response_model=list[ExistingCustomGPT],
-    operation_id="retreiveAllCustomGPTs",
-)
-async def retreive_all_custom_gpts() -> list[ExistingCustomGPT]:
-    custom_gpt_names_list = await get_all_custom_gpts()
-    return custom_gpt_names_list
-
-
-# Retrieve a custom gpt by ID
-@app.get(
-    "/get-custom-gpt-infos",
-    tags=["customGPTs"],
-    summary="User chats with Custom GPT, indetifier = 13",
-    response_description="Information of Custom GPT so as to the Navigate to its Chat Page",
-    response_model=ExistingCustomGPT,
-    operation_id="getCustomGPTInfos",
-)
-async def get_custom_gpt_by_id(custom_gpt_id: int):
-    custom_gpt_info = await retrieve_custom_gpt_by_id(custom_gpt_id)
-    return custom_gpt_info
-
-# Deletes the Custom GPT By ID
-@app.delete(
-    "/delete-custom-gpt",
-    tags=["customGPTs"],
-    summary="delete the existing custom GPT by ID, identifier = 15",
-    response_description="Send the status of deleted successfully(true) or failure(false)",
-    operation_id="deleteCustomGPT",
-)
-async def delete_custom_gpt(custom_gpt_id: int) -> DeleteCustomGPTStatus:
-    response_deletion = await delete_existing_custom_gpt(custom_gpt_id=custom_gpt_id)
-    return response_deletion
-
-
-# Create a New Custom GPT
-@app.post(
-    "/create-or-edit-custom-gpt",
-    tags=["customGPTs"],
-    summary="Takes the input from user to create a custom gpt (Name, instruction), Indentfier = 11/ create",
-    response_description="Responds the status of custom gpt created successfully(true) or failed(false) with custom_gpt_id",
-    response_model=CreateOrEditCustomGPTStatus,
-    operation_id="createOrEditCustomGPT",
-)
+@app.post("/create-or-edit-custom-gpt", tags=["customGPTs"], response_model=CreateOrEditCustomGPTStatus)
 async def create_custom_gpt(
     custom_gpt_infos: CustomGptToCreateOrEdit,
+    session: Session = Depends(get_session),
 ) -> CreateOrEditCustomGPTStatus:
-    created_gpt_status = await send_custom_gpt_info(custom_gpt_infos=custom_gpt_infos)
-    return created_gpt_status
+    return create_or_edit_custom_gpt(custom_gpt_infos, session)
