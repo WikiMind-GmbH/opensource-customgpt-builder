@@ -2,10 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { SimplifiedMessage } from './SimplifiedMessage';
 export type UserMessageRequest = {
     conversation_id?: (number | null);
-    request_message: SimplifiedMessage;
+    request_message: string;
     custom_gpt_id?: (number | null);
 };
 

@@ -8,32 +8,36 @@ import {
   CustomGptToCreateOrEdit,
   ExistingCustomGPT,
 } from "../client";
+import FileUploadZone from "../components/FileUploadZone";
 
 export default function CreateOrEditCustomGPT() {
-  const { idOfCustomGptOrUndefined } = useParams<{
-    idOfCustomGptOrUndefined?: string;
+  const { idOfCustomGptOrUndefinedStr } = useParams<{
+    idOfCustomGptOrUndefinedStr?: string;
   }>();
+
   const [form, setForm] = useState<CreateOrEditCustomGPTForm>({
     custom_gpt_name: "",
     custom_gpt_description: "",
     custom_gpt_instructions: "",
   });
+const [files, setFiles] = useState<string[]>([]);
+
   const navigate = useNavigate();
   // ToDo: add Endpoint for this, functions
   function handleChangeToFormFields(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
-  
+
   async function createOrEditCustomGPT() {
-    if (idOfCustomGptOrUndefined === undefined) {
+    if (idOfCustomGptOrUndefinedStr === undefined) {
       const body: CustomGptToCreateOrEdit = { custom_gpt_id: null, ...form };
       const res: CreateOrEditCustomGPTStatus =
         await CustomGpTsService.createOrEditCustomGpt(body);
       navigate(`/createOrEditCustomGPT/${res.custom_gpt_id}`);
     } else {
       const body: CustomGptToCreateOrEdit = {
-        custom_gpt_id: Number(idOfCustomGptOrUndefined),
+        custom_gpt_id: Number(idOfCustomGptOrUndefinedStr),
         ...form,
       };
       const res: CreateOrEditCustomGPTStatus =
@@ -43,10 +47,13 @@ export default function CreateOrEditCustomGPT() {
 
   useEffect(() => {
     async function load() {
-      if (idOfCustomGptOrUndefined) {
+      if (idOfCustomGptOrUndefinedStr) {
+        const files: string[] = await CustomGpTsService.listFilesToGpt(Number(idOfCustomGptOrUndefinedStr))
+        setFiles(files)
         const infosOfCustomGpt: ExistingCustomGPT =
           await CustomGpTsService.getCustomGptInfos(
-            Number(idOfCustomGptOrUndefined)
+            //ToDo: display "does not exist" page if customgpt does not exist
+            Number(idOfCustomGptOrUndefinedStr)
           ); // ⬅️ adjust endpoint
         const customGptInfosForForms: CreateOrEditCustomGPTForm = (({
           custom_gpt_name,
@@ -61,7 +68,7 @@ export default function CreateOrEditCustomGPT() {
       }
     }
     load();
-  }, []);
+  }, [idOfCustomGptOrUndefinedStr]);
 
   return (
     <div className="editor">
@@ -101,6 +108,23 @@ export default function CreateOrEditCustomGPT() {
       <button className="save-btn" onClick={createOrEditCustomGPT}>
         Save changes
       </button>
-    </div>
+      {idOfCustomGptOrUndefinedStr ? (
+        <div>
+          <FileUploadZone gptId={Number(idOfCustomGptOrUndefinedStr)} />
+          <ul>
+            {files.length > 0 ? (
+              files.map((name) => (
+                <li key={name}>{name}</li>
+              ))
+            ) : (
+              <li>No files available</li> 
+            )}
+          </ul>
+        </div>
+        ) : (
+          <p>You can upload files once a customGpt is created</p>
+        )
+      }
+      </div>
   );
 }

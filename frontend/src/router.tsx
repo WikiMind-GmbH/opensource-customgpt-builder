@@ -11,7 +11,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <ChatWindow /> }, 
       { path: "chatWindow/:conversationIdOrUndefinedfNewConversation?", element: <ChatWindow /> },
-      { path: "createOrEditCustomGPT/:idOfCustomGptOrUndefined?", element: <CreateOrEditCustomGPT /> },
+      { path: "createOrEditCustomGPT/:idOfCustomGptOrUndefinedStr?", element: <CreateOrEditCustomGPT /> },
       { path: "displayCustomGPTs", element: <DisplayCustomGPTs /> }, 
     ],
   },

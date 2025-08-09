@@ -28,9 +28,13 @@ services:
       dockerfile: ./frontend/Dockerfile.dev
       args:
         VITE_APP_DOMAIN: ${APP_DOMAIN}
+        UPLOAD_MAX_FILE_SIZE: ${UPLOAD_MAX_FILE_SIZE}
+        UPLOAD_ALLOWED_SUFFIXES: ${UPLOAD_ALLOWED_SUFFIXES}
 
     environment:
       VITE_APP_DOMAIN: ${APP_DOMAIN}
+      UPLOAD_MAX_FILE_SIZE: ${UPLOAD_MAX_FILE_SIZE}
+      UPLOAD_ALLOWED_SUFFIXES: ${UPLOAD_ALLOWED_SUFFIXES}
       CHOKIDAR_USEPOLLING: true
       # NODE_ENV: development
     volumes:

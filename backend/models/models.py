@@ -1,11 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
 from sqlmodel import Field, Relationship, SQLModel
 
 class ConversationDB(SQLModel, table=True):
     id: int | None = Field(primary_key=True, default=None)
     title: str | None = None
-    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
     # foreign_key must match the actual table name 'customgptsdb'
     customgpt_id: int | None = Field(foreign_key="customgptsdb.id", index=True)
 
@@ -14,8 +14,8 @@ class ConversationDB(SQLModel, table=True):
 
 class CustomGptsDB(SQLModel, table=True):
     id: int | None = Field(primary_key=True, default=None)
-    name: str | None = None
-    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    name: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
     custom_gpt_description: str
     custom_gpt_instructions: str
 
@@ -27,6 +27,6 @@ class MessageDB(SQLModel, table=True):
     content: str | None = None
     function_name: str | None = None
     function_args: str | None = None
-    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
 
     conversation: Optional[ConversationDB] = Relationship(back_populates="messages")

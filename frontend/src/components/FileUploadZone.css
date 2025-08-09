@@ -1,0 +1,33 @@
+/* Basic drop-zone box */
+.upload-zone {
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  background: #fff;
+}
+
+.upload-zone.drag-active {
+  background: #f6f6f6;           /* subtle highlight while dragging */
+}
+
+/* Progress bar */
+.progress-wrapper {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #3b82f6;
+  border-radius: 4px;
+  transition: width 0.2s;
+}
+
+/* Error text */
+.upload-error {
+  color: red;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}

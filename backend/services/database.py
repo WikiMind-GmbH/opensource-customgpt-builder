@@ -1,4 +1,3 @@
-import models.models  # ensure the SQLModel metadata sees all table definitions
 from sqlmodel import SQLModel, create_engine, Session
 
 DATABASE_URL = "sqlite:///./test.db"

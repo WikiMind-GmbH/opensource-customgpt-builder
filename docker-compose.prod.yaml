@@ -29,9 +29,13 @@ services:
       dockerfile: ./frontend/Dockerfile.prod
       args:
         VITE_APP_DOMAIN: ${APP_DOMAIN}
+        UPLOAD_MAX_FILE_SIZE: ${UPLOAD_MAX_FILE_SIZE}
+        UPLOAD_ALLOWED_SUFFIXES: ${UPLOAD_ALLOWED_SUFFIXES}
 
     environment:
       VITE_APP_DOMAIN: ${APP_DOMAIN}
+      UPLOAD_MAX_FILE_SIZE: ${UPLOAD_MAX_FILE_SIZE}
+      UPLOAD_ALLOWED_SUFFIXES: ${UPLOAD_ALLOWED_SUFFIXES}
     volumes:
       - frontend_build:/app/dist
       - /app/node_modules #decouples node_module in container from frontend so we can have

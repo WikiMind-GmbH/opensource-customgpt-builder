@@ -91,7 +91,7 @@ export default function ChatWindow() {
         conversationIdOrUndefinedfNewConversation !== undefined
           ? Number(conversationIdOrUndefinedfNewConversation)
           : null,
-      request_message: { role: Role.USER, message: input },
+      request_message: input,
       custom_gpt_id: gptIdOrNullIfDefault,
     };
     const response: AssistantMessage = await ChatService.sendUserMessage(req);

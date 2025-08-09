@@ -8,6 +8,7 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AssistantMessage } from './models/AssistantMessage';
+export type { Body_addFilesToGpt } from './models/Body_addFilesToGpt';
 export type { ChatHistory } from './models/ChatHistory';
 export type { ChatSummary } from './models/ChatSummary';
 export type { CreateOrEditCustomGPTStatus } from './models/CreateOrEditCustomGPTStatus';
@@ -17,6 +18,8 @@ export type { ExistingCustomGPT } from './models/ExistingCustomGPT';
 export type { HTTPValidationError } from './models/HTTPValidationError';
 export { Role } from './models/Role';
 export type { SimplifiedMessage } from './models/SimplifiedMessage';
+export type { StandardResponse } from './models/StandardResponse';
+export { StatusOfStandardResponse } from './models/StatusOfStandardResponse';
 export type { UserMessageRequest } from './models/UserMessageRequest';
 export type { ValidationError } from './models/ValidationError';
 
