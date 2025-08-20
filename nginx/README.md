@@ -29,7 +29,7 @@ choco --version
 ```
 otherwise is add it manually to the environment variables path 
 
-### For Firefox compatibility install nss
+### For Firefox compatibility install nss (EXTRA WORK FOR WINDOWS: NOT RECOMMENDED)
 Download manually the most recent version from 
 https://ftp.mozilla.org/pub/security/nss/releases/
 

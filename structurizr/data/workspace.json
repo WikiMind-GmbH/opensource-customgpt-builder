@@ -1,0 +1,1230 @@
+{
+  "configuration" : { },
+  "description" : "Use Chatgpt api with own customGPT implementation",
+  "documentation" : { },
+  "id" : 1,
+  "lastModifiedDate" : "2025-08-20T23:13:01Z",
+  "model" : {
+    "people" : [ {
+      "description" : "A user of the system wanting to profit from customized llm chat functionality",
+      "id" : "1",
+      "location" : "Unspecified",
+      "name" : "User",
+      "properties" : {
+        "structurizr.dsl.identifier" : "u"
+      },
+      "relationships" : [ {
+        "description" : "Chats with LLM, uploads data and creates or uses CustomGPTs using",
+        "destinationId" : "3",
+        "id" : "22",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "RestAPI"
+      }, {
+        "description" : "Chats with LLM, uploads data and creates or uses CustomGPTs using",
+        "destinationId" : "2",
+        "id" : "23",
+        "linkedRelationshipId" : "22",
+        "sourceId" : "1",
+        "technology" : "RestAPI"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "description" : "A web app for chat with custom gpts and your data",
+        "documentation" : { },
+        "id" : "3",
+        "name" : "Frontend",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.react"
+        },
+        "relationships" : [ {
+          "description" : "Gets conversations, assistantersponses and data from and send user messages and data to",
+          "destinationId" : "4",
+          "id" : "24",
+          "sourceId" : "3",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container,Web Browser",
+        "technology" : "React + TS"
+      }, {
+        "description" : "This gateway routes requests to the correct microservice",
+        "documentation" : { },
+        "id" : "4",
+        "name" : "Gateway",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.gateway"
+        },
+        "relationships" : [ {
+          "description" : "Gets or creates conversations with LLMs, optionally utilizing RAG and CustomGPT data, utilizing the",
+          "destinationId" : "6",
+          "id" : "25",
+          "sourceId" : "4",
+          "tags" : "Relationship",
+          "technology" : "RESTApi"
+        }, {
+          "description" : "Gets or creates conversations with LLMs, optionally utilizing RAG and CustomGPT data, utilizing the",
+          "destinationId" : "5",
+          "id" : "26",
+          "linkedRelationshipId" : "25",
+          "sourceId" : "4",
+          "technology" : "RESTApi"
+        }, {
+          "description" : "Gets or creates CustomGPTs utilizing",
+          "destinationId" : "9",
+          "id" : "39",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Gets or creates CustomGPTs utilizing",
+          "destinationId" : "8",
+          "id" : "40",
+          "linkedRelationshipId" : "39",
+          "sourceId" : "4"
+        }, {
+          "description" : "Sends documents to process and embedd and retreives relevant document chunks to a given text from",
+          "destinationId" : "12",
+          "id" : "42",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Sends documents to process and embedd and retreives relevant document chunks to a given text from",
+          "destinationId" : "11",
+          "id" : "43",
+          "linkedRelationshipId" : "42",
+          "sourceId" : "4"
+        }, {
+          "description" : "Sends messages when the processing status of uploaded documents has changed to",
+          "destinationId" : "3",
+          "id" : "52",
+          "sourceId" : "4",
+          "tags" : "Relationship",
+          "technology" : "WSMessage"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Fastapi"
+      }, {
+        "components" : [ {
+          "description" : "API for chatting with LLMs utilizing Additional data from other services",
+          "documentation" : { },
+          "id" : "6",
+          "name" : "ChatserviceApi",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.chatservice.api"
+          },
+          "relationships" : [ {
+            "description" : "Stores and retreives Conversations -including metadata- to and from",
+            "destinationId" : "7",
+            "id" : "27",
+            "sourceId" : "6",
+            "tags" : "Relationship",
+            "technology" : "SQLModel"
+          }, {
+            "description" : "Retreive infromation about CustomGPTs from",
+            "destinationId" : "9",
+            "id" : "28",
+            "sourceId" : "6",
+            "tags" : "Relationship",
+            "technology" : "RESTApi"
+          }, {
+            "description" : "Retreive infromation about CustomGPTs from",
+            "destinationId" : "8",
+            "id" : "29",
+            "linkedRelationshipId" : "28",
+            "sourceId" : "6",
+            "technology" : "RESTApi"
+          }, {
+            "description" : "Sends text-snipet and gets relevant document chunks and their metadata from",
+            "destinationId" : "12",
+            "id" : "32",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Sends text-snipet and gets relevant document chunks and their metadata from",
+            "destinationId" : "11",
+            "id" : "33",
+            "linkedRelationshipId" : "32",
+            "sourceId" : "6"
+          }, {
+            "description" : "Sends conversation (snippets) to get assistant messages as answers from",
+            "destinationId" : "18",
+            "id" : "36",
+            "sourceId" : "6",
+            "tags" : "Relationship",
+            "technology" : "RESTApi"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Stores the conversation histories and metadata of the conversation",
+          "documentation" : { },
+          "id" : "7",
+          "name" : "ConversationDB",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.chatservice.db"
+          },
+          "tags" : "Element,Component,Database",
+          "technology" : "SQLite"
+        } ],
+        "description" : "Provides llm chat functionality and composes llm prompts from raw data -userinput, customgpt, rag",
+        "documentation" : { },
+        "id" : "5",
+        "name" : "ChatService",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.chatservice"
+        },
+        "relationships" : [ {
+          "description" : "Retreive infromation about CustomGPTs from",
+          "destinationId" : "9",
+          "id" : "30",
+          "linkedRelationshipId" : "28",
+          "sourceId" : "5",
+          "technology" : "RESTApi"
+        }, {
+          "description" : "Retreive infromation about CustomGPTs from",
+          "destinationId" : "8",
+          "id" : "31",
+          "linkedRelationshipId" : "28",
+          "sourceId" : "5",
+          "technology" : "RESTApi"
+        }, {
+          "description" : "Sends text-snipet and gets relevant document chunks and their metadata from",
+          "destinationId" : "12",
+          "id" : "34",
+          "linkedRelationshipId" : "32",
+          "sourceId" : "5"
+        }, {
+          "description" : "Sends text-snipet and gets relevant document chunks and their metadata from",
+          "destinationId" : "11",
+          "id" : "35",
+          "linkedRelationshipId" : "32",
+          "sourceId" : "5"
+        }, {
+          "description" : "Sends conversation (snippets) to get assistant messages as answers from",
+          "destinationId" : "18",
+          "id" : "37",
+          "linkedRelationshipId" : "36",
+          "sourceId" : "5",
+          "technology" : "RESTApi"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "components" : [ {
+          "description" : "API to set and query the Basic information as well as composing conversation snippets to be utilized in new chats which use this",
+          "documentation" : { },
+          "id" : "9",
+          "name" : "CustomGptApi",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.customgptservice.api"
+          },
+          "relationships" : [ {
+            "description" : "Stores and retreives CustomGPT information -including metadata- to and from",
+            "destinationId" : "10",
+            "id" : "41",
+            "sourceId" : "9",
+            "tags" : "Relationship",
+            "technology" : "SQLModel"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Stores the basic information of the CustomGPTs",
+          "documentation" : { },
+          "id" : "10",
+          "name" : "CustomGptDB",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.customgptservice.db"
+          },
+          "tags" : "Element,Component,Database",
+          "technology" : "SQLite"
+        } ],
+        "description" : "Stores and Serves basic CustomGPT information",
+        "documentation" : { },
+        "id" : "8",
+        "name" : "CustomGPTService",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.customgptservice"
+        },
+        "tags" : "Element,Container"
+      }, {
+        "components" : [ {
+          "description" : "API for processing&storing raw data in a vector database and retreiving relevant chunks and raw data",
+          "documentation" : { },
+          "id" : "12",
+          "name" : "RagServiceAPI",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.ragservice.api"
+          },
+          "relationships" : [ {
+            "description" : "store unprocessed and processed whole documents on",
+            "destinationId" : "16",
+            "id" : "44",
+            "sourceId" : "12",
+            "tags" : "Relationship"
+          }, {
+            "description" : "query processing tasks",
+            "destinationId" : "15",
+            "id" : "45",
+            "sourceId" : "12",
+            "tags" : "Relationship"
+          }, {
+            "description" : "create embeddings for chunks of documents utilizing",
+            "destinationId" : "18",
+            "id" : "46",
+            "sourceId" : "12",
+            "tags" : "Relationship"
+          }, {
+            "description" : "store and retreive (similar) document chunks embeddings",
+            "destinationId" : "13",
+            "id" : "48",
+            "sourceId" : "12",
+            "tags" : "Relationship"
+          }, {
+            "description" : "store metadata information about documents stored in the VectorDB",
+            "destinationId" : "14",
+            "id" : "49",
+            "sourceId" : "12",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Sends messages when the processing status of uploaded documents has changed",
+            "destinationId" : "4",
+            "id" : "50",
+            "sourceId" : "12",
+            "tags" : "Relationship",
+            "technology" : "RESTApi"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "documentation" : { },
+          "id" : "13",
+          "name" : "vectorDB",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.ragservice.vectordb"
+          },
+          "tags" : "Element,Component,Database",
+          "technology" : "Qdrant"
+        }, {
+          "documentation" : { },
+          "id" : "14",
+          "name" : "MetadataDB",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.ragservice.metadatadb"
+          },
+          "tags" : "Element,Component,Database",
+          "technology" : "SQLite"
+        }, {
+          "description" : "Queue tasks to continue directly after responding",
+          "documentation" : { },
+          "id" : "15",
+          "name" : "Background Task",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.ragservice.backgroundtask"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Used to store non-processed and pre-processes  whole documents",
+          "documentation" : { },
+          "id" : "16",
+          "name" : "Local File System",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.ragservice.localfs"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Listens for notification updates from github and updates the corresponding data in the vectorDB",
+          "documentation" : { },
+          "id" : "17",
+          "name" : "githubDataService",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.ragservice.githubdataservice"
+          },
+          "relationships" : [ {
+            "description" : "retreives repository content from",
+            "destinationId" : "21",
+            "id" : "59",
+            "sourceId" : "17",
+            "tags" : "Relationship"
+          }, {
+            "description" : "retreives repository content from",
+            "destinationId" : "19",
+            "id" : "60",
+            "linkedRelationshipId" : "59",
+            "sourceId" : "17"
+          }, {
+            "description" : "updates outdate github repo data in",
+            "destinationId" : "12",
+            "id" : "65",
+            "sourceId" : "17",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Retreive fitting document chunks and provide an api to add or update data",
+        "documentation" : { },
+        "id" : "11",
+        "name" : "RagService",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ss.ragservice"
+        },
+        "relationships" : [ {
+          "description" : "create embeddings for chunks of documents utilizing",
+          "destinationId" : "18",
+          "id" : "47",
+          "linkedRelationshipId" : "46",
+          "sourceId" : "11"
+        }, {
+          "description" : "Sends messages when the processing status of uploaded documents has changed",
+          "destinationId" : "4",
+          "id" : "51",
+          "linkedRelationshipId" : "50",
+          "sourceId" : "11",
+          "technology" : "RESTApi"
+        }, {
+          "description" : "retreives repository content from",
+          "destinationId" : "21",
+          "id" : "61",
+          "linkedRelationshipId" : "59",
+          "sourceId" : "11"
+        }, {
+          "description" : "retreives repository content from",
+          "destinationId" : "19",
+          "id" : "62",
+          "linkedRelationshipId" : "59",
+          "sourceId" : "11"
+        } ],
+        "tags" : "Element,Container"
+      } ],
+      "documentation" : {
+        "decisions" : [ {
+          "content" : "# SWA documentation with Structurizr lite and C4+Arc42+ADRs\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\n\nWe need to document software architecture. Creating a template&process and finding tools that can be used across projects will set clear expectations of quality and structure and make it easier to create quality documentation. This project will be a test-run for it\n\nCriteria: \n- Code-based for easier versioning and maintainability\n- Template must specify the content a SWA documentation must have\n- Template must specify the tooling used to create this documentation\n- Learning to utilize the tools must be as easy as possible to assure adaption\n- Creating the documentation utilizing the tools must be as frictionless and fast as possible\n- The structure the template gives must be of high quality and include all parts usually expected of a SWA document\n\n## Decision\n\nWe will use a minimalistic combination of the arc42 template for SWA documentation together with the code based diagramming C4 tool Structurizr lite. The ADRs will not be added to the Arc42 document but to structurizr lite directly, and all diagrams will be created via structurizr dsl and embedded into the document.\n\n\n## Consequences\n\nEvery technical stakeholder must familiarize themselves with utilizing arc42+structurizr lite+ ADRs. \nAlbert must create documentation for this.\nWe have a default structure of SWA docs leading to consistent SWA documentation standards.\nWe have a nice and easily readable UI for SWA documentation including ADRs and interactive diagrams.\nCreating and maintaing diagrams is fast.",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "1",
+          "status" : "ACCEPTED",
+          "title" : " SWA documentation with Structurizr lite and C4+Arc42+ADRs"
+        }, {
+          "content" : "# Structurizr lite as http (no s!) root app\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\n\n>>No, Structurizr Lite is designed to work as the root application (i.e. via a context path of /) and will not work if deployed to a different path or used behind a reverse-proxy with a rewrite rule. The UI is shared between Structurizr Lite, the on-premises installation, and the cloud service so we have no plans to change this.\n\n## Decision\nOur software system utilizes https, so we can set up nginx such that we only proxy `https://domain` and use `http://domain` for structurizr alone.\n\n\n\n## Consequences\n\nIt is now less clear how the routing works, because we have port 443 with ssl displaying our software system and backend docs via nginx and port 8080 without ssl displaying our swa documentation.   \n\nNginx in dev only routes urls going to port 443 to the containers where needed and no other port.\n\nPort 8080 is reserved and used for the structurizr-lite with no ssl.",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "2",
+          "status" : "ACCEPTED",
+          "title" : " Structurizr lite as http (no s!) root app"
+        }, {
+          "content" : "# Microservices Architecture\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\n\nWe want a base product -a customgpt and then enable customers to have the option to expand the product and include custom solutions.   \nThis will lead to us maintaining a shared base-product across all projects which include custom solutions.\n\nThis leads to the problem on how to keep the base product up to date across all instances. \n\n## Decision\nWe are going to try to utilize the micro-services architecture. \nThe hope is that this will make it possible to modularize our software package that we can host.  \n\n\n\n\n## Consequences\n\nWe will trial the usage of the microservice architecture in a limited period of time and evalate it then.",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "3",
+          "status" : "ACCEPTED",
+          "title" : " Microservices Architecture"
+        }, {
+          "content" : "# 0004 RAG, CustomGPT serve raw data to Chatservice instead of conversationsnippets\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\n\nWhen composing a text, we will not only take into account the user input but also relevant data of the rag system as well as the data stored in the customgpt service.   \nNow theoretically, the RAG Service or customgpt service could process their raw data before giving it back to the chatservice.   \nI.e. the customgpt service could return not just the values of the description, name, id of the customgpt. It could already process this data and transform it into a conversation object for the chatservice -i.e. a system prompt.   \nSame for the Rag Service.\n\nResponsibility, cohesion and coupling are swa concepts which measure how well a system can be maintained and read.  \nWe now have to decide where these functionalities make the most sense.   \n\n\n## Decision\nIf the chat service composes conversations of the user message, previouse history and so on, it would be fitting that it also composes the messages from the other raw data as well.   \nIn this way, the chatservice is soley for composition of the conversation out of raw data and the customgptservice as well as the RAG Service are soley responsible for providing the raw data.   \nIn this way, the responsibility of prompt engineering is not split across services and the sole resposnibility of the chatservice.   \nThis also makes the services more cohesive: The RAG and customgpt service are only responsible for data management and not prompt engineering. Also the domain model of conversations should be found in the chatservice, it is no concept related to RAG nor CustomGPT.  \n\n(We will also lessen the coupling between these services by enabling the chatservice to still respond, even if the other services are not reachable. However, then the user will be notified)\n\n\n\n\n## Consequences\n\nThe interfaces/apis of the customgpt as well as the RAG service will provide the 'raw' data in a well readable format. They will not return conversation-snippets or do any kind of prompt-engineering.   \nAny Prompt-engineering is the responsibility of the chatservice.",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "4",
+          "status" : "ACCEPTED",
+          "title" : " 0004 RAG, CustomGPT serve raw data to Chatservice instead of conversationsnippets"
+        }, {
+          "content" : "# 005 Seperating internal and external endpoints via nginx\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\nFor every Service with a rest api, we want some endpoints to only be accessible to other services in the docker network and not to the outside. This is due to the fact that these endpoints are part of system internal logic and are expected to only be called with specific data in specific circumstances by other services. \n\n## Decision\nThe simplest solution is to a fastapi router with a prefix that is not forwarded by our reverse proxy.\n```\npublic = APIRouter(prefix=\"/api\")\ninternal = APIRouter(prefix=\"/internal\")\n```\n\n```\n# Public API only\n    location /api/ {\n        proxy_pass http://fastapi:8000;\n        include proxy_params.conf;\n    }\n\n    # Just in case someone guesses the path: deny\n    location /internal/ { return 403; }\n    location / { return 404; }\n```\n\n\n## Consequences\n\nFastapi config must be changed to where it sees and can read the prefix that nginx gave it.\n\nExtra care is taken when writing endpoints that are meant for system internal consumption only! The nginx config must not contain a reverse proxy to those endpoints.   \nEndpoints only meant for internal consumption must use the `internal` route prefix.   \nIf endpoints are for external as well as internal consumption: Use a non-internal prefix.\n\nIn the future: extra authentication must be added for safety.",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "5",
+          "status" : "ACCEPTED",
+          "title" : " 005 Seperating internal and external endpoints via nginx"
+        } ],
+        "sections" : [ {
+          "content" : "## Introduction and Goals\nThis document describes the Opensource CustomGPT Builder Software system. It can be used to create your own CustomGPTs outside of the OpenAI Software System. \nThe goal of this system is to have a baseline product onto which we can build more customized solutions for clients. The aim is to have a product that has a use case for as many clients as possible. We hope that this makes for broader adaption and more follow-up costumized solutions then we get without having a more basic product.\nThe goal this system achives for the users is the following:\nThey want to use the capabilities of CustomGPTs without directly giving their data to OpenAI while still getting a very simimalar user experience.\n(Requirements describe what the system should do. Goals describe how the system will help the organization)\n\nThis specific project also has as goal for the team to learn&utilize design and architecture patterns as well as follow SWA documentation best practices.\n### Requirements Overview\n\n1. The UI must display a history of previous chats. Previous chats can be viewed, continued and deleted\n2. The user must be able to create, modify and delete CustomGPTs\n3. Document upload for OpenDocument Format files and PDFs is possible\n4. The information inside these documents is processed and CustomGPT will use and reference it in conversations\n5. The user can see all the data that is used by a CustomGPT, including the documents uploaded.\n\n### Quality Goals\n\n#### Usability\n- The UI must be similar to ChatGPT to enable fast adaption of new users.\nThe Feedback give to user input must be clear such that users know why a certain operation, like uploading unsupported document types, did not succeed.\n#### Performance\n*Latency*\n- A user interaction must trigger a UX response in 500ms. The answer of the backend, when serving assistant messages, can be slow, though other responses shall not exceed 1s response time. Uploading documents shall lead to a fast response initial response once the documents are saved to the backend. Afterwards, the Preprocessing shall take no longer than 10 minutes before the user can use the CustomGPT\n*Throughput*\n- The system is not designed for high throughput, so 2 concurrent preprocessing tasks can be made in parallel with the expected latency.\n#### Security\n- Basic Auth and https will suffice for this POC\n#### Reliability\n*Concurrent Users*\n- The system expects 5 concurrent users max as of now\n*Data volume*\n- The uploaded files are expected to not exceed 20MB and the storage for documents is expected to grow less then 10GB per year\n*Load*\n- The system should handle 4 preprocessing requests in parallel. the other tasks are less computationally heavy are expected to take more concurrent requests\n\n#### Transferability\n- The software system should be designed in such a way that enabling the usage of other LLM Apis is not too much work\n### Stakeholders\n#### Product Owner\nProduct owner must have a overview of the SWA to check if all features are implemented, which features can be implemented more easily and check the architecture decisions\n#### Management\nManagement wants a quick overview of the SWA capabilities\n#### Dev team\nThe dev team needs a place to document and reference architecture and architecture decisions\n\n## Constraints\n\n- The project must be completely dockarized and use or expand the current full-stack-template of wikimind.\n- The code must be completely open-source\n\n## Context and Scope\nThe following diagram shows \n![](embed:SystemContex)\n### User\nUtilizes LLM. Wants to utilize CustomGPTs without depending on Openai and having full transparency\n### OpenAI Api\nThe Api OpenAI provides to create assistant responses from passed conversations. Tool usage is possible as well. It's CustomGPT functionality will not be used.\n\n## Solution Strategy\n### Handling RAG file upload and availability status without strong coupling \nWe want to be able to upload files, directly get a feedback if those files have been uploaded, and then later receive a async http push message / websocketmessage if the processing has finished and the embeddings can be used in the chat.   \nAdditionally, we want to be able to have a restapi where we can directly query the curernt status and availability.\n\nTo fulfill both these features as well as still keeping our services decoupled, we went for the following solution:   \nThe Rag service provides an api for retreiving the status\n## Buildig Block view\n![](embed:SystemContex)\n![](embed:ContainerView)\n### ChatService\nThe chat service has the following apis:\n```\ncreateConversation(CustomGptId:int | None, usermessage: str, useRag:bool)\ncontinueConversation(conversationid::int | None , usermessage: str, useRag:bool)\n```\nIf a CustomGPTid is given, the CustomGPTservice api is called to retreive Infos about the customgpt. If the customGPTservice is not reachable, the request will be processed without the customGPT, but the answer will include this information.\nSame for the RAG Service. This is due to decoupling and keeping the service running even if the other services are down.\n\nThe Rag service will return relevant chunks, but will not process them. How we tune&enrich our prompt with the retreived chunks is decided by the chatservice, not in the rag service, to keep responsibilities clear.\n\n### RAGService\nThe RagService will use WebsocketMessages (/async messages)to inform other services when uploaded documents have been processed. (The initial sync Data uoload api will retrurn a success msg as soon as the files have been uploaded and will then use the WSMessage to nitify when everything has been processed)\n\nFor simplicity, documents will be identified by the following: `customgpt_id: int | None, document_name` if `customgpt_id` is None, the document is available for all chats, not just a specific customgpt.\n\n\n\n### CustomGPTService\nDatabase schema sketch: \n`id:int, name:str, description:str, rag_files_availability: json_str`\nWhere `rag_files_availability` is a dictionary where the keys are the names of the documents and the values are either `uploaded` or `processed`\n\nDecouopling&eventual consistency: The customGPTService will have a \n## Runtime View\n\n## Deployment View\n## Architectural decisions\nSee [ADRs](http://localhost:8080/workspace/decisions/Opensource%20CustomGPT%20builder) \n## Quality Requirements\n## Risks & Technical Debt\n### Internal network traffic -> safety and logging\n\n#### Why direct service→service HTTP is OK\n\n* **Fewer hops/latency:** you’re not hair-pinning through Nginx.\n* **Simplicity:** no extra Nginx routes/ACLs to maintain for internal traffic.\n* **Docker DNS works out of the box:** each container can call others by service name, e.g. `http://usersvc:8000/internal/...`.\n\n#### When you might *not* want to bypass Nginx\n\n* You need **authn/authz, mTLS, rate limiting, request shaping, or WAF** on *internal* calls.\n* You want **single place for access logs/metrics** (observability).\n* You run **multiple replicas** of a target service and want **load balancing** without adding a client-side LB.\n\n(If those matter later, you can still keep Option 1 for public traffic and add a second, **internal-only** Nginx listener/port just for east–west traffic.)\n\n---\n\n#### Minimal, robust setup for direct internal calls\n\n#### 1) FastAPI route grouping + internal guard (defense-in-depth)\n\nEven if `/internal/*` isn’t proxied publicly, protect it in-app.\n\n```python\n# fastapi_app.py\nfrom fastapi import FastAPI, APIRouter, Depends, HTTPException, Request, status\n\napp = FastAPI()\npublic = APIRouter(prefix=\"/api\")\ninternal = APIRouter(prefix=\"/internal\")\n\ndef require_internal(request: Request):\n    # simplest: shared secret header set by callers inside the network\n    if request.headers.get(\"x-internal-token\") != \"supersecret\":\n        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)\n\n@public.get(\"/health\")\ndef health(): return {\"ok\": True}\n\n@internal.post(\"/reindex\")\ndef reindex(_=Depends(require_internal)):\n    return {\"started\": True}\n\napp.include_router(public)\napp.include_router(internal)\n```\n\n> If you prefer stronger auth, swap the header for **JWT** verification or **mTLS** (terminate TLS in the app).\n\n#### 2) Nginx: expose only public paths\n\n```nginx\nserver {\n  listen 443 ssl;\n  server_name your.public.host;\n\n  # Public API only\n  location /api/ {\n    proxy_pass http://fastapi:8000;\n    include proxy_params.conf;\n  }\n\n  # Belt-and-suspenders: block internal paths at the edge\n  location /internal/ { return 403; }\n  location / { return 404; }\n}\n```\n\n#### 3) Docker networking basics\n\n* In `docker-compose.yml`, **don’t publish** the FastAPI port to the host; only `expose` it.\n* Other services call it via service DNS (e.g., `fastapi:8000`).\n\n```yaml\nservices:\n  api:\n    build: .\n    expose: [\"8000\"]\n    networks: [appnet]\n  nginx:\n    image: nginx:alpine\n    ports: [\"443:443\"]    # only public\n    depends_on: [api]\n    networks: [appnet]\n\nnetworks:\n  appnet: { driver: bridge }\n```\n\n### 4) Client code for internal calls (timeouts + retries)\n\nUse `httpx` and be strict about timeouts/retries to avoid cascading failures.\n\n```python\nimport httpx\nimport asyncio\nfrom typing import Callable\n\nINTERNAL_HEADERS = {\"x-internal-token\": \"supersecret\"}\n\ndef make_client() -> httpx.AsyncClient:\n    return httpx.AsyncClient(\n        timeout=httpx.Timeout(connect=1.0, read=1.5, write=1.0, pool=5.0),\n        limits=httpx.Limits(max_keepalive_connections=20, max_connections=50),\n        headers=INTERNAL_HEADERS,\n    )\n\nasync def call_internal(client: httpx.AsyncClient, url: str, json: dict):\n    # simple bounded retry with jitter\n    for attempt in range(3):\n        try:\n            r = await client.post(url, json=json)\n            r.raise_for_status()\n            return r.json()\n        except (httpx.ConnectError, httpx.ReadTimeout):\n            await asyncio.sleep(0.05 * (attempt + 1))\n    raise RuntimeError(f\"internal call failed: {url}\")\n```\n\nAdd **circuit breakers** (e.g., `aiobreaker`) if the downstream can flap.\n\n---\n\n#### Trade-offs and tips\n\n* **Load balancing / scaling:** direct calls hit one container. If you scale a target service to N replicas, Docker’s DNS gives round-robin IPs, but it’s not a full LB. If you need smarter balancing, either:\n\n  * run an **internal Nginx/Envoy** (not exposed to host) and point clients to `http://nginx-internal:PORT`, or\n  * use a **service mesh** (Envoy sidecars, linkerd) later.\n* **Observability:** add request IDs (`X-Request-Id`) and propagate them across services; log internal vs public separately.\n* **Zero trust mindset:** network boundaries are not security. Keep the app-level guard, and prefer JWT/mTLS if risk increases.\n* **Fail-closed at the edge:** the Nginx “deny `/internal`” block prevents accidental exposure by config drift.\n\n---\n\n#### Bottom line\n\nYour plan (Option 1 + direct internal HTTP) is **perfectly reasonable** for a single Docker network setup. Keep internal routes unproxied publicly, add a lightweight app-level check, and be disciplined about client timeouts/retries. If you later need richer auth, load balancing, or centralized observability for east–west traffic, you can introduce an **internal** Nginx/Envoy without changing public behavior.\n",
+          "filename" : "arc42 opensource custom GPT builder.md",
+          "format" : "Markdown",
+          "order" : 1,
+          "title" : ""
+        } ]
+      },
+      "id" : "2",
+      "location" : "Unspecified",
+      "name" : "Opensource CustomGPT builder",
+      "properties" : {
+        "structurizr.dsl.identifier" : "ss"
+      },
+      "relationships" : [ {
+        "description" : "Sends conversation (snippets) to get assistant messages as answers from",
+        "destinationId" : "18",
+        "id" : "38",
+        "linkedRelationshipId" : "36",
+        "sourceId" : "2",
+        "technology" : "RESTApi"
+      }, {
+        "description" : "retreives repository content from",
+        "destinationId" : "21",
+        "id" : "63",
+        "linkedRelationshipId" : "59",
+        "sourceId" : "2"
+      }, {
+        "description" : "retreives repository content from",
+        "destinationId" : "19",
+        "id" : "64",
+        "linkedRelationshipId" : "59",
+        "sourceId" : "2"
+      } ],
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Pass conversation and Retreive assistant messages of OpenAI LLMs",
+      "documentation" : { },
+      "id" : "18",
+      "location" : "Unspecified",
+      "name" : "OpenAIApi",
+      "properties" : {
+        "structurizr.dsl.identifier" : "openaiapi"
+      },
+      "tags" : "Element,Software System,External System"
+    }, {
+      "containers" : [ {
+        "description" : "Listens for new commits and sends Post call to specific url",
+        "documentation" : { },
+        "id" : "20",
+        "name" : "githubWebhook",
+        "properties" : {
+          "structurizr.dsl.identifier" : "github.webhook"
+        },
+        "relationships" : [ {
+          "description" : "Notifies about new commits",
+          "destinationId" : "17",
+          "id" : "53",
+          "sourceId" : "20",
+          "tags" : "Relationship",
+          "technology" : "POST Call"
+        }, {
+          "description" : "Notifies about new commits",
+          "destinationId" : "11",
+          "id" : "54",
+          "linkedRelationshipId" : "53",
+          "sourceId" : "20",
+          "technology" : "POST Call"
+        }, {
+          "description" : "Notifies about new commits",
+          "destinationId" : "2",
+          "id" : "55",
+          "linkedRelationshipId" : "53",
+          "sourceId" : "20",
+          "technology" : "POST Call"
+        } ],
+        "tags" : "Element,Container"
+      }, {
+        "description" : "Provides api for interacting with github repos, e.g. retreiving data",
+        "documentation" : { },
+        "id" : "21",
+        "name" : "GithubAPI",
+        "properties" : {
+          "structurizr.dsl.identifier" : "github.api"
+        },
+        "tags" : "Element,Container"
+      } ],
+      "description" : "Sends a Post message to all subscribers whenever a new commit was made",
+      "documentation" : { },
+      "id" : "19",
+      "location" : "Unspecified",
+      "name" : "github",
+      "properties" : {
+        "structurizr.dsl.identifier" : "github"
+      },
+      "relationships" : [ {
+        "description" : "Notifies about new commits",
+        "destinationId" : "17",
+        "id" : "56",
+        "linkedRelationshipId" : "53",
+        "sourceId" : "19",
+        "technology" : "POST Call"
+      }, {
+        "description" : "Notifies about new commits",
+        "destinationId" : "11",
+        "id" : "57",
+        "linkedRelationshipId" : "53",
+        "sourceId" : "19",
+        "technology" : "POST Call"
+      }, {
+        "description" : "Notifies about new commits",
+        "destinationId" : "2",
+        "id" : "58",
+        "linkedRelationshipId" : "53",
+        "sourceId" : "19",
+        "technology" : "POST Call"
+      } ],
+      "tags" : "Element,Software System,External System"
+    } ]
+  },
+  "name" : "CustomGPT",
+  "properties" : {
+    "structurizr.dsl" : "d29ya3NwYWNlICJDdXN0b21HUFQiICJVc2UgQ2hhdGdwdCBhcGkgd2l0aCBvd24gY3VzdG9tR1BUIGltcGxlbWVudGF0aW9uInsKICAgIC8vIHRoaXMgZW5hYmxlcyB1cyB0byB3cml0ZSBzcy5jb250YWluZXJuYW1lIGluc3RlYWQgb2YganVzdCBjb250YWluZXJuYW1lIC0KICAgICFpZGVudGlmaWVycyBoaWVyYXJjaGljYWwgCgoKICAgIG1vZGVsIHsKICAgICAgICB1ID0gcGVyc29uICJVc2VyIiAiQSB1c2VyIG9mIHRoZSBzeXN0ZW0gd2FudGluZyB0byBwcm9maXQgZnJvbSBjdXN0b21pemVkIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkiICJQZXJzb24iCiAgICAgICAgc3MgPSBzb2Z0d2FyZVN5c3RlbSAiT3BlbnNvdXJjZSBDdXN0b21HUFQgYnVpbGRlciJ7CiAgICAgICAgICAgIHJlYWN0ID0gY29udGFpbmVyICJGcm9udGVuZCIgIkEgd2ViIGFwcCBmb3IgY2hhdCB3aXRoIGN1c3RvbSBncHRzIGFuZCB5b3VyIGRhdGEiICJSZWFjdCArIFRTIiAiV2ViIEJyb3dzZXIiCiAgICAgICAgICAgIGdhdGV3YXkgPSBjb250YWluZXIgIkdhdGV3YXkiICJUaGlzIGdhdGV3YXkgcm91dGVzIHJlcXVlc3RzIHRvIHRoZSBjb3JyZWN0IG1pY3Jvc2VydmljZSIgIkZhc3RhcGkiCiAgICAgICAgICAgIGNoYXRzZXJ2aWNlID0gY29udGFpbmVyICJDaGF0U2VydmljZSIgIlByb3ZpZGVzIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkgYW5kIGNvbXBvc2VzIGxsbSBwcm9tcHRzIGZyb20gcmF3IGRhdGEgLXVzZXJpbnB1dCwgY3VzdG9tZ3B0LCByYWciewogICAgICAgICAgICAgICAgYXBpID0gY29tcG9uZW50ICJDaGF0c2VydmljZUFwaSIgIkFQSSBmb3IgY2hhdHRpbmcgd2l0aCBMTE1zIHV0aWxpemluZyBBZGRpdGlvbmFsIGRhdGEgZnJvbSBvdGhlciBzZXJ2aWNlcyIKICAgICAgICAgICAgICAgIGRiID0gY29tcG9uZW50ICJDb252ZXJzYXRpb25EQiIgIlN0b3JlcyB0aGUgY29udmVyc2F0aW9uIGhpc3RvcmllcyBhbmQgbWV0YWRhdGEgb2YgdGhlIGNvbnZlcnNhdGlvbiJ7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU1FMaXRlIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIGN1c3RvbWdwdFNlcnZpY2UgPSBjb250YWluZXIgIkN1c3RvbUdQVFNlcnZpY2UiICJTdG9yZXMgYW5kIFNlcnZlcyBiYXNpYyBDdXN0b21HUFQgaW5mb3JtYXRpb24iewogICAgICAgICAgICAgICAgYXBpID0gY29tcG9uZW50ICJDdXN0b21HcHRBcGkiIkFQSSB0byBzZXQgYW5kIHF1ZXJ5IHRoZSBCYXNpYyBpbmZvcm1hdGlvbiBhcyB3ZWxsIGFzIGNvbXBvc2luZyBjb252ZXJzYXRpb24gc25pcHBldHMgdG8gYmUgdXRpbGl6ZWQgaW4gbmV3IGNoYXRzIHdoaWNoIHVzZSB0aGlzIgogICAgICAgICAgICAgICAgZGIgPSBjb21wb25lbnQgIkN1c3RvbUdwdERCIiAiU3RvcmVzIHRoZSBiYXNpYyBpbmZvcm1hdGlvbiBvZiB0aGUgQ3VzdG9tR1BUcyJ7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU1FMaXRlIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIHJhZ1NlcnZpY2UgPSBjb250YWluZXIgIlJhZ1NlcnZpY2UiICJSZXRyZWl2ZSBmaXR0aW5nIGRvY3VtZW50IGNodW5rcyBhbmQgcHJvdmlkZSBhbiBhcGkgdG8gYWRkIG9yIHVwZGF0ZSBkYXRhInsKICAgICAgICAgICAgICAgIGFwaSA9IGNvbXBvbmVudCAiUmFnU2VydmljZUFQSSIgIkFQSSBmb3IgcHJvY2Vzc2luZyZzdG9yaW5nIHJhdyBkYXRhIGluIGEgdmVjdG9yIGRhdGFiYXNlIGFuZCByZXRyZWl2aW5nIHJlbGV2YW50IGNodW5rcyBhbmQgcmF3IGRhdGEiCiAgICAgICAgICAgICAgICB2ZWN0b3JEQiA9IGNvbXBvbmVudCAidmVjdG9yREIiewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlFkcmFudCIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIG1ldGFkYXRhREIgPSBjb21wb25lbnQgIk1ldGFkYXRhREIiewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlNRTGl0ZSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGJhY2tncm91bmRUYXNrID0gY29tcG9uZW50ICJCYWNrZ3JvdW5kIFRhc2siICJRdWV1ZSB0YXNrcyB0byBjb250aW51ZSBkaXJlY3RseSBhZnRlciByZXNwb25kaW5nIgogICAgICAgICAgICAgICAgbG9jYWxGUyA9IGNvbXBvbmVudCAiTG9jYWwgRmlsZSBTeXN0ZW0iICJVc2VkIHRvIHN0b3JlIG5vbi1wcm9jZXNzZWQgYW5kIHByZS1wcm9jZXNzZXMgIHdob2xlIGRvY3VtZW50cyIKICAgICAgICAgICAgICAgIGdpdGh1YkRhdGFTZXJ2aWNlID0gY29tcG9uZW50ICJnaXRodWJEYXRhU2VydmljZSIgIkxpc3RlbnMgZm9yIG5vdGlmaWNhdGlvbiB1cGRhdGVzIGZyb20gZ2l0aHViIGFuZCB1cGRhdGVzIHRoZSBjb3JyZXNwb25kaW5nIGRhdGEgaW4gdGhlIHZlY3RvckRCIgogICAgICAgICAgICB9CgogICAgICAgICAgICAhZG9jcyBkb2NzCiAgICAgICAgICAgICFhZHJzIGFkcnMKICAgICAgICAgICAgCiAgICAgICAgfQogICAgICAgIG9wZW5haWFwaSA9IHNvZnR3YXJlU3lzdGVtICJPcGVuQUlBcGkiICJQYXNzIGNvbnZlcnNhdGlvbiBhbmQgUmV0cmVpdmUgYXNzaXN0YW50IG1lc3NhZ2VzIG9mIE9wZW5BSSBMTE1zIiAiRXh0ZXJuYWwgU3lzdGVtIiAKICAgICAgICBnaXRodWIgPSBzb2Z0d2FyZVN5c3RlbSAiZ2l0aHViIiAiU2VuZHMgYSBQb3N0IG1lc3NhZ2UgdG8gYWxsIHN1YnNjcmliZXJzIHdoZW5ldmVyIGEgbmV3IGNvbW1pdCB3YXMgbWFkZSIgIkV4dGVybmFsIFN5c3RlbSIgewogICAgICAgICAgICB3ZWJob29rID0gY29udGFpbmVyICJnaXRodWJXZWJob29rIiAiTGlzdGVucyBmb3IgbmV3IGNvbW1pdHMgYW5kIHNlbmRzIFBvc3QgY2FsbCB0byBzcGVjaWZpYyB1cmwiCiAgICAgICAgICAgIGFwaSA9IGNvbnRhaW5lciAiR2l0aHViQVBJIiAiUHJvdmlkZXMgYXBpIGZvciBpbnRlcmFjdGluZyB3aXRoIGdpdGh1YiByZXBvcywgZS5nLiByZXRyZWl2aW5nIGRhdGEiCiAgICAgICAgfQoKICAgICAgICB1IC0+IHNzLnJlYWN0ICJDaGF0cyB3aXRoIExMTSwgdXBsb2FkcyBkYXRhIGFuZCBjcmVhdGVzIG9yIHVzZXMgQ3VzdG9tR1BUcyB1c2luZyIgIlJlc3RBUEkiCiAgICAgICAgc3MucmVhY3QgLT4gc3MuZ2F0ZXdheSAiR2V0cyBjb252ZXJzYXRpb25zLCBhc3Npc3RhbnRlcnNwb25zZXMgYW5kIGRhdGEgZnJvbSBhbmQgc2VuZCB1c2VyIG1lc3NhZ2VzIGFuZCBkYXRhIHRvIgogICAgICAgIHNzLmdhdGV3YXkgLT4gc3MuY2hhdHNlcnZpY2UuYXBpICJHZXRzIG9yIGNyZWF0ZXMgY29udmVyc2F0aW9ucyB3aXRoIExMTXMsIG9wdGlvbmFsbHkgdXRpbGl6aW5nIFJBRyBhbmQgQ3VzdG9tR1BUIGRhdGEsIHV0aWxpemluZyB0aGUiICJSRVNUQXBpIgogICAgICAgIHNzLmNoYXRzZXJ2aWNlLmFwaSAtPiBzcy5jaGF0c2VydmljZS5kYiAiU3RvcmVzIGFuZCByZXRyZWl2ZXMgQ29udmVyc2F0aW9ucyAtaW5jbHVkaW5nIG1ldGFkYXRhLSB0byBhbmQgZnJvbSIgIlNRTE1vZGVsIgogICAgICAgIHNzLmNoYXRzZXJ2aWNlLmFwaSAtPiBzcy5jdXN0b21ncHRTZXJ2aWNlLmFwaSAiUmV0cmVpdmUgaW5mcm9tYXRpb24gYWJvdXQgQ3VzdG9tR1BUcyBmcm9tIiAiUkVTVEFwaSIKICAgICAgICBzcy5jaGF0c2VydmljZS5hcGkgLT4gc3MucmFnU2VydmljZS5hcGkgIlNlbmRzIHRleHQtc25pcGV0IGFuZCBnZXRzIHJlbGV2YW50IGRvY3VtZW50IGNodW5rcyBhbmQgdGhlaXIgbWV0YWRhdGEgZnJvbSIKICAgICAgICBzcy5jaGF0c2VydmljZS5hcGkgLT4gb3BlbmFpYXBpICJTZW5kcyBjb252ZXJzYXRpb24gKHNuaXBwZXRzKSB0byBnZXQgYXNzaXN0YW50IG1lc3NhZ2VzIGFzIGFuc3dlcnMgZnJvbSIgIlJFU1RBcGkiCiAgICAgICAgCiAgICAgICAgCiAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5jdXN0b21ncHRTZXJ2aWNlLmFwaSAiR2V0cyBvciBjcmVhdGVzIEN1c3RvbUdQVHMgdXRpbGl6aW5nIgogICAgICAgIHNzLmN1c3RvbWdwdFNlcnZpY2UuYXBpIC0+IHNzLmN1c3RvbWdwdFNlcnZpY2UuZGIgIlN0b3JlcyBhbmQgcmV0cmVpdmVzIEN1c3RvbUdQVCBpbmZvcm1hdGlvbiAtaW5jbHVkaW5nIG1ldGFkYXRhLSB0byBhbmQgZnJvbSIgIlNRTE1vZGVsIgoKICAgICAgICBzcy5nYXRld2F5IC0+IHNzLnJhZ1NlcnZpY2UuYXBpICJTZW5kcyBkb2N1bWVudHMgdG8gcHJvY2VzcyBhbmQgZW1iZWRkIGFuZCByZXRyZWl2ZXMgcmVsZXZhbnQgZG9jdW1lbnQgY2h1bmtzIHRvIGEgZ2l2ZW4gdGV4dCBmcm9tIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAic3RvcmUgdW5wcm9jZXNzZWQgYW5kIHByb2Nlc3NlZCB3aG9sZSBkb2N1bWVudHMgb24iCiAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MucmFnU2VydmljZS5iYWNrZ3JvdW5kVGFzayAicXVlcnkgcHJvY2Vzc2luZyB0YXNrcyIKICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBvcGVuYWlhcGkgImNyZWF0ZSBlbWJlZGRpbmdzIGZvciBjaHVua3Mgb2YgZG9jdW1lbnRzIHV0aWxpemluZyIKICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLnZlY3RvckRCICJzdG9yZSBhbmQgcmV0cmVpdmUgKHNpbWlsYXIpIGRvY3VtZW50IGNodW5rcyBlbWJlZGRpbmdzIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubWV0YWRhdGFEQiAic3RvcmUgbWV0YWRhdGEgaW5mb3JtYXRpb24gYWJvdXQgZG9jdW1lbnRzIHN0b3JlZCBpbiB0aGUgVmVjdG9yREIiCgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLmdhdGV3YXkgIlNlbmRzIG1lc3NhZ2VzIHdoZW4gdGhlIHByb2Nlc3Npbmcgc3RhdHVzIG9mIHVwbG9hZGVkIGRvY3VtZW50cyBoYXMgY2hhbmdlZCIgIlJFU1RBcGkiCiAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5yZWFjdCAiU2VuZHMgbWVzc2FnZXMgd2hlbiB0aGUgcHJvY2Vzc2luZyBzdGF0dXMgb2YgdXBsb2FkZWQgZG9jdW1lbnRzIGhhcyBjaGFuZ2VkIHRvIiAiV1NNZXNzYWdlIgogICAgICAgIAogICAgICAgIGdpdGh1Yi53ZWJob29rIC0+IHNzLnJhZ1NlcnZpY2UuZ2l0aHViRGF0YVNlcnZpY2UgIk5vdGlmaWVzIGFib3V0IG5ldyBjb21taXRzIiAiUE9TVCBDYWxsIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuZ2l0aHViRGF0YVNlcnZpY2UgLT4gZ2l0aHViLmFwaSAicmV0cmVpdmVzIHJlcG9zaXRvcnkgY29udGVudCBmcm9tIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuZ2l0aHViRGF0YVNlcnZpY2UgLT4gc3MucmFnU2VydmljZS5hcGkgInVwZGF0ZXMgb3V0ZGF0ZSBnaXRodWIgcmVwbyBkYXRhIGluIgogICAgICAgIAogICAgICAgIAoKCgogICAgICAgIAogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IHNzICJTeXN0ZW1Db250ZXgiewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KICAgICAgICBjb250YWluZXIgc3MgIkNvbnRhaW5lclZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KICAgICAgICBjb21wb25lbnQgc3MuY2hhdHNlcnZpY2UgImNoYXRzZXJ2aWNlVmlldyJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgc3MucmFnU2VydmljZSAicmFnU2VydmljZVZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgY29tcG9uZW50IHNzLmN1c3RvbUdQVFNlcnZpY2UgImN1c3RvbUdQVFNlcnZpY2VWaWV3InsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIC8vIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MucmFnU2VydmljZSB7CiAgICAgICAgICAgIHRpdGxlICJ1cGxvYWQgZG9jdW1lbnQgYW5kIHN0YXJ0IHByb2Nlc3NpbmciIAogICAgICAgICAgICB1IC0+IHNzLnJlYWN0ICJVcGxvYWRzIGRvY3VtZW50IHRvIgogICAgICAgICAgICBzcy5yZWFjdCAtPiBzcy5nYXRld2F5ICJzZW5kcyBkb2N1bWVudCBmaWxlIHZpYSBQb3N0IGNhbGwgdG8iCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MucmFnU2VydmljZS5hcGkgInNlbmQgZG9jdW1lbnQgdG8iCiAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAic3RvcmUgb3JpZ2luYWwgZG9jdW1lbnQgaW4iCiAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubWV0YWRhdGFEQiAiYWRkcyBkb2N1bWVudCBpbmZvbWF0aW9uIHRvIGFuZCBzZXQgc3RhdHVzIHRvIHVwbG9hZGVkIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLmJhY2tncm91bmRUYXNrICJxdWVyeSBwcm9jZXNzaW5nIGJhY2tncm91bmQgdGFzayIKICAgICAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MuZ2F0ZXdheSAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgdXBsb2FkIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5yZWFjdCAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgdXBsb2FkIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MucmFnU2VydmljZSB7CiAgICAgICAgICAgIHRpdGxlICJ1cGxvYWRlZCBkb2N1bWVudCBmaW5pc2hlZCBwcm9jZXNzaW5nIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmJhY2tncm91bmRUYXNrIC0+IHNzLnJhZ1NlcnZpY2UuYXBpICJ0cmlnZ2VyIHByZXByb2Nlc3Npbmcgb2YgdGhlIGRvY3VtZW50IgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLmxvY2FsRlMgInNhdmUgcHJlcHJvY2Vzc2VkICh3aG9sZSkgZG9jdW1lbnQiCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAidXBkYXRlIG1ldGFkYXRhIGluZm9ybWF0aW9uIHRvIG5vdGUgcHJlcHJvY2Vzc2VkIGRvY3VtZW50IgogICAgICAgICAgICB9CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IG9wZW5haWFwaSAiY3JlYXRlIGVtYmVkZGluZ3MgZm9yIGNyZWF0ZWQgZG9jdW1lbnQgY2h1bmtzIHV0aWxpemluZyIKICAgICAgICAgICAgfQogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLnZlY3RvckRCICJzdG9yZSBlbWJlZGRpbmdzIGluIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLm1ldGFkYXRhREIgInNldHMgZG9jdW1lbnQgc3RhdHVzIHRvIGF2YWlsYWJsZSBhbmQgdXBkYXRlcyBvdGhlciBtZXRhZGF0YSBpbmZvcm1hdGlvbiIKICAgICAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MuZ2F0ZXdheSAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgcHJvY2Nlc2luZyBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MucmVhY3QgInNlbmQgbm90aWZpY2F0aW9uIGFib3V0IGF2YWlsYWJpbGl0eSBvZiB0aGUgZG9jdW1lbnQgdG8gc3Vic2NyaWJlZCIgIldTTWVzc2FnZSIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MgewogICAgICAgICAgICB0aXRsZSAiY2xpZW50IHN1YnNjaWJlcyB0byB3ZWJzb2NrZXRNc2ciCiAgICAgICAgICAgIHNzLnJlYWN0IC0+IHNzLmdhdGV3YXkgInN1YnNjcmliZXMgdG8gd2Vic29ja2V0bWVzc2FnZXMiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIHNzLmN1c3RvbWdwdFNlcnZpY2UgewogICAgICAgICAgICB0aXRsZSAiY3JlYXRlIG9yIGVkaXQgY3VzdG9tIGdwdCIKICAgICAgICAgICAgc3MucmVhY3QgLT4gc3MuZ2F0ZXdheSAic2VuZCBjdXN0b21ncHQgZm9ybSBkYXRhIHRvIgogICAgICAgICAgICBzcy5nYXRld2F5IC0+IHNzLmN1c3RvbUdQVFNlcnZpY2UuYXBpICJmb3J3YWQgcG9zdCBjYWxsIHRvIgogICAgICAgICAgICBzcy5jdXN0b21HUFRTZXJ2aWNlLmFwaSAtPiBzcy5jdXN0b21HUFRTZXJ2aWNlLmRiICJzYXZlIGRhdGEgYW5kIG1ldGFkYXRhIGluIgogICAgICAgICAgICBzcy5jdXN0b21HUFRTZXJ2aWNlLmFwaSAtPiAgc3MuZ2F0ZXdheSAic3VjY2VzcyByZXNwb25zZSIKICAgICAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5yZWFjdCAic3VjY2VzcyByZXNwb25zZSIKICAgICAgICB9CgoKICAgICAgICBzdHlsZXMgewogICAgICAgICAgICBlbGVtZW50ICJQZXJzb24iIHsKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgICAgIGZvbnRTaXplIDIyCiAgICAgICAgICAgICAgICBzaGFwZSBQZXJzb24KICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJTb2Z0d2FyZSBTeXN0ZW0iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzExNjhiZAogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkV4dGVybmFsIFN5c3RlbSIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjOTk5OTk5CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29udGFpbmVyIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM0MzhkZDUKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJXZWIgQnJvd3NlciIgewogICAgICAgICAgICAgICAgc2hhcGUgV2ViQnJvd3NlcgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkRhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBDeWxpbmRlcgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkNvbXBvbmVudCIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjODViYmYwCiAgICAgICAgICAgICAgICBjb2xvciAjMDAwMDAwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRmFpbG92ZXIiIHsKICAgICAgICAgICAgICAgIG9wYWNpdHkgMjUKICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KfQ=="
+  },
+  "views" : {
+    "componentViews" : [ {
+      "containerId" : "5",
+      "dimensions" : {
+        "height" : 1748,
+        "width" : 2480
+      },
+      "elements" : [ {
+        "id" : "4",
+        "x" : 915,
+        "y" : 115
+      }, {
+        "id" : "6",
+        "x" : 915,
+        "y" : 750
+      }, {
+        "id" : "7",
+        "x" : 915,
+        "y" : 1335
+      }, {
+        "id" : "8",
+        "x" : 1770,
+        "y" : 450
+      }, {
+        "id" : "11",
+        "x" : 60,
+        "y" : 450
+      }, {
+        "id" : "18",
+        "x" : 60,
+        "y" : 1080
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "chatserviceView",
+      "order" : 3,
+      "paperSize" : "A5_Landscape",
+      "relationships" : [ {
+        "id" : "25"
+      }, {
+        "id" : "27"
+      }, {
+        "id" : "29"
+      }, {
+        "id" : "33"
+      }, {
+        "id" : "36"
+      }, {
+        "id" : "40"
+      }, {
+        "id" : "43",
+        "vertices" : [ {
+          "x" : 670,
+          "y" : 285
+        } ]
+      }, {
+        "id" : "47"
+      }, {
+        "id" : "51",
+        "vertices" : [ {
+          "x" : 755,
+          "y" : 520
+        } ]
+      } ]
+    }, {
+      "containerId" : "11",
+      "dimensions" : {
+        "height" : 2484,
+        "width" : 2767
+      },
+      "elements" : [ {
+        "id" : "4",
+        "x" : 290,
+        "y" : 720
+      }, {
+        "id" : "5",
+        "x" : 290,
+        "y" : 1320
+      }, {
+        "id" : "12",
+        "x" : 1306,
+        "y" : 1258
+      }, {
+        "id" : "13",
+        "x" : 949,
+        "y" : 1858
+      }, {
+        "id" : "14",
+        "x" : 1510,
+        "y" : 1850
+      }, {
+        "id" : "15",
+        "x" : 2035,
+        "y" : 795
+      }, {
+        "id" : "16",
+        "x" : 2055,
+        "y" : 1850
+      }, {
+        "id" : "17",
+        "x" : 1306,
+        "y" : 785
+      }, {
+        "id" : "18",
+        "x" : 290,
+        "y" : 1887
+      }, {
+        "id" : "19",
+        "x" : 1306,
+        "y" : 165
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "ragServiceView",
+      "order" : 4,
+      "relationships" : [ {
+        "id" : "26"
+      }, {
+        "id" : "34",
+        "vertices" : [ {
+          "x" : 876,
+          "y" : 1408
+        }, {
+          "x" : 1235,
+          "y" : 1408
+        } ]
+      }, {
+        "id" : "37"
+      }, {
+        "id" : "42",
+        "vertices" : [ {
+          "x" : 990,
+          "y" : 1185
+        } ]
+      }, {
+        "id" : "44"
+      }, {
+        "id" : "45"
+      }, {
+        "id" : "46"
+      }, {
+        "id" : "48"
+      }, {
+        "id" : "49"
+      }, {
+        "id" : "50",
+        "vertices" : [ {
+          "x" : 1090,
+          "y" : 955
+        } ]
+      }, {
+        "id" : "56",
+        "vertices" : [ {
+          "x" : 1450,
+          "y" : 595
+        } ]
+      }, {
+        "id" : "60",
+        "vertices" : [ {
+          "x" : 1655,
+          "y" : 610
+        } ]
+      }, {
+        "id" : "65"
+      } ]
+    }, {
+      "containerId" : "8",
+      "dimensions" : {
+        "height" : 1430,
+        "width" : 1640
+      },
+      "elements" : [ {
+        "id" : "4",
+        "x" : 70,
+        "y" : 160
+      }, {
+        "id" : "5",
+        "x" : 60,
+        "y" : 805
+      }, {
+        "id" : "9",
+        "x" : 895,
+        "y" : 160
+      }, {
+        "id" : "10",
+        "x" : 895,
+        "y" : 820
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "customGPTServiceView",
+      "order" : 5,
+      "relationships" : [ {
+        "id" : "26"
+      }, {
+        "id" : "30"
+      }, {
+        "id" : "39"
+      }, {
+        "id" : "41"
+      } ]
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "ContainerView",
+      "styles" : {
+        "elements" : [ {
+          "color" : "#ffffff",
+          "fontSize" : 22,
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#1168bd",
+          "color" : "#ffffff",
+          "tag" : "Software System"
+        }, {
+          "background" : "#999999",
+          "color" : "#ffffff",
+          "tag" : "External System"
+        }, {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "tag" : "Container"
+        }, {
+          "shape" : "WebBrowser",
+          "tag" : "Web Browser"
+        }, {
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#85bbf0",
+          "color" : "#000000",
+          "tag" : "Component"
+        }, {
+          "opacity" : 25,
+          "tag" : "Failover"
+        } ]
+      },
+      "terminology" : { }
+    },
+    "containerViews" : [ {
+      "dimensions" : {
+        "height" : 2395,
+        "width" : 2555
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 100,
+        "y" : 65
+      }, {
+        "id" : "3",
+        "x" : 1298,
+        "y" : 115
+      }, {
+        "id" : "4",
+        "x" : 1298,
+        "y" : 735
+      }, {
+        "id" : "5",
+        "x" : 1298,
+        "y" : 1362
+      }, {
+        "id" : "8",
+        "x" : 1985,
+        "y" : 1360
+      }, {
+        "id" : "11",
+        "x" : 580,
+        "y" : 1365
+      }, {
+        "id" : "18",
+        "x" : 1298,
+        "y" : 1950
+      }, {
+        "id" : "19",
+        "x" : 595,
+        "y" : 1960
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "ContainerView",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "22"
+      }, {
+        "id" : "24",
+        "vertices" : [ {
+          "x" : 1303,
+          "y" : 502
+        } ]
+      }, {
+        "id" : "26"
+      }, {
+        "id" : "31"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "37"
+      }, {
+        "id" : "40",
+        "vertices" : [ {
+          "x" : 2046,
+          "y" : 985
+        } ]
+      }, {
+        "id" : "43",
+        "vertices" : [ {
+          "x" : 991,
+          "y" : 980
+        } ]
+      }, {
+        "id" : "47"
+      }, {
+        "id" : "51",
+        "vertices" : [ {
+          "x" : 1176,
+          "y" : 1210
+        } ]
+      }, {
+        "id" : "52",
+        "vertices" : [ {
+          "x" : 1668,
+          "y" : 542
+        } ]
+      }, {
+        "id" : "57",
+        "vertices" : [ {
+          "x" : 935,
+          "y" : 1830
+        } ]
+      }, {
+        "id" : "62",
+        "vertices" : [ {
+          "x" : 735,
+          "y" : 1820
+        } ]
+      } ],
+      "softwareSystemId" : "2"
+    } ],
+    "dynamicViews" : [ {
+      "dimensions" : {
+        "height" : 2036,
+        "width" : 2390
+      },
+      "elementId" : "11",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 214,
+        "y" : 165
+      }, {
+        "id" : "3",
+        "x" : 799,
+        "y" : 235
+      }, {
+        "id" : "4",
+        "x" : 1639,
+        "y" : 240
+      }, {
+        "id" : "12",
+        "x" : 964,
+        "y" : 855
+      }, {
+        "id" : "14",
+        "x" : 219,
+        "y" : 1410
+      }, {
+        "id" : "15",
+        "x" : 975,
+        "y" : 1570
+      }, {
+        "id" : "16",
+        "x" : 1719,
+        "y" : 1410
+      } ],
+      "externalBoundariesVisible" : false,
+      "generatedKey" : true,
+      "key" : "Dynamic-001",
+      "order" : 6,
+      "relationships" : [ {
+        "description" : "Uploads document to",
+        "id" : "22",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "sends document file via Post call to",
+        "id" : "24",
+        "order" : "2",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1439,
+          "y" : 335
+        } ]
+      }, {
+        "description" : "send document to",
+        "id" : "42",
+        "order" : "3",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1369,
+          "y" : 710
+        } ]
+      }, {
+        "description" : "store original document in",
+        "id" : "44",
+        "order" : "4",
+        "response" : false
+      }, {
+        "description" : "adds document infomation to and set status to uploaded",
+        "id" : "49",
+        "order" : "5",
+        "response" : false
+      }, {
+        "description" : "query processing background task",
+        "id" : "45",
+        "order" : "6",
+        "response" : false
+      }, {
+        "description" : "notifies about the successful upload of the document",
+        "id" : "50",
+        "order" : "7",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1714,
+          "y" : 740
+        } ]
+      }, {
+        "description" : "notifies about the successful upload of the document",
+        "id" : "52",
+        "order" : "8",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1429,
+          "y" : 470
+        } ]
+      } ],
+      "title" : "upload document and start processing"
+    }, {
+      "dimensions" : {
+        "height" : 2011,
+        "width" : 2390
+      },
+      "elementId" : "11",
+      "elements" : [ {
+        "id" : "3",
+        "x" : 1740,
+        "y" : 1385
+      }, {
+        "id" : "4",
+        "x" : 1740,
+        "y" : 865
+      }, {
+        "id" : "12",
+        "x" : 944,
+        "y" : 865
+      }, {
+        "id" : "13",
+        "x" : 950,
+        "y" : 295
+      }, {
+        "id" : "14",
+        "x" : 944,
+        "y" : 1385
+      }, {
+        "id" : "15",
+        "x" : 145,
+        "y" : 865
+      }, {
+        "id" : "16",
+        "x" : 150,
+        "y" : 335
+      }, {
+        "id" : "18",
+        "x" : 145,
+        "y" : 1385
+      } ],
+      "externalBoundariesVisible" : false,
+      "generatedKey" : true,
+      "key" : "Dynamic-002",
+      "order" : 7,
+      "relationships" : [ {
+        "description" : "trigger preprocessing of the document",
+        "id" : "45",
+        "order" : "1",
+        "response" : true
+      }, {
+        "description" : "save preprocessed (whole) document",
+        "id" : "44",
+        "order" : "2",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 780,
+          "y" : 545
+        } ]
+      }, {
+        "description" : "update metadata information to note preprocessed document",
+        "id" : "44",
+        "order" : "3",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 605,
+          "y" : 755
+        } ]
+      }, {
+        "description" : "create embeddings for created document chunks utilizing",
+        "id" : "46",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "store embeddings in",
+        "id" : "48",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "sets document status to available and updates other metadata information",
+        "id" : "49",
+        "order" : "4",
+        "response" : false
+      }, {
+        "description" : "notifies about the successful proccesing of the document",
+        "id" : "50",
+        "order" : "5",
+        "response" : false
+      }, {
+        "description" : "send notification about availability of the document to subscribed",
+        "id" : "52",
+        "order" : "6",
+        "response" : false
+      } ],
+      "title" : "uploaded document finished processing"
+    }, {
+      "dimensions" : {
+        "height" : 1558,
+        "width" : 1108
+      },
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "3",
+        "x" : 329,
+        "y" : 329
+      }, {
+        "id" : "4",
+        "x" : 329,
+        "y" : 929
+      } ],
+      "externalBoundariesVisible" : false,
+      "generatedKey" : true,
+      "key" : "Dynamic-003",
+      "order" : 8,
+      "paperSize" : "A6_Portrait",
+      "relationships" : [ {
+        "description" : "subscribes to websocketmessages",
+        "id" : "24",
+        "order" : "1",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 550,
+          "y" : 762
+        } ]
+      } ],
+      "title" : "client subscibes to websocketMsg"
+    }, {
+      "dimensions" : {
+        "height" : 2054,
+        "width" : 1754
+      },
+      "elementId" : "8",
+      "elements" : [ {
+        "id" : "3",
+        "x" : 1100,
+        "y" : 960
+      }, {
+        "id" : "4",
+        "x" : 1100,
+        "y" : 360
+      }, {
+        "id" : "9",
+        "x" : 329,
+        "y" : 329
+      }, {
+        "id" : "10",
+        "x" : 329,
+        "y" : 929
+      } ],
+      "externalBoundariesVisible" : false,
+      "generatedKey" : true,
+      "key" : "Dynamic-004",
+      "order" : 9,
+      "paperSize" : "A4_Portrait",
+      "relationships" : [ {
+        "description" : "send customgpt form data to",
+        "id" : "24",
+        "order" : "1",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1475,
+          "y" : 810
+        } ]
+      }, {
+        "description" : "forwad post call to",
+        "id" : "39",
+        "order" : "2",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 965,
+          "y" : 420
+        } ]
+      }, {
+        "description" : "save data and metadata in",
+        "id" : "41",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "success response",
+        "id" : "39",
+        "order" : "4",
+        "response" : true,
+        "vertices" : [ {
+          "x" : 940,
+          "y" : 625
+        } ]
+      }, {
+        "description" : "success response",
+        "id" : "52",
+        "order" : "5",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1175,
+          "y" : 810
+        } ]
+      } ],
+      "title" : "create or edit custom gpt"
+    } ],
+    "systemContextViews" : [ {
+      "dimensions" : {
+        "height" : 1350,
+        "width" : 2300
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 200,
+        "y" : 165
+      }, {
+        "id" : "2",
+        "x" : 900,
+        "y" : 215
+      }, {
+        "id" : "18",
+        "x" : 920,
+        "y" : 865
+      }, {
+        "id" : "19",
+        "x" : 1650,
+        "y" : 215
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "SystemContex",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "23"
+      }, {
+        "id" : "38"
+      }, {
+        "id" : "58",
+        "vertices" : [ {
+          "x" : 1500,
+          "y" : 215
+        } ]
+      }, {
+        "id" : "64",
+        "vertices" : [ {
+          "x" : 1500,
+          "y" : 515
+        } ]
+      } ],
+      "softwareSystemId" : "2"
+    } ]
+  }
+}

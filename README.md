@@ -6,7 +6,7 @@ This project uses Docker Compose for managing development and production environ
 
 - [Docker](https://www.docker.com/get-started) installed on your system.
 - [Docker Compose](https://docs.docker.com/compose/) installed.
-- It is advised to use VSCode and to install all the necessary extensions published by Microsoft for Docker (Docker, Container Tools) and the Python Debugger extension. These change from time to time -check the VSCode Pop Ups which recommend fitting extensions.
+- It is advised to use VSCode and to install all the necessary extensions published by Microsoft for Docker (Docker, Container Tools) and the Python Debugger extension. These change from time to time -check the VSCode Pop Ups to the bottom right which recommends fitting extensions when opening up files.
 - Please also install the VSCode black formatter extension from Microsoft and use it to format the python code with it. For JS/TS and CSS use the Prettier Formatter extension from Prettier.
 - For local development, mkcert must be used to create ssl certs. The Readme.md in the nginx folder explains how to do this.
 - The frontend uses a client generated from the fastapi openapi documentation to reach the endpoints and provide interfaces detailing the expected structure of the bodys. When changing endpoint signatures or adding new endpoints, you must use `make generate-client-prod`
@@ -45,7 +45,7 @@ To start the production environment
 ### Utilizing VSCodes UI features and quality of life improvements on the remote server
 Connect via vscode+ssh to the server.
 
-Installing the docker extension inside the server.
+Install the docker extension inside the server.
 
 -> Control docker via vscode UI instead of cmd tool. No manual docker &docker-compose install needed either
 
@@ -56,7 +56,7 @@ Utilize the Version Control UI in VSCoder -> Vscode authenticates you to git, no
 a) `.env`
 For example:
 ```sh
-CERTBOT_DOMAINS="-d url.de -d www.albert.wikimind.de"
+CERTBOT_DOMAINS="-d www.albert.wikimind.de"
 CERTBOT_EMAIL=albert.sandritter@wikimind.de
 ```
 b) nginx_lets_encrypt_setup.conf + nginx_prod.conf
