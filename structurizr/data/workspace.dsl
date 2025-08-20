@@ -91,16 +91,25 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
         }
         component ss.chatservice "chatserviceView"{
             include *
+            exclude "element.type==Container -> element.type==Container"
+            exclude "element.type==SoftwareSystem -> element.type==Container"
+            exclude "element.type==Container -> element.type==SoftwareSystem"
             // autoLayout lr
         }
 
         component ss.ragService "ragServiceView"{
             include *
+            exclude "element.type==Container -> element.type==Container"
+            exclude "element.type==SoftwareSystem -> element.type==Container"
+            exclude "element.type==Container -> element.type==SoftwareSystem"
             // autoLayout lr
         }
 
         component ss.customGPTService "customGPTServiceView"{
             include *
+            exclude "element.type==Container -> element.type==Container"
+            exclude "element.type==SoftwareSystem -> element.type==Container"
+            exclude "element.type==Container -> element.type==SoftwareSystem"
             // autoLayout lr
         }
 
@@ -121,7 +130,7 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             ss.ragService.backgroundTask -> ss.ragService.api "trigger preprocessing of the document"
             ss.ragService.api -> ss.ragService.localFS "save preprocessed (whole) document"
             {
-                ss.ragService.api -> ss.ragService.localFS "update metadata information to note preprocessed document"
+                ss.ragService.api -> ss.ragService.metadataDB "update metadata information to note preprocessed document"
             }
             {
                 ss.ragService.api -> openaiapi "create embeddings for created document chunks utilizing"
