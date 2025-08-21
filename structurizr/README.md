@@ -17,6 +17,7 @@ Everyone, including from technical to non-technical people can get a basic under
 ### Creating SWA Document in Structurizr
 
 #### Integrate markdown or Asciidoc file(s)
+[Check the consice official documentation](https://docs.structurizr.com/ui/documentation/headings)
 In your workspace.dsl, you can write `!docs ${docs_foldername}` to include all Markdown and AsciiDoc files of the folder `{docs_foldername}` residing in the same directory as the workspace.dsl file.
 
 Chapters are created from ## and ### headers and linked automatically in the structurizr UI.    

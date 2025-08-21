@@ -89,7 +89,7 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             include *
             // autoLayout lr
         }
-        component ss.chatservice "chatserviceView"{
+        component ss.chatservice "chatServiceView"{
             include *
             exclude "element.type==Container -> element.type==Container"
             exclude "element.type==SoftwareSystem -> element.type==Container"
@@ -113,7 +113,12 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             // autoLayout lr
         }
 
-        dynamic ss.ragService {
+        dynamic ss "wsMessage"{
+            title "client subscibes to websocketMsg"
+            ss.react -> ss.gateway "subscribes to websocketmessages"
+        }
+
+        dynamic ss.ragService "uploadDocument"{
             title "upload document and start processing" 
             u -> ss.react "Uploads document to"
             ss.react -> ss.gateway "sends document file via Post call to"
@@ -125,7 +130,7 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             ss.gateway -> ss.react "notifies about the successful upload of the document"
         }
 
-        dynamic ss.ragService {
+        dynamic ss.ragService "processDocument"{
             title "uploaded document finished processing"
             ss.ragService.backgroundTask -> ss.ragService.api "trigger preprocessing of the document"
             ss.ragService.api -> ss.ragService.localFS "save preprocessed (whole) document"
@@ -141,12 +146,9 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             ss.gateway -> ss.react "send notification about availability of the document to subscribed" "WSMessage"
         }
 
-        dynamic ss {
-            title "client subscibes to websocketMsg"
-            ss.react -> ss.gateway "subscribes to websocketmessages"
-        }
+        
 
-        dynamic ss.customgptService {
+        dynamic ss.customgptService "customGPTCreateOrEdit"{
             title "create or edit custom gpt"
             ss.react -> ss.gateway "send customgpt form data to"
             ss.gateway -> ss.customGPTService.api "forwad post call to"

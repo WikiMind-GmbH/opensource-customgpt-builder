@@ -3,8 +3,7 @@
   "description" : "Use Chatgpt api with own customGPT implementation",
   "documentation" : { },
   "id" : 1,
-  "lastModifiedAgent" : "structurizr-ui",
-  "lastModifiedDate" : "2025-08-20T23:48:42Z",
+  "lastModifiedDate" : "2025-08-21T15:46:56Z",
   "model" : {
     "people" : [ {
       "description" : "A user of the system wanting to profit from customized llm chat functionality",
@@ -432,10 +431,63 @@
           "title" : " 005 Seperating internal and external endpoints via nginx"
         } ],
         "sections" : [ {
-          "content" : "## Introduction and Goals\nThis document describes the Opensource CustomGPT Builder Software system. It can be used to create your own CustomGPTs outside of the OpenAI Software System. \nThe goal of this system is to have a baseline product onto which we can build more customized solutions for clients. The aim is to have a product that has a use case for as many clients as possible. We hope that this makes for broader adaption and more follow-up costumized solutions then we get without having a more basic product.\nThe goal this system achives for the users is the following:\nThey want to use the capabilities of CustomGPTs without directly giving their data to OpenAI while still getting a very simimalar user experience.\n(Requirements describe what the system should do. Goals describe how the system will help the organization)\n\nThis specific project also has as goal for the team to learn&utilize design and architecture patterns as well as follow SWA documentation best practices.\n### Requirements Overview\n\n1. The UI must display a history of previous chats. Previous chats can be viewed, continued and deleted\n2. The user must be able to create, modify and delete CustomGPTs\n3. Document upload for OpenDocument Format files and PDFs is possible\n4. The information inside these documents is processed and CustomGPT will use and reference it in conversations\n5. The user can see all the data that is used by a CustomGPT, including the documents uploaded.\n\n### Quality Goals\n\n#### Usability\n- The UI must be similar to ChatGPT to enable fast adaption of new users.\nThe Feedback give to user input must be clear such that users know why a certain operation, like uploading unsupported document types, did not succeed.\n#### Performance\n*Latency*\n- A user interaction must trigger a UX response in 500ms. The answer of the backend, when serving assistant messages, can be slow, though other responses shall not exceed 1s response time. Uploading documents shall lead to a fast response initial response once the documents are saved to the backend. Afterwards, the Preprocessing shall take no longer than 10 minutes before the user can use the CustomGPT\n*Throughput*\n- The system is not designed for high throughput, so 2 concurrent preprocessing tasks can be made in parallel with the expected latency.\n#### Security\n- Basic Auth and https will suffice for this POC\n#### Reliability\n*Concurrent Users*\n- The system expects 5 concurrent users max as of now\n*Data volume*\n- The uploaded files are expected to not exceed 20MB and the storage for documents is expected to grow less then 10GB per year\n*Load*\n- The system should handle 4 preprocessing requests in parallel. the other tasks are less computationally heavy are expected to take more concurrent requests\n\n#### Transferability\n- The software system should be designed in such a way that enabling the usage of other LLM Apis is not too much work\n### Stakeholders\n#### Product Owner\nProduct owner must have a overview of the SWA to check if all features are implemented, which features can be implemented more easily and check the architecture decisions\n#### Management\nManagement wants a quick overview of the SWA capabilities\n#### Dev team\nThe dev team needs a place to document and reference architecture and architecture decisions\n\n## Constraints\n\n- The project must be completely dockarized and use or expand the current full-stack-template of wikimind.\n- The code must be completely open-source\n\n## Context and Scope\nThe following diagram shows \n![](embed:SystemContex)\n### User\nUtilizes LLM. Wants to utilize CustomGPTs without depending on Openai and having full transparency\n### OpenAI Api\nThe Api OpenAI provides to create assistant responses from passed conversations. Tool usage is possible as well. It's CustomGPT functionality will not be used.\n\n## Solution Strategy\n### Handling RAG file upload and availability status without strong coupling \nWe want to be able to upload files, directly get a feedback if those files have been uploaded, and then later receive a async http push message / websocketmessage if the processing has finished and the embeddings can be used in the chat.   \nAdditionally, we want to be able to have a restapi where we can directly query the curernt status and availability.\n\nTo fulfill both these features as well as still keeping our services decoupled, we went for the following solution:   \nThe Rag service provides an api for retreiving the status\n## Buildig Block view\n![](embed:SystemContex)\n![](embed:ContainerView)\n### ChatService\nThe chat service has the following apis:\n```\ncreateConversation(CustomGptId:int | None, usermessage: str, useRag:bool)\ncontinueConversation(conversationid::int | None , usermessage: str, useRag:bool)\n```\nIf a CustomGPTid is given, the CustomGPTservice api is called to retreive Infos about the customgpt. If the customGPTservice is not reachable, the request will be processed without the customGPT, but the answer will include this information.\nSame for the RAG Service. This is due to decoupling and keeping the service running even if the other services are down.\n\nThe Rag service will return relevant chunks, but will not process them. How we tune&enrich our prompt with the retreived chunks is decided by the chatservice, not in the rag service, to keep responsibilities clear.\n\n### RAGService\nThe RagService will use WebsocketMessages (/async messages)to inform other services when uploaded documents have been processed. (The initial sync Data uoload api will retrurn a success msg as soon as the files have been uploaded and will then use the WSMessage to nitify when everything has been processed)\n\nFor simplicity, documents will be identified by the following: `customgpt_id: int | None, document_name` if `customgpt_id` is None, the document is available for all chats, not just a specific customgpt.\n\n\n\n### CustomGPTService\nDatabase schema sketch: \n`id:int, name:str, description:str, rag_files_availability: json_str`\nWhere `rag_files_availability` is a dictionary where the keys are the names of the documents and the values are either `uploaded` or `processed`\n\nDecouopling&eventual consistency: The customGPTService will have a \n## Runtime View\n\n## Deployment View\n## Architectural decisions\nSee [ADRs](http://localhost:8080/workspace/decisions/Opensource%20CustomGPT%20builder) \n## Quality Requirements\n## Risks & Technical Debt\n### Internal network traffic -> safety and logging\n\n#### Why direct service→service HTTP is OK\n\n* **Fewer hops/latency:** you’re not hair-pinning through Nginx.\n* **Simplicity:** no extra Nginx routes/ACLs to maintain for internal traffic.\n* **Docker DNS works out of the box:** each container can call others by service name, e.g. `http://usersvc:8000/internal/...`.\n\n#### When you might *not* want to bypass Nginx\n\n* You need **authn/authz, mTLS, rate limiting, request shaping, or WAF** on *internal* calls.\n* You want **single place for access logs/metrics** (observability).\n* You run **multiple replicas** of a target service and want **load balancing** without adding a client-side LB.\n\n(If those matter later, you can still keep Option 1 for public traffic and add a second, **internal-only** Nginx listener/port just for east–west traffic.)\n\n---\n\n#### Minimal, robust setup for direct internal calls\n\n#### 1) FastAPI route grouping + internal guard (defense-in-depth)\n\nEven if `/internal/*` isn’t proxied publicly, protect it in-app.\n\n```python\n# fastapi_app.py\nfrom fastapi import FastAPI, APIRouter, Depends, HTTPException, Request, status\n\napp = FastAPI()\npublic = APIRouter(prefix=\"/api\")\ninternal = APIRouter(prefix=\"/internal\")\n\ndef require_internal(request: Request):\n    # simplest: shared secret header set by callers inside the network\n    if request.headers.get(\"x-internal-token\") != \"supersecret\":\n        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)\n\n@public.get(\"/health\")\ndef health(): return {\"ok\": True}\n\n@internal.post(\"/reindex\")\ndef reindex(_=Depends(require_internal)):\n    return {\"started\": True}\n\napp.include_router(public)\napp.include_router(internal)\n```\n\n> If you prefer stronger auth, swap the header for **JWT** verification or **mTLS** (terminate TLS in the app).\n\n#### 2) Nginx: expose only public paths\n\n```nginx\nserver {\n  listen 443 ssl;\n  server_name your.public.host;\n\n  # Public API only\n  location /api/ {\n    proxy_pass http://fastapi:8000;\n    include proxy_params.conf;\n  }\n\n  # Belt-and-suspenders: block internal paths at the edge\n  location /internal/ { return 403; }\n  location / { return 404; }\n}\n```\n\n#### 3) Docker networking basics\n\n* In `docker-compose.yml`, **don’t publish** the FastAPI port to the host; only `expose` it.\n* Other services call it via service DNS (e.g., `fastapi:8000`).\n\n```yaml\nservices:\n  api:\n    build: .\n    expose: [\"8000\"]\n    networks: [appnet]\n  nginx:\n    image: nginx:alpine\n    ports: [\"443:443\"]    # only public\n    depends_on: [api]\n    networks: [appnet]\n\nnetworks:\n  appnet: { driver: bridge }\n```\n\n### 4) Client code for internal calls (timeouts + retries)\n\nUse `httpx` and be strict about timeouts/retries to avoid cascading failures.\n\n```python\nimport httpx\nimport asyncio\nfrom typing import Callable\n\nINTERNAL_HEADERS = {\"x-internal-token\": \"supersecret\"}\n\ndef make_client() -> httpx.AsyncClient:\n    return httpx.AsyncClient(\n        timeout=httpx.Timeout(connect=1.0, read=1.5, write=1.0, pool=5.0),\n        limits=httpx.Limits(max_keepalive_connections=20, max_connections=50),\n        headers=INTERNAL_HEADERS,\n    )\n\nasync def call_internal(client: httpx.AsyncClient, url: str, json: dict):\n    # simple bounded retry with jitter\n    for attempt in range(3):\n        try:\n            r = await client.post(url, json=json)\n            r.raise_for_status()\n            return r.json()\n        except (httpx.ConnectError, httpx.ReadTimeout):\n            await asyncio.sleep(0.05 * (attempt + 1))\n    raise RuntimeError(f\"internal call failed: {url}\")\n```\n\nAdd **circuit breakers** (e.g., `aiobreaker`) if the downstream can flap.\n\n---\n\n#### Trade-offs and tips\n\n* **Load balancing / scaling:** direct calls hit one container. If you scale a target service to N replicas, Docker’s DNS gives round-robin IPs, but it’s not a full LB. If you need smarter balancing, either:\n\n  * run an **internal Nginx/Envoy** (not exposed to host) and point clients to `http://nginx-internal:PORT`, or\n  * use a **service mesh** (Envoy sidecars, linkerd) later.\n* **Observability:** add request IDs (`X-Request-Id`) and propagate them across services; log internal vs public separately.\n* **Zero trust mindset:** network boundaries are not security. Keep the app-level guard, and prefer JWT/mTLS if risk increases.\n* **Fail-closed at the edge:** the Nginx “deny `/internal`” block prevents accidental exposure by config drift.\n\n---\n\n#### Bottom line\n\nYour plan (Option 1 + direct internal HTTP) is **perfectly reasonable** for a single Docker network setup. Keep internal routes unproxied publicly, add a lightweight app-level check, and be disciplined about client timeouts/retries. If you later need richer auth, load balancing, or centralized observability for east–west traffic, you can introduce an **internal** Nginx/Envoy without changing public behavior.\n",
-          "filename" : "arc42 opensource custom GPT builder.md",
+          "content" : "## Introduction and Goals\n\nThis document describes the Opensource CustomGPT Builder Software system. It can be used to create your own CustomGPTs outside of the OpenAI Software System. \nThe goal of this system is to have a baseline product onto which we can build more customized solutions for clients. The aim is to have a product that has a use case for as many clients as possible. We hope that this makes for broader adaption and more follow-up costumized solutions then we get without having a more basic product.\nThe goal this system achives for the users is the following:\nThey want to use the capabilities of CustomGPTs without directly giving their data to OpenAI while still getting a very simimalar user experience.\n(Requirements describe what the system should do. Goals describe how the system will help the organization)\n\nThis specific project also has as goal for the team to learn&utilize design and architecture patterns as well as follow SWA documentation best practices.\n### Requirements Overview\n\n1. The UI must display a history of previous chats. Previous chats can be viewed, continued and deleted\n2. The user must be able to create, modify and delete CustomGPTs\n3. Document upload for OpenDocument Format files and PDFs is possible\n4. The information inside these documents is processed and CustomGPT will use and reference it in conversations\n5. The user can see all the data that is used by a CustomGPT, including the documents uploaded.\n\n### Quality Goals\n\n#### Usability\n- The UI must be similar to ChatGPT to enable fast adaption of new users.\nThe Feedback give to user input must be clear such that users know why a certain operation, like uploading unsupported document types, did not succeed.\n#### Performance\n*Latency*\n- A user interaction must trigger a UX response in 500ms. The answer of the backend, when serving assistant messages, can be slow, though other responses shall not exceed 1s response time. Uploading documents shall lead to a fast response initial response once the documents are saved to the backend. Afterwards, the Preprocessing shall take no longer than 10 minutes before the user can use the CustomGPT\n*Throughput*\n- The system is not designed for high throughput, so 2 concurrent preprocessing tasks can be made in parallel with the expected latency.\n#### Security\n- Basic Auth and https will suffice for this POC\n#### Reliability\n*Concurrent Users*\n- The system expects 5 concurrent users max as of now\n*Data volume*\n- The uploaded files are expected to not exceed 20MB and the storage for documents is expected to grow less then 10GB per year\n*Load*\n- The system should handle 4 preprocessing requests in parallel. the other tasks are less computationally heavy are expected to take more concurrent requests\n\n#### Transferability\n- The software system should be designed in such a way that enabling the usage of other LLM Apis is not too much work\n### Stakeholders\n#### Product Owner\nProduct owner must have a overview of the SWA to check if all features are implemented, which features can be implemented more easily and check the architecture decisions\n#### Management\nManagement wants a quick overview of the SWA capabilities\n#### Dev team\nThe dev team needs a place to document and reference architecture and architecture decisions\n",
+          "filename" : "01- Introduction and Goals.md",
           "format" : "Markdown",
           "order" : 1,
+          "title" : ""
+        }, {
+          "content" : "## Constraints\n\n- The project must be completely dockarized and use or expand the current full-stack-template of wikimind.\n- The code must be completely open-source",
+          "filename" : "02-Constraints.md",
+          "format" : "Markdown",
+          "order" : 2,
+          "title" : ""
+        }, {
+          "content" : "## Context and Scope\nThe following diagram shows \n![](embed:SystemContex)\n### User\nUtilizes LLM. Wants to utilize CustomGPTs without depending on Openai and having full transparency\n### OpenAI Api\nThe Api OpenAI provides to create assistant responses from passed conversations. Tool usage is possible as well. It's CustomGPT functionality will not be used.",
+          "filename" : "03-Context and scope.md",
+          "format" : "Markdown",
+          "order" : 3,
+          "title" : ""
+        }, {
+          "content" : "## Runtime View\n### Upload documents and RAG functionality\nUploading and processing a document is notably done in two steps and utilizes two different message protocols.  \n\nFor the client to be able to get live-updates about uploaded documents having been processed and being available to use in the chat, the client must subscribe to the Websocket Endpoint first.\n![](embed:wsMessage)\n\nThe client uploads a document and gets a response message as soon as the file has been saved to the files system. The background task is queued before sending the response\n![](embed:uploadDocument)\n\nAfter the response of the RagServiceAPI has been sent, the background task starts with the (pre)processing. After this is finished, the client gets a WebsocketMessage informing them that their document is available to the chatbot.\n![](embed:processDocument)",
+          "filename" : "06-Runtime View.md",
+          "format" : "Markdown",
+          "order" : 4,
+          "title" : ""
+        }, {
+          "content" : "## Deployment View",
+          "filename" : "07-Deployment View.md",
+          "format" : "Markdown",
+          "order" : 5,
+          "title" : ""
+        }, {
+          "content" : "## Crosscutting Concepts",
+          "filename" : "08-Concepts.md",
+          "format" : "Markdown",
+          "order" : 6,
+          "title" : ""
+        }, {
+          "content" : "## Architectural decisions\nSee [ADRs](http://localhost:8080/workspace/decisions/Opensource%20CustomGPT%20builder) ",
+          "filename" : "09-Architecture decisions.md",
+          "format" : "Markdown",
+          "order" : 7,
+          "title" : ""
+        }, {
+          "content" : "## Quality Requirements",
+          "filename" : "10-Quality.md",
+          "format" : "Markdown",
+          "order" : 8,
+          "title" : ""
+        }, {
+          "content" : "## Risks & Technical Debt\n\n### Central Logging service\nA central logging service must be used in the future.\nAll services will send their logs to this service with a timestamp, logging level *as well as an operationID/requestID*. In this way, we can trace the logs of one operation across multiple services, even if there were multiple parallel requests. (I.e. multiple users in parallel upload documents (on multiple instances). One experiences an error. We can't just from timestamp or instance see which logs of the different services belong to this one request if wew do not have a request or operationID for tracing)\n\n### Internal network traffic -> safety and logging\nSee: the following chatgpt snippet\n\n### Document uploading\n\nAs of now, the C4 model only shows how to upload one document.  \nThis must be changed to allow multiple document uploads (?) -> parallelization easily done.  \n\n\n#### Why direct service→service HTTP is OK\n\n* **Fewer hops/latency:** you’re not hair-pinning through Nginx.\n* **Simplicity:** no extra Nginx routes/ACLs to maintain for internal traffic.\n* **Docker DNS works out of the box:** each container can call others by service name, e.g. `http://usersvc:8000/internal/...`.\n\n#### When you might *not* want to bypass Nginx\n\n* You need **authn/authz, mTLS, rate limiting, request shaping, or WAF** on *internal* calls.\n* You want **single place for access logs/metrics** (observability).\n* You run **multiple replicas** of a target service and want **load balancing** without adding a client-side LB.\n\n(If those matter later, you can still keep Option 1 for public traffic and add a second, **internal-only** Nginx listener/port just for east–west traffic.)\n\n---\n\n#### Minimal, robust setup for direct internal calls\n\n#### 1) FastAPI route grouping + internal guard (defense-in-depth)\n\nEven if `/internal/*` isn’t proxied publicly, protect it in-app.\n\n```python\n# fastapi_app.py\nfrom fastapi import FastAPI, APIRouter, Depends, HTTPException, Request, status\n\napp = FastAPI()\npublic = APIRouter(prefix=\"/api\")\ninternal = APIRouter(prefix=\"/internal\")\n\ndef require_internal(request: Request):\n    # simplest: shared secret header set by callers inside the network\n    if request.headers.get(\"x-internal-token\") != \"supersecret\":\n        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)\n\n@public.get(\"/health\")\ndef health(): return {\"ok\": True}\n\n@internal.post(\"/reindex\")\ndef reindex(_=Depends(require_internal)):\n    return {\"started\": True}\n\napp.include_router(public)\napp.include_router(internal)\n```\n\n> If you prefer stronger auth, swap the header for **JWT** verification or **mTLS** (terminate TLS in the app).\n\n#### 2) Nginx: expose only public paths\n\n```nginx\nserver {\n  listen 443 ssl;\n  server_name your.public.host;\n\n  # Public API only\n  location /api/ {\n    proxy_pass http://fastapi:8000;\n    include proxy_params.conf;\n  }\n\n  # Belt-and-suspenders: block internal paths at the edge\n  location /internal/ { return 403; }\n  location / { return 404; }\n}\n```\n\n#### 3) Docker networking basics\n\n* In `docker-compose.yml`, **don’t publish** the FastAPI port to the host; only `expose` it.\n* Other services call it via service DNS (e.g., `fastapi:8000`).\n\n```yaml\nservices:\n  api:\n    build: .\n    expose: [\"8000\"]\n    networks: [appnet]\n  nginx:\n    image: nginx:alpine\n    ports: [\"443:443\"]    # only public\n    depends_on: [api]\n    networks: [appnet]\n\nnetworks:\n  appnet: { driver: bridge }\n```\n\n### 4) Client code for internal calls (timeouts + retries)\n\nUse `httpx` and be strict about timeouts/retries to avoid cascading failures.\n\n```python\nimport httpx\nimport asyncio\nfrom typing import Callable\n\nINTERNAL_HEADERS = {\"x-internal-token\": \"supersecret\"}\n\ndef make_client() -> httpx.AsyncClient:\n    return httpx.AsyncClient(\n        timeout=httpx.Timeout(connect=1.0, read=1.5, write=1.0, pool=5.0),\n        limits=httpx.Limits(max_keepalive_connections=20, max_connections=50),\n        headers=INTERNAL_HEADERS,\n    )\n\nasync def call_internal(client: httpx.AsyncClient, url: str, json: dict):\n    # simple bounded retry with jitter\n    for attempt in range(3):\n        try:\n            r = await client.post(url, json=json)\n            r.raise_for_status()\n            return r.json()\n        except (httpx.ConnectError, httpx.ReadTimeout):\n            await asyncio.sleep(0.05 * (attempt + 1))\n    raise RuntimeError(f\"internal call failed: {url}\")\n```\n\nAdd **circuit breakers** (e.g., `aiobreaker`) if the downstream can flap.\n\n---\n\n#### Trade-offs and tips\n\n* **Load balancing / scaling:** direct calls hit one container. If you scale a target service to N replicas, Docker’s DNS gives round-robin IPs, but it’s not a full LB. If you need smarter balancing, either:\n\n  * run an **internal Nginx/Envoy** (not exposed to host) and point clients to `http://nginx-internal:PORT`, or\n  * use a **service mesh** (Envoy sidecars, linkerd) later.\n* **Observability:** add request IDs (`X-Request-Id`) and propagate them across services; log internal vs public separately.\n* **Zero trust mindset:** network boundaries are not security. Keep the app-level guard, and prefer JWT/mTLS if risk increases.\n* **Fail-closed at the edge:** the Nginx “deny `/internal`” block prevents accidental exposure by config drift.\n\n---\n\n#### Bottom line\n\nYour plan (Option 1 + direct internal HTTP) is **perfectly reasonable** for a single Docker network setup. Keep internal routes unproxied publicly, add a lightweight app-level check, and be disciplined about client timeouts/retries. If you later need richer auth, load balancing, or centralized observability for east–west traffic, you can introduce an **internal** Nginx/Envoy without changing public behavior.\n",
+          "filename" : "11-Risk and technical debt.md",
+          "format" : "Markdown",
+          "order" : 9,
+          "title" : ""
+        }, {
+          "filename" : "13-Glossary.md",
+          "format" : "Markdown",
+          "order" : 10,
           "title" : ""
         } ]
       },
@@ -553,7 +605,7 @@
   },
   "name" : "CustomGPT",
   "properties" : {
-    "structurizr.dsl" : "d29ya3NwYWNlICJDdXN0b21HUFQiICJVc2UgQ2hhdGdwdCBhcGkgd2l0aCBvd24gY3VzdG9tR1BUIGltcGxlbWVudGF0aW9uInsKICAgIC8vIHRoaXMgZW5hYmxlcyB1cyB0byB3cml0ZSBzcy5jb250YWluZXJuYW1lIGluc3RlYWQgb2YganVzdCBjb250YWluZXJuYW1lIC0KICAgICFpZGVudGlmaWVycyBoaWVyYXJjaGljYWwgCgoKICAgIG1vZGVsIHsKICAgICAgICB1ID0gcGVyc29uICJVc2VyIiAiQSB1c2VyIG9mIHRoZSBzeXN0ZW0gd2FudGluZyB0byBwcm9maXQgZnJvbSBjdXN0b21pemVkIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkiICJQZXJzb24iCiAgICAgICAgc3MgPSBzb2Z0d2FyZVN5c3RlbSAiT3BlbnNvdXJjZSBDdXN0b21HUFQgYnVpbGRlciJ7CiAgICAgICAgICAgIHJlYWN0ID0gY29udGFpbmVyICJGcm9udGVuZCIgIkEgd2ViIGFwcCBmb3IgY2hhdCB3aXRoIGN1c3RvbSBncHRzIGFuZCB5b3VyIGRhdGEiICJSZWFjdCArIFRTIiAiV2ViIEJyb3dzZXIiCiAgICAgICAgICAgIGdhdGV3YXkgPSBjb250YWluZXIgIkdhdGV3YXkiICJUaGlzIGdhdGV3YXkgcm91dGVzIHJlcXVlc3RzIHRvIHRoZSBjb3JyZWN0IG1pY3Jvc2VydmljZSIgIkZhc3RhcGkiCiAgICAgICAgICAgIGNoYXRzZXJ2aWNlID0gY29udGFpbmVyICJDaGF0U2VydmljZSIgIlByb3ZpZGVzIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkgYW5kIGNvbXBvc2VzIGxsbSBwcm9tcHRzIGZyb20gcmF3IGRhdGEgLXVzZXJpbnB1dCwgY3VzdG9tZ3B0LCByYWciewogICAgICAgICAgICAgICAgYXBpID0gY29tcG9uZW50ICJDaGF0c2VydmljZUFwaSIgIkFQSSBmb3IgY2hhdHRpbmcgd2l0aCBMTE1zIHV0aWxpemluZyBBZGRpdGlvbmFsIGRhdGEgZnJvbSBvdGhlciBzZXJ2aWNlcyIKICAgICAgICAgICAgICAgIGRiID0gY29tcG9uZW50ICJDb252ZXJzYXRpb25EQiIgIlN0b3JlcyB0aGUgY29udmVyc2F0aW9uIGhpc3RvcmllcyBhbmQgbWV0YWRhdGEgb2YgdGhlIGNvbnZlcnNhdGlvbiJ7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU1FMaXRlIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIGN1c3RvbWdwdFNlcnZpY2UgPSBjb250YWluZXIgIkN1c3RvbUdQVFNlcnZpY2UiICJTdG9yZXMgYW5kIFNlcnZlcyBiYXNpYyBDdXN0b21HUFQgaW5mb3JtYXRpb24iewogICAgICAgICAgICAgICAgYXBpID0gY29tcG9uZW50ICJDdXN0b21HcHRBcGkiIkFQSSB0byBzZXQgYW5kIHF1ZXJ5IHRoZSBCYXNpYyBpbmZvcm1hdGlvbiBhcyB3ZWxsIGFzIGNvbXBvc2luZyBjb252ZXJzYXRpb24gc25pcHBldHMgdG8gYmUgdXRpbGl6ZWQgaW4gbmV3IGNoYXRzIHdoaWNoIHVzZSB0aGlzIgogICAgICAgICAgICAgICAgZGIgPSBjb21wb25lbnQgIkN1c3RvbUdwdERCIiAiU3RvcmVzIHRoZSBiYXNpYyBpbmZvcm1hdGlvbiBvZiB0aGUgQ3VzdG9tR1BUcyJ7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU1FMaXRlIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIHJhZ1NlcnZpY2UgPSBjb250YWluZXIgIlJhZ1NlcnZpY2UiICJSZXRyZWl2ZSBmaXR0aW5nIGRvY3VtZW50IGNodW5rcyBhbmQgcHJvdmlkZSBhbiBhcGkgdG8gYWRkIG9yIHVwZGF0ZSBkYXRhInsKICAgICAgICAgICAgICAgIGFwaSA9IGNvbXBvbmVudCAiUmFnU2VydmljZUFQSSIgIkFQSSBmb3IgcHJvY2Vzc2luZyZzdG9yaW5nIHJhdyBkYXRhIGluIGEgdmVjdG9yIGRhdGFiYXNlIGFuZCByZXRyZWl2aW5nIHJlbGV2YW50IGNodW5rcyBhbmQgcmF3IGRhdGEiCiAgICAgICAgICAgICAgICB2ZWN0b3JEQiA9IGNvbXBvbmVudCAidmVjdG9yREIiewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlFkcmFudCIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIG1ldGFkYXRhREIgPSBjb21wb25lbnQgIk1ldGFkYXRhREIiewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlNRTGl0ZSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGJhY2tncm91bmRUYXNrID0gY29tcG9uZW50ICJCYWNrZ3JvdW5kIFRhc2siICJRdWV1ZSB0YXNrcyB0byBjb250aW51ZSBkaXJlY3RseSBhZnRlciByZXNwb25kaW5nIgogICAgICAgICAgICAgICAgbG9jYWxGUyA9IGNvbXBvbmVudCAiTG9jYWwgRmlsZSBTeXN0ZW0iICJVc2VkIHRvIHN0b3JlIG5vbi1wcm9jZXNzZWQgYW5kIHByZS1wcm9jZXNzZXMgIHdob2xlIGRvY3VtZW50cyIKICAgICAgICAgICAgICAgIGdpdGh1YkRhdGFTZXJ2aWNlID0gY29tcG9uZW50ICJnaXRodWJEYXRhU2VydmljZSIgIkxpc3RlbnMgZm9yIG5vdGlmaWNhdGlvbiB1cGRhdGVzIGZyb20gZ2l0aHViIGFuZCB1cGRhdGVzIHRoZSBjb3JyZXNwb25kaW5nIGRhdGEgaW4gdGhlIHZlY3RvckRCIgogICAgICAgICAgICB9CgogICAgICAgICAgICAhZG9jcyBkb2NzCiAgICAgICAgICAgICFhZHJzIGFkcnMKICAgICAgICAgICAgCiAgICAgICAgfQogICAgICAgIG9wZW5haWFwaSA9IHNvZnR3YXJlU3lzdGVtICJPcGVuQUlBcGkiICJQYXNzIGNvbnZlcnNhdGlvbiBhbmQgUmV0cmVpdmUgYXNzaXN0YW50IG1lc3NhZ2VzIG9mIE9wZW5BSSBMTE1zIiAiRXh0ZXJuYWwgU3lzdGVtIiAKICAgICAgICBnaXRodWIgPSBzb2Z0d2FyZVN5c3RlbSAiZ2l0aHViIiAiU2VuZHMgYSBQb3N0IG1lc3NhZ2UgdG8gYWxsIHN1YnNjcmliZXJzIHdoZW5ldmVyIGEgbmV3IGNvbW1pdCB3YXMgbWFkZSIgIkV4dGVybmFsIFN5c3RlbSIgewogICAgICAgICAgICB3ZWJob29rID0gY29udGFpbmVyICJnaXRodWJXZWJob29rIiAiTGlzdGVucyBmb3IgbmV3IGNvbW1pdHMgYW5kIHNlbmRzIFBvc3QgY2FsbCB0byBzcGVjaWZpYyB1cmwiCiAgICAgICAgICAgIGFwaSA9IGNvbnRhaW5lciAiR2l0aHViQVBJIiAiUHJvdmlkZXMgYXBpIGZvciBpbnRlcmFjdGluZyB3aXRoIGdpdGh1YiByZXBvcywgZS5nLiByZXRyZWl2aW5nIGRhdGEiCiAgICAgICAgfQoKICAgICAgICB1IC0+IHNzLnJlYWN0ICJDaGF0cyB3aXRoIExMTSwgdXBsb2FkcyBkYXRhIGFuZCBjcmVhdGVzIG9yIHVzZXMgQ3VzdG9tR1BUcyB1c2luZyIgIlJlc3RBUEkiCiAgICAgICAgc3MucmVhY3QgLT4gc3MuZ2F0ZXdheSAiR2V0cyBjb252ZXJzYXRpb25zLCBhc3Npc3RhbnRlcnNwb25zZXMgYW5kIGRhdGEgZnJvbSBhbmQgc2VuZCB1c2VyIG1lc3NhZ2VzIGFuZCBkYXRhIHRvIgogICAgICAgIHNzLmdhdGV3YXkgLT4gc3MuY2hhdHNlcnZpY2UuYXBpICJHZXRzIG9yIGNyZWF0ZXMgY29udmVyc2F0aW9ucyB3aXRoIExMTXMsIG9wdGlvbmFsbHkgdXRpbGl6aW5nIFJBRyBhbmQgQ3VzdG9tR1BUIGRhdGEsIHV0aWxpemluZyB0aGUiICJSRVNUQXBpIgogICAgICAgIHNzLmNoYXRzZXJ2aWNlLmFwaSAtPiBzcy5jaGF0c2VydmljZS5kYiAiU3RvcmVzIGFuZCByZXRyZWl2ZXMgQ29udmVyc2F0aW9ucyAtaW5jbHVkaW5nIG1ldGFkYXRhLSB0byBhbmQgZnJvbSIgIlNRTE1vZGVsIgogICAgICAgIHNzLmNoYXRzZXJ2aWNlLmFwaSAtPiBzcy5jdXN0b21ncHRTZXJ2aWNlLmFwaSAiUmV0cmVpdmUgaW5mcm9tYXRpb24gYWJvdXQgQ3VzdG9tR1BUcyBmcm9tIiAiUkVTVEFwaSIKICAgICAgICBzcy5jaGF0c2VydmljZS5hcGkgLT4gc3MucmFnU2VydmljZS5hcGkgIlNlbmRzIHRleHQtc25pcGV0IGFuZCBnZXRzIHJlbGV2YW50IGRvY3VtZW50IGNodW5rcyBhbmQgdGhlaXIgbWV0YWRhdGEgZnJvbSIKICAgICAgICBzcy5jaGF0c2VydmljZS5hcGkgLT4gb3BlbmFpYXBpICJTZW5kcyBjb252ZXJzYXRpb24gKHNuaXBwZXRzKSB0byBnZXQgYXNzaXN0YW50IG1lc3NhZ2VzIGFzIGFuc3dlcnMgZnJvbSIgIlJFU1RBcGkiCiAgICAgICAgCiAgICAgICAgCiAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5jdXN0b21ncHRTZXJ2aWNlLmFwaSAiR2V0cyBvciBjcmVhdGVzIEN1c3RvbUdQVHMgdXRpbGl6aW5nIgogICAgICAgIHNzLmN1c3RvbWdwdFNlcnZpY2UuYXBpIC0+IHNzLmN1c3RvbWdwdFNlcnZpY2UuZGIgIlN0b3JlcyBhbmQgcmV0cmVpdmVzIEN1c3RvbUdQVCBpbmZvcm1hdGlvbiAtaW5jbHVkaW5nIG1ldGFkYXRhLSB0byBhbmQgZnJvbSIgIlNRTE1vZGVsIgoKICAgICAgICBzcy5nYXRld2F5IC0+IHNzLnJhZ1NlcnZpY2UuYXBpICJTZW5kcyBkb2N1bWVudHMgdG8gcHJvY2VzcyBhbmQgZW1iZWRkIGFuZCByZXRyZWl2ZXMgcmVsZXZhbnQgZG9jdW1lbnQgY2h1bmtzIHRvIGEgZ2l2ZW4gdGV4dCBmcm9tIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAic3RvcmUgdW5wcm9jZXNzZWQgYW5kIHByb2Nlc3NlZCB3aG9sZSBkb2N1bWVudHMgb24iCiAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MucmFnU2VydmljZS5iYWNrZ3JvdW5kVGFzayAicXVlcnkgcHJvY2Vzc2luZyB0YXNrcyIKICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBvcGVuYWlhcGkgImNyZWF0ZSBlbWJlZGRpbmdzIGZvciBjaHVua3Mgb2YgZG9jdW1lbnRzIHV0aWxpemluZyIKICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLnZlY3RvckRCICJzdG9yZSBhbmQgcmV0cmVpdmUgKHNpbWlsYXIpIGRvY3VtZW50IGNodW5rcyBlbWJlZGRpbmdzIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubWV0YWRhdGFEQiAic3RvcmUgbWV0YWRhdGEgaW5mb3JtYXRpb24gYWJvdXQgZG9jdW1lbnRzIHN0b3JlZCBpbiB0aGUgVmVjdG9yREIiCgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLmdhdGV3YXkgIlNlbmRzIG1lc3NhZ2VzIHdoZW4gdGhlIHByb2Nlc3Npbmcgc3RhdHVzIG9mIHVwbG9hZGVkIGRvY3VtZW50cyBoYXMgY2hhbmdlZCIgIlJFU1RBcGkiCiAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5yZWFjdCAiU2VuZHMgbWVzc2FnZXMgd2hlbiB0aGUgcHJvY2Vzc2luZyBzdGF0dXMgb2YgdXBsb2FkZWQgZG9jdW1lbnRzIGhhcyBjaGFuZ2VkIHRvIiAiV1NNZXNzYWdlIgogICAgICAgIAogICAgICAgIGdpdGh1Yi53ZWJob29rIC0+IHNzLnJhZ1NlcnZpY2UuZ2l0aHViRGF0YVNlcnZpY2UgIk5vdGlmaWVzIGFib3V0IG5ldyBjb21taXRzIiAiUE9TVCBDYWxsIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuZ2l0aHViRGF0YVNlcnZpY2UgLT4gZ2l0aHViLmFwaSAicmV0cmVpdmVzIHJlcG9zaXRvcnkgY29udGVudCBmcm9tIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuZ2l0aHViRGF0YVNlcnZpY2UgLT4gc3MucmFnU2VydmljZS5hcGkgInVwZGF0ZXMgb3V0ZGF0ZSBnaXRodWIgcmVwbyBkYXRhIGluIgogICAgICAgIAogICAgICAgIAoKCgogICAgICAgIAogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IHNzICJTeXN0ZW1Db250ZXgiewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KICAgICAgICBjb250YWluZXIgc3MgIkNvbnRhaW5lclZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KICAgICAgICBjb21wb25lbnQgc3MuY2hhdHNlcnZpY2UgImNoYXRzZXJ2aWNlVmlldyJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSIKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgY29tcG9uZW50IHNzLnJhZ1NlcnZpY2UgInJhZ1NlcnZpY2VWaWV3InsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgc3MuY3VzdG9tR1BUU2VydmljZSAiY3VzdG9tR1BUU2VydmljZVZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0gLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0iCiAgICAgICAgICAgIC8vIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MucmFnU2VydmljZSB7CiAgICAgICAgICAgIHRpdGxlICJ1cGxvYWQgZG9jdW1lbnQgYW5kIHN0YXJ0IHByb2Nlc3NpbmciIAogICAgICAgICAgICB1IC0+IHNzLnJlYWN0ICJVcGxvYWRzIGRvY3VtZW50IHRvIgogICAgICAgICAgICBzcy5yZWFjdCAtPiBzcy5nYXRld2F5ICJzZW5kcyBkb2N1bWVudCBmaWxlIHZpYSBQb3N0IGNhbGwgdG8iCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MucmFnU2VydmljZS5hcGkgInNlbmQgZG9jdW1lbnQgdG8iCiAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAic3RvcmUgb3JpZ2luYWwgZG9jdW1lbnQgaW4iCiAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubWV0YWRhdGFEQiAiYWRkcyBkb2N1bWVudCBpbmZvbWF0aW9uIHRvIGFuZCBzZXQgc3RhdHVzIHRvIHVwbG9hZGVkIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLmJhY2tncm91bmRUYXNrICJxdWVyeSBwcm9jZXNzaW5nIGJhY2tncm91bmQgdGFzayIKICAgICAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MuZ2F0ZXdheSAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgdXBsb2FkIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5yZWFjdCAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgdXBsb2FkIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MucmFnU2VydmljZSB7CiAgICAgICAgICAgIHRpdGxlICJ1cGxvYWRlZCBkb2N1bWVudCBmaW5pc2hlZCBwcm9jZXNzaW5nIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmJhY2tncm91bmRUYXNrIC0+IHNzLnJhZ1NlcnZpY2UuYXBpICJ0cmlnZ2VyIHByZXByb2Nlc3Npbmcgb2YgdGhlIGRvY3VtZW50IgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLmxvY2FsRlMgInNhdmUgcHJlcHJvY2Vzc2VkICh3aG9sZSkgZG9jdW1lbnQiCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubWV0YWRhdGFEQiAidXBkYXRlIG1ldGFkYXRhIGluZm9ybWF0aW9uIHRvIG5vdGUgcHJlcHJvY2Vzc2VkIGRvY3VtZW50IgogICAgICAgICAgICB9CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IG9wZW5haWFwaSAiY3JlYXRlIGVtYmVkZGluZ3MgZm9yIGNyZWF0ZWQgZG9jdW1lbnQgY2h1bmtzIHV0aWxpemluZyIKICAgICAgICAgICAgfQogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLnZlY3RvckRCICJzdG9yZSBlbWJlZGRpbmdzIGluIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLm1ldGFkYXRhREIgInNldHMgZG9jdW1lbnQgc3RhdHVzIHRvIGF2YWlsYWJsZSBhbmQgdXBkYXRlcyBvdGhlciBtZXRhZGF0YSBpbmZvcm1hdGlvbiIKICAgICAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MuZ2F0ZXdheSAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgcHJvY2Nlc2luZyBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MucmVhY3QgInNlbmQgbm90aWZpY2F0aW9uIGFib3V0IGF2YWlsYWJpbGl0eSBvZiB0aGUgZG9jdW1lbnQgdG8gc3Vic2NyaWJlZCIgIldTTWVzc2FnZSIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MgewogICAgICAgICAgICB0aXRsZSAiY2xpZW50IHN1YnNjaWJlcyB0byB3ZWJzb2NrZXRNc2ciCiAgICAgICAgICAgIHNzLnJlYWN0IC0+IHNzLmdhdGV3YXkgInN1YnNjcmliZXMgdG8gd2Vic29ja2V0bWVzc2FnZXMiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIHNzLmN1c3RvbWdwdFNlcnZpY2UgewogICAgICAgICAgICB0aXRsZSAiY3JlYXRlIG9yIGVkaXQgY3VzdG9tIGdwdCIKICAgICAgICAgICAgc3MucmVhY3QgLT4gc3MuZ2F0ZXdheSAic2VuZCBjdXN0b21ncHQgZm9ybSBkYXRhIHRvIgogICAgICAgICAgICBzcy5nYXRld2F5IC0+IHNzLmN1c3RvbUdQVFNlcnZpY2UuYXBpICJmb3J3YWQgcG9zdCBjYWxsIHRvIgogICAgICAgICAgICBzcy5jdXN0b21HUFRTZXJ2aWNlLmFwaSAtPiBzcy5jdXN0b21HUFRTZXJ2aWNlLmRiICJzYXZlIGRhdGEgYW5kIG1ldGFkYXRhIGluIgogICAgICAgICAgICBzcy5jdXN0b21HUFRTZXJ2aWNlLmFwaSAtPiAgc3MuZ2F0ZXdheSAic3VjY2VzcyByZXNwb25zZSIKICAgICAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5yZWFjdCAic3VjY2VzcyByZXNwb25zZSIKICAgICAgICB9CgoKICAgICAgICBzdHlsZXMgewogICAgICAgICAgICBlbGVtZW50ICJQZXJzb24iIHsKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgICAgIGZvbnRTaXplIDIyCiAgICAgICAgICAgICAgICBzaGFwZSBQZXJzb24KICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJTb2Z0d2FyZSBTeXN0ZW0iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzExNjhiZAogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkV4dGVybmFsIFN5c3RlbSIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjOTk5OTk5CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29udGFpbmVyIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM0MzhkZDUKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJXZWIgQnJvd3NlciIgewogICAgICAgICAgICAgICAgc2hhcGUgV2ViQnJvd3NlcgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkRhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBDeWxpbmRlcgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkNvbXBvbmVudCIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjODViYmYwCiAgICAgICAgICAgICAgICBjb2xvciAjMDAwMDAwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRmFpbG92ZXIiIHsKICAgICAgICAgICAgICAgIG9wYWNpdHkgMjUKICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KfQ=="
+    "structurizr.dsl" : "d29ya3NwYWNlICJDdXN0b21HUFQiICJVc2UgQ2hhdGdwdCBhcGkgd2l0aCBvd24gY3VzdG9tR1BUIGltcGxlbWVudGF0aW9uInsKICAgIC8vIHRoaXMgZW5hYmxlcyB1cyB0byB3cml0ZSBzcy5jb250YWluZXJuYW1lIGluc3RlYWQgb2YganVzdCBjb250YWluZXJuYW1lIC0KICAgICFpZGVudGlmaWVycyBoaWVyYXJjaGljYWwgCgoKICAgIG1vZGVsIHsKICAgICAgICB1ID0gcGVyc29uICJVc2VyIiAiQSB1c2VyIG9mIHRoZSBzeXN0ZW0gd2FudGluZyB0byBwcm9maXQgZnJvbSBjdXN0b21pemVkIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkiICJQZXJzb24iCiAgICAgICAgc3MgPSBzb2Z0d2FyZVN5c3RlbSAiT3BlbnNvdXJjZSBDdXN0b21HUFQgYnVpbGRlciJ7CiAgICAgICAgICAgIHJlYWN0ID0gY29udGFpbmVyICJGcm9udGVuZCIgIkEgd2ViIGFwcCBmb3IgY2hhdCB3aXRoIGN1c3RvbSBncHRzIGFuZCB5b3VyIGRhdGEiICJSZWFjdCArIFRTIiAiV2ViIEJyb3dzZXIiCiAgICAgICAgICAgIGdhdGV3YXkgPSBjb250YWluZXIgIkdhdGV3YXkiICJUaGlzIGdhdGV3YXkgcm91dGVzIHJlcXVlc3RzIHRvIHRoZSBjb3JyZWN0IG1pY3Jvc2VydmljZSIgIkZhc3RhcGkiCiAgICAgICAgICAgIGNoYXRzZXJ2aWNlID0gY29udGFpbmVyICJDaGF0U2VydmljZSIgIlByb3ZpZGVzIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkgYW5kIGNvbXBvc2VzIGxsbSBwcm9tcHRzIGZyb20gcmF3IGRhdGEgLXVzZXJpbnB1dCwgY3VzdG9tZ3B0LCByYWciewogICAgICAgICAgICAgICAgYXBpID0gY29tcG9uZW50ICJDaGF0c2VydmljZUFwaSIgIkFQSSBmb3IgY2hhdHRpbmcgd2l0aCBMTE1zIHV0aWxpemluZyBBZGRpdGlvbmFsIGRhdGEgZnJvbSBvdGhlciBzZXJ2aWNlcyIKICAgICAgICAgICAgICAgIGRiID0gY29tcG9uZW50ICJDb252ZXJzYXRpb25EQiIgIlN0b3JlcyB0aGUgY29udmVyc2F0aW9uIGhpc3RvcmllcyBhbmQgbWV0YWRhdGEgb2YgdGhlIGNvbnZlcnNhdGlvbiJ7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU1FMaXRlIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIGN1c3RvbWdwdFNlcnZpY2UgPSBjb250YWluZXIgIkN1c3RvbUdQVFNlcnZpY2UiICJTdG9yZXMgYW5kIFNlcnZlcyBiYXNpYyBDdXN0b21HUFQgaW5mb3JtYXRpb24iewogICAgICAgICAgICAgICAgYXBpID0gY29tcG9uZW50ICJDdXN0b21HcHRBcGkiIkFQSSB0byBzZXQgYW5kIHF1ZXJ5IHRoZSBCYXNpYyBpbmZvcm1hdGlvbiBhcyB3ZWxsIGFzIGNvbXBvc2luZyBjb252ZXJzYXRpb24gc25pcHBldHMgdG8gYmUgdXRpbGl6ZWQgaW4gbmV3IGNoYXRzIHdoaWNoIHVzZSB0aGlzIgogICAgICAgICAgICAgICAgZGIgPSBjb21wb25lbnQgIkN1c3RvbUdwdERCIiAiU3RvcmVzIHRoZSBiYXNpYyBpbmZvcm1hdGlvbiBvZiB0aGUgQ3VzdG9tR1BUcyJ7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU1FMaXRlIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIHJhZ1NlcnZpY2UgPSBjb250YWluZXIgIlJhZ1NlcnZpY2UiICJSZXRyZWl2ZSBmaXR0aW5nIGRvY3VtZW50IGNodW5rcyBhbmQgcHJvdmlkZSBhbiBhcGkgdG8gYWRkIG9yIHVwZGF0ZSBkYXRhInsKICAgICAgICAgICAgICAgIGFwaSA9IGNvbXBvbmVudCAiUmFnU2VydmljZUFQSSIgIkFQSSBmb3IgcHJvY2Vzc2luZyZzdG9yaW5nIHJhdyBkYXRhIGluIGEgdmVjdG9yIGRhdGFiYXNlIGFuZCByZXRyZWl2aW5nIHJlbGV2YW50IGNodW5rcyBhbmQgcmF3IGRhdGEiCiAgICAgICAgICAgICAgICB2ZWN0b3JEQiA9IGNvbXBvbmVudCAidmVjdG9yREIiewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlFkcmFudCIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIG1ldGFkYXRhREIgPSBjb21wb25lbnQgIk1ldGFkYXRhREIiewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlNRTGl0ZSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGJhY2tncm91bmRUYXNrID0gY29tcG9uZW50ICJCYWNrZ3JvdW5kIFRhc2siICJRdWV1ZSB0YXNrcyB0byBjb250aW51ZSBkaXJlY3RseSBhZnRlciByZXNwb25kaW5nIgogICAgICAgICAgICAgICAgbG9jYWxGUyA9IGNvbXBvbmVudCAiTG9jYWwgRmlsZSBTeXN0ZW0iICJVc2VkIHRvIHN0b3JlIG5vbi1wcm9jZXNzZWQgYW5kIHByZS1wcm9jZXNzZXMgIHdob2xlIGRvY3VtZW50cyIKICAgICAgICAgICAgICAgIGdpdGh1YkRhdGFTZXJ2aWNlID0gY29tcG9uZW50ICJnaXRodWJEYXRhU2VydmljZSIgIkxpc3RlbnMgZm9yIG5vdGlmaWNhdGlvbiB1cGRhdGVzIGZyb20gZ2l0aHViIGFuZCB1cGRhdGVzIHRoZSBjb3JyZXNwb25kaW5nIGRhdGEgaW4gdGhlIHZlY3RvckRCIgogICAgICAgICAgICB9CgogICAgICAgICAgICAhZG9jcyBkb2NzCiAgICAgICAgICAgICFhZHJzIGFkcnMKICAgICAgICAgICAgCiAgICAgICAgfQogICAgICAgIG9wZW5haWFwaSA9IHNvZnR3YXJlU3lzdGVtICJPcGVuQUlBcGkiICJQYXNzIGNvbnZlcnNhdGlvbiBhbmQgUmV0cmVpdmUgYXNzaXN0YW50IG1lc3NhZ2VzIG9mIE9wZW5BSSBMTE1zIiAiRXh0ZXJuYWwgU3lzdGVtIiAKICAgICAgICBnaXRodWIgPSBzb2Z0d2FyZVN5c3RlbSAiZ2l0aHViIiAiU2VuZHMgYSBQb3N0IG1lc3NhZ2UgdG8gYWxsIHN1YnNjcmliZXJzIHdoZW5ldmVyIGEgbmV3IGNvbW1pdCB3YXMgbWFkZSIgIkV4dGVybmFsIFN5c3RlbSIgewogICAgICAgICAgICB3ZWJob29rID0gY29udGFpbmVyICJnaXRodWJXZWJob29rIiAiTGlzdGVucyBmb3IgbmV3IGNvbW1pdHMgYW5kIHNlbmRzIFBvc3QgY2FsbCB0byBzcGVjaWZpYyB1cmwiCiAgICAgICAgICAgIGFwaSA9IGNvbnRhaW5lciAiR2l0aHViQVBJIiAiUHJvdmlkZXMgYXBpIGZvciBpbnRlcmFjdGluZyB3aXRoIGdpdGh1YiByZXBvcywgZS5nLiByZXRyZWl2aW5nIGRhdGEiCiAgICAgICAgfQoKICAgICAgICB1IC0+IHNzLnJlYWN0ICJDaGF0cyB3aXRoIExMTSwgdXBsb2FkcyBkYXRhIGFuZCBjcmVhdGVzIG9yIHVzZXMgQ3VzdG9tR1BUcyB1c2luZyIgIlJlc3RBUEkiCiAgICAgICAgc3MucmVhY3QgLT4gc3MuZ2F0ZXdheSAiR2V0cyBjb252ZXJzYXRpb25zLCBhc3Npc3RhbnRlcnNwb25zZXMgYW5kIGRhdGEgZnJvbSBhbmQgc2VuZCB1c2VyIG1lc3NhZ2VzIGFuZCBkYXRhIHRvIgogICAgICAgIHNzLmdhdGV3YXkgLT4gc3MuY2hhdHNlcnZpY2UuYXBpICJHZXRzIG9yIGNyZWF0ZXMgY29udmVyc2F0aW9ucyB3aXRoIExMTXMsIG9wdGlvbmFsbHkgdXRpbGl6aW5nIFJBRyBhbmQgQ3VzdG9tR1BUIGRhdGEsIHV0aWxpemluZyB0aGUiICJSRVNUQXBpIgogICAgICAgIHNzLmNoYXRzZXJ2aWNlLmFwaSAtPiBzcy5jaGF0c2VydmljZS5kYiAiU3RvcmVzIGFuZCByZXRyZWl2ZXMgQ29udmVyc2F0aW9ucyAtaW5jbHVkaW5nIG1ldGFkYXRhLSB0byBhbmQgZnJvbSIgIlNRTE1vZGVsIgogICAgICAgIHNzLmNoYXRzZXJ2aWNlLmFwaSAtPiBzcy5jdXN0b21ncHRTZXJ2aWNlLmFwaSAiUmV0cmVpdmUgaW5mcm9tYXRpb24gYWJvdXQgQ3VzdG9tR1BUcyBmcm9tIiAiUkVTVEFwaSIKICAgICAgICBzcy5jaGF0c2VydmljZS5hcGkgLT4gc3MucmFnU2VydmljZS5hcGkgIlNlbmRzIHRleHQtc25pcGV0IGFuZCBnZXRzIHJlbGV2YW50IGRvY3VtZW50IGNodW5rcyBhbmQgdGhlaXIgbWV0YWRhdGEgZnJvbSIKICAgICAgICBzcy5jaGF0c2VydmljZS5hcGkgLT4gb3BlbmFpYXBpICJTZW5kcyBjb252ZXJzYXRpb24gKHNuaXBwZXRzKSB0byBnZXQgYXNzaXN0YW50IG1lc3NhZ2VzIGFzIGFuc3dlcnMgZnJvbSIgIlJFU1RBcGkiCiAgICAgICAgCiAgICAgICAgCiAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5jdXN0b21ncHRTZXJ2aWNlLmFwaSAiR2V0cyBvciBjcmVhdGVzIEN1c3RvbUdQVHMgdXRpbGl6aW5nIgogICAgICAgIHNzLmN1c3RvbWdwdFNlcnZpY2UuYXBpIC0+IHNzLmN1c3RvbWdwdFNlcnZpY2UuZGIgIlN0b3JlcyBhbmQgcmV0cmVpdmVzIEN1c3RvbUdQVCBpbmZvcm1hdGlvbiAtaW5jbHVkaW5nIG1ldGFkYXRhLSB0byBhbmQgZnJvbSIgIlNRTE1vZGVsIgoKICAgICAgICBzcy5nYXRld2F5IC0+IHNzLnJhZ1NlcnZpY2UuYXBpICJTZW5kcyBkb2N1bWVudHMgdG8gcHJvY2VzcyBhbmQgZW1iZWRkIGFuZCByZXRyZWl2ZXMgcmVsZXZhbnQgZG9jdW1lbnQgY2h1bmtzIHRvIGEgZ2l2ZW4gdGV4dCBmcm9tIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAic3RvcmUgdW5wcm9jZXNzZWQgYW5kIHByb2Nlc3NlZCB3aG9sZSBkb2N1bWVudHMgb24iCiAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MucmFnU2VydmljZS5iYWNrZ3JvdW5kVGFzayAicXVlcnkgcHJvY2Vzc2luZyB0YXNrcyIKICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBvcGVuYWlhcGkgImNyZWF0ZSBlbWJlZGRpbmdzIGZvciBjaHVua3Mgb2YgZG9jdW1lbnRzIHV0aWxpemluZyIKICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLnZlY3RvckRCICJzdG9yZSBhbmQgcmV0cmVpdmUgKHNpbWlsYXIpIGRvY3VtZW50IGNodW5rcyBlbWJlZGRpbmdzIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubWV0YWRhdGFEQiAic3RvcmUgbWV0YWRhdGEgaW5mb3JtYXRpb24gYWJvdXQgZG9jdW1lbnRzIHN0b3JlZCBpbiB0aGUgVmVjdG9yREIiCgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLmdhdGV3YXkgIlNlbmRzIG1lc3NhZ2VzIHdoZW4gdGhlIHByb2Nlc3Npbmcgc3RhdHVzIG9mIHVwbG9hZGVkIGRvY3VtZW50cyBoYXMgY2hhbmdlZCIgIlJFU1RBcGkiCiAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5yZWFjdCAiU2VuZHMgbWVzc2FnZXMgd2hlbiB0aGUgcHJvY2Vzc2luZyBzdGF0dXMgb2YgdXBsb2FkZWQgZG9jdW1lbnRzIGhhcyBjaGFuZ2VkIHRvIiAiV1NNZXNzYWdlIgogICAgICAgIAogICAgICAgIGdpdGh1Yi53ZWJob29rIC0+IHNzLnJhZ1NlcnZpY2UuZ2l0aHViRGF0YVNlcnZpY2UgIk5vdGlmaWVzIGFib3V0IG5ldyBjb21taXRzIiAiUE9TVCBDYWxsIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuZ2l0aHViRGF0YVNlcnZpY2UgLT4gZ2l0aHViLmFwaSAicmV0cmVpdmVzIHJlcG9zaXRvcnkgY29udGVudCBmcm9tIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuZ2l0aHViRGF0YVNlcnZpY2UgLT4gc3MucmFnU2VydmljZS5hcGkgInVwZGF0ZXMgb3V0ZGF0ZSBnaXRodWIgcmVwbyBkYXRhIGluIgogICAgICAgIAogICAgICAgIAoKCgogICAgICAgIAogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IHNzICJTeXN0ZW1Db250ZXgiewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KICAgICAgICBjb250YWluZXIgc3MgIkNvbnRhaW5lclZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KICAgICAgICBjb21wb25lbnQgc3MuY2hhdHNlcnZpY2UgImNoYXRTZXJ2aWNlVmlldyJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSIKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgY29tcG9uZW50IHNzLnJhZ1NlcnZpY2UgInJhZ1NlcnZpY2VWaWV3InsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgc3MuY3VzdG9tR1BUU2VydmljZSAiY3VzdG9tR1BUU2VydmljZVZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0gLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0iCiAgICAgICAgICAgIC8vIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MgIndzTWVzc2FnZSJ7CiAgICAgICAgICAgIHRpdGxlICJjbGllbnQgc3Vic2NpYmVzIHRvIHdlYnNvY2tldE1zZyIKICAgICAgICAgICAgc3MucmVhY3QgLT4gc3MuZ2F0ZXdheSAic3Vic2NyaWJlcyB0byB3ZWJzb2NrZXRtZXNzYWdlcyIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MucmFnU2VydmljZSAidXBsb2FkRG9jdW1lbnQiewogICAgICAgICAgICB0aXRsZSAidXBsb2FkIGRvY3VtZW50IGFuZCBzdGFydCBwcm9jZXNzaW5nIiAKICAgICAgICAgICAgdSAtPiBzcy5yZWFjdCAiVXBsb2FkcyBkb2N1bWVudCB0byIKICAgICAgICAgICAgc3MucmVhY3QgLT4gc3MuZ2F0ZXdheSAic2VuZHMgZG9jdW1lbnQgZmlsZSB2aWEgUG9zdCBjYWxsIHRvIgogICAgICAgICAgICBzcy5nYXRld2F5IC0+IHNzLnJhZ1NlcnZpY2UuYXBpICJzZW5kIGRvY3VtZW50IHRvIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLmxvY2FsRlMgInN0b3JlIG9yaWdpbmFsIGRvY3VtZW50IGluIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLm1ldGFkYXRhREIgImFkZHMgZG9jdW1lbnQgaW5mb21hdGlvbiB0byBhbmQgc2V0IHN0YXR1cyB0byB1cGxvYWRlZCIKICAgICAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MucmFnU2VydmljZS5iYWNrZ3JvdW5kVGFzayAicXVldWUgcHJvY2Vzc2luZyBiYWNrZ3JvdW5kIHRhc2siCiAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLmdhdGV3YXkgIm5vdGlmaWVzIGFib3V0IHRoZSBzdWNjZXNzZnVsIHVwbG9hZCBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MucmVhY3QgIm5vdGlmaWVzIGFib3V0IHRoZSBzdWNjZXNzZnVsIHVwbG9hZCBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIHNzLnJhZ1NlcnZpY2UgInByb2Nlc3NEb2N1bWVudCJ7CiAgICAgICAgICAgIHRpdGxlICJ1cGxvYWRlZCBkb2N1bWVudCBmaW5pc2hlZCBwcm9jZXNzaW5nIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmJhY2tncm91bmRUYXNrIC0+IHNzLnJhZ1NlcnZpY2UuYXBpICJ0cmlnZ2VyIHByZXByb2Nlc3Npbmcgb2YgdGhlIGRvY3VtZW50IgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLmxvY2FsRlMgInNhdmUgcHJlcHJvY2Vzc2VkICh3aG9sZSkgZG9jdW1lbnQiCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubWV0YWRhdGFEQiAidXBkYXRlIG1ldGFkYXRhIGluZm9ybWF0aW9uIHRvIG5vdGUgcHJlcHJvY2Vzc2VkIGRvY3VtZW50IgogICAgICAgICAgICB9CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IG9wZW5haWFwaSAiY3JlYXRlIGVtYmVkZGluZ3MgZm9yIGNyZWF0ZWQgZG9jdW1lbnQgY2h1bmtzIHV0aWxpemluZyIKICAgICAgICAgICAgfQogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLnZlY3RvckRCICJzdG9yZSBlbWJlZGRpbmdzIGluIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLm1ldGFkYXRhREIgInNldHMgZG9jdW1lbnQgc3RhdHVzIHRvIGF2YWlsYWJsZSBhbmQgdXBkYXRlcyBvdGhlciBtZXRhZGF0YSBpbmZvcm1hdGlvbiIKICAgICAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MuZ2F0ZXdheSAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgcHJvY2Nlc2luZyBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MucmVhY3QgInNlbmQgbm90aWZpY2F0aW9uIGFib3V0IGF2YWlsYWJpbGl0eSBvZiB0aGUgZG9jdW1lbnQgdG8gc3Vic2NyaWJlZCIgIldTTWVzc2FnZSIKICAgICAgICB9CgogICAgICAgIAoKICAgICAgICBkeW5hbWljIHNzLmN1c3RvbWdwdFNlcnZpY2UgImN1c3RvbUdQVENyZWF0ZU9yRWRpdCJ7CiAgICAgICAgICAgIHRpdGxlICJjcmVhdGUgb3IgZWRpdCBjdXN0b20gZ3B0IgogICAgICAgICAgICBzcy5yZWFjdCAtPiBzcy5nYXRld2F5ICJzZW5kIGN1c3RvbWdwdCBmb3JtIGRhdGEgdG8iCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MuY3VzdG9tR1BUU2VydmljZS5hcGkgImZvcndhZCBwb3N0IGNhbGwgdG8iCiAgICAgICAgICAgIHNzLmN1c3RvbUdQVFNlcnZpY2UuYXBpIC0+IHNzLmN1c3RvbUdQVFNlcnZpY2UuZGIgInNhdmUgZGF0YSBhbmQgbWV0YWRhdGEgaW4iCiAgICAgICAgICAgIHNzLmN1c3RvbUdQVFNlcnZpY2UuYXBpIC0+ICBzcy5nYXRld2F5ICJzdWNjZXNzIHJlc3BvbnNlIgogICAgICAgICAgICBzcy5nYXRld2F5IC0+IHNzLnJlYWN0ICJzdWNjZXNzIHJlc3BvbnNlIgogICAgICAgIH0KCgogICAgICAgIHN0eWxlcyB7CiAgICAgICAgICAgIGVsZW1lbnQgIlBlcnNvbiIgewogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICAgICAgZm9udFNpemUgMjIKICAgICAgICAgICAgICAgIHNoYXBlIFBlcnNvbgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIlNvZnR3YXJlIFN5c3RlbSIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjMTE2OGJkCiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRXh0ZXJuYWwgU3lzdGVtIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM5OTk5OTkKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJDb250YWluZXIiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzQzOGRkNQogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIldlYiBCcm93c2VyIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBXZWJCcm93c2VyCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgIHNoYXBlIEN5bGluZGVyCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29tcG9uZW50IiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM4NWJiZjAKICAgICAgICAgICAgICAgIGNvbG9yICMwMDAwMDAKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJGYWlsb3ZlciIgewogICAgICAgICAgICAgICAgb3BhY2l0eSAyNQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQp9"
   },
   "views" : {
     "componentViews" : [ {
@@ -588,7 +640,7 @@
         "y" : 1080
       } ],
       "externalContainerBoundariesVisible" : false,
-      "key" : "chatserviceView",
+      "key" : "chatServiceView",
       "order" : 3,
       "paperSize" : "A5_Landscape",
       "relationships" : [ {
@@ -731,8 +783,7 @@
     } ],
     "configuration" : {
       "branding" : { },
-      "lastSavedView" : "Dynamic-004",
-      "metadataSymbols" : "SquareBrackets",
+      "lastSavedView" : "processDocument",
       "styles" : {
         "elements" : [ {
           "color" : "#ffffff",
@@ -868,6 +919,36 @@
     } ],
     "dynamicViews" : [ {
       "dimensions" : {
+        "height" : 1558,
+        "width" : 1108
+      },
+      "elementId" : "2",
+      "elements" : [ {
+        "id" : "3",
+        "x" : 329,
+        "y" : 329
+      }, {
+        "id" : "4",
+        "x" : 329,
+        "y" : 929
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "wsMessage",
+      "order" : 6,
+      "paperSize" : "A6_Portrait",
+      "relationships" : [ {
+        "description" : "subscribes to websocketmessages",
+        "id" : "24",
+        "order" : "1",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 550,
+          "y" : 762
+        } ]
+      } ],
+      "title" : "client subscibes to websocketMsg"
+    }, {
+      "dimensions" : {
         "height" : 2036,
         "width" : 2390
       },
@@ -902,9 +983,8 @@
         "y" : 1410
       } ],
       "externalBoundariesVisible" : false,
-      "generatedKey" : true,
-      "key" : "Dynamic-001",
-      "order" : 6,
+      "key" : "uploadDocument",
+      "order" : 7,
       "relationships" : [ {
         "description" : "Uploads document to",
         "id" : "22",
@@ -939,7 +1019,7 @@
         "order" : "5",
         "response" : false
       }, {
-        "description" : "query processing background task",
+        "description" : "queue processing background task",
         "id" : "45",
         "order" : "6",
         "response" : false
@@ -965,47 +1045,46 @@
       "title" : "upload document and start processing"
     }, {
       "dimensions" : {
-        "height" : 2011,
-        "width" : 2390
+        "height" : 2105,
+        "width" : 2699
       },
       "elementId" : "11",
       "elements" : [ {
         "id" : "3",
-        "x" : 1740,
-        "y" : 1385
+        "x" : 2050,
+        "y" : 1135
       }, {
         "id" : "4",
-        "x" : 1740,
-        "y" : 865
+        "x" : 2045,
+        "y" : 250
       }, {
         "id" : "12",
-        "x" : 944,
-        "y" : 865
+        "x" : 965,
+        "y" : 720
       }, {
         "id" : "13",
-        "x" : 210,
-        "y" : 1385
+        "x" : 425,
+        "y" : 1135
       }, {
         "id" : "14",
-        "x" : 944,
-        "y" : 1385
+        "x" : 1505,
+        "y" : 1140
       }, {
         "id" : "15",
-        "x" : 940,
-        "y" : 310
+        "x" : 217,
+        "y" : 250
       }, {
         "id" : "16",
-        "x" : 195,
-        "y" : 860
+        "x" : 219,
+        "y" : 716
       }, {
         "id" : "18",
-        "x" : 1740,
-        "y" : 295
+        "x" : 965,
+        "y" : 1570
       } ],
       "externalBoundariesVisible" : false,
-      "generatedKey" : true,
-      "key" : "Dynamic-002",
-      "order" : 7,
+      "key" : "processDocument",
+      "order" : 8,
       "relationships" : [ {
         "description" : "trigger preprocessing of the document",
         "id" : "45",
@@ -1015,11 +1094,7 @@
         "description" : "save preprocessed (whole) document",
         "id" : "44",
         "order" : "2",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 780,
-          "y" : 1020
-        } ]
+        "response" : false
       }, {
         "description" : "create embeddings for created document chunks utilizing",
         "id" : "46",
@@ -1029,15 +1104,19 @@
         "description" : "store embeddings in",
         "id" : "48",
         "order" : "3",
-        "response" : false
+        "response" : false,
+        "vertices" : [ {
+          "x" : 829,
+          "y" : 1091
+        } ]
       }, {
         "description" : "update metadata information to note preprocessed document",
         "id" : "49",
         "order" : "3",
         "response" : false,
         "vertices" : [ {
-          "x" : 1019,
-          "y" : 1275
+          "x" : 1385,
+          "y" : 1160
         } ]
       }, {
         "description" : "sets document status to available and updates other metadata information",
@@ -1045,8 +1124,8 @@
         "order" : "4",
         "response" : false,
         "vertices" : [ {
-          "x" : 1319,
-          "y" : 1275
+          "x" : 1625,
+          "y" : 870
         } ]
       }, {
         "description" : "notifies about the successful proccesing of the document",
@@ -1062,61 +1141,29 @@
       "title" : "uploaded document finished processing"
     }, {
       "dimensions" : {
-        "height" : 1558,
-        "width" : 1108
-      },
-      "elementId" : "2",
-      "elements" : [ {
-        "id" : "3",
-        "x" : 329,
-        "y" : 329
-      }, {
-        "id" : "4",
-        "x" : 329,
-        "y" : 929
-      } ],
-      "externalBoundariesVisible" : false,
-      "generatedKey" : true,
-      "key" : "Dynamic-003",
-      "order" : 8,
-      "paperSize" : "A6_Portrait",
-      "relationships" : [ {
-        "description" : "subscribes to websocketmessages",
-        "id" : "24",
-        "order" : "1",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 550,
-          "y" : 762
-        } ]
-      } ],
-      "title" : "client subscibes to websocketMsg"
-    }, {
-      "dimensions" : {
-        "height" : 1411,
-        "width" : 1654
+        "height" : 1410,
+        "width" : 1634
       },
       "elementId" : "8",
       "elements" : [ {
         "id" : "3",
-        "x" : 991,
-        "y" : 816
+        "x" : 971,
+        "y" : 785
       }, {
         "id" : "4",
-        "x" : 991,
-        "y" : 216
+        "x" : 971,
+        "y" : 185
       }, {
         "id" : "9",
-        "x" : 220,
+        "x" : 221,
         "y" : 185
       }, {
         "id" : "10",
         "x" : 220,
-        "y" : 785
+        "y" : 784
       } ],
       "externalBoundariesVisible" : false,
-      "generatedKey" : true,
-      "key" : "Dynamic-004",
+      "key" : "customGPTCreateOrEdit",
       "order" : 9,
       "relationships" : [ {
         "description" : "send customgpt form data to",
@@ -1124,8 +1171,8 @@
         "order" : "1",
         "response" : false,
         "vertices" : [ {
-          "x" : 1366,
-          "y" : 666
+          "x" : 1346,
+          "y" : 635
         } ]
       }, {
         "description" : "forwad post call to",
@@ -1133,8 +1180,8 @@
         "order" : "2",
         "response" : false,
         "vertices" : [ {
-          "x" : 856,
-          "y" : 276
+          "x" : 836,
+          "y" : 240
         } ]
       }, {
         "description" : "save data and metadata in",
@@ -1147,8 +1194,8 @@
         "order" : "4",
         "response" : true,
         "vertices" : [ {
-          "x" : 831,
-          "y" : 481
+          "x" : 806,
+          "y" : 385
         } ]
       }, {
         "description" : "success response",
@@ -1156,8 +1203,8 @@
         "order" : "5",
         "response" : false,
         "vertices" : [ {
-          "x" : 1066,
-          "y" : 666
+          "x" : 1046,
+          "y" : 635
         } ]
       } ],
       "title" : "create or edit custom gpt"
