@@ -120,7 +120,7 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             ss.gateway -> ss.ragService.api "send document to"
             ss.ragService.api -> ss.ragService.localFS "store original document in"
             ss.ragService.api -> ss.ragService.metadataDB "adds document infomation to and set status to uploaded"
-            ss.ragService.api -> ss.ragService.backgroundTask "query processing background task"
+            ss.ragService.api -> ss.ragService.backgroundTask "queue processing background task"
             ss.ragService.api -> ss.gateway "notifies about the successful upload of the document"
             ss.gateway -> ss.react "notifies about the successful upload of the document"
         }
