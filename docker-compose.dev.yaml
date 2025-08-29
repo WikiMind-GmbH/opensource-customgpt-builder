@@ -49,7 +49,7 @@ services:
     image: structurizr/lite:latest
     volumes:
       # your local workspace dir → where Lite expects to find workspace.dsl / workspace.json
-      - ./structurizr/data:/usr/local/structurizr
+      - ./structurizr:/usr/local/structurizr
     ports:
       - "8080:8080"
     environment:

@@ -1,4 +1,4 @@
-# 0004 RAG, CustomGPT serve raw data to Chatservice instead of conversationsnippets
+# RAG, CustomGPT serve raw data to Chatservice instead of conversationsnippets
 
 Date: 2025-08-04
 

@@ -1,4 +1,4 @@
-# 005 Seperating internal and external endpoints via nginx
+# Seperating internal and external endpoints via nginx
 
 Date: 2025-08-04
 

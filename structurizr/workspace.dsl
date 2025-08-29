@@ -41,7 +41,7 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             !adrs adrs
             
         }
-        openaiapi = softwareSystem "OpenAIApi" "Pass conversation and Retreive assistant messages of OpenAI LLMs" "External System" 
+        openaiapi = softwareSystem "OpenAIApi" "Pass conversation and Retreive assistant messages of OpenAI LLMs" "External System"
         github = softwareSystem "github" "Sends a Post message to all subscribers whenever a new commit was made" "External System" {
             webhook = container "githubWebhook" "Listens for new commits and sends Post call to specific url"
             api = container "GithubAPI" "Provides api for interacting with github repos, e.g. retreiving data"
@@ -135,10 +135,12 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             ss.ragService.backgroundTask -> ss.ragService.api "trigger preprocessing of the document"
             ss.ragService.api -> ss.ragService.localFS "save preprocessed (whole) document"
             {
-                ss.ragService.api -> ss.ragService.metadataDB "update metadata information to note preprocessed document"
-            }
-            {
-                ss.ragService.api -> openaiapi "create embeddings for created document chunks utilizing"
+                {
+                    ss.ragService.api -> ss.ragService.metadataDB "update metadata information to note preprocessed document"
+                }
+                {
+                    ss.ragService.api -> openaiapi "create embeddings for created document chunks utilizing"
+                }
             }
             ss.ragService.api -> ss.ragService.vectorDB "store embeddings in"
             ss.ragService.api -> ss.ragService.metadataDB "sets document status to available and updates other metadata information"

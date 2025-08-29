@@ -1,9 +1,9 @@
 ## Introduction and Goals
 
-This document describes the Opensource CustomGPT Builder Software system. It can be used to create your own CustomGPTs outside of the OpenAI Software System. 
-The goal of this system is to have a baseline product onto which we can build more customized solutions for clients. The aim is to have a product that has a use case for as many clients as possible. We hope that this makes for broader adaption and more follow-up costumized solutions then we get without having a more basic product.
-The goal this system achives for the users is the following:
-They want to use the capabilities of CustomGPTs without directly giving their data to OpenAI while still getting a very simimalar user experience.
+This document describes the Opensource CustomGPT Builder Software system. It can be used to create your own CustomGPTs outside of the OpenAI Software System.   
+The goal of this system is to have a baseline product onto which we can build more customized solutions for clients. The aim is to have a product that targets a broad audience. We hope that this makes for broader adaption of our products and lead to more follow-up projects.  
+The goal this system achives for the users is the following:   
+They want to use the capabilities of CustomGPTs without directly giving their data to OpenAI while still getting a very simimalar user experience.  
 (Requirements describe what the system should do. Goals describe how the system will help the organization)
 
 This specific project also has as goal for the team to learn&utilize design and architecture patterns as well as follow SWA documentation best practices.

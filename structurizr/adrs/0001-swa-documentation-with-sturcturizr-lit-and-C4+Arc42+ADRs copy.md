@@ -8,7 +8,17 @@ ACCEPTED
 
 ## Context
 
-We need to document software architecture. Creating a template&process and finding tools that can be used across projects will set clear expectations of quality and structure and make it easier to create quality documentation. This project will be a test-run for it
+*Why SWA Documentation*
+Documenting Software Architecture and Sofware Architecture Decisions brings many advantages for multiple stakeholders.   
+Everyone, including from technical to non-technical people can get a basic understanding of the Software System, its requirements and architecture in multiple depths.  
+- Management can quickly get a high-level view of the architecture and its goals 
+- the Product owner or Tech lead will be able to see the Architecture and the reasoning behind Architecture decisions and their development over time
+- New developers will be able to quickly understand the software system without a deep dive into the code and the explicitly documented constraints and decisions will enable them to create code in accordance to the teams previous decisions.
+
+
+
+**Thus, we need to document software architecture.**   
+Creating a template&process and finding tools that can be used across projects will set clear expectations of quality and structure and make it easier to create quality documentation. This project will be a test-run for it
 
 Criteria: 
 - Code-based for easier versioning and maintainability
