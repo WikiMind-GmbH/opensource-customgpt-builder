@@ -1,16 +1,21 @@
 from contextlib import asynccontextmanager
+from typing import List
 from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse
 from sqlmodel import Session
 
+from src.contexts.chat.application.exceptions import ConversationNonExistentError
+from src.bootstrap import DependenciesContainer
+from src.contexts.chat.application.ports.uow import ConversationUOW
+from src.contexts.chat.application.service_layer.service_functions import get_chat_summaries_service, retrieve_chat_history_by_id
+from src.contexts.chat.domain.models import ConversationFilteredForClient, ConversationOverview
+from src.interface.http.deps import deps
 from backend_spanning_helpers import require_env, validateFileFormat, validateGptExistsQuery
 from models.models import ConversationDB
 from services.database import create_db_and_tables, get_session
 from services.chats_service import (
-    retrieve_chat_history_by_id,
-    retrieve_chat_summaries_list,
     send_user_message_service,
 )
 from services.custom_gpt_service import (
@@ -28,6 +33,8 @@ from schemas.common import (
     CreateOrEditCustomGPTStatus,
     DeleteCustomGPTStatus,
     ExistingCustomGPT,
+    Role,
+    SimplifiedMessage,
     StandardResponse,
     UploadFileFileFormatValidated,
     UserMessageRequest,
@@ -35,6 +42,7 @@ from schemas.common import (
 )
 LOADED_FILES_PATH = require_env("LOADED_FILES_PATH")
 
+deps: DependenciesContainer = deps
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -58,6 +66,15 @@ async def validation_exception_handler(
         content={"error": msg},
     )
 
+@app.exception_handler(ConversationNonExistentError)
+async def validation_exception_handler(
+    request: Request, exc: ConversationNonExistentError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"error": f"Conversation does not exist"},
+    )
+
 origins = ["https://localhost"]
 app.add_middleware(
     CORSMiddleware,
@@ -66,8 +83,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
- 
- 
+# Refactored:
+#------------------------------------------------------------------------ 
+
+@app.get(
+    "/get-chat-summaries",
+    tags=["Chat"],
+    response_model=list[ChatSummary],
+    operation_id="getChatSummaries",)
+def get_chat_summaries(
+    chat_uow: ConversationUOW = Depends(deps.conversation_uow_factory),
+) -> list[ChatSummary]:
+    overviews: List[ConversationOverview] = get_chat_summaries_service(chat_uow)
+    summaries = [ChatSummary(chat_id=ov.id,chat_summary=ov.title) for ov in overviews]
+    return summaries#
+
+# Ongoing:
+#------------------------------------------------------------------------ 
+
 @app.post(
     "/chat-history-by-id",
     tags=["Chat"],
@@ -75,26 +108,19 @@ app.add_middleware(
     operation_id="chatHistoryById",
 )
 async def get_chat_history(
-    chat_id: int,
-    session: Session = Depends(get_session),
+    chat_id: str,
+    chat_uow: ConversationUOW = Depends(deps.conversation_uow_factory),
 ) -> ChatHistory:
-    if session.get(ConversationDB, chat_id) is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Conversation {chat_id} not found",
-        )
-    return retrieve_chat_history_by_id(chat_id, session)
+    history:ConversationFilteredForClient = retrieve_chat_history_by_id(chat_id, chat_uow)
+    messages_translated: list[SimplifiedMessage] = [SimplifiedMessage(role = Role(str(msg.role)), message=msg.text) for msg in history.messages]
+    return ChatHistory(custom_gpt_id=history.customgpt_id, messages=messages_translated)
+#------------------------------------------------------------------------ 
 
-@app.get(
-    "/get-chat-summaries",
-    tags=["Chat"],
-    response_model=list[ChatSummary],
-    operation_id="getChatSummaries",
-)
-async def get_chat_summaries(
-    session: Session = Depends(get_session),
-) -> list[ChatSummary]:
-    return retrieve_chat_summaries_list(session)
+
+
+
+    # decoupling
+    # return retrieve_chat_summaries_list(session)
 
 @app.post(
     "/send-user-message",

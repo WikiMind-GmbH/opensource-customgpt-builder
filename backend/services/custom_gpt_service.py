@@ -118,5 +118,3 @@ def list_loaded_files(custom_gpt_id: int) -> list[str]:
         return []
 
     return sorted(files)
-
-

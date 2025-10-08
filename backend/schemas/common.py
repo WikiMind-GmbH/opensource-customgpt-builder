@@ -90,7 +90,7 @@ class SimplifiedMessage(BaseModel):
 
 
 class ChatHistory(BaseModel):
-    custom_gpt_id: int | None
+    custom_gpt_id: str | None
     messages: list[SimplifiedMessage]
 
 
@@ -149,7 +149,7 @@ class ExistingCustomGPT(CustomGptToCreateOrEdit):
 
 
 class ChatSummary(BaseModel):
-    chat_id: int
+    chat_id: str
     chat_summary: str
 
 

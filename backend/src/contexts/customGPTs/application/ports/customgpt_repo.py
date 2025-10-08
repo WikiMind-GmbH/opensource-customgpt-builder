@@ -1,0 +1,13 @@
+from typing import Protocol, Sequence
+
+from domain.models import CustomGPT, CustomGPTOverview
+
+# Below: Not needed if we explicitly inherit Protocols -> better for typechecking 
+# #@runtime_checkable #So we can  assert isinstance(adapter, port)
+class CustomGPTRepository(Protocol):
+    def get(self, gpt_id:str)-> CustomGPT: ...
+    def list_all_overviews_ordered_by_latest_msg(self,)-> Sequence[CustomGPTOverview]: ...
+    def create(self)-> CustomGPT: ...
+    def delete(self, conversation: CustomGPT): ...
+
+

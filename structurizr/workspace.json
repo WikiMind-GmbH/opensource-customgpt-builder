@@ -3,7 +3,7 @@
   "description" : "Use Chatgpt api with own customGPT implementation",
   "documentation" : { },
   "id" : 1,
-  "lastModifiedDate" : "2025-08-28T14:23:03Z",
+  "lastModifiedDate" : "2025-09-12T14:18:01Z",
   "model" : {
     "people" : [ {
       "description" : "A user of the system wanting to profit from customized llm chat functionality",
@@ -429,6 +429,20 @@
           "id" : "5",
           "status" : "ACCEPTED",
           "title" : " Seperating internal and external endpoints via nginx"
+        }, {
+          "content" : "# Celery with redis/valkey for cpu heavy tasks\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\nConsider redis vs valkey \n\n## Decision\n\n## Consequences\n\n\n\n",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "6",
+          "status" : "ACCEPTED",
+          "title" : " Celery with redis/valkey for cpu heavy tasks"
+        }, {
+          "content" : "# Imporatant Standard libraries modules to utilize\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\n\nPathlib instead of os.path\nshutil for file management\n\ntextwrap for text formatting\n\nfunctools for partial functions (&cache)\nitertools for working with lists -cyling through etc\n\n## Decision\n\n\n\n## Consequences\n\n\n\n",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "7",
+          "status" : "ACCEPTED",
+          "title" : " Imporatant Standard libraries modules to utilize"
         } ],
         "sections" : [ {
           "content" : "## Introduction and Goals\n\nThis document describes the Opensource CustomGPT Builder Software system. It can be used to create your own CustomGPTs outside of the OpenAI Software System.   \nThe goal of this system is to have a baseline product onto which we can build more customized solutions for clients. The aim is to have a product that targets a broad audience. We hope that this makes for broader adaption of our products and lead to more follow-up projects.  \nThe goal this system achives for the users is the following:   \nThey want to use the capabilities of CustomGPTs without directly giving their data to OpenAI while still getting a very simimalar user experience.  \n(Requirements describe what the system should do. Goals describe how the system will help the organization)\n\nThis specific project also has as goal for the team to learn&utilize design and architecture patterns as well as follow SWA documentation best practices.\n### Requirements Overview\n\n1. The UI must display a history of previous chats. Previous chats can be viewed, continued and deleted\n2. The user must be able to create, modify and delete CustomGPTs\n3. Document upload for OpenDocument Format files and PDFs is possible\n4. The information inside these documents is processed and CustomGPT will use and reference it in conversations\n5. The user can see all the data that is used by a CustomGPT, including the documents uploaded.\n\n### Quality Goals\n\n#### Usability\n- The UI must be similar to ChatGPT to enable fast adaption of new users.\nThe Feedback give to user input must be clear such that users know why a certain operation, like uploading unsupported document types, did not succeed.\n#### Performance\n*Latency*\n- A user interaction must trigger a UX response in 500ms. The answer of the backend, when serving assistant messages, can be slow, though other responses shall not exceed 1s response time. Uploading documents shall lead to a fast response initial response once the documents are saved to the backend. Afterwards, the Preprocessing shall take no longer than 10 minutes before the user can use the CustomGPT\n*Throughput*\n- The system is not designed for high throughput, so 2 concurrent preprocessing tasks can be made in parallel with the expected latency.\n#### Security\n- Basic Auth and https will suffice for this POC\n#### Reliability\n*Concurrent Users*\n- The system expects 5 concurrent users max as of now\n*Data volume*\n- The uploaded files are expected to not exceed 20MB and the storage for documents is expected to grow less then 10GB per year\n*Load*\n- The system should handle 4 preprocessing requests in parallel. the other tasks are less computationally heavy are expected to take more concurrent requests\n\n#### Transferability\n- The software system should be designed in such a way that enabling the usage of other LLM Apis is not too much work\n### Stakeholders\n#### Product Owner\nProduct owner must have a overview of the SWA to check if all features are implemented, which features can be implemented more easily and check the architecture decisions\n#### Management\nManagement wants a quick overview of the SWA capabilities\n#### Dev team\nThe dev team needs a place to document and reference architecture and architecture decisions\n",
@@ -449,45 +463,57 @@
           "order" : 3,
           "title" : ""
         }, {
+          "content" : "## Solution Strategy\n>Contents  \nA short summary and explanation of the fundamental decisions and solution strategies, that shape the system’s architecture. These include.  \n-technology decisions  \n-decisions about the top-level decomposition of the system, e.g. usage of an architectural pattern or design pattern  \n-decisions on how to achieve key quality goals  \n-relevant organizational decisions, e.g. selecting a development process or delegating certain tasks to third parties\n\nThis projects main goal is getting closer to creating a structure and outline for our modular LLM/AI product. As a result, most system architecture desicions are made with the goal of learning to get closer to a structure that we can use well into the future, instead of one that fits the current scope of the project and it being a POC best.\nThus, the decision was made that these are the top priorities that the SWA should achieve:\n1. Highly Modular architecture -> Microservices: i) as dev: add, remove or extend functionalities(/services) easily and ii) being able to deploy and run the software system easily with different sets of functionalities(/services) -i.e. I can deploy an instance which does not use the rag functionality but the customgpt functionality, or the other way around\n2. Using/implementing Good software design patterns\n3. Using/implementing Good software architecture: i) Creating (and learning) good SWA documentation practices ii) following Microservises patterns\n\nWhile some corners are cut as of now, the following will be implemented:\n### Software design patterns\n#### Three layer architecutre\nWeb layer.  \nservice layer.  \ndata layer.  \n\n+\nrepository pattern with dependency inversion\n\n(intro see Fastapi ch. 1, detailed: ch. )\n\n\n### Microservice Architecture\n[While the current scope does not necessarily need this seperation of concerns yet, it will be super helpful in the future, if we want to extend the functionality of existing services, add new services and  split work and being able to give a team member the responsibility of only one service sucht that they need to only understand this narrow scope]",
+          "filename" : "04-Solution Strategy.md",
+          "format" : "Markdown",
+          "order" : 4,
+          "title" : ""
+        }, {
+          "content" : "## Buildig Block view -C4 System Context View\n![](embed:SystemContex)\n\n### Whitebox overall system- C4 Container Views\n![](embed:ContainerView)\n\n### Level 2 - C4 Component Views\n#### ChatService\n![](embed:chatServiceView)\nThe chat service has the following apis:\n```\ncreateConversation(CustomGptId:int | None, usermessage: str, useRag:bool)\ncontinueConversation(conversationid::int | None , usermessage: str, useRag:bool)\n```\nIf a CustomGPTid is given, the CustomGPTservice api is called to retreive Infos about the customgpt. If the customGPTservice is not reachable, the request will be processed without the customGPT, but the answer will include this information.\nSame for the RAG Service. This is due to decoupling and keeping the service running even if the other services are down.\n\nThe Rag service will return relevant chunks, but will not process them. How we tune&enrich our prompt with the retreived chunks is decided by the chatservice, not in the rag service, to keep responsibilities clear.\n\n#### RAGService  \n![](embed:ragServiceView)\nThe Rag service offers the following functionality: \n- upload documents that can be referenced by the llm if relevant\n- send a notification if uploaded documents have been processed and can be  \nThe Rag service provides an api for retreiving the status of uploaded documents: it is either uploaded or available(processed)\n\nThe RagService will use WebsocketMessages (/async messages)to inform other services when uploaded documents have been processed. (The initial sync Data uoload api will retrurn a success msg as soon as the files have been uploaded and will then use the WSMessage to nitify when everything has been processed)\n\nFor simplicity, documents will be identified by the following: `customgpt_id: int | None, document_name` if `customgpt_id` is None, the document is available for all chats, not just a specific customgpt.\n\n\n\n#### CustomGPTService\n![](embed:customGptServiceView)\nDatabase schema sketch: \n`id:int, name:str, description:str, rag_files_availability: json_str`\nWhere `rag_files_availability` is a dictionary where the keys are the names of the documents and the values are either `uploaded` or `processed`\n\nDecouopling&eventual consistency: The customGPTService will have a ",
+          "filename" : "05-Building Block View.md",
+          "format" : "Markdown",
+          "order" : 5,
+          "title" : ""
+        }, {
           "content" : "## Runtime View\n### Upload documents and RAG functionality\nUploading and processing a document is notably done in two steps and utilizes two different message protocols.  \n\nFor the client to be able to get live-updates about uploaded documents having been processed and being available to use in the chat, the client must subscribe to the Websocket Endpoint first.\n![](embed:wsMessage)\n\nThe client uploads a document and gets a response message as soon as the file has been saved to the files system. The background task which will process the documents, is queued before sending the response\n![](embed:uploadDocument)\n\nAfter the response of the RagServiceAPI has been sent, the background task starts with the (pre)processing. After this is finished, the client gets a WebsocketMessage informing them that their document is available to the chatbot.\n![](embed:processDocument)",
           "filename" : "06-Runtime View.md",
           "format" : "Markdown",
-          "order" : 4,
+          "order" : 6,
           "title" : ""
         }, {
           "content" : "## Deployment View",
           "filename" : "07-Deployment View.md",
           "format" : "Markdown",
-          "order" : 5,
+          "order" : 7,
           "title" : ""
         }, {
           "content" : "## Crosscutting Concepts\n\n### Internal vs external apis\nOne aspect that \nThe only service that is reachable from outside the docker network -which is not a documentation or reverse proxy- is the gateway server.\nThus we have only one service that the clients need to authenticate to and this service then forwards the call to the corresponding services, where no further authentication is needed.  \nAll the other services ()\n",
           "filename" : "08-Concepts.md",
           "format" : "Markdown",
-          "order" : 6,
+          "order" : 8,
           "title" : ""
         }, {
           "content" : "## Architectural decisions\nSee [ADRs](http://localhost:8080/workspace/decisions/Opensource%20CustomGPT%20builder) ",
           "filename" : "09-Architecture decisions.md",
           "format" : "Markdown",
-          "order" : 7,
+          "order" : 9,
           "title" : ""
         }, {
           "content" : "## Quality Requirements",
           "filename" : "10-Quality.md",
           "format" : "Markdown",
-          "order" : 8,
+          "order" : 10,
           "title" : ""
         }, {
           "content" : "## Risks & Technical Debt\n\n### Central Logging service\nA central logging service must be used in the future.\nAll services will send their logs to this service with a timestamp, logging level *as well as an operationID/requestID*. In this way, we can trace the logs of one operation across multiple services, even if there were multiple parallel requests. (I.e. multiple users in parallel upload documents (on multiple instances). One experiences an error. We can't just from timestamp or instance see which logs of the different services belong to this one request if wew do not have a request or operationID for tracing)\n\n### Internal network traffic -> safety and logging\nSee: the following chatgpt snippet\n\n### Document uploading\n\nAs of now, the C4 model only shows how to upload one document.  \nThis must be changed to allow multiple document uploads (?) -> parallelization easily done.  \n\n\n#### Why direct service→service HTTP is OK\n\n* **Fewer hops/latency:** you’re not hair-pinning through Nginx.\n* **Simplicity:** no extra Nginx routes/ACLs to maintain for internal traffic.\n* **Docker DNS works out of the box:** each container can call others by service name, e.g. `http://usersvc:8000/internal/...`.\n\n#### When you might *not* want to bypass Nginx\n\n* You need **authn/authz, mTLS, rate limiting, request shaping, or WAF** on *internal* calls.\n* You want **single place for access logs/metrics** (observability).\n* You run **multiple replicas** of a target service and want **load balancing** without adding a client-side LB.\n\n(If those matter later, you can still keep Option 1 for public traffic and add a second, **internal-only** Nginx listener/port just for east–west traffic.)\n\n---\n\n#### Minimal, robust setup for direct internal calls\n\n#### 1) FastAPI route grouping + internal guard (defense-in-depth)\n\nEven if `/internal/*` isn’t proxied publicly, protect it in-app.\n\n```python\n# fastapi_app.py\nfrom fastapi import FastAPI, APIRouter, Depends, HTTPException, Request, status\n\napp = FastAPI()\npublic = APIRouter(prefix=\"/api\")\ninternal = APIRouter(prefix=\"/internal\")\n\ndef require_internal(request: Request):\n    # simplest: shared secret header set by callers inside the network\n    if request.headers.get(\"x-internal-token\") != \"supersecret\":\n        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)\n\n@public.get(\"/health\")\ndef health(): return {\"ok\": True}\n\n@internal.post(\"/reindex\")\ndef reindex(_=Depends(require_internal)):\n    return {\"started\": True}\n\napp.include_router(public)\napp.include_router(internal)\n```\n\n> If you prefer stronger auth, swap the header for **JWT** verification or **mTLS** (terminate TLS in the app).\n\n#### 2) Nginx: expose only public paths\n\n```nginx\nserver {\n  listen 443 ssl;\n  server_name your.public.host;\n\n  # Public API only\n  location /api/ {\n    proxy_pass http://fastapi:8000;\n    include proxy_params.conf;\n  }\n\n  # Belt-and-suspenders: block internal paths at the edge\n  location /internal/ { return 403; }\n  location / { return 404; }\n}\n```\n\n#### 3) Docker networking basics\n\n* In `docker-compose.yml`, **don’t publish** the FastAPI port to the host; only `expose` it.\n* Other services call it via service DNS (e.g., `fastapi:8000`).\n\n```yaml\nservices:\n  api:\n    build: .\n    expose: [\"8000\"]\n    networks: [appnet]\n  nginx:\n    image: nginx:alpine\n    ports: [\"443:443\"]    # only public\n    depends_on: [api]\n    networks: [appnet]\n\nnetworks:\n  appnet: { driver: bridge }\n```\n\n### 4) Client code for internal calls (timeouts + retries)\n\nUse `httpx` and be strict about timeouts/retries to avoid cascading failures.\n\n```python\nimport httpx\nimport asyncio\nfrom typing import Callable\n\nINTERNAL_HEADERS = {\"x-internal-token\": \"supersecret\"}\n\ndef make_client() -> httpx.AsyncClient:\n    return httpx.AsyncClient(\n        timeout=httpx.Timeout(connect=1.0, read=1.5, write=1.0, pool=5.0),\n        limits=httpx.Limits(max_keepalive_connections=20, max_connections=50),\n        headers=INTERNAL_HEADERS,\n    )\n\nasync def call_internal(client: httpx.AsyncClient, url: str, json: dict):\n    # simple bounded retry with jitter\n    for attempt in range(3):\n        try:\n            r = await client.post(url, json=json)\n            r.raise_for_status()\n            return r.json()\n        except (httpx.ConnectError, httpx.ReadTimeout):\n            await asyncio.sleep(0.05 * (attempt + 1))\n    raise RuntimeError(f\"internal call failed: {url}\")\n```\n\nAdd **circuit breakers** (e.g., `aiobreaker`) if the downstream can flap.\n\n---\n\n#### Trade-offs and tips\n\n* **Load balancing / scaling:** direct calls hit one container. If you scale a target service to N replicas, Docker’s DNS gives round-robin IPs, but it’s not a full LB. If you need smarter balancing, either:\n\n  * run an **internal Nginx/Envoy** (not exposed to host) and point clients to `http://nginx-internal:PORT`, or\n  * use a **service mesh** (Envoy sidecars, linkerd) later.\n* **Observability:** add request IDs (`X-Request-Id`) and propagate them across services; log internal vs public separately.\n* **Zero trust mindset:** network boundaries are not security. Keep the app-level guard, and prefer JWT/mTLS if risk increases.\n* **Fail-closed at the edge:** the Nginx “deny `/internal`” block prevents accidental exposure by config drift.\n\n---\n\n#### Bottom line\n\nYour plan (Option 1 + direct internal HTTP) is **perfectly reasonable** for a single Docker network setup. Keep internal routes unproxied publicly, add a lightweight app-level check, and be disciplined about client timeouts/retries. If you later need richer auth, load balancing, or centralized observability for east–west traffic, you can introduce an **internal** Nginx/Envoy without changing public behavior.\n",
           "filename" : "11-Risk and technical debt.md",
           "format" : "Markdown",
-          "order" : 9,
+          "order" : 11,
           "title" : ""
         }, {
           "filename" : "13-Glossary.md",
           "format" : "Markdown",
-          "order" : 10,
+          "order" : 12,
           "title" : ""
         } ]
       },

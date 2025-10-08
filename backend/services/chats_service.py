@@ -15,45 +15,6 @@ from schemas.common import (
 
 client = OpenAI()
 
-
-def retrieve_chat_history_by_id(chat_id: int, session: Session) -> ChatHistory:
-    conv = session.get(ConversationDB, chat_id)
-    if conv is None or conv.id is None:
-        raise UnpersistedObjectError(" Conv must exists and be created")
-    msgs = [
-        SimplifiedMessage(role=Role(msg.role), message=msg.content or "")
-        for msg in conv.messages
-        if msg.role
-        in (
-            "user",
-            "assistant",
-        )  # drop 'system' since Role enum only has user|assistant
-    ]
-    return ChatHistory(custom_gpt_id=conv.customgpt_id, messages=msgs)
-
-
-def retrieve_chat_summaries_list(session: Session) -> list[ChatSummary]:
-    stmt = select(ConversationDB)
-    convs = session.exec(stmt).all()
-    summaries: list[ChatSummary] = []
-    for conv in convs:
-        if conv.id is None:
-            raise UnpersistedObjectError(" Conv must exists and be created")
-        if conv.customgpt_id is None:
-            gpt_name = "vanilla"
-        else:
-            gpt = session.get(CustomGptsDB, conv.customgpt_id)
-            if gpt is None:
-                raise UnpersistedObjectError(" GPT must exists and be created")
-            gpt_name = gpt.name or "vanilla"
-
-        # Build summary as "<gpt_name> <conversation_id>"
-        summary_text = f"GPT {gpt_name}: conv {conv.id}"
-        summaries.append(ChatSummary(chat_id=conv.id, chat_summary=summary_text))
-
-    return summaries
-
-
 def send_user_message_service(
     request: UserMessageRequest,
     session: Session,
