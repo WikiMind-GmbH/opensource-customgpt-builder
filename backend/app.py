@@ -9,7 +9,7 @@ from sqlmodel import Session
 from src.contexts.chat.application.exceptions import ConversationNonExistentError
 from src.bootstrap import DependenciesContainer
 from src.contexts.chat.application.ports.uow import ConversationUOW
-from src.contexts.chat.application.service_layer.service_functions import get_chat_summaries_service, retrieve_chat_history_by_id
+from backend.src.contexts.chat.application.service_functions import get_chat_summaries_service, retrieve_chat_history_by_id
 from src.contexts.chat.domain.models import ConversationFilteredForClient, ConversationOverview
 from src.interface.http.deps import deps
 from backend_spanning_helpers import require_env, validateFileFormat, validateGptExistsQuery

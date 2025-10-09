@@ -2,7 +2,7 @@ from typing import List, Sequence
 from src.contexts.chat.application.ports.customgpt_instructions_retreiver import CustomGPTInstructionsRetreiver
 from src.contexts.chat.application.exceptions import ConversationNonExistentError
 from src.contexts.chat.application.ports.uow import ConversationUOW
-from src.contexts.chat.domain.models import Conversation, ConversationFilteredForClient, ConversationOverview, Message, Role, UserOrAssistantTextMessage
+from src.contexts.chat.domain.models import Conversation, ConversationFilteredForClient, ConversationOverview, Message, Role, TextMessage
 
 
 def get_chat_summaries_service(conv_uow: ConversationUOW) -> List[ConversationOverview]:
