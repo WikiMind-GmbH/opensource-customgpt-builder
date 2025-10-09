@@ -84,7 +84,6 @@ def bootstrap(
 
     # 7) Typed container (also expose a plain Session factory if needed)
     return DependenciesContainer(
-        session_factory=lambda: SessionMaker(),
         conversation_uow_factory=conversation_uow_factory,
         # cgpt_uow_factory=cgpt_uow_factory,
         # cgpt_instructions_adapter_factory=cgpt_instructions_adapter_factory,

@@ -21,7 +21,7 @@ Let’s compare a ball of mud with a cleaner architecture to evaluate whether th
 - Unmaintainable code: unclear responsibilities and coupling force you to understand far more than the component you want to change/debug.
 
 ### Clean architecture
-- Cohesive components with a single responsibility communicate through Ports and use **their own layer-specific data types**.
+- Cohesive components with a single responsibility communicate through Ports.
 - To understand a component, you need only the component itself and the Ports it defines/depends on.
 - The whole picture and how the single components work toghether is easier to understand due to clearly defined context boundaries and interfaces
 
@@ -102,7 +102,7 @@ This adapter is part of the data layer which contains other modules that make th
 [Most unclear to Albert]
 Domain-Driven Design (DDD) is concerned with the following things:
 1. Having at the heart of the software system a model of the buisness domain whose language (buisness-) domain experts will understand and agree with.
-2. Structuring the rest of the code around this domain model and clear decoupling of modules created by subdomains and an architecture consisting of 1) TOP: http layer 2)CORE/MIDDLE: domain layer + service layer 3) LOWER: data layer
+2. Structuring the rest of the code around this domain model and clear decoupling of modules created by subdomains and a layered architecture. In our case with the following layers 1) TOP: http layer 2)CORE/MIDDLE: domain layer + service layer 3) LOWER: data layer
 3. Keeping these modules 'pure' -> not leaking data types of different modules leak into each other. This is done by using Ports & Adapters.
 #### What is a domain model
 At the heart of DDD is looking at a software-system as something that models a buisness domain. The domain model and the domain functions that we will create in our software system should be understandable by, and in the language of, a domain expert who has no software development experience.   
@@ -157,7 +157,7 @@ LOWER: data layer
 MIDDLE layer (service & domain):
 does not know anything about the data types of the other layers or how their adapters implement the functions defined in the service layer ports.   
 Domain layer:    
-The domain model functions and models are completely closed off, not utilizing any Ports/Adapters. However, there are many use cases where we want to feed data into our domain model(s) functions. That is the job of the service/orchestration layer functions. They utiilize the injected adapters of its Ports to get data from the database or other contexts and calls the domain functions with the retreived data.    
+Following Cosmic Python, the domain model functions and models are completely closed off, not utilizing any Ports/Adapters. However, there are many use cases where we want to feed data into our domain model(s) functions. That is the job of the service/orchestration layer functions. They utiilize the injected adapters of its Ports to get data from the database or other contexts and calls the domain functions with the retreived data.    
 Service layer:
 - Service layer is called orchestration layer, because it fulfills use cases by orchestrating adapter function calls, retreiving domain models from the database via the UoW, calling domain functions and commiting changes to the db.
 - service layer fulfills uses cases by providing service functions to the http layer, with atomic types and Ports as Parameters. 
@@ -294,7 +294,7 @@ src/
            ...
 │  │  │  │  └─ uow.py
 ```
-The repository defines all the ways we can interface with our db.
+In our case, the repository defines all the ways we can interface with our db. (Later, if we implement read queries, this will not be the case anymore)
 The UoW wraps the repo and takes care of session management.
 ### Small break-down of repo and UoW.
 The service layer owns the Port of the repo.
@@ -448,7 +448,6 @@ def bootstrap(
 
 
     return DependenciesContainer(
-        session_factory=lambda: SessionMaker(),
         conversation_uow_factory=conversation_uow_factory,
     )
 ```
