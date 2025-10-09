@@ -59,7 +59,7 @@ In this way, the consumer component is easily understood without knowing anythin
 
 This is achived in the following way:    
 The consumer component defines Ports utilizing Pythons Protocol, e.g.
-```
+```.py
 class ConversationRepository(Protocol):
     def get(self, conv_id:str)-> Conversation: ...
     def list_all_overviews_ordered_by_latest_msg(self,)-> Sequence[ConversationOverview]: ...
@@ -70,7 +70,7 @@ class ConversationRepository(Protocol):
 
 And then another component implements this port as an adapter:    
 backend/src/contexts/chat/infrastructure/db/conv_repo_implmementations.py
-```
+```.py
 class SQAlchemyConversartionRepository(ConversationRepository):
     def __init__(self, session: Session) -> None:
         self._session = session
@@ -307,7 +307,7 @@ The problem with only using a repo is that we have manually manage the session i
 Therefore, we utilize the UnitOfWork pattern, wrapping the repository in a unit of work and letting the UoW manage the session lifecycle:    
 The UnitOfWork is a context manager, providing `__enter__` and `__exit__` methods for session management. 
 Here is an example for illustration:
-```
+```.py
 class SQLAlchemyConversationUOW():
     def __init__(self, session_factory: Callable[[], Session]) -> None:
         self._session_factory = session_factory
@@ -339,9 +339,9 @@ class SQLAlchemyConversationUOW():
 ```
 
 We can utilize it by 
-```
+```.py
 with uow:
-    do_some_work
+    do_some_work()
 ```
 To see how it behaves, check out `backend/tests/integration/db/contexts/chat/test_uow.py`
 
