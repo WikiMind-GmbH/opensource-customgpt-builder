@@ -58,7 +58,28 @@ How can a component define its interface with another component? We want the con
 In this way, the consumer component is easily understood without knowing anything about the other components.   
 
 This is achived in the following way:    
-The consumer component defines Ports utilizing Pythons Protocol, e.g.
+The consumer component defines Ports utilizing [Pythons Protocol]("https://docs.python.org/3/library/typing.html#typing.Protocol")[(Blog Post)](https://realpython.com/python-protocol/)which use structural subtyping instead of inheritance,
+### Protocol excerpt
+Protocol classes are defined like this:
+```.py
+class Proto(Protocol):
+    def meth(self) -> int:
+        ...
+```
+Such classes are primarily used with static type checkers that recognize structural subtyping (static duck-typing), for example:
+```.py
+class C:
+    def meth(self) -> int:
+        return 0
+
+def func(x: Proto) -> int:
+    return x.meth()
+
+func(C())  # Passes static type check
+```
+See [PEP 544](https://peps.python.org/pep-0544/) for more details.
+### Back to Ports and adapters
+
 ```.py
 class ConversationRepository(Protocol):
     def get(self, conv_id:str)-> Conversation: ...
@@ -305,7 +326,7 @@ The repo
 - Is initialized with a session
 The problem with only using a repo is that we have manually manage the session in the service layer, breaking seperation as well as suspecticle to errors.   
 Therefore, we utilize the UnitOfWork pattern, wrapping the repository in a unit of work and letting the UoW manage the session lifecycle:    
-The UnitOfWork is a context manager, providing `__enter__` and `__exit__` methods for session management. 
+The UnitOfWork is a [context manager](https://book.pythontips.com/en/latest/context_managers.html), utilizing its `__enter__` and `__exit__` methods for managing the session lifecycle and assuring that no inconsistent state can be reached. [See cosmic python for explicit examples.](https://www.cosmicpython.com/book/chapter_06_uow.html#_examples_using_uow_to_group_multiple_operations_into_an_atomic_unit)
 Here is an example for illustration:
 ```.py
 class SQLAlchemyConversationUOW():
@@ -479,3 +500,21 @@ def get_chat_summaries(
     chat_uow: ConversationUOW = Depends(deps.conversation_uow_factory), # <- accessing adapter like this
 ) -> list[ChatSummary]:
 ```
+
+## Further information
+### [Dataclass decorator](https://docs.python.org/3/library/dataclasses.html)
+```
+@dataclass(init=True, repr=True, eq=True, order=False, unsafe_hash=False, frozen=False,
+           match_args=True, kw_only=False, slots=False, weakref_slot=False)
+class C:
+```
+
+The dataclass operator mainly has the following effects (quoted from python docs above):
+> nit: If true (the default), a __init__() method will be generated.
+So we don't need to write an init function
+>eq: If true (the default), an __eq__() method will be generated. This method compares the class as if it were a tuple of its fields, in order. Both instances in the comparison must be of the identical type.
+So two dataclass objects are the same by value, not by having the same reference
+> frozen: If true (the default is False), assigning to fields will generate an exception. This emulates read-only frozen instances. See the discussion below.
+Using `frozen=True` can further be used to make it clear that this is a value-object not an entity.   
+See [this discussion](https://www.cosmicpython.com/book/chapter_01_domain_model.html#_dataclasses_are_great_for_value_objects) in cosmic python about when to use which
+
