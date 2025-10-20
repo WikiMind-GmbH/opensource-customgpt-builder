@@ -103,18 +103,23 @@ class StandardResponse(BaseModel):
 
 
 class AssistantMessage(BaseModel):
-    conversation_id: int
+    conversation_id: str
     response_message: SimplifiedMessage
 
-
-class UserMessageRequest(BaseModel):
-    conversation_id: int | None = None
+class NewChatRequest(BaseModel):
     request_message: str
-    custom_gpt_id: int | None = None
+    custom_gpt_id: str | None
+
+class ContinueChatRequest(BaseModel):
+    conversation_id: str
+    request_message: str
+
+UserMessageRequest = NewChatRequest | ContinueChatRequest
+    
 
 
 class CustomGptToCreateOrEdit(BaseModel):
-    custom_gpt_id: int | None = None
+    custom_gpt_id: str | None = None
     custom_gpt_name: str = Field(max_length=40, min_length=1) # ToDo: Handle this nicely -is possible like that for nice client errors or not?
     custom_gpt_description: str = Field(max_length=200, min_length=1)
     custom_gpt_instructions: str = Field(max_length=50000, min_length=1)
@@ -144,7 +149,7 @@ class CustomGptToCreateOrEdit(BaseModel):
 
 
 class ExistingCustomGPT(CustomGptToCreateOrEdit):
-    custom_gpt_id: int
+    custom_gpt_id: str
     created_at: datetime | None
 
 

@@ -1,13 +1,15 @@
 from typing import Callable, runtime_checkable
 
 from sqlalchemy.orm import Session
+from src.contexts.shared.typing_aliases import Factory
+from src.contexts.chat.application.ports.uow import ConversationUOW
 from src.contexts.chat.infrastructure.db.conv_repo_implmementations import SQAlchemyConversartionRepository
 from src.contexts.chat.application.ports.conversation_repo import ConversationRepository
 
 # Below: Not needed if we explicitly inherit Protocols -> better for typechecking 
 # #@runtime_checkable #So we can  assert isinstance(adapter, port)
-class SQLAlchemyConversationUOW():
-    def __init__(self, session_factory: Callable[[], Session]) -> None:
+class SQLAlchemyConversationUOW(ConversationUOW):
+    def __init__(self, session_factory: Factory[Session]) -> None:
         self._session_factory = session_factory
         self._session: Session | None = None
         self._sqla_conv_repo: SQAlchemyConversartionRepository | None

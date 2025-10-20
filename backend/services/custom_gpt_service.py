@@ -3,9 +3,9 @@ from pathlib import Path
 import aiofiles
 from fastapi import HTTPException, UploadFile, status
 from sqlmodel import Session, select
-from backend_spanning_helpers import require_env, validate_gpt_id_exists
+from backend_spanning_helpers import require_env
 from models.models import ConversationDB, CustomGptsDB
-from schemas.common import (
+from src.interface.http.schemas.common import (
     ExistingCustomGPT,
     CreateOrEditCustomGPTStatus,
     CustomGptToCreateOrEdit,

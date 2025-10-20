@@ -24,7 +24,7 @@ conversations = Table(
     metadata,
     Column("id", String, primary_key=True),
     Column("title", String, nullable=True),
-    Column("customGPT_id", String, nullable=True),
+    Column("_customGPT_id", String, nullable=True),
     Column(
         "created_at",
         DateTime(timezone=True),
@@ -34,8 +34,8 @@ conversations = Table(
     Column("last_message_at", DateTime(timezone=True)),
 )
 
-messages = Table(
-    "messages",
+messages_excl_sysPrompt = Table(
+    "messages_excl_sysPrompt",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column(
@@ -59,7 +59,7 @@ def prepare_engine(engine: Engine) -> Engine:
     if engine.url.get_backend_name() == "sqlite":
         @event.listens_for(engine, "connect")
         def _fk_on(dbapi_conn, _):
-            dbapi_conn.execute("PRAGMA foreign_keys=ON")
+            dbapi_conn.execute("PRAGMA foreign_keys=ON") # for cascading deletes
     return engine
 
 # Index("ix_messages_conv_created_at", messages.c.conversation_id, messages.c.created_at)
@@ -67,18 +67,18 @@ def prepare_engine(engine: Engine) -> Engine:
 def start_mappers() -> None:
     mapper_registry.map_imperatively(
         Message,
-        messages,
+        messages_excl_sysPrompt,
     )
     mapper_registry.map_imperatively(
         Conversation,
         conversations,
         properties={
             # one-to-many; SQLAlchemy instruments `Conversation.messages`
-            "messages": relationship(
+            "messages_excl_sysPrompt": relationship(
                 Message,
-                primaryjoin=messages.c.conversation_id == conversations.c.id,
+                primaryjoin=messages_excl_sysPrompt.c.conversation_id == conversations.c.id,
                 backref=None,
-                order_by=messages.c.id.asc(),
+                order_by=messages_excl_sysPrompt.c.id.asc(),
                 cascade="all, delete-orphan",
                 passive_deletes=True,
             )

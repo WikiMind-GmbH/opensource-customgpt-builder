@@ -39,7 +39,7 @@ services:
       # NODE_ENV: development
     volumes:
       - ./frontend:/app
-      - /app/node_modules #decouples node_module in container from frontend so we can have
+      - /app/node_modules #decouples node_module in container from frontend so this will not be synced back to the host
       
     container_name: frontend
     stdin_open: true

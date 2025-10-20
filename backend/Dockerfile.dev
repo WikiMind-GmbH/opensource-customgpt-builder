@@ -31,5 +31,6 @@ EXPOSE 5173
 
 # Start the app using uvicorn
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5173", "--reload"]
+CMD ["uvicorn", "src.interface.http.app:app", "--host", "0.0.0.0", "--port", "5173", "--reload"] 
+# "--app-dir", "src/interface/http",
 

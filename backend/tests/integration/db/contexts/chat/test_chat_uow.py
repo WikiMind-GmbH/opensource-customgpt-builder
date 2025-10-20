@@ -10,7 +10,7 @@ def test_uow_commit_persists(session_factory):
         # create and persist via repo
         conv: Conversation = uow.conversation_repo.create_conversation()
         conv_id = conv.id
-        conv.messages.append(
+        conv.messages_excl_sysPrompt.append(
             Message(role=Role.user, contentType=ContentType.text, imageUrlOrText="hello")
         )
         uow.commit()
@@ -19,7 +19,7 @@ def test_uow_commit_persists(session_factory):
     with SQLAlchemyConversationUOW(session_factory) as uow2:
         got = uow2.conversation_repo.get(conv_id)
         assert got is not None
-        assert len(got.messages) == 1
+        assert len(got.messages_excl_sysPrompt) == 1
 
 
 def test_uow_rollback_on_exception(session_factory):
@@ -28,7 +28,7 @@ def test_uow_rollback_on_exception(session_factory):
         with SQLAlchemyConversationUOW(session_factory) as tx:
             conv = tx.conversation_repo.create_conversation()
             conv_id = conv.id
-            conv.messages.append(
+            conv.messages_excl_sysPrompt.append(
                 Message(role=Role.user, contentType=ContentType.text, imageUrlOrText="boom")
             )
             raise RuntimeError("Error before exiting the uow")

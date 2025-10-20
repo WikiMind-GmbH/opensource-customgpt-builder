@@ -2,7 +2,7 @@
 from typing import Set
 from sqlalchemy import event, select, update, func
 from sqlalchemy.orm import Session, sessionmaker
-from src.contexts.chat.infrastructure.db.orm import conversations, messages  # your Table objects
+from src.contexts.chat.infrastructure.db.orm import conversations, messages_excl_sysPrompt  # your Table objects
 from src.contexts.chat.domain.models import Conversation
 
 def register_last_message_at_events(SessionFactory: sessionmaker) -> None:
@@ -23,8 +23,8 @@ def register_last_message_at_events(SessionFactory: sessionmaker) -> None:
             update(conversations)
             .where(conversations.c.id.in_(ids))
             .values(
-                last_message_at=select(func.max(messages.c.created_at))
-                .where(messages.c.conversation_id == conversations.c.id)
+                last_message_at=select(func.max(messages_excl_sysPrompt.c.created_at))
+                .where(messages_excl_sysPrompt.c.conversation_id == conversations.c.id)
                 .correlate(conversations)
                 .scalar_subquery()
             )
