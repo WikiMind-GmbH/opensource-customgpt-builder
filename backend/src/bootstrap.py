@@ -7,6 +7,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import ChatQueriesAdapter
+from src.contexts.chat.application.ports.chat_queries import ChatQueries
+from src.contexts.customGPTs.application.ports.cgpt_queries import CgptQueries
+from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import CgptQueriesImplementation
 from src.contexts.shared.typing_aliases import Factory  # alias for Callable[[], T]
 
 # ---------------- CHAT ----------------
@@ -43,6 +47,8 @@ class DependenciesContainer:
     cgpt_uow_factory: Factory[CgptUOW]
     cgpt_instructions_adapter_factory: Factory[CustomGPTInstructionsRetreiver]
     llm_adapter_factory: Factory[LlmPort]
+    cgpt_queries_adapter_factory: Factory[CgptQueries]
+    chat_queries_adapter_factory: Factory[ChatQueries]
 
 def _make_engine(db_url: str, prepare: Callable[[Engine], Engine] = (lambda e:e)) -> Engine:
     connect_args: dict[str, object] = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
@@ -62,13 +68,13 @@ def bootstrap(
     # ----- CHAT -----
     chat_start_mappers()
     engine_chat = _make_engine(db_url_chat, chat_prepare_engine)
-    SessionMaker_Chat: sessionmaker[Session] = _make_sessionmaker(engine_chat)
+    sessionMaker_Chat: sessionmaker[Session] = _make_sessionmaker(engine_chat)
     if create_schema:
         chat_metadata.create_all(engine_chat)
-    register_last_message_at_events(SessionMaker_Chat)
+    register_last_message_at_events(sessionMaker_Chat)
 
     def conversation_uow_factory() -> ConversationUOW:
-        return SQLAlchemyConversationUOW(SessionMaker_Chat)
+        return SQLAlchemyConversationUOW(sessionMaker_Chat)
 
     # Stateless LLM adapter can be a singleton or a factory; both fine.
     _llm_adapter = OpenaiAdapter(model_name=model_name)
@@ -78,22 +84,30 @@ def bootstrap(
     # ----- CGPT -----
     cgpt_start_mappers()
     engine_cgpt = _make_engine(db_url_cgpt)
-    SessionMaker_CGPT: sessionmaker[Session] = _make_sessionmaker(engine_cgpt)
+    sessionMaker_CGPT: sessionmaker[Session] = _make_sessionmaker(engine_cgpt)
     if create_schema:
         cgpt_metadata.create_all(engine_cgpt)
     # If CGPT has its own events, register them here (do NOT reuse chat’s)
     # register_cgpt_events(SessionMaker_CGPT)
 
     def cgpt_uow_factory() -> CgptUOW:
-        return SQLAlchemyCgptUOW(SessionMaker_CGPT)
+        return SQLAlchemyCgptUOW(sessionMaker_CGPT)
 
     def cgpt_instructions_adapter_factory() -> CustomGPTInstructionsRetreiver:
         # Adapter owns its own context’s UoW factory
         return CustomGPTInstructionsRetreiverAdapter(cgpt_uow_factory)
+    
+    def cgpt_queries_adapter_factory()  -> CgptQueries:
+        return CgptQueriesImplementation(cgpt_session_factory=sessionMaker_CGPT)
+    
+    def chat_queries_adapter_factory()  -> ChatQueries:
+        return ChatQueriesAdapter(chat_session_factory=sessionMaker_Chat)
 
     return DependenciesContainer(
         conversation_uow_factory=conversation_uow_factory,
         cgpt_uow_factory=cgpt_uow_factory,
         cgpt_instructions_adapter_factory=cgpt_instructions_adapter_factory,
         llm_adapter_factory=llm_adapter_factory,
+        cgpt_queries_adapter_factory = cgpt_queries_adapter_factory,
+        chat_queries_adapter_factory = chat_queries_adapter_factory,
     )

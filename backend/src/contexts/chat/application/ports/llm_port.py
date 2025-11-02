@@ -1,11 +1,31 @@
+from dataclasses import dataclass
+from enum import StrEnum
 from typing import Protocol
-from src.contexts.chat.domain.models import Message
+
+
+class RoleDTOllm(StrEnum):
+    user = "user"
+    assistant = "assistant"
+    system = "system"
+
+
+@dataclass
+class MessageDTOllm:
+    role: RoleDTOllm
+    imageUrlOrText: str
+
 
 class NoAssistantResponse(RuntimeError):
     "API did not return anything"
 
+
 class ErrorWhileCallingAPI(RuntimeError):
     "Error occured when calling the api"
 
+
 class LlmPort(Protocol):
-    def get_assistant_response(self, messages_excluding_sys_prompt: list[Message], cgpt_systemprompt: list[Message])->str: ...
+    def get_assistant_text_response(
+        self,
+        messages_excluding_sys_prompt: list[MessageDTOllm],
+        cgpt_systemprompt: list[MessageDTOllm],
+    ) -> str: ...

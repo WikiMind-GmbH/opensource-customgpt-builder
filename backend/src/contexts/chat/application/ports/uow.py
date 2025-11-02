@@ -1,6 +1,6 @@
 from typing import Protocol, Self
 
-from src.contexts.chat.application.ports.conversation_repo import ConversationRepository
+from src.contexts.chat.application.ports.chat_repo import ConversationRepository
 
 # Below: Not needed if we explicitly inherit Protocols -> better for typechecking 
 # #@runtime_checkable #So we can  assert isinstance(adapter, port)

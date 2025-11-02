@@ -1,8 +1,8 @@
-from src.contexts.customGPTs.infrastructure.db.uow_implementations import SQLAlchemyCgptUOW
+from src.contexts.shared.typing_aliases import Factory
 from src.contexts.customGPTs.infrastructure.db.orm import start_mappers
 from src.contexts.customGPTs.infrastructure.db.orm import metadata
-from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker, clear_mappers
+from sqlalchemy import  create_engine
+from sqlalchemy.orm import sessionmaker, clear_mappers, Session
 import pytest
 
 # If the below leads to errors, consider refactoring with the following:
@@ -20,11 +20,7 @@ def engine(mappers):
     eng.dispose()
 
 @pytest.fixture()
-def session_factory(engine):
+def session_factory(engine)-> Factory[Session]:
     SessionFactory = sessionmaker(engine, expire_on_commit=False)
     return SessionFactory
 
-# @pytest.fixture()
-# def uow_factory(session_factory):
-#     # fresh UoW per test
-#     return lambda: SQLAlchemyCgptUOW(session_factory)

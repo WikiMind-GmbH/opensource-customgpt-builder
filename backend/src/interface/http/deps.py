@@ -6,7 +6,7 @@ from src.bootstrap import bootstrap, DependenciesContainer
 # Compose ONCE for this process (choose env-specific URL here)
 deps: DependenciesContainer = bootstrap(
     db_url_chat="sqlite:///./dev-chat.db",
-    db_url_cgpt="sqlite:///./cgpt-chat.db",
+    db_url_cgpt="sqlite:///./dev-cgpt.db",
     model_name="gpt-4.1-mini",
     create_schema=True,  # dev/test only
 )

@@ -10,6 +10,6 @@ export enum Role{
 }
 
 export type CustomGptInfo = {
-  customgptIdOrNullIfDefault: number;
+  customgptIdOrNullIfDefault: string;
   customGptName: string;
 };

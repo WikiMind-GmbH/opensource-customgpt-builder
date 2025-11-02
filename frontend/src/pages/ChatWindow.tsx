@@ -5,12 +5,14 @@ import { List } from "lodash";
 import {
   AssistantMessage,
   ChatHistory,
-  ChatService,
-  CustomGpTsService,
-  ExistingCustomGPT,
+  ChatCommandsService,
+  ChatQueriesService,
+  CustomGpTsQueriesService,
+  CustomGPTInfosSchema,
   Role,
   SimplifiedMessage,
-  UserMessageRequest,
+  NewChatRequest,
+  ContinueChatRequest,
 } from "../client";
 
 export default function ChatWindow() {
@@ -20,7 +22,7 @@ export default function ChatWindow() {
   }>();
   const { state } = useLocation();
   const gptIdOrNullIfDefault =
-    (state as { gptIdOrNullIfDefault?: number } | null)?.gptIdOrNullIfDefault ??
+    (state as { gptIdOrNullIfDefault?: string } | null)?.gptIdOrNullIfDefault ??
     null; // id null will be default gpt version
 
   // const [loading, setLoading] = useState(true);
@@ -35,8 +37,8 @@ export default function ChatWindow() {
   async function loadChatContentIfExisting() {
     if (conversationIdOrUndefinedfNewConversation !== undefined)
       try {
-        const conversation: ChatHistory = await ChatService.chatHistoryById(
-          Number(conversationIdOrUndefinedfNewConversation)
+        const conversation: ChatHistory = await ChatQueriesService.chatHistoryById(
+          conversationIdOrUndefinedfNewConversation
         );
         setMessages(conversation.messages);
       } catch (err: unknown) {
@@ -49,8 +51,8 @@ export default function ChatWindow() {
   async function setNameOfGPT() {
     if (gptIdOrNullIfDefault !== null) {
       try {
-        const gptInfos: ExistingCustomGPT =
-          await CustomGpTsService.getCustomGptInfos(gptIdOrNullIfDefault);
+        const gptInfos: CustomGPTInfosSchema =
+          await CustomGpTsQueriesService.getCustomGptInfos(gptIdOrNullIfDefault);
         setCurrentGptName(gptInfos.custom_gpt_name);
       } catch (err: unknown) {
         setError((err as Error).message);
@@ -86,15 +88,21 @@ export default function ChatWindow() {
     // push user message
     setMessages((prev) => [...prev, { role: Role.USER, message: input }]);
     setInput("");
-    const req: UserMessageRequest = {
-      conversation_id:
-        conversationIdOrUndefinedfNewConversation !== undefined
-          ? Number(conversationIdOrUndefinedfNewConversation)
-          : null,
-      request_message: input,
-      custom_gpt_id: gptIdOrNullIfDefault,
-    };
-    const response: AssistantMessage = await ChatService.sendUserMessage(req);
+
+
+  const req: ContinueChatRequest | NewChatRequest =
+  conversationIdOrUndefinedfNewConversation !== undefined
+    ? {
+        request_message: input,
+        conversation_id: conversationIdOrUndefinedfNewConversation,
+      }
+    : {
+        request_message: input,
+        custom_gpt_id: gptIdOrNullIfDefault,
+      };
+
+
+    const response: AssistantMessage = await ChatCommandsService.sendUserMessage(req);
     const response_text: string = response.response_message.message;
     const convId = response.conversation_id;
     if (conversationIdOrUndefinedfNewConversation !== undefined) {

@@ -1,17 +1,12 @@
+from src.contexts.chat.application.ports.chat_repo import ConversationNotFoundError
 from src.contexts.shared.typing_aliases import Factory
 from src.contexts.chat.infrastructure.db.conv_repo_implmementations import (
     SQAlchemyConversartionRepository,
 )
-from src.contexts.chat.application.exceptions import ConversationNonExistentError
-from src.contexts.chat.infrastructure.db.uow_implementations import (
-    SQLAlchemyConversationUOW,
-)
 from src.contexts.chat.domain.models import ContentType, Message, Role, Conversation
 from src.contexts.chat.infrastructure.db.orm import conversations as conversations_table
-from sqlalchemy import select
-from sqlalchemy.orm import Session, sessionmaker
-
 from sqlalchemy import select, func
+from sqlalchemy.orm import Session
 from src.contexts.chat.infrastructure.db.orm import messages_excl_sysPrompt as messages_table
 import itertools
 import pytest
@@ -33,31 +28,33 @@ def test_repository_get_roundtrip(session_factory: Factory[Session]):
 def test_repository_get_raises_when_missing(session_factory: Factory[Session]):
     with session_factory() as session:
         repository = SQAlchemyConversartionRepository(session)
-        with pytest.raises(ConversationNonExistentError):
+        with pytest.raises(ConversationNotFoundError):
             repository.get("non-existent-id")
 
-
-def test_list_all_overviews_orders_by_last_message(session_factory: Factory[Session]):
+def test_add_text_messages_domain_functions_translate(session_factory: Factory[Session]):
+    assistant_text: str = "assistant_text"
+    user_text: str = "user_text"
     with session_factory() as session:
-        conversation_a = Conversation(id="a")
-        conversation_b = Conversation(id="b")
-        conversation_c = Conversation(id="c")
-        session.add_all([conversation_a, conversation_b, conversation_c])
-        session.commit()
-
-        conversation_a.messages_excl_sysPrompt.append(
-            Message(role=Role.user, contentType=ContentType.text, imageUrlOrText="1")
-        )
-        session.commit()  # sets last_message_at for A
-
-        conversation_b.messages_excl_sysPrompt.append(
-            Message(role=Role.user, contentType=ContentType.text, imageUrlOrText="2")
-        )
-        session.commit()  # sets last_message_at for B (later than A)
-
         repository = SQAlchemyConversartionRepository(session)
-        overviews = repository.list_all_overviews_ordered_by_latest_msg()
-        assert [overview.id for overview in overviews] == ["b", "a", "c"]
+        conversation = repository.create_conversation()
+        conv_id: str = conversation.id
+        conversation.add_user_text_message(user_text)
+        session.commit()
+        conversation.add_assistant_text_message(assistant_text)
+        session.commit()
+    with session_factory() as session:
+        repository = SQAlchemyConversartionRepository(session)
+        conv: Conversation = repository.get(conv_id=conv_id)
+        messages: list[Message] = conv.messages_excl_sysPrompt
+        assert len(messages) == 2
+        assert messages[0].contentType == ContentType.text
+        assert messages[1].contentType == ContentType.text
+        assert messages[0].role == Role.user
+        assert messages[1].role == Role.assistant
+        assert messages[0].imageUrlOrText == user_text
+        assert messages[1].imageUrlOrText == assistant_text
+
+
 
 
 def test_delete_conversation_cascades_messages(session_factory: Factory[Session]):
@@ -65,9 +62,7 @@ def test_delete_conversation_cascades_messages(session_factory: Factory[Session]
         repository = SQAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
         conversation.title = "X"
-        conversation.messages_excl_sysPrompt.append(
-            Message(role=Role.user, contentType=ContentType.text, imageUrlOrText="hi")
-        )
+        conversation.add_user_text_message("hi")
         session.commit()
 
         repository.delete(conversation)
@@ -94,25 +89,20 @@ def test_last_message_at_recomputes_on_delete_of_latest_message(session_factory:
         conversation = repository.create_conversation()
         conversation.title = "LMA"
 
-        first_message = Message(
-            role=Role.user, contentType=ContentType.text, imageUrlOrText="1"
-        )
-        conversation.messages_excl_sysPrompt.append(first_message)
+        msg:Message =conversation.add_user_text_message("1")
         session.commit()
+        assert msg is not None
         timestamp_after_first = _fetch_last_message_at(session, conversation.id)
 
-        second_message = Message(
-            role=Role.user, contentType=ContentType.text, imageUrlOrText="2"
-        )
-        conversation.messages_excl_sysPrompt.append(second_message)
+        conversation.add_user_text_message("2")
         session.commit()
         timestamp_after_second = _fetch_last_message_at(session, conversation.id)
         assert (
             timestamp_after_second and timestamp_after_second >= timestamp_after_first
         )
 
-        # Remove the latest message → timestamp should step back
-        conversation.messages_excl_sysPrompt.remove(second_message)
+        # Remove the latest message → timestamp should step yback
+        conversation._messages_excl_sysPrompt = conversation.messages_excl_sysPrompt[:-1]
         session.commit()
         timestamp_after_deletion = _fetch_last_message_at(session, conversation.id)
         assert timestamp_after_deletion == timestamp_after_first
@@ -122,44 +112,13 @@ def test_last_message_at_becomes_null_when_all_messages_deleted(session_factory:
     with session_factory() as session:
         repository = SQAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
-        conversation.messages_excl_sysPrompt.append(
-            Message(role=Role.user, contentType=ContentType.text, imageUrlOrText="x")
-        )
+        conversation.add_user_text_message("x")
         session.commit()
         assert _fetch_last_message_at(session, conversation.id) is not None
 
-        conversation.messages_excl_sysPrompt.clear()  # delete-orphan
+        conversation._messages_excl_sysPrompt.clear()  # delete-orphan
         session.commit()
         assert _fetch_last_message_at(session, conversation.id) is None
-
-
-def test_overviews_empty_when_no_conversations(session_factory: Factory[Session]):
-    with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
-        assert repository.list_all_overviews_ordered_by_latest_msg() == []
-
-
-def test_overviews_place_null_last_message_at_last(session_factory: Factory[Session]):
-    with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
-        conversation_with_message = repository.create_conversation()
-        conversation_with_message.title = "With"
-        conversation_without_message = repository.create_conversation()
-        conversation_without_message.title = "Without"
-
-        conversation_with_message.messages_excl_sysPrompt.append(
-            Message(role=Role.user, contentType=ContentType.text, imageUrlOrText="1")
-        )
-        session.commit()
-
-        overview_ids = [
-            overview.id
-            for overview in repository.list_all_overviews_ordered_by_latest_msg()
-        ]
-        assert overview_ids == [
-            conversation_with_message.id,
-            conversation_without_message.id,
-        ]
 
 
 @pytest.mark.parametrize(
@@ -169,7 +128,7 @@ def test_message_enum_roundtrip(session_factory: Factory[Session], role: Role, c
     with session_factory() as session:
         repository = SQAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
-        conversation.messages_excl_sysPrompt.append(
+        conversation._messages_excl_sysPrompt.append(
             Message(role=role, contentType=content_type, imageUrlOrText="x")
         )
         session.commit()
@@ -177,5 +136,5 @@ def test_message_enum_roundtrip(session_factory: Factory[Session], role: Role, c
     with session_factory() as verification_session:
         repository_verify = SQAlchemyConversartionRepository(verification_session)
         fetched = repository_verify.get(conversation.id)
-        assert fetched.messages_excl_sysPrompt[0].role == role
-        assert fetched.messages_excl_sysPrompt[0].contentType == content_type
+        assert fetched._messages_excl_sysPrompt[0].role == role
+        assert fetched._messages_excl_sysPrompt[0].contentType == content_type

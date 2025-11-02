@@ -1,48 +1,19 @@
-from typing import List, Sequence
-from src.contexts.chat.application.mappers import message_dto_to_message_domain
+from src.contexts.chat.application.mappers import (
+    message_domain_to_message_llm_port_dto,
+    message_dto_cgpt_retreiver_to_message_domain,
+)
 from src.contexts.chat.application.ports.llm_port import (
-    ErrorWhileCallingAPI,
     LlmPort,
-    NoAssistantResponse,
+    MessageDTOllm,
 )
 from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
     CustomGPTInstructionsRetreiver,
-    MessageDTO,
+    MessageDTORetreiver,
 )
-from src.contexts.chat.application.exceptions import ConversationNonExistentError
 from src.contexts.chat.application.ports.uow import ConversationUOW
 from src.contexts.chat.domain.models import (
-    Conversation,
-    ConversationFilteredForClient,
-    ConversationOverview,
-    Message,
-    Role,
-    TextMessage,
+    Conversation
 )
-
-
-def get_chat_summaries_service(conv_uow: ConversationUOW) -> List[ConversationOverview]:
-    with conv_uow as uow:
-        summaries: Sequence[ConversationOverview] = (
-            uow.conversation_repo.list_all_overviews_ordered_by_latest_msg()
-        )
-        return list(summaries)
-
-
-def retrieve_chat_history_by_id(
-    conv_id: str, conv_uow: ConversationUOW
-) -> ConversationFilteredForClient:
-    try:
-        with conv_uow as uow:
-            conv: Conversation = uow.conversation_repo.get(conv_id)
-            conv_filtered_for_client: ConversationFilteredForClient = (
-                conv.get_conversation_filtered_for_client
-            )
-            return conv_filtered_for_client
-    except ConversationNonExistentError:
-        raise ConversationNonExistentError
-    except Exception:
-        raise Exception
 
 
 def create_conversation(
@@ -58,33 +29,40 @@ def create_conversation(
 
 
 def continue_conversation(
+    user_message: str,
     conv_id: str,
     conv_uow: ConversationUOW,
     cgpt_retreiver: CustomGPTInstructionsRetreiver,
     llm_adapter: LlmPort,
     use_rag: bool = False,
 ) -> str:
+    with conv_uow as uow:
+        conv: Conversation = uow.conversation_repo.get(conv_id)
+        conv.add_user_text_message(user_text_message=user_message)
+        uow.commit()
 
-    try:
-        with conv_uow as uow:
-            conv: Conversation = uow.conversation_repo.get(conv_id)
-            cgpt_id: str | None = conv.customGPT_id
-            cgpt_sys_prompt_dto: list[MessageDTO] = (
-                cgpt_retreiver.get_cgpt_sys_prompt(cgpt_id=cgpt_id)
-                if cgpt_id is not None
-                else []
+        cgpt_id: str | None = conv.customGPT_id
+        cgpt_sys_prompt_dto: list[MessageDTORetreiver] = (
+            cgpt_retreiver.get_cgpt_sys_prompt(cgpt_id=cgpt_id)
+            if cgpt_id is not None
+            else []
+        )
+        cgpt_sys_prompt: list[MessageDTOllm] = [
+            message_domain_to_message_llm_port_dto(
+                message_dto_cgpt_retreiver_to_message_domain(msg)
             )
-            cgpt_sys_prompt: list[Message] = [message_dto_to_message_domain(msg_dto) for msg_dto in cgpt_sys_prompt_dto]
-            assistant_response: str = llm_adapter.get_assistant_response(
-                messages_excluding_sys_prompt=conv.messages_excl_sysPrompt,
-                cgpt_systemprompt=cgpt_sys_prompt,
-            )
-            return assistant_response
-    except ConversationNonExistentError:
-        raise ConversationNonExistentError
-    except NoAssistantResponse:
-        raise NoAssistantResponse
-    except ErrorWhileCallingAPI:
-        raise ErrorWhileCallingAPI
-    except Exception:
-        raise Exception
+            for msg in cgpt_sys_prompt_dto
+        ]
+
+        messages_excluding_sys_prompt: list[MessageDTOllm] = [
+            message_domain_to_message_llm_port_dto(msg)
+            for msg in conv.messages_excl_sysPrompt
+        ]
+
+        assistant_response: str = llm_adapter.get_assistant_text_response(
+            messages_excluding_sys_prompt=messages_excluding_sys_prompt,
+            cgpt_systemprompt=cgpt_sys_prompt,
+        )
+        conv.add_assistant_text_message(assistant_text_response=assistant_response)
+        uow.commit()
+        return assistant_response

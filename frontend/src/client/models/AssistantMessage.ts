@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { SimplifiedMessage } from './SimplifiedMessage';
 export type AssistantMessage = {
-    conversation_id: number;
+    conversation_id: string;
     response_message: SimplifiedMessage;
 };
 

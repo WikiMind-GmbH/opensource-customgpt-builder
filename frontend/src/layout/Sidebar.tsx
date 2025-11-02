@@ -1,26 +1,25 @@
 // Sidebar.tsx
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ChatService, ChatSummary } from "../client";
+import { ChatQueriesService, ChatSummary } from "../client";
 // import "./Sidebar.css";
 
 export default function Sidebar() {
   const [summaries, setSummaries] = useState<ChatSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const location = useLocation();  // watch the router location
+  const location = useLocation(); // watch the router location
 
   useEffect(() => {
     async function loadSummaries() {
       try {
-        const data = await ChatService.getChatSummaries();
-        data.sort((a, b) => b.chat_id - a.chat_id);
+        const data = await ChatQueriesService.getChatSummaries();
         setSummaries(data);
       } catch (err: any) {
         setError(err.message ?? "Failed to load chats");
       }
     }
     loadSummaries();
-  }, [location]);  // re-run on every navigation change
+  }, [location]); // re-run on every navigation change
 
   return (
     <aside className="sidebar">

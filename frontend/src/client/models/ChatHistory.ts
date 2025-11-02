@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { SimplifiedMessage } from './SimplifiedMessage';
 export type ChatHistory = {
-    custom_gpt_id: (number | null);
+    custom_gpt_id: (string | null);
     messages: Array<SimplifiedMessage>;
 };
 

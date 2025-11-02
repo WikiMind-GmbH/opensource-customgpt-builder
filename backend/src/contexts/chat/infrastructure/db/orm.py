@@ -74,11 +74,11 @@ def start_mappers() -> None:
         conversations,
         properties={
             # one-to-many; SQLAlchemy instruments `Conversation.messages`
-            "messages_excl_sysPrompt": relationship(
+            "_messages_excl_sysPrompt": relationship(
                 Message,
                 primaryjoin=messages_excl_sysPrompt.c.conversation_id == conversations.c.id,
                 backref=None,
-                order_by=messages_excl_sysPrompt.c.id.asc(),
+                order_by=messages_excl_sysPrompt.c.created_at.asc(),
                 cascade="all, delete-orphan",
                 passive_deletes=True,
             )

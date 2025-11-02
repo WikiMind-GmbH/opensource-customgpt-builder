@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ChatSummary = {
-    chat_id: number;
+    chat_id: string;
     chat_summary: string;
 };
 

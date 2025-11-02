@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DisplayCustomGPTs.css";
-import { CustomGpTsService, DeleteCustomGPTStatus, ExistingCustomGPT } from "../client";
+import {
+  CustomGpTsCommandsService,
+  CustomGpTsQueriesService,
+  CustomGPTOverviewSchema,
+} from "../client";
 import { CustomGptInfo } from "../interfaces/interfaces";
-
 
 export default function DisplayCustomGPTs() {
   const [gpts, setGpts] = useState<CustomGptInfo[]>([]);
@@ -15,10 +18,13 @@ export default function DisplayCustomGPTs() {
   useEffect(() => {
     async function load() {
       try {
-        const existingGPTList: ExistingCustomGPT[] =
-          await CustomGpTsService.retreiveAllCustomGpts(); // ⬅️ adjust endpoint
+        const existingGPTList: CustomGPTOverviewSchema[] =
+          await CustomGpTsQueriesService.retreiveAllCustomGpts(); // ⬅️ adjust endpoint
         const customGptInfos: CustomGptInfo[] = existingGPTList.map(
-          ({ custom_gpt_id: customgptIdOrNullIfDefault, custom_gpt_name: customGptName }) => ({
+          ({
+            custom_gpt_id: customgptIdOrNullIfDefault,
+            custom_gpt_name: customGptName,
+          }) => ({
             customgptIdOrNullIfDefault,
             customGptName,
           })
@@ -33,12 +39,15 @@ export default function DisplayCustomGPTs() {
     load();
   }, []);
 
-  async function handleDelete(id: number) {
+  async function handleDelete(id: string) {
     if (!confirm("Delete this GPT?")) return;
 
     try {
-      const res: DeleteCustomGPTStatus = await CustomGpTsService.deleteCustomGpt(id);
-      setGpts((prev) => prev.filter((g) => g.customgptIdOrNullIfDefault !== id));
+      const res: CustomGpTsCommandsService =
+        await CustomGpTsCommandsService.deleteCustomGpt(id);
+      setGpts((prev) =>
+        prev.filter((g) => g.customgptIdOrNullIfDefault !== id)
+      );
     } catch (err: unknown) {
       alert(`Delete failed: ${(err as Error).message}`);
     }
@@ -63,7 +72,12 @@ export default function DisplayCustomGPTs() {
             <button
               type="button"
               onClick={() =>
-                navigate("/chatWindow", { state: { gptIdOrNullIfDefault: customgptIdOrNullIfDefault, chatId: null } })
+                navigate("/chatWindow", {
+                  state: {
+                    gptIdOrNullIfDefault: customgptIdOrNullIfDefault,
+                    chatId: null,
+                  },
+                })
               }
               className="btn primary"
             >
@@ -71,7 +85,9 @@ export default function DisplayCustomGPTs() {
             </button>
             <button
               type="button"
-              onClick={() => navigate(`/createOrEditCustomGPT/${customgptIdOrNullIfDefault}`)}
+              onClick={() =>
+                navigate(`/createOrEditCustomGPT/${customgptIdOrNullIfDefault}`)
+              }
               className="btn secondary"
             >
               Edit
