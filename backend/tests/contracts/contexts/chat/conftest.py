@@ -1,21 +1,14 @@
 from src.contexts.chat.infrastructure.db.conv_repo_implmementations import SQAlchemyConversartionRepository
 from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import ChatQueriesAdapter
-from src.contexts.chat.infrastructure.db.orm import start_mappers
 from src.contexts.chat.infrastructure.db.orm import metadata
 from src.contexts.shared.typing_aliases import Factory
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, clear_mappers, Session
+from sqlalchemy.orm import sessionmaker, Session
 import pytest
 
-# If the below leads to errors, consider refactoring with the following:
-@pytest.fixture(scope="session")
-def mappers():
-    start_mappers()
-    yield
-    clear_mappers() # Can't call start_mappers multiple times in same runtime! (without this)
 
 @pytest.fixture()
-def engine(mappers):
+def engine(start_mapper_chat):
     eng = create_engine("sqlite:///:memory:")
     metadata.create_all(eng)
     yield eng

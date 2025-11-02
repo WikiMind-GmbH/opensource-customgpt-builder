@@ -17,30 +17,21 @@ from src.contexts.shared.typing_aliases import Factory
 from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
 from src.contexts.chat.infrastructure.db.orm import (
     prepare_engine,
-    start_mappers as start_mappers_chat,
 )
 from src.contexts.chat.infrastructure.db.orm import metadata as chat_metadata
-from src.contexts.customGPTs.infrastructure.db.orm import (
-    start_mappers as cgpt_start_mappers,
-)
+
 from src.contexts.customGPTs.infrastructure.db.orm import metadata as cgpt_metadata
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, clear_mappers, Session
+from sqlalchemy.orm import sessionmaker, Session
 
 import pytest
 
 
 # --------------  ConversationUOW  -----------------
 
-@pytest.fixture(scope="session")
-def mappers():
-    cgpt_start_mappers()
-    start_mappers_chat()
-    yield
-    clear_mappers()  # Can't call start_mappers multiple times in same runtime! (without this)
 
 @pytest.fixture()
-def conv_engine(mappers):
+def conv_engine(start_chat_mappers):
     eng = create_engine("sqlite:///:memory:")
     eng = prepare_engine(eng)
     chat_metadata.create_all(eng)
@@ -66,7 +57,7 @@ def conv_uow_factory(conv_session_factory):
 
 
 @pytest.fixture()
-def cgpt_engine(mappers):
+def cgpt_engine(start_cgpt_mappers):
     eng = create_engine("sqlite:///:memory:")
     cgpt_metadata.create_all(eng)
     yield eng

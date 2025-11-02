@@ -1,13 +1,16 @@
 
 
 COMPOSE := docker compose -f docker-compose.dev.yaml
-PYTEST_FLAGS := -q --maxfail=1 --disable-warnings --setup-show -s
+PYTEST_FLAGS := -q --maxfail=1  
 
 .PHONY: generate-client-prod test test-unit test-integration test-unit-exec test-integration-exec test-clean
 
 ## Run ALL tests (unit + integration)
 test:
 	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests"
+
+test-show-setup:
+	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) --setup-show -s tests"
 
 ## Run only unit tests
 test-unit:
