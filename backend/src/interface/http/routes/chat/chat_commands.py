@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from backend.src.interface.http.schemas.chat.chat_commands import AssistantMessage, SimplifiedMessage, Role
 from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
     CustomGPTInstructionsRetreiver,
 )
@@ -16,7 +17,6 @@ from src.contexts.chat.application.service_functions import (
     create_conversation,
 )
 from src.contexts.chat.application.ports.uow import ConversationUOW
-from src.interface.http.schemas.common import AssistantMessage, Role, SimplifiedMessage
 
 chat_commands_router = APIRouter(prefix="/chat", tags=["Chat: Commands"])
 

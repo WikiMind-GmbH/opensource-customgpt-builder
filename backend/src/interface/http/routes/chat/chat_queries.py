@@ -4,8 +4,7 @@ from src.bootstrap import DependenciesContainer
 from src.interface.http.deps import deps
 
 
-from src.contexts.chat.application.ports.uow import ConversationUOW
-from src.interface.http.schemas.common import ChatHistory, ChatSummary, SimplifiedMessage, Role 
+from src.interface.http.schemas.chat.chat_queries import ChatHistory, ChatSummary, SimplifiedMessage, Role 
 
 chat_queries_router = APIRouter(prefix="/chat", tags=["Chat: Queries"])
 

@@ -1,1 +1,0 @@
-**Cross-context** rule: the consumer defines the port; the provider implements it. That’s your anti-corruption boundary.
