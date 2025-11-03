@@ -35,7 +35,8 @@ const [files, setFiles] = useState<string[]>([]);
     if (idOfCustomGptOrUndefinedStr === undefined) {
       const body: CustomGptToCreate = { ...form };
       const res: CommandResult =
-        await CustomGpTsCommandsService.createOrEditCustomGpt(body);
+        await CustomGpTsCommandsService.createCustomGpt(body);
+      alert(res.message)
       navigate(`/createOrEditCustomGPT/${res.resource_id}`);
     } else {
       const body: CustomGptToEdit = {
@@ -43,7 +44,9 @@ const [files, setFiles] = useState<string[]>([]);
         ...form,
       };
       const res: CommandResult =
-        await CustomGpTsCommandsService.createOrEditCustomGpt(body);
+        await CustomGpTsCommandsService.editCustomGpt(body);
+      alert(res.message)
+      
     }
   }
 

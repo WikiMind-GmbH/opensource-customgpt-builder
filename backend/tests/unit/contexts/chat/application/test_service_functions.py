@@ -7,6 +7,7 @@ from src.contexts.chat.application.ports.llm_port import LlmPort
 from src.contexts.chat.application.ports.uow import ConversationUOW
 from src.contexts.chat.application.service_functions import (
     continue_conversation,
+    create_conversation,
 )
 from src.contexts.chat.domain.models import Conversation, Role
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
@@ -14,6 +15,12 @@ from src.contexts.customGPTs.domain.models import CustomGPT
 from src.contexts.shared.typing_aliases import Factory
 from tests.unit.contexts.chat.application.FakeAdapters import FakeLLMAdapter
 import pytest
+
+def test_create_conversation_creation_works(conv_uow_factory: Factory[ConversationUOW]):
+    conv_id:str = create_conversation(conv_uow=conv_uow_factory())
+    with conv_uow_factory() as uow:
+        conv: Conversation = uow.conversation_repo.get(conv_id)
+    # If no error thrown, we are good
 
 def test_continue_conversation_messages_are_added_to_conversation(
     conv_uow_factory: Factory[ConversationUOW],

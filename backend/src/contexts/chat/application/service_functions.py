@@ -17,14 +17,11 @@ from src.contexts.chat.domain.models import (
 
 
 def create_conversation(
-    custom_gpt_id: str | None,
     conv_uow: ConversationUOW,
 ) -> str:
-
     with conv_uow as uow:
-        conv: Conversation = uow.conversation_repo.create_conversation(
-            cgpt_id=custom_gpt_id
-        )
+        conv: Conversation = uow.conversation_repo.create_conversation()
+        uow.commit()
         return conv.id
 
 

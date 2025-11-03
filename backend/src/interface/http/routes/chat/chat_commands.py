@@ -38,7 +38,7 @@ async def send_user_message(
 ) -> AssistantMessage:
     if isinstance(request, NewChatRequest):
         conversation_id: str = create_conversation(
-            custom_gpt_id=request.custom_gpt_id, conv_uow=conv_uow
+            conv_uow=conv_uow
         )
     else:
         conversation_id: str = request.conversation_id

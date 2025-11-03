@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.interface.http.mappers_data_and_exceptions.chat.cgpt_queries_classes_and_exceptions import register_query_exception_handlers
+from src.interface.http.mappers_data_and_exceptions.all_handlers import register_all_handlers
 from src.interface.http.routes.chat.chat_commands import chat_commands_router
 from src.interface.http.routes.chat.chat_queries import chat_queries_router
 from src.interface.http.routes.customGPTs.customGPT_commands import customgpt_commands_router
@@ -21,7 +21,7 @@ app.include_router(customgpt_commands_router)
 app.include_router(customgpt_queries_router)
 # include knowledge routers
 
-register_query_exception_handlers(app)
+register_all_handlers(app)
 # ToDo: add other exception handlers
 origins = ["https://localhost"]
 app.add_middleware(

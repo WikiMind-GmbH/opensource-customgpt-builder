@@ -35,7 +35,7 @@ export class CustomGpTsCommandsService {
      * @returns CommandResult Successful Response
      * @throws ApiError
      */
-    public static createOrEditCustomGpt(
+    public static createCustomGpt(
         requestBody: CustomGptToCreate,
     ): CancelablePromise<CommandResult> {
         return __request(OpenAPI, {
@@ -54,7 +54,7 @@ export class CustomGpTsCommandsService {
      * @returns CommandResult Successful Response
      * @throws ApiError
      */
-    public static createOrEditCustomGpt1(
+    public static editCustomGpt(
         requestBody: CustomGptToEdit,
     ): CancelablePromise<CommandResult> {
         return __request(OpenAPI, {

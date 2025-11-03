@@ -14,7 +14,7 @@ from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
 
-def register_query_exception_handlers(app: FastAPI) -> None:
+def register_query_exception_handlers_cgpt_query_port(app: FastAPI) -> None:
     @app.exception_handler(NotFoundError)
     async def _not_found(_, exc: NotFoundError):
         return JSONResponse(

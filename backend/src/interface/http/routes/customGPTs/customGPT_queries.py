@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from src.bootstrap import DependenciesContainer
 from src.contexts.customGPTs.application.ports.cgpt_queries import CgptQueries, CustomGPTInfosDTO
-from src.interface.http.mappers_data_and_exceptions.chat.cgpt_queries_classes_and_exceptions import CustomGPTInfosMapper, CustomGPTOverviewsMapper
+from src.interface.http.mappers_data_and_exceptions.customGPTs.cgpt_queries_classes_and_exceptions import CustomGPTInfosMapper, CustomGPTOverviewsMapper
 from src.interface.http.schemas.customGPTs.customGPT_queries import CustomGPTInfosSchema, CustomGPTOverviewSchema
 from src.contexts.customGPTs.application.ports.cgpt_queries import CustomGPTOverviewDTO
 from src.interface.http.deps import deps

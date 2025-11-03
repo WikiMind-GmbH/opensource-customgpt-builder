@@ -39,7 +39,7 @@ async def delete_custom_gpt_endpoint(
 @customgpt_commands_router.post(
     "/create-custom-gpt",
     response_model=CommandResult,
-    operation_id="createOrEditCustomGpt",
+    operation_id="createCustomGpt",
 )
 async def create_custom_gpt(
     custom_gpt_infos: CustomGptToCreate,
@@ -60,7 +60,7 @@ async def create_custom_gpt(
 @customgpt_commands_router.post(
     "/edit-custom-gpt",
     response_model=CommandResult,
-    operation_id="createOrEditCustomGpt",
+    operation_id="editCustomGpt",
 )
 async def edit_custom_gpt(
     custom_gpt_infos: CustomGptToEdit,

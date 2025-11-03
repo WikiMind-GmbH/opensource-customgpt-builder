@@ -43,6 +43,16 @@ https://chatgpt.com/s/t_68f9763ba9bc819182481f31737a043e
 There are conventions about how the names and syntax/structure of endpoint urls related to expected behaviour. As of now, the names are chosen freely and no structure is held up between getters and setters of the same object type for example.
 
 We should, for the sake of a readable api, read and implement these conventions.
+
+### OPEN: Pydantic strictnes unknown fields
+from pydantic import BaseModel, ConfigDict
+
+class CreateCgptIn(BaseModel):
+    model_config = ConfigDict(extra='forbid')  # <— reject unknown fields
+    name: str
+    instructions: str
+    description: str | None = None
+
 ## Consequences
 
 This must be reevaluated in the future and better adrs will be created containing all the information
