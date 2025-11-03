@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from backend.src.interface.http.schemas.chat.chat_commands import AssistantMessage, SimplifiedMessage, Role
+from src.interface.http.schemas.chat.chat_commands import AssistantMessage, SimplifiedMessage, Role
 from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
     CustomGPTInstructionsRetreiver,
 )
