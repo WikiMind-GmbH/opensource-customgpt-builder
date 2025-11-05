@@ -8,7 +8,7 @@ import pytest
 
 
 @pytest.fixture()
-def engine(start_mapper_chat):
+def engine(start_chat_mappers):
     eng = create_engine("sqlite:///:memory:")
     metadata.create_all(eng)
     yield eng

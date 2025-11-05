@@ -16,6 +16,10 @@ test-show-setup:
 test-unit:
 	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/unit"
 
+## Run only external api tests -might cost money
+test-external-api-adapters:
+	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) test_external_api_adapters"
+
 
 test-contracts:
 	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/contracts"

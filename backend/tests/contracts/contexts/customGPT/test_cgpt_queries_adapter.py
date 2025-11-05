@@ -8,6 +8,7 @@ from src.contexts.shared.typing_aliases import Factory
 from src.contexts.customGPTs.infrastructure.db.orm import custom_gpts
 from sqlalchemy.orm import Session
 from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import CgptQueriesImplementation
+
 def test_get_overviews(session_factory: Factory[Session], engine:Engine, cgpt_query_factory:Factory[CgptQueriesImplementation]):
     """
     We create 3 rows, then set their created_at explicitly so ordering is deterministic.
@@ -59,6 +60,7 @@ def test_get_custom_gpt_infos(session_factory: Factory[Session], engine:Engine, 
 
     # create three entities (ids come from your domain model)
     first = repo.create_cgpt(name=name, instructions=instructions, description=description)
+    session.commit()
     id = first.id
     cgpt_first:CustomGPTInfosDTO = cgpt_query_factory().get_custom_gpt_infos(id)
     assert cgpt_first.id == id
