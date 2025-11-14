@@ -55,6 +55,33 @@ def test_empty_get_chat_summaries_returns_empty_list(adapter: ChatQueriesAdapter
     assert summaries == []
 
 
+def test_chat_history_returns_correct_cgpt_value(
+    session_factory: Factory[Session], adapter: ChatQueriesAdapter
+):
+    session = session_factory()
+
+    # Create conversation
+    session.execute(
+        insert(conversations).values(
+            id="conv1", title="T", _customGPT_id="cgpt-123", last_message_at=None
+        )
+    )
+    session.execute(
+        insert(conversations).values(
+            id="conv2", title="T", _customGPT_id=None, last_message_at=None
+        )
+    )
+    session.commit()
+
+    dto = adapter.get_chat_history("conv1")
+    # customgpt id propagated
+    assert dto.customgpt_id == "cgpt-123"
+
+    dto2 = adapter.get_chat_history("conv2")
+    # customgpt id propagated
+    assert dto2.customgpt_id is None
+
+
 def test_get_chat_history_returns_only_text_messages_and_maps_roles(
     session_factory: Factory[Session], adapter: ChatQueriesAdapter
 ):
@@ -103,8 +130,8 @@ def test_get_chat_history_returns_only_text_messages_and_maps_roles(
     assert dto.customgpt_id == "cgpt-123"
 
     # Only TEXT messages, sorted by created_at DESC per adapter
-    assert [m.text for m in dto.messages] == ["hi!", "hello"]
-    assert [m.role for m in dto.messages] == [RoleDTO.assistant, RoleDTO.user]
+    assert [m.text for m in dto.messages] == [ "hello","hi!"]
+    assert [m.role for m in dto.messages] == [RoleDTO.user,RoleDTO.assistant]
 
 
 def test_get_chat_history_unknown_conversation_raises(adapter: ChatQueriesAdapter):

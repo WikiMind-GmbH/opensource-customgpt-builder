@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import datetime
 from enum import StrEnum
 from uuid import uuid4
 
@@ -30,7 +31,7 @@ class Message:
 
 class Conversation:
     id: str
-    title: str | None = None
+    title: str 
     # system_prompt: list[Message] | None = None # ToDo: change repo etc, add other changes see: https://chatgpt.com/c/68dd7c24-82a0-8327-84f1-445d9ecc5192
     _messages_excl_sysPrompt: list[Message] # = field(default_factory=list) #excluding system prompt <- this will be retreived every time
     _customGPT_id: str | None = None
@@ -41,6 +42,7 @@ class Conversation:
         self.id = id if id else str(uuid4())
         self._customGPT_id = customGPT_id
         self._messages_excl_sysPrompt: list[Message] = []
+        self.title = str(datetime.datetime.now())
 
 
     def __repr__(self) -> str:

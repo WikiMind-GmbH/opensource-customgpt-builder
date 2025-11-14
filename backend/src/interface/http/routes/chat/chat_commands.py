@@ -33,12 +33,13 @@ async def send_user_message(
     conv_uow: ConversationUOW = Depends(deps.conversation_uow_factory),
     llm_adapter: LlmPort = Depends(deps.llm_adapter_factory),
     cgpt_retreiver: CustomGPTInstructionsRetreiver = Depends(
-        deps.cgpt_instructions_adapter_factory
+        deps.cgpt_retreiver_adapter_factory
     ),
 ) -> AssistantMessage:
     if isinstance(request, NewChatRequest):
         conversation_id: str = create_conversation(
-            conv_uow=conv_uow
+            conv_uow=conv_uow,
+            cgpt_id=request.custom_gpt_id
         )
     else:
         conversation_id: str = request.conversation_id

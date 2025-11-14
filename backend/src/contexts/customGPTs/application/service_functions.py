@@ -1,9 +1,5 @@
 from src.contexts.customGPTs.domain.models import CustomGPT
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
-from src.interface.http.schemas.customGPTs.customGPT_commands import (
-    CustomGptToCreate,
-    CustomGptToEdit,
-)
 
 
 def delete_custom_gpt_service(uow: CgptUOW, gpt_id: str):

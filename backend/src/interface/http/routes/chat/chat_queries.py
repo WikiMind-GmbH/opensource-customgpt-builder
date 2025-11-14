@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from src.interface.http.mappers_data_and_exceptions.chat.chat_queries_classes_and_exceptions import conversationOverviewsDTO_to_chatSummaries, conversationTextOnlyDTO_to_chat
 from src.contexts.chat.application.ports.chat_queries import ChatQueries, ConversationOverviewDTO, ConversationTextOnlyDTO
 from src.bootstrap import DependenciesContainer
 from src.interface.http.deps import deps
@@ -18,7 +19,7 @@ def get_chat_summaries(
     queries_adapter: ChatQueries = Depends(deps.chat_queries_adapter_factory),
 ) -> list[ChatSummary]:
     overviews: list[ConversationOverviewDTO] = queries_adapter.get_chat_summaries_ordered_by_last_message()
-    summaries = [ChatSummary(chat_id=ov.id ,chat_summary=ov.title) for ov in overviews]
+    summaries: list[ChatSummary] = conversationOverviewsDTO_to_chatSummaries(overviews)
     return summaries
 
 @chat_queries_router.get(
@@ -31,5 +32,5 @@ async def get_chat_history(
     queries_adapter: ChatQueries = Depends(deps.chat_queries_adapter_factory),
 ) -> ChatHistory:
     chat: ConversationTextOnlyDTO= queries_adapter.get_chat_history(conv_id=chat_id)
-    history_to_old_schema: list[SimplifiedMessage] = [SimplifiedMessage(role = Role(str(msg.role)), message=msg.text) for msg in chat.messages]
-    return ChatHistory(custom_gpt_id=chat.customgpt_id, messages=history_to_old_schema)
+    chat_history: ChatHistory = conversationTextOnlyDTO_to_chat(chat)
+    return chat_history

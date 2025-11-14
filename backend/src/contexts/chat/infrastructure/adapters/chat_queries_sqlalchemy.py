@@ -33,12 +33,13 @@ class ChatQueriesAdapter(ChatQueries):
         return [ConversationOverviewDTO(id=id, title=title) for id, title in rows]
 
     def get_chat_history(self, conv_id: str) -> ConversationTextOnlyDTO:
-        stmt_cgpt_id = select(conversations.c._customGPT_id).where(
+        stmt_cgpt_id = select(conversations.c._customGPT_id, conversations.c.id).where(
             conversations.c.id == conv_id
         )
-        rows_cgpt_id = self._session.execute(stmt_cgpt_id).scalar_one_or_none()
-        if rows_cgpt_id is None:
+        row = self._session.execute(stmt_cgpt_id).one_or_none()
+        if row is None:
             raise NotFoundError(f"No Conv with id {conv_id} exists")
+        cgpt_id, _ = row
 
         stmt_msgs = (
             select(
@@ -48,7 +49,7 @@ class ChatQueriesAdapter(ChatQueries):
                 (messages_excl_sysPrompt.c.conversation_id == conv_id)
                 & (messages_excl_sysPrompt.c.contentType == ContentType.text)
             )
-            .order_by(messages_excl_sysPrompt.c.created_at.desc().nullslast())
+            .order_by(messages_excl_sysPrompt.c.created_at.asc().nullslast())
         )
         rows_msgs = self._session.execute(stmt_msgs).all()
         msgs: list[TextMessageDTO] = [
@@ -56,4 +57,4 @@ class ChatQueriesAdapter(ChatQueries):
             for role, text in rows_msgs
         ]
 
-        return ConversationTextOnlyDTO(customgpt_id=rows_cgpt_id, messages=msgs)
+        return ConversationTextOnlyDTO(customgpt_id=cgpt_id, messages=msgs)

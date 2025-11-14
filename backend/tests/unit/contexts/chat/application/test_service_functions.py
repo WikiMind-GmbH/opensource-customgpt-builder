@@ -16,11 +16,16 @@ from src.contexts.shared.typing_aliases import Factory
 from tests.unit.contexts.chat.application.FakeAdapters import FakeLLMAdapter
 import pytest
 
-def test_create_conversation_creation_works(conv_uow_factory: Factory[ConversationUOW]):
-    conv_id:str = create_conversation(conv_uow=conv_uow_factory())
+def test_create_conversation_cgpt_registered_correctly(conv_uow_factory: Factory[ConversationUOW]):
+    conv_id_no_cgpt:str = create_conversation(conv_uow=conv_uow_factory())
+    cgpt_id = "cgpt_id"
+    conv_id_cgpt:str = create_conversation(conv_uow=conv_uow_factory(),cgpt_id=cgpt_id)
     with conv_uow_factory() as uow:
-        conv: Conversation = uow.conversation_repo.get(conv_id)
-    # If no error thrown, we are good
+        conv_no_cgpt: Conversation = uow.conversation_repo.get(conv_id_no_cgpt)
+        conv_cgpt: Conversation = uow.conversation_repo.get(conv_id_cgpt)
+        assert conv_no_cgpt.customGPT_id is None
+        assert conv_cgpt.customGPT_id == cgpt_id
+    
 
 def test_continue_conversation_messages_are_added_to_conversation(
     conv_uow_factory: Factory[ConversationUOW],

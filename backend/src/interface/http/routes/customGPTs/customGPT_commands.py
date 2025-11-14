@@ -34,8 +34,6 @@ async def delete_custom_gpt_endpoint(
 
 
 # WIP
-
-
 @customgpt_commands_router.post(
     "/create-custom-gpt",
     response_model=CommandResult,

@@ -18,9 +18,10 @@ from src.contexts.chat.domain.models import (
 
 def create_conversation(
     conv_uow: ConversationUOW,
+    cgpt_id:str | None = None
 ) -> str:
     with conv_uow as uow:
-        conv: Conversation = uow.conversation_repo.create_conversation()
+        conv: Conversation = uow.conversation_repo.create_conversation(cgpt_id=cgpt_id)
         uow.commit()
         return conv.id
 

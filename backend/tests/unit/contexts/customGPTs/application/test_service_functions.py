@@ -12,7 +12,7 @@ from src.contexts.shared.typing_aliases import Factory
 import pytest
 
 
-def test_delete_custom_gpt_service(cgpt_uow_factory: Factory[CgptUOW]):
+def test_delete_custom_gpt_service_deltes_only_existing_customgpt_otherwise_throws_error(cgpt_uow_factory: Factory[CgptUOW]):
     with cgpt_uow_factory() as uow:
         cgpt: CustomGPT = uow.cgpt_repo.create_cgpt(
             name="cgpt_1", instructions="Do sth"
@@ -60,7 +60,7 @@ def test_create_custom_gpt_service(cgpt_uow_factory: Factory[CgptUOW]):
         assert cgpt.instructions == instructions
         assert cgpt.description == None
 
-def test_edit_custom_gpt_service(cgpt_uow_factory: Factory[CgptUOW]):
+def test_edit_custom_gpt_service_overwrites_old_values(cgpt_uow_factory: Factory[CgptUOW]):
     with cgpt_uow_factory() as uow:
         cgpt: CustomGPT = uow.cgpt_repo.create_cgpt("Old","Old","Old")
         cgpt_id: str = cgpt.id
