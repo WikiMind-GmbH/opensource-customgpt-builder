@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from src.contexts.customGPTs.application.ports.conversation_port import ConversationPort
 from src.interface.http.schemas.customGPTs.customGPT_commands import (
     CustomGptToCreate,
     CustomGptToEdit,
@@ -28,8 +29,9 @@ customgpt_commands_router = APIRouter(
 async def delete_custom_gpt_endpoint(
     gpt_id: str,
     uow: CgptUOW = Depends(deps.cgpt_uow_factory),
+    conv_adapter: ConversationPort = Depends(deps.conversation_adapter_factory)
 ) -> CommandResult:
-    delete_custom_gpt_service(uow, gpt_id)
+    delete_custom_gpt_service(uow, gpt_id, conv_adapter)
     return CommandResult(resource_id=gpt_id, message="Succesfully deleted")
 
 

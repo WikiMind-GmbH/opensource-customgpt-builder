@@ -1,3 +1,7 @@
+from src.contexts.chat.application.ports.chat_repo import ConversationNotFoundError
+from src.contexts.chat.application.ports.uow import ConversationUOW
+from src.contexts.chat.domain.models import Conversation
+from src.contexts.customGPTs.application.ports.conversation_port import ConversationPort
 from src.contexts.customGPTs.application.ports.customgpt_repo import (
     CgptNotFound,
 )
@@ -12,7 +16,7 @@ from src.contexts.shared.typing_aliases import Factory
 import pytest
 
 
-def test_delete_custom_gpt_service_deltes_only_existing_customgpt_otherwise_throws_error(cgpt_uow_factory: Factory[CgptUOW]):
+def test_delete_custom_gpt_service_deltes_only_existing_customgpt_otherwise_throws_error(cgpt_uow_factory: Factory[CgptUOW], conversation_adapter_factory:Factory[ConversationPort]):
     with cgpt_uow_factory() as uow:
         cgpt: CustomGPT = uow.cgpt_repo.create_cgpt(
             name="cgpt_1", instructions="Do sth"
@@ -22,14 +26,57 @@ def test_delete_custom_gpt_service_deltes_only_existing_customgpt_otherwise_thro
     with cgpt_uow_factory() as uow:
         cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)
         assert cgpt.id == cgpt_id
-    delete_custom_gpt_service(uow=uow, gpt_id=cgpt_id)
+    delete_custom_gpt_service(uow=uow, cgpt_id=cgpt_id, conv_adapter=conversation_adapter_factory())
     # test: if delete worked
     with pytest.raises(CgptNotFound):
         with cgpt_uow_factory() as uow:
             cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)
     # test: can't delete non existing gpt
     with pytest.raises(CgptNotFound):
-        delete_custom_gpt_service(uow=uow, gpt_id=cgpt_id)
+        delete_custom_gpt_service(uow=uow, cgpt_id=cgpt_id,conv_adapter=conversation_adapter_factory())
+
+def test_delete_custom_gpt_service_deletes_corresponding_conversation(cgpt_uow_factory: Factory[CgptUOW], conversation_adapter_factory:Factory[ConversationPort], conv_uow_factory:Factory[ConversationUOW]):
+    # Setup
+    with cgpt_uow_factory() as uow:
+        cgpt = uow.cgpt_repo.create_cgpt("a","a","a")
+        cgpt_other = uow.cgpt_repo.create_cgpt("a","a","a")
+        uow.commit()
+        cgpt_id = cgpt.id
+        cgpt_other_id = cgpt_other.id
+    with conv_uow_factory() as uow:
+        convs_with_cgpt: list[Conversation] = []
+        unrelated_convs: list[Conversation] = []
+        convs_with_cgpt.append(uow.conversation_repo.create_conversation(cgpt_id=cgpt_id))
+        convs_with_cgpt.append(uow.conversation_repo.create_conversation(cgpt_id=cgpt_id))
+        convs_with_cgpt.append(uow.conversation_repo.create_conversation(cgpt_id=cgpt_id))
+
+        conv_without_cgpt = uow.conversation_repo.create_conversation()
+        conv_with_other_cgpt = uow.conversation_repo.create_conversation(cgpt_id=cgpt_other_id)
+        unrelated_convs.append(conv_without_cgpt)
+        unrelated_convs.append(conv_with_other_cgpt)
+
+        all_convs: list[Conversation] = convs_with_cgpt + unrelated_convs
+        uow.commit()
+    
+    # Test: all convs exist
+    with conv_uow_factory() as uow:
+        assert(not None in [uow.conversation_repo.get(conv.id) for conv in all_convs])
+    
+    # delete
+    delete_custom_gpt_service(uow=cgpt_uow_factory(),cgpt_id=cgpt_id,conv_adapter=conversation_adapter_factory())
+    
+    # Test: unrelated converstions still exist
+    with conv_uow_factory() as uow:
+        assert(not None in [uow.conversation_repo.get(conv.id) for conv in unrelated_convs])
+    
+    # Test: convs with cgpt_id were deleted
+    with conv_uow_factory() as uow:
+        for conv in convs_with_cgpt:
+            with pytest.raises(ConversationNotFoundError):
+                uow.conversation_repo.get(conv.id)
+    
+
+
 
 
 def test_create_custom_gpt_service(cgpt_uow_factory: Factory[CgptUOW]):

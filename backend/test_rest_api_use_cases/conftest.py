@@ -1,5 +1,8 @@
 import os
 from fastapi.testclient import TestClient
+from src.contexts.chat.application.ports.uow import ConversationUOW
+from src.contexts.chat.infrastructure.adapters.conv_adapter import ConversationAdapter
+from src.contexts.customGPTs.application.ports.conversation_port import ConversationPort
 from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
     ChatQueriesAdapter,
 )
@@ -72,6 +75,10 @@ def chat_query_factory(
 ) -> Factory[ChatQueriesAdapter]:
     return lambda: ChatQueriesAdapter(chat_session_factory=conv_session_factory)
 
+@pytest.fixture()
+def conversation_adapter_factory(conv_uow_factory: Factory[ConversationUOW])-> Factory[ConversationPort]:
+    return lambda: ConversationAdapter(conv_uow_factory=conv_uow_factory)
+
 
 # # --------------  CustomGPTInstructionsRetreiver  -----------------
 
@@ -120,56 +127,59 @@ def fake_llm_adapter_factory() -> Factory[FakeLLMAdapter]:
     return lambda: FakeLLMAdapter()
 
 
-# @pytest.fixture()
-# def test_deps(
-#     conv_uow_factory,
-#     cgpt_uow_factory,
-#     cgpt_retreiver_factory,
-#     fake_llm_adapter_factory,
-#     cgpt_query_factory,
-#     chat_query_factory,
-# )->DependenciesContainer:
-#     test_deps_container: DependenciesContainer = DependenciesContainer(
-#         conversation_uow_factory=conv_uow_factory,
-#         cgpt_uow_factory=cgpt_uow_factory,
-#         cgpt_retreiver_adapter_factory=cgpt_retreiver_factory,
-#         llm_adapter_factory=fake_llm_adapter_factory,
-#         cgpt_queries_adapter_factory=cgpt_query_factory,
-#         chat_queries_adapter_factory=chat_query_factory,
-#     )
-#     return test_deps_container
-
-
-# @pytest.fixture()
-# def test_client(test_deps:DependenciesContainer):
-#     from src.interface.http.deps import deps
-#     from src.interface.http.app import app
-#     app.dependency_overrides[deps.conversation_uow_factory] = test_deps.conversation_uow_factory
-#     app.dependency_overrides[deps.cgpt_uow_factory] = test_deps.cgpt_uow_factory
-#     app.dependency_overrides[deps.cgpt_retreiver_adapter_factory] = test_deps.cgpt_retreiver_adapter_factory
-#     app.dependency_overrides[deps.llm_adapter_factory] = test_deps.llm_adapter_factory
-#     app.dependency_overrides[deps.cgpt_queries_adapter_factory] = test_deps.cgpt_queries_adapter_factory
-#     app.dependency_overrides[deps.chat_queries_adapter_factory] = test_deps.chat_queries_adapter_factory
-#     test_app: TestClient = TestClient(app)
-#     return test_app
-
-
 @pytest.fixture()
-def test_client(
+def test_deps(
     conv_uow_factory,
     cgpt_uow_factory,
     cgpt_retreiver_factory,
     fake_llm_adapter_factory,
     cgpt_query_factory,
     chat_query_factory,
-)->TestClient:
+    conversation_adapter_factory,
+)->DependenciesContainer:
+    test_deps_container: DependenciesContainer = DependenciesContainer(
+        conversation_uow_factory=conv_uow_factory,
+        cgpt_uow_factory=cgpt_uow_factory,
+        cgpt_retreiver_adapter_factory=cgpt_retreiver_factory,
+        llm_adapter_factory=fake_llm_adapter_factory,
+        cgpt_queries_adapter_factory=cgpt_query_factory,
+        chat_queries_adapter_factory=chat_query_factory,
+        conversation_adapter_factory=conversation_adapter_factory,
+    )
+    return test_deps_container
+
+
+@pytest.fixture()
+def test_client(test_deps:DependenciesContainer):
     from src.interface.http.deps import deps
     from src.interface.http.app import app
-    app.dependency_overrides[deps.conversation_uow_factory] = conv_uow_factory
-    app.dependency_overrides[deps.cgpt_uow_factory] = cgpt_uow_factory
-    app.dependency_overrides[deps.cgpt_retreiver_adapter_factory] = cgpt_retreiver_factory
-    app.dependency_overrides[deps.llm_adapter_factory] = fake_llm_adapter_factory
-    app.dependency_overrides[deps.cgpt_queries_adapter_factory] = cgpt_query_factory
-    app.dependency_overrides[deps.chat_queries_adapter_factory] = chat_query_factory
+    app.dependency_overrides[deps.conversation_uow_factory] = test_deps.conversation_uow_factory
+    app.dependency_overrides[deps.cgpt_uow_factory] = test_deps.cgpt_uow_factory
+    app.dependency_overrides[deps.cgpt_retreiver_adapter_factory] = test_deps.cgpt_retreiver_adapter_factory
+    app.dependency_overrides[deps.llm_adapter_factory] = test_deps.llm_adapter_factory
+    app.dependency_overrides[deps.cgpt_queries_adapter_factory] = test_deps.cgpt_queries_adapter_factory
+    app.dependency_overrides[deps.chat_queries_adapter_factory] = test_deps.chat_queries_adapter_factory
+    app.dependency_overrides[deps.conversation_adapter_factory] = test_deps.conversation_adapter_factory
     test_app: TestClient = TestClient(app)
     return test_app
+
+
+# @pytest.fixture()
+# def test_client(
+#     conv_uow_factory,
+#     cgpt_uow_factory,
+#     cgpt_retreiver_factory,
+#     fake_llm_adapter_factory,
+#     cgpt_query_factory,
+#     chat_query_factory,
+# )->TestClient:
+#     from src.interface.http.deps import deps
+#     from src.interface.http.app import app
+#     app.dependency_overrides[deps.conversation_uow_factory] = conv_uow_factory
+#     app.dependency_overrides[deps.cgpt_uow_factory] = cgpt_uow_factory
+#     app.dependency_overrides[deps.cgpt_retreiver_adapter_factory] = cgpt_retreiver_factory
+#     app.dependency_overrides[deps.llm_adapter_factory] = fake_llm_adapter_factory
+#     app.dependency_overrides[deps.cgpt_queries_adapter_factory] = cgpt_query_factory
+#     app.dependency_overrides[deps.chat_queries_adapter_factory] = chat_query_factory
+#     test_app: TestClient = TestClient(app)
+#     return test_app

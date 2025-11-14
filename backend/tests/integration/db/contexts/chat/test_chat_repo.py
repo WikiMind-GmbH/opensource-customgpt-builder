@@ -107,6 +107,46 @@ def test_last_message_at_recomputes_on_delete_of_latest_message(session_factory:
         timestamp_after_deletion = _fetch_last_message_at(session, conversation.id)
         assert timestamp_after_deletion == timestamp_after_first
 
+def test_delete_conversations_with_cgpt(session_factory: Factory[Session]):
+    with session_factory() as session:
+        repository = SQAlchemyConversartionRepository(session)
+        cgpt_id = "id"
+        cgpt_other_id ="other_id"
+        convs_with_cgpt: list[Conversation] = []
+        unrelated_convs: list[Conversation] = []
+        convs_with_cgpt.append(repository.create_conversation(cgpt_id=cgpt_id))
+        convs_with_cgpt.append(repository.create_conversation(cgpt_id=cgpt_id))
+        convs_with_cgpt.append(repository.create_conversation(cgpt_id=cgpt_id))
+
+        conv_without_cgpt = repository.create_conversation()
+        conv_with_other_cgpt = repository.create_conversation(cgpt_id=cgpt_other_id)
+        unrelated_convs.append(conv_without_cgpt)
+        unrelated_convs.append(conv_with_other_cgpt)
+
+        all_convs: list[Conversation] = convs_with_cgpt + unrelated_convs
+        session.commit()
+
+    
+    # Test: all convs exist
+    with session_factory() as session:
+        assert(not None in [SQAlchemyConversartionRepository(session).get(conv.id) for conv in all_convs])
+    
+    # delete
+    with session_factory() as session:
+        SQAlchemyConversartionRepository(session).delete_conversations_with_cgpt(cgpt_id=cgpt_id)
+        session.commit()
+    # Test: unrelated converstions still exist
+    with session_factory() as session:
+        assert(not None in [SQAlchemyConversartionRepository(session).get(conv.id) for conv in unrelated_convs])
+    
+    # Test: convs with cgpt_id were deleted
+    with session_factory() as session:
+        for conv in convs_with_cgpt:
+            with pytest.raises(ConversationNotFoundError):
+                SQAlchemyConversartionRepository(session).get(conv.id)
+
+
+
 
 def test_last_message_at_becomes_null_when_all_messages_deleted(session_factory: Factory[Session]):
     with session_factory() as session:
@@ -138,3 +178,4 @@ def test_message_enum_roundtrip(session_factory: Factory[Session], role: Role, c
         fetched = repository_verify.get(conversation.id)
         assert fetched._messages_excl_sysPrompt[0].role == role
         assert fetched._messages_excl_sysPrompt[0].contentType == content_type
+

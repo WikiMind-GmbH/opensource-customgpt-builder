@@ -7,6 +7,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from src.contexts.chat.infrastructure.adapters.conv_adapter import ConversationAdapter
+from src.contexts.customGPTs.application.ports.conversation_port import ConversationPort
 from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
     ChatQueriesAdapter,
 )
@@ -58,6 +60,7 @@ class DependenciesContainer:
     llm_adapter_factory: Factory[LlmPort]
     cgpt_queries_adapter_factory: Factory[CgptQueries]
     chat_queries_adapter_factory: Factory[ChatQueries]
+    conversation_adapter_factory: Factory[ConversationPort]
 
 
 def _make_engine(
@@ -119,6 +122,9 @@ def bootstrap(
 
     def chat_queries_adapter_factory() -> ChatQueries:
         return ChatQueriesAdapter(chat_session_factory=sessionMaker_Chat)
+    
+    def conversation_adapter_factory() -> ConversationPort:
+        return ConversationAdapter(conv_uow_factory=conversation_uow_factory)
 
     return DependenciesContainer(
         conversation_uow_factory=conversation_uow_factory,
@@ -127,4 +133,5 @@ def bootstrap(
         llm_adapter_factory=llm_adapter_factory,
         cgpt_queries_adapter_factory=cgpt_queries_adapter_factory,
         chat_queries_adapter_factory=chat_queries_adapter_factory,
+        conversation_adapter_factory=conversation_adapter_factory,
     )
