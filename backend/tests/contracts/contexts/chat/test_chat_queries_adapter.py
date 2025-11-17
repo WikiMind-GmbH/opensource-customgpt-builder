@@ -141,3 +141,23 @@ def test_get_chat_history_unknown_conversation_raises(adapter: ChatQueriesAdapte
         adapter.get_chat_history(non_existent_conv_id)
 
     assert f"No Conv with id {non_existent_conv_id} exists" in str(exc.value)
+
+
+def test_sessions_are_closed(
+    session_factory: Factory[Session], adapter: ChatQueriesAdapter
+):
+    """Returns (id, title) ordered by last_message_at DESC, NULLS LAST."""
+    session: Session = session_factory()
+
+    now = datetime.now(timezone.utc)
+
+    # convs: A(newer), B(older), C(None)
+    session.execute(
+        insert(conversations),
+        [
+            {"id": "A", "title": "Alpha", "last_message_at": now},
+        ],
+    )
+    session.commit()
+    for n in range(10):
+        items = adapter.get_chat_summaries_ordered_by_last_message()

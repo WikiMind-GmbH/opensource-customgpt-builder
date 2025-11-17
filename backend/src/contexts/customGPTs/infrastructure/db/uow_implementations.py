@@ -7,7 +7,7 @@ from src.contexts.customGPTs.application.ports.customgpt_repo import CustomGPTRe
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
 from src.contexts.customGPTs.infrastructure.db.customgpt_repo_implmementations import SQAlchemyCustomGPTRepository
 
-# Below: Not needed if we explicitly inherit Protocols -> better for typechecking 
+# Below: Not needed if we explicitly inherit Protocols -> better for typechecking
 # #@runtime_checkable #So we can  assert isinstance(adapter, port)
 class SQLAlchemyCgptUOW(CgptUOW):
     def __init__(self, session_factory: Factory[Session]) -> None:

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Protocol
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
 from pydantic import BaseModel

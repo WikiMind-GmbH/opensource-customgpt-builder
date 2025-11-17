@@ -66,3 +66,19 @@ def test_get_custom_gpt_infos(session_factory: Factory[Session], engine:Engine, 
     assert cgpt_first.id == id
     assert cgpt_first.instructions == instructions
     assert cgpt_first.description == description
+
+def test_sessions_are_closed(session_factory: Factory[Session], engine:Engine, cgpt_query_factory:Factory[CgptQueriesImplementation]):
+    session = session_factory()
+    repo = SQAlchemyCustomGPTRepository(session)
+    name = "name"
+    description = "description"
+    instructions = "instructions"
+
+    # create three entities (ids come from your domain model)
+    first = repo.create_cgpt(name=name, instructions=instructions, description=description)
+    session.commit()
+    id = first.id
+    for x in range(10):
+        cgpt_first:CustomGPTInfosDTO = cgpt_query_factory().get_custom_gpt_infos(id)
+        assert cgpt_first.id == id
+
