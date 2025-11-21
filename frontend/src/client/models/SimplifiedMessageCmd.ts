@@ -2,7 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export enum Role {
-    USER = 'user',
-    ASSISTANT = 'assistant',
-}
+import type { RoleCmd } from './RoleCmd';
+export type SimplifiedMessageCmd = {
+    role: RoleCmd;
+    message: string;
+};
+

@@ -3,24 +3,24 @@ from enum import StrEnum
 from pydantic import BaseModel
 
 
-class Role(StrEnum):
+class RoleQuery(StrEnum):
     user = "user"
     assistant = "assistant"
 
 
-class SimplifiedMessage(BaseModel):
-    role: Role
+class SimplifiedMessageQueries(BaseModel):
+    role: RoleQuery
     message: str
 
 
 class ChatHistory(BaseModel):
     custom_gpt_id: str | None
-    messages: list[SimplifiedMessage]
+    messages: list[SimplifiedMessageQueries]
 
 
 class AssistantMessage(BaseModel):
     conversation_id: str
-    response_message: SimplifiedMessage
+    response_message: SimplifiedMessageQueries
 
 
 class ChatSummary(BaseModel):

@@ -13,3 +13,5 @@ export type CustomGptInfo = {
   customgptIdOrNullIfDefault: string;
   customGptName: string;
 };
+
+export type ChatLocationState = { gptIdOrNullIfDefault?: string } | null;

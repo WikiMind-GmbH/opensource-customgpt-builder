@@ -13,11 +13,7 @@ from src.interface.http.schemas.chat.chat_commands import (
     NewChatRequest,
 )
 
-# def test_tmp(test_client:TestClient):
-#     # Currently no conversations
-#     res: httpx.Response = test_client.get("/chat/get-chat-summaries")
-#     print(res.status_code, res.text)
-#     print(res)
+
 
 
 def test_create_cgpt_start_conv_chat_then_delete_cgpt(test_client: TestClient):
@@ -211,9 +207,9 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(test_c
     assert [s.chat_id for s in summaries] == [conv_id_initial, conv_id_other], summaries
 
 
-def test_cgpt_creation_edit_list_functionality(test_client: TestClient):
+def test_cgpt_creation_editing_querying_functionality(test_client: TestClient):
     # Create three cgpts -every one except the second one with the same parameters
-    # list them with retreive_all_custom_gpts -order should be third, ssecond eond first
+    # list them with retreive_all_custom_gpts -order should be third, second first
     # Retreive the second one, check its values
     # Edit the second one to have the same values as the other ones
     # delete the third one

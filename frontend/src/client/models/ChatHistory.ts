@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { SimplifiedMessage } from './SimplifiedMessage';
+import type { SimplifiedMessageQueries } from './SimplifiedMessageQueries';
 export type ChatHistory = {
     custom_gpt_id: (string | null);
-    messages: Array<SimplifiedMessage>;
+    messages: Array<SimplifiedMessageQueries>;
 };
 

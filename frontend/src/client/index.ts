@@ -18,8 +18,10 @@ export type { CustomGptToCreate } from './models/CustomGptToCreate';
 export type { CustomGptToEdit } from './models/CustomGptToEdit';
 export type { HTTPValidationError } from './models/HTTPValidationError';
 export type { NewChatRequest } from './models/NewChatRequest';
-export { Role } from './models/Role';
-export type { SimplifiedMessage } from './models/SimplifiedMessage';
+export { RoleCmd } from './models/RoleCmd';
+export { RoleQuery } from './models/RoleQuery';
+export type { SimplifiedMessageCmd } from './models/SimplifiedMessageCmd';
+export type { SimplifiedMessageQueries } from './models/SimplifiedMessageQueries';
 export type { ValidationError } from './models/ValidationError';
 
 export { ChatCommandsService } from './services/ChatCommandsService';

@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { SimplifiedMessage } from './SimplifiedMessage';
+import type { SimplifiedMessageCmd } from './SimplifiedMessageCmd';
 export type AssistantMessage = {
     conversation_id: string;
-    response_message: SimplifiedMessage;
+    response_message: SimplifiedMessageCmd;
 };
 

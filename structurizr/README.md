@@ -29,6 +29,8 @@ You can include live diagrams/views in the documentation. via `![](embed:MyDiagr
 There is a good integration of Architecture Decision Records into the structurizr UI so *it is strongly adviced to use this functionality instead of directly documenting the ADRs in the document*.
 [ADRs in StructuriztUI](https://docs.structurizr.com/ui/decisions/)
 
+To create these ADRs we will use [ADR Tools](https://github.com/npryce/adr-tools) command line tool.
+
 ## Arc42
 
 

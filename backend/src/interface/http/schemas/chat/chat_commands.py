@@ -2,19 +2,19 @@ from enum import StrEnum
 from pydantic import BaseModel
 
 
-class Role(StrEnum):
+class RoleCmd(StrEnum):
     user = "user"
     assistant = "assistant"
 
 
-class SimplifiedMessage(BaseModel):
-    role: Role
+class SimplifiedMessageCmd(BaseModel):
+    role: RoleCmd
     message: str
 
 
 class AssistantMessage(BaseModel):
     conversation_id: str
-    response_message: SimplifiedMessage
+    response_message: SimplifiedMessageCmd
 
 
 

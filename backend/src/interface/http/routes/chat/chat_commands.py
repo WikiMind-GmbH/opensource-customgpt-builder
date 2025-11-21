@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from src.interface.http.schemas.chat.chat_commands import AssistantMessage, SimplifiedMessage, Role
+from src.interface.http.schemas.chat.chat_commands import AssistantMessage, SimplifiedMessageCmd, RoleCmd
 from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
     CustomGPTInstructionsRetreiver,
 )
@@ -54,5 +54,5 @@ async def send_user_message(
 
     return AssistantMessage(
         conversation_id=conversation_id,
-        response_message=SimplifiedMessage(role=Role.assistant, message=response),
+        response_message=SimplifiedMessageCmd(role=RoleCmd.assistant, message=response),
     )

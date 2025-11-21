@@ -15,6 +15,10 @@ This project uses Docker Compose for managing development and production environ
 
 - The project uses a single `.env` file for environment variables. Ensure that it is correctly set up before running the containers. Copy the `.env.example`, paste it in the same folder, rename the copy to `.env` and fill in the values that are not defaults. Some values are only needed for the prod environment, no need to set them for development.
 
+## Software Architecture
+
+The SWA must be documented using structurizr lite. 
+The ADRS will be documented as part of the software architecture using [ADR Tools](https://github.com/npryce/adr-tools) command line tool.
 
 ## Development
 You must install mkcert for https to work. See nginx/README.md on how to do it.

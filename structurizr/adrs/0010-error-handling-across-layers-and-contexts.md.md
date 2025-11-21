@@ -138,7 +138,7 @@ class CustomGPTInstructionsRetrieverAdapter(CustomGPTInstructionsRetriever):
             raise RetrieverUnexpectedError(f"unexpected failure; cgpt_id={cgpt_id}") from e
 ```
 
-#### Service layer (use domain/port exceptions; add service errors only for new semantics)
+#### Service layer use domain/port exceptions
 
 ```python
 def build_system_prompt(retriever: CustomGPTInstructionsRetriever, cgpt_id: str) -> list[MessageDTO]:

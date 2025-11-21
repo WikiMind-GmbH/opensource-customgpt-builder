@@ -4,8 +4,8 @@ from fastapi.responses import JSONResponse
 from src.interface.http.schemas.chat.chat_queries import (
     ChatHistory,
     ChatSummary,
-    Role,
-    SimplifiedMessage,
+    RoleQuery,
+    SimplifiedMessageQueries,
 )
 from src.contexts.chat.application.ports.chat_queries import (
     ConversationOverviewDTO,
@@ -39,8 +39,8 @@ def conversationOverviewsDTO_to_chatSummaries(
 def conversationTextOnlyDTO_to_chat(conv: ConversationTextOnlyDTO) -> ChatHistory:
     if any(m.role is RoleDTO.system for m in conv.messages):
         raise RuntimeError("Should not be used on data cotaining system prompts")
-    simplified_messages: list[SimplifiedMessage] = [
-        SimplifiedMessage(role=Role(str(msg.role)), message=msg.text)
+    simplified_messages: list[SimplifiedMessageQueries] = [
+        SimplifiedMessageQueries(role=RoleQuery(str(msg.role)), message=msg.text)
         for msg in conv.messages
     ]
     return ChatHistory(custom_gpt_id=conv.customgpt_id, messages=simplified_messages)

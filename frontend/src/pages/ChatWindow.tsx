@@ -9,29 +9,32 @@ import {
   ChatQueriesService,
   CustomGpTsQueriesService,
   CustomGPTInfosSchema,
-  Role,
-  SimplifiedMessage,
+  RoleQuery,
+  SimplifiedMessageQueries,
   NewChatRequest,
   ContinueChatRequest,
 } from "../client";
+import { ChatLocationState } from "../interfaces/interfaces";
 
 export default function ChatWindow() {
   /* 1 ▸ read optional id from URL  e.g.  /chatWindow/123 */
   const { conversationIdOrUndefinedfNewConversation } = useParams<{
     conversationIdOrUndefinedfNewConversation?: string;
   }>();
-  const { state } = useLocation();
-  const gptIdOrNullIfDefault =
-    (state as { gptIdOrNullIfDefault?: string } | null)?.gptIdOrNullIfDefault ??
-    null; // id null will be default gpt version
+  
+  const location = useLocation() as { state: ChatLocationState };
+
+  const [gptIdOrNull, setGptId] = useState<string | null>(() =>
+  location.state?.gptIdOrNullIfDefault ?? null
+);
 
   // const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   /* 2 ▸ local component state */
-  const [messages, setMessages] = useState<SimplifiedMessage[]>([]);
+  const [messages, setMessages] = useState<SimplifiedMessageQueries[]>([]);
   const [input, setInput] = useState<string>("");
-  const [currentGptName, setCurrentGptName] = useState<string | null>(null);
+  const [currentGptName, setCurrentGptName] = useState<string>("GPT");
   const navigate = useNavigate();
 
   async function loadChatContentIfExisting() {
@@ -41,6 +44,7 @@ export default function ChatWindow() {
           conversationIdOrUndefinedfNewConversation
         );
         setMessages(conversation.messages);
+        setGptId(conversation.custom_gpt_id)
       } catch (err: unknown) {
         setError((err as Error).message);
       } finally {
@@ -49,10 +53,10 @@ export default function ChatWindow() {
   }
 
   async function setNameOfGPT() {
-    if (gptIdOrNullIfDefault !== null) {
+    if (gptIdOrNull) {
       try {
         const gptInfos: CustomGPTInfosSchema =
-          await CustomGpTsQueriesService.getCustomGptInfos(gptIdOrNullIfDefault);
+          await CustomGpTsQueriesService.getCustomGptInfos(gptIdOrNull);
         setCurrentGptName(gptInfos.custom_gpt_name);
       } catch (err: unknown) {
         setError((err as Error).message);
@@ -70,6 +74,7 @@ export default function ChatWindow() {
     if (conversationIdOrUndefinedfNewConversation === undefined) {
       // we’re back at “new” → reset
       setMessages([]);
+      setGptId(null);
       setInput("");
     } else {
       // if you want, you could also reload existing when ID appears
@@ -78,15 +83,16 @@ export default function ChatWindow() {
   }, [conversationIdOrUndefinedfNewConversation]);
 
   useEffect(() => {
-    loadChatContentIfExisting();
     setNameOfGPT();
-  }, [conversationIdOrUndefinedfNewConversation]);
+  }, [gptIdOrNull]);
+
+      
 
   async function handleSend() {
     if (!input.trim()) return;
 
     // push user message
-    setMessages((prev) => [...prev, { role: Role.USER, message: input }]);
+    setMessages((prev) => [...prev, { role: RoleQuery.USER, message: input }]);
     setInput("");
 
 
@@ -98,7 +104,7 @@ export default function ChatWindow() {
       }
     : {
         request_message: input,
-        custom_gpt_id: gptIdOrNullIfDefault,
+        custom_gpt_id: gptIdOrNull,
       };
 
 
@@ -108,11 +114,11 @@ export default function ChatWindow() {
     if (conversationIdOrUndefinedfNewConversation !== undefined) {
       setMessages((prev) => [
         ...prev,
-        { role: Role.ASSISTANT, message: response_text },
+        { role: RoleQuery.ASSISTANT, message: response_text },
       ]);
     } else {
       navigate(`/chatWindow/${convId}`, {
-        state: { gptIdOrNullIfDefault: gptIdOrNullIfDefault },
+        state: { gptIdOrNullIfDefault: gptIdOrNull },
       });
     }
 
@@ -126,16 +132,14 @@ export default function ChatWindow() {
   return (
     <div className="chat-root">
       <h2 className="chat-title">
-        {gptIdOrNullIfDefault !== null
-          ? `${currentGptName}`
-          : "Vanilla ChatGPT"}
+        {currentGptName}
       </h2>
 
       <div className="chat-messages">
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`chat-msg ${m.role === Role.USER ? "right" : "left"}`}
+            className={`chat-msg ${m.role === RoleQuery.USER ? "right" : "left"}`}
           >
             {m.message}
           </div>

@@ -6,6 +6,8 @@ Date: 2025-08-04
 
 ACCEPTED    
 
+Superceded by [16. Modulith](0016-modulith.md)
+
 ## Context
 
 We want a base product -a customgpt and then enable customers to have the option to expand the product and include custom solutions.   
