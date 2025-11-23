@@ -74,7 +74,6 @@ export default function ChatWindow() {
     if (conversationIdOrUndefinedfNewConversation === undefined) {
       // we’re back at “new” → reset
       setMessages([]);
-      setGptId(null);
       setInput("");
     } else {
       // if you want, you could also reload existing when ID appears

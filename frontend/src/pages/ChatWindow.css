@@ -24,7 +24,7 @@
   gap: 0.6rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: #f8fafc;
+  background: #576b7f;
 }
 
 /* individual message bubbles */
@@ -62,6 +62,8 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font: inherit;
+  background: #576b7f;
+  color: #fff;
 }
 
 .chat-send-btn {

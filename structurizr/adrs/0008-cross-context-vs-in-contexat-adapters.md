@@ -6,6 +6,8 @@ Date: 2025-08-04
 
 OPEN    
 
+Superceded by [19. Different type of Port Adapter combos](0019-different-type-of-port-adapter-combos.md)
+
 ## Context
 We have different sources of adapters: cross context adapters when it is absolutely necessary to have communication between different contexts.   
 And in-context adapters, e.g. for calling an external api, where, similar to our db implementation being hidden behind the repo port, we do not want to have the implementation details in our core layer. 

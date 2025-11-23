@@ -13,6 +13,8 @@
   display: flex;
   flex-direction: column;
   gap: .4rem;
+  background: #576b7f;
+
 }
 
 /* label text */
@@ -27,6 +29,8 @@ textarea {
   border: 1px solid #ccc;
   border-radius: 4px;
   font: inherit;
+  background: #576b7f;
+
 }
 
 input:focus,
