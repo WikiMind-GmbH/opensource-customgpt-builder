@@ -77,6 +77,9 @@ const [files, setFiles] = useState<string[]>([]);
 
   return (
     <div className="editor">
+      <h2>
+        {idOfCustomGptOrUndefinedStr ? "Edit custom gpt": "Create custom gpt"}
+      </h2>
       <label className="field">
         <span className="title">Name</span>
         <input

@@ -23,7 +23,7 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <h2 className="title">Demo App</h2>
+      <h2>Wikimind Chat</h2>
       <nav className="nav">
         <NavLink to="/createOrEditCustomGPT" className="navlink">
           Create custom GPTs

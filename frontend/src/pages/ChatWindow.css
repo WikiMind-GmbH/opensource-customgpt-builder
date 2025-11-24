@@ -22,9 +22,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  border: 1px solid #d1d5db;
+  border: 0px solid #d1d5db;
   border-radius: 6px;
-  background: #576b7f;
+  background: var(--color-darkness-3);
 }
 
 /* individual message bubbles */
@@ -38,13 +38,13 @@
 
 .chat-msg.left {
   align-self: flex-start;
-  background: #e2e8f0;
-  color: #111827;
+  background: var(--color-darkness-3);
+  color: var(--color-darkness-0);
 }
 
 .chat-msg.right {
   align-self: flex-end;
-  background: #3b82f6;
+  background: var(--color-darkness-2);
   color: #fff;
 }
 
@@ -59,22 +59,26 @@
   flex: 1;
   resize: none;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 3px solid var(--color-darkness-4);
   border-radius: 6px;
   font: inherit;
-  background: #576b7f;
-  color: #fff;
+  background: var(--color-darkness-0);
+  color: var(--color-darkness-5);
+}
+.chat-input::placeholder {
+  color: var(--color-darkness-2);   /* pick whatever you like */
+  opacity: 1;       /* some browsers lower opacity by default */
 }
 
 .chat-send-btn {
+  border: 3px solid var(--color-darkness-4);
   padding: 0 1.1rem;
-  background: #3b82f6;
-  border: none;
-  color: #fff;
+  background: var(--color-darkness-1);
+  color: #020F1E;
   border-radius: 6px;
   cursor: pointer;
 }
 
 .chat-send-btn:hover {
-  background: #2563eb;
+  background:var(--color-darkness-4); color: var(--color-darkness-0);
 }

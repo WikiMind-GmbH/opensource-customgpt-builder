@@ -21,11 +21,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 2px solid var(--color-darkness-4);
+  background: var(--color-darkness-2);
   border-radius: 6px;
 }
 
 .gpt-name {
+  color: #fff;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -46,10 +48,10 @@
   font-size: 0.9rem;
 }
 
-.btn.primary   { background:#3b82f6; color:#fff; }
-.btn.secondary { background:#e2e8f0; color:#111827; }
+.btn.primary   { background:var(--color-darkness-0); color:#fff; }
+.btn.secondary { background:var(--color-darkness-0); color:#111827; }
 .btn.danger    { background:#ef4444; color:#fff; }
 
-.btn.primary:hover   { background:#2563eb; }
-.btn.secondary:hover { background:#cbd5e1; }
-.btn.danger:hover    { background:#dc2626; }
+.btn.primary:hover   { background:var(--color-darkness-4); }
+.btn.secondary:hover { background:var(--color-darkness-4); color:#fff }
+.btn.danger:hover    { background:var(--color-darkness-4); color:#fff }
