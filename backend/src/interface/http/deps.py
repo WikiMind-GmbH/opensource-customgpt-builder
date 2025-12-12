@@ -1,5 +1,5 @@
 # interface/http/deps.py
-from __future__ import annotations #Reference future Types without quotation marks
+# from __future__ import annotations #Reference future Types without quotation marks
 
 from src.bootstrap import bootstrap, DependenciesContainer
 
@@ -7,6 +7,6 @@ from src.bootstrap import bootstrap, DependenciesContainer
 deps: DependenciesContainer = bootstrap(
     db_url_chat="sqlite:///./dev-chat.db",
     db_url_cgpt="sqlite:///./dev-cgpt.db",
-    model_name="gpt-4.1-mini",
+    model_name="gpt-5-nano",
     create_schema=True,  # dev/test only
 )

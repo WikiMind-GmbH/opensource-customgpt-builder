@@ -1,7 +1,8 @@
 
 
 COMPOSE := docker compose -f docker-compose.dev.yaml
-PYTEST_FLAGS := -q -s --maxfail=1  
+PYTEST_FLAGS := -q -s --maxfail=1 -m 'not performance'
+PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
 .PHONY: generate-client-prod test test-unit test-integration test-unit-exec test-integration-exec test-clean
 
@@ -43,7 +44,17 @@ test-clean:
 	$(COMPOSE) rm -f
 
 
+test-use-cases-perf:
+	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s test_rest_api_use_cases"
 
+test-integration-perf:
+	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/integration"
+
+
+test-perf:
+	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests"
+	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s test_rest_api_use_cases"
+# 	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE)" tests
 # #replace the automatically generated base/url of the backend api 
 # #with the one defined as environment variable (if not already done)
 # fix-openapi-base:

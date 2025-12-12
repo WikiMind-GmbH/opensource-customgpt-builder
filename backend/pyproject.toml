@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+markers = [
+  "performance: performance tests (exclude with -m 'not performance')",
+  "benchmark: benchmark-related tests",
+]

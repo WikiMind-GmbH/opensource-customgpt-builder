@@ -203,7 +203,7 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(test_c
     # --- Summaries should now flip: [initial (newest), other] ---
     res = test_client.get("/chat/get-chat-summaries")
     assert res.status_code == 200, res.text
-    summaries = TypeAdapter(list[ChatSummary]).validate_python(res.json())
+    summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(res.json())
     assert [s.chat_id for s in summaries] == [conv_id_initial, conv_id_other], summaries
 
 

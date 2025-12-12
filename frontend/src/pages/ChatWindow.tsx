@@ -21,12 +21,12 @@ export default function ChatWindow() {
   const { conversationIdOrUndefinedfNewConversation } = useParams<{
     conversationIdOrUndefinedfNewConversation?: string;
   }>();
-  
+
   const location = useLocation() as { state: ChatLocationState };
 
-  const [gptIdOrNull, setGptId] = useState<string | null>(() =>
-  location.state?.gptIdOrNullIfDefault ?? null
-);
+  const [gptIdOrNull, setGptId] = useState<string | null>(
+    () => location.state?.gptIdOrNullIfDefault ?? null // needed for new chats with cgpts, who have not yet been started/given an id
+  );
 
   // const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,11 +40,12 @@ export default function ChatWindow() {
   async function loadChatContentIfExisting() {
     if (conversationIdOrUndefinedfNewConversation !== undefined)
       try {
-        const conversation: ChatHistory = await ChatQueriesService.chatHistoryById(
-          conversationIdOrUndefinedfNewConversation
-        );
+        const conversation: ChatHistory =
+          await ChatQueriesService.chatHistoryById(
+            conversationIdOrUndefinedfNewConversation
+          );
         setMessages(conversation.messages);
-        setGptId(conversation.custom_gpt_id)
+        setGptId(conversation.custom_gpt_id);
       } catch (err: unknown) {
         setError((err as Error).message);
       } finally {
@@ -85,8 +86,6 @@ export default function ChatWindow() {
     setNameOfGPT();
   }, [gptIdOrNull]);
 
-      
-
   async function handleSend() {
     if (!input.trim()) return;
 
@@ -94,20 +93,19 @@ export default function ChatWindow() {
     setMessages((prev) => [...prev, { role: RoleQuery.USER, message: input }]);
     setInput("");
 
+    const req: ContinueChatRequest | NewChatRequest =
+      conversationIdOrUndefinedfNewConversation !== undefined
+        ? {
+            request_message: input,
+            conversation_id: conversationIdOrUndefinedfNewConversation,
+          }
+        : {
+            request_message: input,
+            custom_gpt_id: gptIdOrNull,
+          };
 
-  const req: ContinueChatRequest | NewChatRequest =
-  conversationIdOrUndefinedfNewConversation !== undefined
-    ? {
-        request_message: input,
-        conversation_id: conversationIdOrUndefinedfNewConversation,
-      }
-    : {
-        request_message: input,
-        custom_gpt_id: gptIdOrNull,
-      };
-
-
-    const response: AssistantMessage = await ChatCommandsService.sendUserMessage(req);
+    const response: AssistantMessage =
+      await ChatCommandsService.sendUserMessage(req);
     const response_text: string = response.response_message.message;
     const convId = response.conversation_id;
     if (conversationIdOrUndefinedfNewConversation !== undefined) {
@@ -130,15 +128,15 @@ export default function ChatWindow() {
   if (error) return <p className="center">Error: {error}</p>;
   return (
     <div className="chat-root">
-      <h2 className="chat-title">
-        {currentGptName}
-      </h2>
+      <h2 className="chat-title">{currentGptName}</h2>
 
       <div className="chat-messages">
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`chat-msg ${m.role === RoleQuery.USER ? "right" : "left"}`}
+            className={`chat-msg ${
+              m.role === RoleQuery.USER ? "right" : "left"
+            }`}
           >
             {m.message}
           </div>
