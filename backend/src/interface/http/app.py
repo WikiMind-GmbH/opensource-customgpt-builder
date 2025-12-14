@@ -1,14 +1,19 @@
 from contextlib import asynccontextmanager
+import debugpy
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend_spanning_helpers import require_env
 from src.interface.http.mappers_data_and_exceptions.all_handlers import register_all_handlers
 from src.interface.http.routes.chat.chat_commands import chat_commands_router
 from src.interface.http.routes.chat.chat_queries import chat_queries_router
 from src.interface.http.routes.customGPTs.customGPT_commands import customgpt_commands_router
 from src.interface.http.routes.customGPTs.customGPT_queries import customgpt_queries_router
 
-
+DEBUG_MODE: bool = require_env("DEBUG").lower() == "true"
+if DEBUG_MODE:
+    debugpy.listen(("0.0.0.0", 5678))  # Debugger listens on port 5678
+    
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
