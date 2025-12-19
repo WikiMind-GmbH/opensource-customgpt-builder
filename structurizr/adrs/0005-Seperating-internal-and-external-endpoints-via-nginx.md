@@ -6,6 +6,8 @@ Date: 2025-08-04
 
 ACCEPTED    
 
+Superceded by [16. Modulith](0016-modulith.md)
+
 ## Context
 For every Service with a rest api, we want some endpoints to only be accessible to other services in the docker network and not to the outside. This is due to the fact that these endpoints are part of system internal logic and are expected to only be called with specific data in specific circumstances by other services. 
 

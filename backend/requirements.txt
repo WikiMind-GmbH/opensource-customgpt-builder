@@ -4,6 +4,5 @@ openai
 aiofiles
 requests
 fastapi[standard]
-debugpy[standard]
 sqlmodel
 alembic

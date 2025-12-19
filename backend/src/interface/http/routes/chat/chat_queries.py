@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from backend_spanning_helpers import require_env
 from src.interface.http.mappers_data_and_exceptions.chat.chat_queries_classes_and_exceptions import conversationOverviewsDTO_to_chatSummaries, conversationTextOnlyDTO_to_chat
 from src.contexts.chat.application.ports.chat_queries import ChatQueries, ConversationOverviewDTO, ConversationTextOnlyDTO
 from src.bootstrap import DependenciesContainer

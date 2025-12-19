@@ -1,66 +1,76 @@
 
 
-COMPOSE := docker compose -f docker-compose.dev.yaml
+COMPOSE_DEV := docker compose -f docker-compose.dev.yaml
+COMPOSE_LOCUST := docker compose -f backend/tests_perf_locust/docker-compose.locust-perf.yaml
 PYTEST_FLAGS := -q -s --maxfail=1 -m 'not performance'
 PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
 .PHONY: generate-client-prod test test-unit test-integration test-unit-exec test-integration-exec test-clean
 
-## Run ALL tests (unit + integration)
+## ----------------------PYTEST FUNCTIONAL----------------------
 test:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests"
 
 test-show-setup:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) --setup-show -s tests"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) --setup-show -s tests"
 
 test-use-cases:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) -s test_rest_api_use_cases"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) -s test_rest_api_use_cases"
 
 ## Run only unit tests
 test-unit:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/unit"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/unit"
 
 ## Run only external api tests -might cost money
 test-external-api-adapters:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) test_external_api_adapters"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) test_external_api_adapters"
 
 
 test-contracts:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/contracts"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/contracts"
 
 ## Run only integration tests
 test-integration:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/integration"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/integration"
 
 ## (Optional) Run tests in an already-running backend container
 test-unit-exec:
-	$(COMPOSE) exec backend pytest $(PYTEST_FLAGS) tests/unit
+	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/unit
 
 test-integration-exec:
-	$(COMPOSE) exec backend pytest $(PYTEST_FLAGS) tests/integration
+	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/integration
 
 ## Clean up any stopped test containers
 test-clean:
-	$(COMPOSE) rm -f
+	$(COMPOSE_DEV) rm -f
 
+
+## ----------------------PYTEST PERFORMANCE----------------------
 
 test-use-cases-perf:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s test_rest_api_use_cases"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s test_rest_api_use_cases"
 
 test-integration-perf:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/integration"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/integration"
 
 
 test-perf:
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests"
-	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s test_rest_api_use_cases"
-# 	$(COMPOSE) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE)" tests
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s test_rest_api_use_cases"
+# 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE)" tests
 # #replace the automatically generated base/url of the backend api 
 # #with the one defined as environment variable (if not already done)
 # fix-openapi-base:
 # 	docker-compose -f docker-compose.dev.yaml exec frontend \
 # 	sh -c 'grep -q "import.meta.env.VITE_APP_DOMAIN" src/client/core/OpenAPI.ts || sed -i '\''s|BASE: .*|BASE: import.meta.env.VITE_APP_DOMAIN + "/api",|'\'' src/client/core/OpenAPI.ts'
 # NOT YET WORKING
+
+## ----------------------LOCUST PERFORMANCE----------------------
+locust:
+	$(COMPOSE_LOCUST) run --rm locust sh -c "locust -f locustfile.py --html 'results/locust_results_$$(date +%Y%m%d_%H%M%S).html'"
+
+
+
 
 
 # Waits until the backend container is marked as healthy, then runs codegen

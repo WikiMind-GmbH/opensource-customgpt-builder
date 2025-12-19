@@ -33,6 +33,22 @@
                 }
             ],
             // "justMyCode": false,               // ← step into site-packages
+        },
+        {
+            "name": "Locust debugger",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                "localRoot": "${workspaceFolder}/backend/tests_perf_locust",
+                "remoteRoot": "/app"
+                }
+            ],
+            // "justMyCode": false,               // ← step into site-packages
         }
     ]
 }

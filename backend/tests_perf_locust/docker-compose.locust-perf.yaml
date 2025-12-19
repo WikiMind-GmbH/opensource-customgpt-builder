@@ -1,0 +1,15 @@
+services:
+  locust:
+    build:
+        context: .
+        dockerfile: Dockerfile.tests_perf_locust
+    container_name: locust
+    # Pass in environment variables from the .env file (avoid baking secrets)
+    env_file:
+    - ./../../.env
+    ports:
+      - "8089:8089"
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - ./:/work/loadtests
+    command: ["sleep", "infinity"]

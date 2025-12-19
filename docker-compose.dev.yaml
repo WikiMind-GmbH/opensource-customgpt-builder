@@ -2,19 +2,17 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: ./Dockerfile.dev
+      dockerfile: Dockerfile.dev
     container_name: backend
     # Pass in environment variables from the .env file (avoid baking secrets)
     env_file:
       - ./.env
-    environment:
-      - DEBUG=true
     volumes:
       - ./backend:/app
       # - loaded_images:${LOADED_IMAGES_PATH}
       # - prompt_files:${PROMPT_FILES_PATH}
     ports:
-      - "5678:5678"
+      - "127.0.0.1:5678:5678"
     tty: true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://0.0.0.0:5173/openapi.json"]
