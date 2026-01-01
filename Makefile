@@ -53,7 +53,6 @@ test-use-cases-perf:
 test-integration-perf:
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/integration"
 
-
 test-perf:
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests"
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s test_rest_api_use_cases"

@@ -1,4 +1,4 @@
-# ADR-XXX: Error Handling Pattern (Ports Own Errors, Global HTTP Translation)
+# Error Handling Pattern (Ports Own Errors, Global HTTP Translation)
 
 **Status:** Open
 **Date:** 2025-10-03

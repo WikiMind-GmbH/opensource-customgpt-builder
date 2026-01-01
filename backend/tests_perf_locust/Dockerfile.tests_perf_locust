@@ -15,7 +15,3 @@ COPY requirements-locust.txt .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements-locust.txt
-
-# Start the app using uvicorn
-
-CMD ["locust", "--help"]

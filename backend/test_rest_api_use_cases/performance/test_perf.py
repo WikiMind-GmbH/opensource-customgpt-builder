@@ -44,5 +44,3 @@ def test_perf_many_conversations(test_client: TestClient, benchmark):
     summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(summaries_res.json())
     assert conv_id_initial in [summary.chat_id for summary in summaries] # where should this assert be -
 
-# @pytest.mark.performance vs @pytest.mark.benchmark
-

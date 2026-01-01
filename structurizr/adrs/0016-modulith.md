@@ -6,7 +6,8 @@ Date: 2025-11-19
 
 Accepted
 
-Supercedes [](0003-Microservices-architecture-test)
+Supercedes [Microservices Architecture](0003-Microservices-architecture-test)
+Supercedes [Seperating internal and external endpoints via nginx](0005-Seperating-internal-and-external-endpoints-via-nginx)
 
 ## Context
 *PLACEHOLDER TEXT*

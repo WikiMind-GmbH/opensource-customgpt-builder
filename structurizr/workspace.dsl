@@ -38,7 +38,7 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             //     localFS = component "Local File System" "Used to store non-processed and pre-processes  whole documents"
             //     githubDataService = component "githubDataService" "Listens for notification updates from github and updates the corresponding data in the vectorDB"
             // }
-
+ 
             !docs docs
             !adrs adrs
             

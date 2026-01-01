@@ -1,41 +1,76 @@
-# 21. keeping stable version on server
+# 21. Branching, release promotion, and quality gates
 
 Date: 2025-11-21
-
-## Status
-
-Accepted
+Status: Accepted
 
 ## Context
 
-We need to have a process similar to splitting a repo into staging prod and dev.   
-Each version of the app is necessary for a different purpose:  
-We need dev and feature branches to improve the software and include new features.   
-We need a stable version that we can deploy for customers.   
-And we need a testing branch that is more stable than the dev and feature branches, where we can have testers test new versions of our software.  
+We need a simple, reliable way to run multiple tracks of development:
 
-All of this only works if there are clear guidelines that qualify when our code qualifys to move from dev to testing to prod.   
-For each transition, we need qualifyers that evaluate if the quality of the code is up to standard.    
-This can be simple things like unit/e2e tests that need to written and passed, code reviews or enought time being tested by test users for a version of code to move from testing to prod.    
+* **Feature/Dev** for fast iteration.
+* **Staging** for testing release candidates in a prod-like environment.
+* **Prod** as the stable version deployed for customers.
 
-Additionally, we must consider practicality: it is important that we start somewhere fast, and improve it itearitevly
+To keep quality high without slowing iteration, we establish **explicit promotion gates** between these branches and define how multi-branch features advance without breaking `dev`.
+
+We’ll start with a minimal, enforceable process and iterate.
+
 ## Decision
-We create two additional branches: `prod` `testing`
-### Testing
-Testing branch will be used for local testing and in the future also be available for testing online
-For code to be allowed to merge into `Testing`, it must fulfill these criteria:   
-- e2e are passed
-- if there is the introduction of a major feature that opens a new use case: a new (backend) e2e test must be written.
-- for each new adapter, a test module must be written
-- for each new service function, a test module must be written
-- all the previous tests must be passed -if we introduce a new adapter for a port, we must also change our service function tests to use this instead of the deprecated one. If both adapters should be used, we must copy the test module and run it with the new adapter as well
 
-### Prod
-For code to be allowed to merge into `Testing`, it must fulfill these criteria:
-- Only code from testing can be merged into prod
-- The code was on testing and was run and actively tested for at least one hour (for now) -future: was tested by client testers for 2 weeks.
+Adopt a **three-stream** branching model with **explicit promotion** and quality gates.
+
+### Branches
+
+* Long-lived: `dev`, `staging`, `prod`
+* Short-lived: `feature/*`, `bugfix/*`, `hotfix/*`
+
+### Promotion flow
+
+```
+feature/*  →  dev  →  staging  →  prod
+                 (merge)  (merge)  (merge)
+```
+
+* `dev` = integration of day-to-day work.
+* `staging` = release candidate tested in a prod-like environment.
+* `prod` = version deployed (or ready to deploy) for customers.
+
+Code must flow and transition in this way. It is not possible to go from feature straight to staging for example
+
+---
+
+## Quality gates
+
+### 1) Feature → Dev (integration-ready, with tests)
+
+**Must have (ALL):**
+All previous tests pass, additionally
+* **Unit tests** for new/changed domain logic and **service functions** are created and pass on the dev machine
+* **Contract/adapter tests** for any new adapter (port compliance + error translation) are created and pass on the dev machine.
+* **DTO Mapper tests* for new or changed DTOs are created and pass on the dev machine.
+* For each **new service function**,tests are created and pass on the dev machine
+* **Docs updated** where applicable:
+  * ADR created if the change impacts architecture decisions.
+
+### 2) Dev → Staging (release candidate)
+
+**Must have (ALL):**
+
+* For any **major feature / new use case**, add at least one new backend E2E test.
+* Performance tests for the new features are added.
+* **Docs updated** where applicable:
+  * ADR created if the change impacts architecture decisions.
+
+### 3) Staging → Prod (release)
+
+**Must have (ALL):**
+* Code review from a person outside the core dev team responsible for the current changes
+* Only fast-forward/merge from **`staging`** (no direct commits to `prod`).
+* Deployed to a **staging environment** with **same or lower specs** than prod.
+* **Performance/sanity checks** are passed in the staging environment.
+* **Human testing window** completed (≥ **1 hour** for now; target: ≥ **2 weeks** with client testers).
+
 
 ## Consequences
 
-We will always be able to showcase two (more or less) working version -testing and prod.   
-Being incentiviced to creat 'checkpoints' on working versions by merging into testing, thus shortening the cycle between working versions, resulting in a faster feedback loop.
+Placeholder

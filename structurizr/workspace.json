@@ -3,7 +3,7 @@
   "description" : "Use Chatgpt api with own customGPT implementation",
   "documentation" : { },
   "id" : 1,
-  "lastModifiedDate" : "2025-09-12T14:18:01Z",
+  "lastModifiedDate" : "2026-01-01T14:00:23Z",
   "model" : {
     "people" : [ {
       "description" : "A user of the system wanting to profit from customized llm chat functionality",
@@ -14,17 +14,17 @@
         "structurizr.dsl.identifier" : "u"
       },
       "relationships" : [ {
-        "description" : "Chats with LLM, uploads data and creates or uses CustomGPTs using",
+        "description" : "Chats with LLM, creates or uses CustomGPTs using",
         "destinationId" : "3",
-        "id" : "22",
+        "id" : "14",
         "sourceId" : "1",
         "tags" : "Relationship",
         "technology" : "RestAPI"
       }, {
-        "description" : "Chats with LLM, uploads data and creates or uses CustomGPTs using",
+        "description" : "Chats with LLM, creates or uses CustomGPTs using",
         "destinationId" : "2",
-        "id" : "23",
-        "linkedRelationshipId" : "22",
+        "id" : "15",
+        "linkedRelationshipId" : "14",
         "sourceId" : "1",
         "technology" : "RestAPI"
       } ],
@@ -42,115 +42,93 @@
         "relationships" : [ {
           "description" : "Gets conversations, assistantersponses and data from and send user messages and data to",
           "destinationId" : "4",
-          "id" : "24",
+          "id" : "16",
           "sourceId" : "3",
           "tags" : "Relationship"
         } ],
         "tags" : "Element,Container,Web Browser",
         "technology" : "React + TS"
       }, {
-        "description" : "This gateway routes requests to the correct microservice",
+        "description" : "Provides endpoints and calls service functions of the fitting contexts",
         "documentation" : { },
         "id" : "4",
-        "name" : "Gateway",
+        "name" : "Interface",
         "properties" : {
-          "structurizr.dsl.identifier" : "ss.gateway"
+          "structurizr.dsl.identifier" : "ss.interface"
         },
         "relationships" : [ {
           "description" : "Gets or creates conversations with LLMs, optionally utilizing RAG and CustomGPT data, utilizing the",
-          "destinationId" : "6",
-          "id" : "25",
+          "destinationId" : "7",
+          "id" : "17",
           "sourceId" : "4",
           "tags" : "Relationship",
           "technology" : "RESTApi"
         }, {
           "description" : "Gets or creates conversations with LLMs, optionally utilizing RAG and CustomGPT data, utilizing the",
           "destinationId" : "5",
-          "id" : "26",
-          "linkedRelationshipId" : "25",
+          "id" : "18",
+          "linkedRelationshipId" : "17",
           "sourceId" : "4",
           "technology" : "RESTApi"
         }, {
           "description" : "Gets or creates CustomGPTs utilizing",
-          "destinationId" : "9",
-          "id" : "39",
+          "destinationId" : "11",
+          "id" : "27",
           "sourceId" : "4",
           "tags" : "Relationship"
         }, {
           "description" : "Gets or creates CustomGPTs utilizing",
-          "destinationId" : "8",
-          "id" : "40",
-          "linkedRelationshipId" : "39",
+          "destinationId" : "9",
+          "id" : "28",
+          "linkedRelationshipId" : "27",
           "sourceId" : "4"
-        }, {
-          "description" : "Sends documents to process and embedd and retreives relevant document chunks to a given text from",
-          "destinationId" : "12",
-          "id" : "42",
-          "sourceId" : "4",
-          "tags" : "Relationship"
-        }, {
-          "description" : "Sends documents to process and embedd and retreives relevant document chunks to a given text from",
-          "destinationId" : "11",
-          "id" : "43",
-          "linkedRelationshipId" : "42",
-          "sourceId" : "4"
-        }, {
-          "description" : "Sends messages when the processing status of uploaded documents has changed to",
-          "destinationId" : "3",
-          "id" : "52",
-          "sourceId" : "4",
-          "tags" : "Relationship",
-          "technology" : "WSMessage"
         } ],
         "tags" : "Element,Container",
         "technology" : "Fastapi"
       }, {
         "components" : [ {
-          "description" : "API for chatting with LLMs utilizing Additional data from other services",
+          "description" : "Processes multiple inputs (sysPrompt, context, messages, tools) to get a response from an LLM completion API",
           "documentation" : { },
           "id" : "6",
+          "name" : "LLMAdapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.chatservice.llmadapter"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "API for chatting with LLMs utilizing Additional data from other services",
+          "documentation" : { },
+          "id" : "7",
           "name" : "ChatserviceApi",
           "properties" : {
-            "structurizr.dsl.identifier" : "ss.chatservice.api"
+            "structurizr.dsl.identifier" : "ss.chatservice.core"
           },
           "relationships" : [ {
             "description" : "Stores and retreives Conversations -including metadata- to and from",
-            "destinationId" : "7",
-            "id" : "27",
-            "sourceId" : "6",
+            "destinationId" : "8",
+            "id" : "19",
+            "sourceId" : "7",
             "tags" : "Relationship",
             "technology" : "SQLModel"
           }, {
-            "description" : "Retreive infromation about CustomGPTs from",
-            "destinationId" : "9",
-            "id" : "28",
-            "sourceId" : "6",
+            "description" : "Get the systemPrompt created from the cgpt information from",
+            "destinationId" : "10",
+            "id" : "20",
+            "sourceId" : "7",
             "tags" : "Relationship",
             "technology" : "RESTApi"
           }, {
-            "description" : "Retreive infromation about CustomGPTs from",
-            "destinationId" : "8",
-            "id" : "29",
-            "linkedRelationshipId" : "28",
-            "sourceId" : "6",
+            "description" : "Get the systemPrompt created from the cgpt information from",
+            "destinationId" : "9",
+            "id" : "21",
+            "linkedRelationshipId" : "20",
+            "sourceId" : "7",
             "technology" : "RESTApi"
           }, {
-            "description" : "Sends text-snipet and gets relevant document chunks and their metadata from",
-            "destinationId" : "12",
-            "id" : "32",
-            "sourceId" : "6",
-            "tags" : "Relationship"
-          }, {
-            "description" : "Sends text-snipet and gets relevant document chunks and their metadata from",
-            "destinationId" : "11",
-            "id" : "33",
-            "linkedRelationshipId" : "32",
-            "sourceId" : "6"
-          }, {
             "description" : "Sends conversation (snippets) to get assistant messages as answers from",
-            "destinationId" : "18",
-            "id" : "36",
-            "sourceId" : "6",
+            "destinationId" : "13",
+            "id" : "24",
+            "sourceId" : "7",
             "tags" : "Relationship",
             "technology" : "RESTApi"
           } ],
@@ -158,7 +136,7 @@
         }, {
           "description" : "Stores the conversation histories and metadata of the conversation",
           "documentation" : { },
-          "id" : "7",
+          "id" : "8",
           "name" : "ConversationDB",
           "properties" : {
             "structurizr.dsl.identifier" : "ss.chatservice.db"
@@ -166,7 +144,7 @@
           "tags" : "Element,Component,Database",
           "technology" : "SQLite"
         } ],
-        "description" : "Provides llm chat functionality and composes llm prompts from raw data -userinput, customgpt, rag",
+        "description" : "Provides chat functionality with an LLM",
         "documentation" : { },
         "id" : "5",
         "name" : "ChatService",
@@ -174,54 +152,50 @@
           "structurizr.dsl.identifier" : "ss.chatservice"
         },
         "relationships" : [ {
-          "description" : "Retreive infromation about CustomGPTs from",
+          "description" : "Get the systemPrompt created from the cgpt information from",
+          "destinationId" : "10",
+          "id" : "22",
+          "linkedRelationshipId" : "20",
+          "sourceId" : "5",
+          "technology" : "RESTApi"
+        }, {
+          "description" : "Get the systemPrompt created from the cgpt information from",
           "destinationId" : "9",
-          "id" : "30",
-          "linkedRelationshipId" : "28",
+          "id" : "23",
+          "linkedRelationshipId" : "20",
           "sourceId" : "5",
           "technology" : "RESTApi"
-        }, {
-          "description" : "Retreive infromation about CustomGPTs from",
-          "destinationId" : "8",
-          "id" : "31",
-          "linkedRelationshipId" : "28",
-          "sourceId" : "5",
-          "technology" : "RESTApi"
-        }, {
-          "description" : "Sends text-snipet and gets relevant document chunks and their metadata from",
-          "destinationId" : "12",
-          "id" : "34",
-          "linkedRelationshipId" : "32",
-          "sourceId" : "5"
-        }, {
-          "description" : "Sends text-snipet and gets relevant document chunks and their metadata from",
-          "destinationId" : "11",
-          "id" : "35",
-          "linkedRelationshipId" : "32",
-          "sourceId" : "5"
         }, {
           "description" : "Sends conversation (snippets) to get assistant messages as answers from",
-          "destinationId" : "18",
-          "id" : "37",
-          "linkedRelationshipId" : "36",
+          "destinationId" : "13",
+          "id" : "25",
+          "linkedRelationshipId" : "24",
           "sourceId" : "5",
           "technology" : "RESTApi"
         } ],
         "tags" : "Element,Container"
       }, {
         "components" : [ {
-          "description" : "API to set and query the Basic information as well as composing conversation snippets to be utilized in new chats which use this",
           "documentation" : { },
-          "id" : "9",
+          "id" : "10",
+          "name" : "constructs and returns a sysprompt based on a specific cgpt ID",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ss.customgptservice.cgptsyspromptadapter"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "API to get/create/change customgpts",
+          "documentation" : { },
+          "id" : "11",
           "name" : "CustomGptApi",
           "properties" : {
-            "structurizr.dsl.identifier" : "ss.customgptservice.api"
+            "structurizr.dsl.identifier" : "ss.customgptservice.core"
           },
           "relationships" : [ {
             "description" : "Stores and retreives CustomGPT information -including metadata- to and from",
-            "destinationId" : "10",
-            "id" : "41",
-            "sourceId" : "9",
+            "destinationId" : "12",
+            "id" : "29",
+            "sourceId" : "11",
             "tags" : "Relationship",
             "technology" : "SQLModel"
           } ],
@@ -229,7 +203,7 @@
         }, {
           "description" : "Stores the basic information of the CustomGPTs",
           "documentation" : { },
-          "id" : "10",
+          "id" : "12",
           "name" : "CustomGptDB",
           "properties" : {
             "structurizr.dsl.identifier" : "ss.customgptservice.db"
@@ -239,158 +213,11 @@
         } ],
         "description" : "Stores and Serves basic CustomGPT information",
         "documentation" : { },
-        "id" : "8",
+        "id" : "9",
         "name" : "CustomGPTService",
         "properties" : {
           "structurizr.dsl.identifier" : "ss.customgptservice"
         },
-        "tags" : "Element,Container"
-      }, {
-        "components" : [ {
-          "description" : "API for processing&storing raw data in a vector database and retreiving relevant chunks and raw data",
-          "documentation" : { },
-          "id" : "12",
-          "name" : "RagServiceAPI",
-          "properties" : {
-            "structurizr.dsl.identifier" : "ss.ragservice.api"
-          },
-          "relationships" : [ {
-            "description" : "store unprocessed and processed whole documents on",
-            "destinationId" : "16",
-            "id" : "44",
-            "sourceId" : "12",
-            "tags" : "Relationship"
-          }, {
-            "description" : "query processing tasks",
-            "destinationId" : "15",
-            "id" : "45",
-            "sourceId" : "12",
-            "tags" : "Relationship"
-          }, {
-            "description" : "create embeddings for chunks of documents utilizing",
-            "destinationId" : "18",
-            "id" : "46",
-            "sourceId" : "12",
-            "tags" : "Relationship"
-          }, {
-            "description" : "store and retreive (similar) document chunks embeddings",
-            "destinationId" : "13",
-            "id" : "48",
-            "sourceId" : "12",
-            "tags" : "Relationship"
-          }, {
-            "description" : "store metadata information about documents stored in the VectorDB",
-            "destinationId" : "14",
-            "id" : "49",
-            "sourceId" : "12",
-            "tags" : "Relationship"
-          }, {
-            "description" : "Sends messages when the processing status of uploaded documents has changed",
-            "destinationId" : "4",
-            "id" : "50",
-            "sourceId" : "12",
-            "tags" : "Relationship",
-            "technology" : "RESTApi"
-          } ],
-          "tags" : "Element,Component"
-        }, {
-          "documentation" : { },
-          "id" : "13",
-          "name" : "vectorDB",
-          "properties" : {
-            "structurizr.dsl.identifier" : "ss.ragservice.vectordb"
-          },
-          "tags" : "Element,Component,Database",
-          "technology" : "Qdrant"
-        }, {
-          "documentation" : { },
-          "id" : "14",
-          "name" : "MetadataDB",
-          "properties" : {
-            "structurizr.dsl.identifier" : "ss.ragservice.metadatadb"
-          },
-          "tags" : "Element,Component,Database",
-          "technology" : "SQLite"
-        }, {
-          "description" : "Queue tasks to continue directly after responding",
-          "documentation" : { },
-          "id" : "15",
-          "name" : "Background Task",
-          "properties" : {
-            "structurizr.dsl.identifier" : "ss.ragservice.backgroundtask"
-          },
-          "tags" : "Element,Component"
-        }, {
-          "description" : "Used to store non-processed and pre-processes  whole documents",
-          "documentation" : { },
-          "id" : "16",
-          "name" : "Local File System",
-          "properties" : {
-            "structurizr.dsl.identifier" : "ss.ragservice.localfs"
-          },
-          "tags" : "Element,Component"
-        }, {
-          "description" : "Listens for notification updates from github and updates the corresponding data in the vectorDB",
-          "documentation" : { },
-          "id" : "17",
-          "name" : "githubDataService",
-          "properties" : {
-            "structurizr.dsl.identifier" : "ss.ragservice.githubdataservice"
-          },
-          "relationships" : [ {
-            "description" : "retreives repository content from",
-            "destinationId" : "21",
-            "id" : "59",
-            "sourceId" : "17",
-            "tags" : "Relationship"
-          }, {
-            "description" : "retreives repository content from",
-            "destinationId" : "19",
-            "id" : "60",
-            "linkedRelationshipId" : "59",
-            "sourceId" : "17"
-          }, {
-            "description" : "updates outdate github repo data in",
-            "destinationId" : "12",
-            "id" : "65",
-            "sourceId" : "17",
-            "tags" : "Relationship"
-          } ],
-          "tags" : "Element,Component"
-        } ],
-        "description" : "Retreive fitting document chunks and provide an api to add or update data",
-        "documentation" : { },
-        "id" : "11",
-        "name" : "RagService",
-        "properties" : {
-          "structurizr.dsl.identifier" : "ss.ragservice"
-        },
-        "relationships" : [ {
-          "description" : "create embeddings for chunks of documents utilizing",
-          "destinationId" : "18",
-          "id" : "47",
-          "linkedRelationshipId" : "46",
-          "sourceId" : "11"
-        }, {
-          "description" : "Sends messages when the processing status of uploaded documents has changed",
-          "destinationId" : "4",
-          "id" : "51",
-          "linkedRelationshipId" : "50",
-          "sourceId" : "11",
-          "technology" : "RESTApi"
-        }, {
-          "description" : "retreives repository content from",
-          "destinationId" : "21",
-          "id" : "61",
-          "linkedRelationshipId" : "59",
-          "sourceId" : "11"
-        }, {
-          "description" : "retreives repository content from",
-          "destinationId" : "19",
-          "id" : "62",
-          "linkedRelationshipId" : "59",
-          "sourceId" : "11"
-        } ],
         "tags" : "Element,Container"
       } ],
       "documentation" : {
@@ -402,6 +229,84 @@
           "status" : "ACCEPTED",
           "title" : " SWA documentation with Structurizr lite and C4+Arc42+ADRs"
         }, {
+          "content" : "# Error Handling Pattern (Ports Own Errors, Global HTTP Translation)\n\n**Status:** Open\n**Date:** 2025-10-03\n\n## Context\n\nWe need a simple, consistent approach to error handling across multiple bounded contexts and layers.\n\nSee:\nhttps://chatgpt.com/s/t_68fa00d64ad48191802c77e5deccb544\n\nFor more details on how catch-all exceptions can be applied, and possible pitfalls,  see https://chatgpt.com/s/t_68fa149487a48191a5d18869845aba8b\nhttps://chatgpt.com/s/t_68faad13da78819190b985d0e0c62b4b\n\n\nAbsolutely—here’s a single, coherent guide that merges both threads: **where to define exceptions across layers** and **how to handle/reraise them safely (including a per-port catch-all).**\n\n#### Exception ownership by layer\n\n#### 1) Domain (Core)\n\n**What:** Business-rule & invariant errors.\n**Why:** They express domain semantics and are independent of infrastructure.\n**Examples:** `InvalidPrompt`, `QuotaExceeded`, `OperationNotAllowed`.\n**How used:** Raised by domain logic or services; handled in services or mapped to HTTP at the boundary.\n\n#### 2) Per-Port (Contract) — your key stability point\n\n**What:** The *declared failure modes* of a port (the interface your app calls).\n**Why:** Adapters may change tech, but callers rely on stable, domain-ish semantics.\n**Examples:** `CgptNotFoundError`, `RetrieverUnavailable`, `RetrieverError` (base).\n**How used:** **Adapters translate infra/library errors → these exceptions**. Callers see only port exceptions (and domain exceptions), never raw infra ones.\n\n#### 3) Service / Use-case layer (optional, be frugal)\n\n**When to create service exceptions:** Only if the service adds **new semantics** that don’t belong to a single port (e.g., orchestration/compensation failure, cross-port normalization).\n**Otherwise:** Use **domain + port exceptions directly**; catch/handle or let them bubble to HTTP.\n\n#### 4) Adapters / Infrastructure\n\n**What:** Implementation details stay here.\n**Rule:** Never leak infra exceptions upward. **Map to port exceptions** (specific first, then a *port-scoped* catch-all). Keep try-blocks tight.\n\n#### 5) HTTP Boundary\n\n**What:** Central exception handlers that map domain/port exceptions → HTTP (Problem Details).\n**Rule:** Keep HTTP knowledge here; the core remains transport-agnostic.\n\n---\n\n#### Handling & re-raising: rules that keep you safe\n\n* **Define exceptions per port** as part of the port interface; adapters raise only those.\n* **Raise instances, not classes:** `raise CgptNotFoundError(\"cgpt_id=...\")`.\n* **Preserve tracebacks:** `raise ... from e` for observability.\n* **Catch only when you add value:** translation, add context, adjust retryability, ensure cleanup.\n* **Keep try-scopes tight** so you don’t mask unrelated bugs.\n* **No blanket `except Exception`** *except* for a **final, port-scoped catch-all** that wraps to a generic port error and re-raises (with chaining).\n* **Don’t catch control-flow exceptions:** `KeyboardInterrupt`, `SystemExit`, `GeneratorExit`, `asyncio.CancelledError`.\n* **Expected absence vs exception:** if “not found” is common/acceptable, return `model | None`. If it violates an invariant for the operation, raise `NotFound`.\n* **Log once at the boundary** (HTTP/middleware). Inside adapters/services, prefer adding context and re-raising—avoid duplicate logs.\n\n---\n\n### Minimal shapes (concise patterns)\n\n#### Port contract (exceptions + protocol)\n\n```python\n# ports/cgpt_retriever.py\nfrom dataclasses import dataclass\nfrom enum import StrEnum\nfrom typing import Protocol\n\nclass CGPTRetrieverError(RuntimeError): ...\nclass CgptNotFoundError(CGPTRetrieverError): ...\nclass CGPTRetrieverUnavailable(CGPTRetrieverError): ...\nclass RetrieverUnexpectedError(CGPTRetrieverError): ...  # final catch-all type\n\nclass RoleDTO(StrEnum):\n    user = \"user\"\n    assistant = \"assistant\"\n    system = \"system\"\n\n@dataclass(frozen=True)\nclass MessageDTO:\n    role: RoleDTO\n    text_content: str\n\nclass CustomGPTInstructionsRetriever(Protocol):\n    def get_cgpt_sys_prompt(self, cgpt_id: str) -> list[MessageDTO]: ...\n```\n\n#### Adapter (specific mappings → final port-scoped catch-all)\n\n```python\n# adapters/cgpt_retriever_adapter.py\nimport asyncio\nfrom src.contexts.chat.ports.cgpt_retriever import (\n    CustomGPTInstructionsRetriever,\n    MessageDTO, CgptNotFoundError, CGPTRetrieverUnavailable, RetrieverUnexpectedError\n)\nfrom src.contexts.chat.domain.models import CustomGPT\nfrom src.contexts.chat.domain.uow import CgptUOW, CGPTNonExistentError\nfrom src.shared.types import Factory\n\ndef cgpt_infos_to_sysprompt(*, cgpt_name: str, cgpt_instructions: str) -> list[MessageDTO]:\n    ...\n\nclass CustomGPTInstructionsRetrieverAdapter(CustomGPTInstructionsRetriever):\n    def __init__(self, cgpt_uow_factory: Factory[CgptUOW]):\n        self._cgpt_uow_factory = cgpt_uow_factory\n\n    def get_cgpt_sys_prompt(self, cgpt_id: str) -> list[MessageDTO]:\n        try:\n            with self._cgpt_uow_factory() as uow:\n                try:\n                    cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)\n                except CGPTNonExistentError as e:\n                    raise CgptNotFoundError(f\"cgpt_id={cgpt_id}\") from e\n\n                return cgpt_infos_to_sysprompt(\n                    cgpt_name=cgpt.name,\n                    cgpt_instructions=cgpt.instructions,\n                )\n\n        # Map known transient/operational issues first\n        except (ConnectionError, TimeoutError) as e:\n            raise CGPTRetrieverUnavailable(f\"cgpt_id={cgpt_id}\") from e\n\n        # Preserve control-flow exceptions\n        except (KeyboardInterrupt, SystemExit, GeneratorExit, asyncio.CancelledError):\n            raise\n\n        # Final, port-scoped catch-all: wrap & chain (never swallow)\n        except Exception as e:\n            raise RetrieverUnexpectedError(f\"unexpected failure; cgpt_id={cgpt_id}\") from e\n```\n\n#### Service layer use domain/port exceptions\n\n```python\ndef build_system_prompt(retriever: CustomGPTInstructionsRetriever, cgpt_id: str) -> list[MessageDTO]:\n    try:\n        return retriever.get_cgpt_sys_prompt(cgpt_id)\n    except CgptNotFoundError:\n        # Either handle (e.g., default prompt) or bubble unchanged\n        raise\n    # Add service-level exceptions only if this function introduces\n    # a new, higher-level failure not captured by the port/domain types.\n```\n\n#### HTTP boundary (Problem Details mapping)\n\n```python\nfrom fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\nfrom src.contexts.chat.ports.cgpt_retriever import (\n    CgptNotFoundError, CGPTRetrieverUnavailable, RetrieverUnexpectedError\n)\n\napp = FastAPI()\n\ndef problem(status: int, type_: str, title: str, detail: str | None = None):\n    return JSONResponse(\n        status_code=status,\n        content={\"type\": type_, \"title\": title, \"status\": status, \"detail\": detail},\n        headers={\"Cache-Control\": \"no-store\"},\n    )\n\n@app.exception_handler(CgptNotFoundError)\ndef _not_found(_: Request, exc: CgptNotFoundError):\n    return problem(404, \"urn:problem:cgpt-not-found\", \"Custom GPT not found\", str(exc))\n\n@app.exception_handler(CGPTRetrieverUnavailable)\ndef _unavailable(_: Request, exc: CGPTRetrieverUnavailable):\n    return problem(503, \"urn:problem:retriever-unavailable\", \"Retriever unavailable\", str(exc))\n\n@app.exception_handler(RetrieverUnexpectedError)\ndef _unexpected(_: Request, exc: RetrieverUnexpectedError):\n    return problem(500, \"urn:problem:unexpected\", \"Unexpected error\", \"An unexpected error occurred.\")\n```\n\n---\n\n### Should you have a blanket per-port catch-all?\n\n**Yes**, at the adapter boundary—**one per port**—implemented as the *final* `except Exception as e` that **wraps into a generic port error** and **re-raises with chaining**.\nThis ensures no unknown infra errors leak outside the adapter while preserving debuggability.\n\n---\n\n### Quick checklist\n\n* **Domain exceptions:** business rules; raised/handled in core/services.\n* **Per-port exceptions:** part of the port contract; adapters only raise these.\n* **Service exceptions:** only when you invent new cross-port semantics; otherwise reuse domain/port.\n* **Adapters:** map known errors specifically; add a **port-scoped catch-all**; no swallowing; tight try-scopes; chain with `from e`.\n* **HTTP:** central Problem Details mapping; log at the boundary.\n\nIf you want, paste another port’s methods + typical failures and I’ll suggest the minimal exception set and its adapter mapping table.\n\n\n## Decision\nOLD:\n\n1. **Error classes per context & layer combo**\n\n   * Each bounded context defines its own **domain error classes** (business-focused).\n   * Each **port** (e.g., repository/gateway interface) defines its own **port error classes** for that context.\n\n2. **Ports define errors; adapters only raise those**\n\n   * Adapters must translate vendor/ORM exceptions into the **port-defined** errors and **never** leak vendor exceptions.\n   * Include a single catch-all mapping for anything not explicitly handled:\n\n   ```python\n   # inside the adapter\n   from sqlalchemy.exc import IntegrityError, OperationalError, StaleDataError\n\n   class RepoError(Exception): ...\n   class UniqueViolation(RepoError): ...\n   class ConcurrencyConflict(RepoError): ...\n   class RepoUnavailable(RepoError): ...\n\n   def _map_sa(e: Exception) -> RepoError:\n       if isinstance(e, IntegrityError):   return UniqueViolation(str(e))\n       if isinstance(e, StaleDataError):   return ConcurrencyConflict(str(e))\n       if isinstance(e, OperationalError): return RepoUnavailable(str(e))\n       return RepoError(str(e))  # catch-all\n   ```\n\nAdapter can use an explicit translator:\n```\nfrom sqlalchemy.exc import IntegrityError, OperationalError, StaleDataError\nfrom .ports import RepoError, UniqueViolation, ConcurrencyConflict, RepoUnavailable\n\ndef _map_sa(e: Exception) -> RepoError:\n   if isinstance(e, IntegrityError):   return UniqueViolation(str(e))\n   if isinstance(e, StaleDataError):   return ConcurrencyConflict(str(e))\n   if isinstance(e, OperationalError): return RepoUnavailable(str(e))\n   return RepoError(str(e))  # catch-all\n```\n\n3. **Service/Application layer**\n\n   * We will **not** manually translate domain or port errors in the service layer.\n   * Services allow **domain** and **port** errors to bubble up unchanged to keep the application layer simpler.\n\n4. **HTTP layer (FastAPI)**\n\n   * FastAPI **exception handlers** must handle and translate **all** domain and application/port errors to `HTTPException` responses.\n   * Centralize this translation with global handlers; better: an explicit translator function that handlers call\n```\none handler catching all exception types, then calling the translator function to return the correct translation.\nNeed one global catch-all again, here: take care not to overwrite important errors that fastapi would throw for validation for example. So maybe just return all errors not explicitly translated as-is\n```\n   * If using an explicit translator, it maps known domain/port/app errors to HTTP status codes; unknowns become 500.\n\n\n## Consequences\n\n* **Pros:** Clear boundaries; no vendor leaks; minimal service-layer boilerplate; one place for HTTP mapping; predictable failure semantics.\n* **Cons:** HTTP layer must know the set of domain/port/app error types to translate.\n\n\n",
+          "date" : "2026-01-01T14:00:23Z",
+          "format" : "Markdown",
+          "id" : "10",
+          "status" : "Proposed",
+          "title" : " Error Handling Pattern (Ports Own Errors, Global HTTP Translation)"
+        }, {
+          "content" : "# Other architecture patterns\nDate: 2025-08-04\n\n## Status\n\nOPEN    \n\n## Context\n\nPatterns that I have not yet finely sorted and put into their own adr will find its place here\n\n## Decision\n\n### Atomic types as service function parameters\nService layer functions will take only atomic types -this is due to decoupling.\nSee chapter 5 cosmic python / architecture patterns with python book\nOpen question: what is with the return type, can this be different\nPersonal take: convoluted types are not really readable, like: `tuple[str|None, List[tuple[Role, str]]]` Returning something else then such a thing might be prettier.\n\n#### update\nWhat about DTOs?\n\n### OPEN: CQRS & Interface btw http and app\nWhat datatypes to return, where to translate from Domain models to pydantic schema objects?\nIn http, or deconstruct in app and construct http pydantic in http layer\n\nHowever, if we use the CQRS pattern, we will probably not have this problem.\nWhy this pattern is good, is explained in ch12 of cosmic python / architecture patterns with python\n\n#### update\nUsing seperate query module, we should only really need to write dtos for these, posts should only get as return simple types, or otherwise \"reroutes\" to the queries.\n\nAs such, no need for mappers outside of exception handlers and queries should be needed\n-> must hold the requrement that service funcions must return simple types somewhere, and think of sop for service functions necessitating more complex return types (DTOs in app layer, )\n\nFor now, app layer DTOs of queries will be used either directly or with a minimal wrapper for later complications \n\n### Exception ownership and structure\n\nhttps://chatgpt.com/s/t_68f9763ba9bc819182481f31737a043e\n\n### OPEN: naming conventions endpoints\nThere are conventions about how the names and syntax/structure of endpoint urls related to expected behaviour. As of now, the names are chosen freely and no structure is held up between getters and setters of the same object type for example.\n\nWe should, for the sake of a readable api, read and implement these conventions.\n\n### OPEN: Pydantic strictnes unknown fields\nfrom pydantic import BaseModel, ConfigDict\n\nclass CreateCgptIn(BaseModel):\n    model_config = ConfigDict(extra='forbid')  # <— reject unknown fields\n    name: str\n    instructions: str\n    description: str | None = None\n\n## Consequences\n\nThis must be reevaluated in the future and better adrs will be created containing all the information",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "11",
+          "status" : "OPEN",
+          "title" : " Other architecture patterns"
+        }, {
+          "content" : "# Who owns sysprompt generation\nDate: 2025-08-04\n\n## Status\n\nOPEN    \n\n## Context\n\nWe want to have nice decoupled contexts. The question is: who is generating the system prompt.   \nFor our customgpts, we want to construct a system prompt from its properties (i.e. tone, name, instructions, etc).   \nWe could either let the chat context retreive all properties of a specific customGPT via an adapter and construct the system prompt in the chat context, or we retreive from the adapter a system prompt instead.   \n\nOther considerations will be how we incorperate tool calling information as well.    \nAs we wanted to (also) bind the ability to function call to the customgpts, having them inclueded in the system prompt of the customGPT seems reasonable as well.    \nThis could lead to complications if we want to use tool calls outside of cgpts.    \nHowever, we could have the return of the cgpt port be one of many inputs to determine what tool calls to make available to the assistant.\n\n\n\nAdditionally, **we will need to make sure that our sysprompt is up-to-date.**\nIf we change something in our cgpt, the system prompt it will create is different.    \nSo we can not call the cgpt adapter only once per conversation creation and save its output.\n\nNow we could either always call the adapter and retreive the system prompt per each call to the llm or have another solution maybe with redis pub-sub, where we keep the sysprompt up-to-date. But this might also be ugly coupling.\n\nWe could do everything in the orchestration layer and llmAdapter.\nRetreive possible tools, retreive cgpt sysprompt, etc etc\n\nInspiration GPT Idea of what could be passed to the llmadapter from the service layer:\n```\nPromptBundle = {\n  system: list[Message],      # from PromptProvider(s)\n  tools: list[ToolSpec],      # from ToolProvider(s)\n  seed:  list[Message],       # optional starter/user/assistant msgs\n  context: list[Message],     # from ContextProvider(s)\n  meta: dict[str, Any],       # free-form extensions, version tags\n}\n```\n\n## Decision\n\nWe will let the customgpt port return a system prompt. In this way the responisbilities for cgpt is isolated in its context. No need to change the port if new properties are added to the cgpt context if it returns a system prompt.    \nAlso, the cgpt context is responsible for everything related to cgpts. Which properties it has, \nIn this way, we decouple the contexts.   \n\nAddi\n\nStill, how tool calling will be implemented is still open.\n\n\n## Consequences\n\nFor now: sysprompt will be passed by the \nOnce tool calling and the rag system are researched",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "12",
+          "status" : "OPEN",
+          "title" : " Who owns sysprompt generation"
+        }, {
+          "content" : "# Utilizing openai library types to interface with its api\nDate: 2025-08-04\n\n## Status\n\nOPEN    \n\n## Context\n\nBefore, we have sent a list of dictionaries to the chat completion endpoint like this: \n```\nmessages= [\n        {\"role\": m.role, \"content\": m.content} for m in history\n    ] \n    if customgpt:\n        system_message_content = f\"\"\"Du bist ein CustomGPT namens {customgpt.name} und bist für folgendes zuständig: {customgpt.custom_gpt_description}. Dafür befolgst du folgende Anweisungen: {customgpt.custom_gpt_instructions}\"\"\"\n        system_message= [{\"role\": \"system\", \"content\": system_message_content}]\n        messages = system_message + messages\n    # build history for OpenAI\n\n    # call OpenAI\n    response = client.chat.completions.create(\n        model=\"gpt-4.1-mini\",\n        messages=messages,\n    )\n```\n\nHowever, this means that we do not have type safety and we can not utilize our linter to check if we pass parameters of the correct syntax to the endpoint.\n\nEverywhere else in our code we utilize pythons typing functionality to aid our software development.  \nOpenais pip library also uses python typing and provides types that we can use, like\n```\nclass ChatCompletionMessage(BaseModel):\n    content: Optional[str] = None\n    \"\"\"The contents of the message.\"\"\"\n\n    refusal: Optional[str] = None\n    \"\"\"The refusal message generated by the model.\"\"\"\n\n    role: Literal[\"assistant\"]\n    \"\"\"The role of the author of this message.\"\"\"\n```\n\n\n\n\n## Decision\n\nWe will switch to utilizing the types provided by Openai.   \nAs such, we can statically see in vscode if the data we pass to the api has the correct syntax. \nAdditionally, we know the syntax and properties of the returned type and can utilize this as well.\n\n\n\n## Consequences\n\nWe import the types from openai library\n```\nfrom openai.types.chat.chat_completion_message import ChatCompletionMessage\nfrom openai.types.chat.chat_completion import ChatCompletion\n```\n\nWe will create a mapper function that maps our domain model to the openai chat models\n```\ndef transform_message_domain_to_message_openai_chat_completion(msg: Message) -> ChatCompletionMessageParam:\n    match msg.role:\n        case Role.assistant:\n            return ChatCompletionAssistantMessageParam(\n                role=\"assistant\", content=msg.imageUrlOrText\n            )\n        case Role.user:\n            return ChatCompletionUserMessageParam(\n                role=\"user\", content=msg.imageUrlOrText\n            )\n        case Role.system:\n            return ChatCompletionSystemMessageParam(\n                role=\"system\", content=msg.imageUrlOrText\n            )\n```\nAnd utilize it\n```\nfor msg in cgpt_systemprompt+messages_excluding_sys_prompt:\n    messages.append(transform_message_domain_to_message_openai_chat_completion(msg=msg))\n\ntry:\n    client = OpenAI()\n\n    response: ChatCompletion = client.chat.completions.create(\n        model=self.model_name,\n        messages=messages,\n    )\n    assistant_response: ChatCompletionMessage = response.choices[0].message\n```\n",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "13",
+          "status" : "OPEN",
+          "title" : " Utilizing openai library types to interface with its api"
+        }, {
+          "content" : "# Utilizing DTOs in cross-context ports\nDate: 2025-08-04\n\n## Status\n\nOPEN    \n\n## Context\nOur contexts each have their own domain models and we want to make sure that the contexts are decoupled from each other.   \nIf we now have cross context communication via Ports of Context `A` and Adapter implementing this Port in context `B`, we must pay close attention to how we define this interface to not create coupling.   \nA)\nWe might be tempted to use domain models of `A` in the Port. But that binds the Port to the domain model and that is not advisable because 1) we don't want to have to modify the port(&adapters) every time we change something in the domain model 2) the domain model might contain way more information than we need for our interface 3) We don't want to leak internals of a context to the outside.\n\nTherefore, DTOs and a mapper translating those is a solid and widely used choice.\nB)\nAdditionally, we have the problems of the following kind:       \nThe adapter of Context B might need to access its db and therefore needs it uow.   \nWe don't want to have the uow of `B` as a parameter of the Port function of `A`or anything that couples the contexts.   \nTherefore we will have the uow and similar dependencies as properties of the adapter (not defined in the port.) and then wire them up in the bootstrap.   \nIn this way, we have no coupling\n\n\n## Decision\n\nWe will define DTOs in the Port and utilize those in the Ports functions to pass data.\nThe context owning the Port with its DTOs will then define a mapper function to translate the DTOs to domain objects.   \nIf we change the domain model or DTO, we will only have to adjust this mapper function and nothing more\n\nAdditionally, \n\n\n\n\n\n\nWe will define per Cross context Port<>Adapter in the Port DTOs and a mapper function like this:\n\nPort:\n```.py\nclass DefaultCGPTRetreiverError(RuntimeError):\n    \"The adapter threw an error\"\nclass CgptNotFoundError(DefaultCGPTRetreiverError):\n    \"CGPT does not exist\"\nclass RoleDTO(StrEnum):\n    user = \"user\"\n    assistant = \"assistant\"\n    system = 'system'\n\n@dataclass(frozen= True)\nclass MessageDTO:\n    role: RoleDTO\n    text_content: str\n\nclass CustomGPTInstructionsRetreiver(Protocol):\n    \n    def get_cgpt_sys_prompt(self, cgpt_id: str, ) -> list[MessageDTO]: ...\n```\nAdapters init with the uow:\n\n```.py\nclass CustomGPTInstructionsRetreiverAdapter(CustomGPTInstructionsRetreiver):\n    def __init__(self, cgpt_uow_factory: Factory[CgptUOW]):\n        self._cgpt_uow_factory: Factory[CgptUOW] = cgpt_uow_factory\n\n    def get_cgpt_sys_prompt(\n        self, cgpt_id: str\n    ) -> list[\n        MessageDTO\n    ]:  # ToDo: add exception GPTDoesNotExist and add management here\n        \n        try:\n            with self._cgpt_uow_factory() as uow:\n                try:\n                    cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)\n                except CGPTNonExistentError:\n                    raise CgptNotFoundError\n                \n                messages_of_sysprompt: list[MessageDTO] = cgpt_infos_to_sysprompt(\n                    cgpt_name=cgpt.name, cgpt_instructions=cgpt.instructions\n                )\n                return messages_of_sysprompt\n        except Exception:\n            raise DefaultCGPTRetreiverError\n```\n\nWire everything up in the bootstrap\n```bootstrap.py\n@dataclass(frozen=True)\nclass DependenciesContainer:\n    # Return **port types** (or ports’ concrete implementations if ports are Protocols)\n    conversation_uow_factory: Factory[ConversationUOW]\n    cgpt_uow_factory: Factory[CgptUOW]\n    cgpt_instructions_adapter_factory: Factory[CustomGPTInstructionsRetreiver]\n```\n\n```.py\ndef bootstrap( ... ):\n    def cgpt_instructions_adapter_factory() -> CustomGPTInstructionsRetreiver:\n        # Adapter owns its own context’s UoW factory\n        return CustomGPTInstructionsRetreiverAdapter(cgpt_uow_factory)\n\n    return DependenciesContainer(\n        ...\n        cgpt_instructions_adapter_factory=cgpt_instructions_adapter_factory,\n        ...\n    )\n```\n\n## Consequences\n\n",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "14",
+          "status" : "OPEN",
+          "title" : " Utilizing DTOs in cross-context ports"
+        }, {
+          "content" : "# Utilizing DTOs in cross-context ports\nDate: 2025-08-04\n\n## Status\n\nOPEN    \n## Context\nhttps://chatgpt.com/s/t_68f96a5a16d0819191473a850610f488\nWe need to also establish clear rules to guarantee best practices are followed.\nSee the conversation added for a starting point\n\n## Decision\n## Consequences",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "15",
+          "status" : "OPEN",
+          "title" : " Utilizing DTOs in cross-context ports"
+        }, {
+          "content" : "# 16. Modulith\n\nDate: 2025-11-19\n\n## Status\n\nAccepted\n\nSupercedes [Microservices Architecture](0003-Microservices-architecture-test)\nSupercedes [Seperating internal and external endpoints via nginx](0005-Seperating-internal-and-external-endpoints-via-nginx)\n\n## Context\n*PLACEHOLDER TEXT*\nA previous decision proposed a microservice architecture to achieve modularity, decoupling, and clear bounded contexts.\n\nOur current system is relatively small in scope. We apply Domain-Driven Design (DDD) with a hexagonal (ports & adapters) architecture. All cross-context communication is already modeled via interfaces (ports) with concrete implementations in adapters. This gives us clear boundaries and stable contracts between modules.\n\n## Decision\nWe will implement the system as a **modulith** (modular monolith) using DDD and hexagonal architecture instead of splitting the system into separate deployable microservices.\n\n## Rationale\n- We still get **modularity, decoupling, and clear domain boundaries** via DDD and hexagonal design within a single deployable unit.\n- For our **current scope (small project)**, a modulith reduces operational and organizational complexity compared to a microservice landscape.\n- We **avoid the overhead** of inter-service **HTTP calls** (latency, serialization, circuit breakers, retries, distributed tracing, etc.), while keeping module boundaries explicit.\n- Because all cross-context communication already goes through **ports and adapters**, modules can be **extracted into microservices later** with minimal change: the contracts are stable and well-defined.\n\n## Consequences\n- **Pros**\n  - Simpler deployment, monitoring, and operations (single application).\n  - Lower runtime overhead (no network hops between domain modules).\n  - Clear path to future **microservice extraction**, if/when system size and team structure justify it.\n  - Consistent DDD & hexagonal patterns across all modules.\n\n- **Cons**\n  - No independent deployment per bounded context initially.\n  - Some microservice-specific concerns (e.g. per-service scaling, independent tech stacks) are not available until modules are extracted.\n\n",
+          "date" : "2025-11-19T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "16",
+          "status" : "Accepted",
+          "title" : "Modulith"
+        }, {
+          "content" : "# 17. ADRs with tools\n\nDate: 2025-11-19\n\n## Status\n\nAccepted\n\nSupercedes [1. Record architecture decisions](0001-record-architecture-decisions.md)\n\n## Context\n\nWe want to streamline working with adrs. \nUsing the command line tools lets us quickly create adr templates with the correct file name and header, as well as giving the possibility to automatically edit superseded adrs. \nA widely adopted tool is [ADR Tools](https://github.com/npryce/adr-tools) that \n\n## Decision\n\nWe will use [ADR Tools](https://github.com/npryce/adr-tools) from now on.\n\n## Consequences\n\nAdding the tutorial for this tool must be considered.\nWe will always use this tool in this project. If it works well, we might implement this in all projects.\n\n",
+          "date" : "2025-11-19T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "17",
+          "status" : "Accepted",
+          "title" : "ADRs with tools"
+        }, {
+          "content" : "# 18. Error handling implementation\n\nDate: 2025-11-20\n\n## Status\n\nOpen\n\nSupercedes [ADR-XXX: Error Handling Pattern (Ports Own Errors, Global HTTP Translation)](#10)\n\n## Context\n\nIn the process of refactoring, testing and working with the ideas of previous adr, a baseline was established that still holds some technical debt.   \nHowever, the core aspects are covered in the current application version:\n\n- Layer specific errors with upper layer translating errors\n- Ports defining errors that the Adapters implement (incl. data layer ports)\n- Ports and Domain errors are the only errors that are thrown\n- Service layer does not catch/translate nor implement any errors\n- http layer catches/translates all port and domain errors to http errors via exception handlers \n- per Port we have one to_http mapper module for exceptions and dataclasses. There, we have one register_handlers function that contains all exception handler functions\n```.py\ndef register_query_exception_handlers_cgpt_query_port(app: FastAPI) -> None:\n    @app.exception_handler(NotFoundError)\n    async def _not_found(_, exc: NotFoundError):\n        return JSONResponse(\n            status_code=status.HTTP_404_NOT_FOUND,\n            content={\n                \"detail\": f\"Conversation not found: {getattr(exc, 'args', [''])[0]}\"\n            },\n        )\n\n    @app.exception_handler(QueryError)\n    async def _query_error(_, exc: QueryError):\n    ...\n```\n- we have one `all_handlers.py` module where we have one function that runs all exception handlers, which we run once in our `app.py`\n```.py\ndef register_all_handlers(app: FastAPI):\n    register_query_exception_handlers_queries_port(app)\n    register_query_exception_handlers_chat_repo_port(app)\n    ...\n```\n\n```.py\napp = FastAPI(root_path=\"/api\", lifespan=lifespan)\napp.include_router(chat_commands_router)\n...\n\nregister_all_handlers(app)\n```\n- http layer also implements its own errors (automatically) -e.g. validation errors. Those can also be customized via exception handlers\n- all exception handler modules are imported into one\n\n**There is now some nuance!**\nNot all exceptions should be caught and translated, some must be passed as is, like control-flow/process exceptions, which should be passed through. See `src/contexts/shared/port_exceptions_decorator.py`\n```.py\n    KeyboardInterrupt,\n    SystemExit,\n    GeneratorExit,\n    asyncio.CancelledError,\n    concurrent.futures.CancelledError,\n```\nThis specific wrapper is not yet implemented.\nAs of now, we simply do not catch and translate all errors, but those we want the client to know of. Like a missing resource throwing a `NotFound` Error of some kind. This might not be perfect, but the most important errors that the client should know of (after a translation) are.\n\nAdditionally, creating Base Errors which can be inherited to structure the erros better should also be considered\n\n\n\n## Decision\n\nWe will stick with the current version, maybe implementing the wrapper in the future.   \nMore fine tuning will be done when we start with implementing logging.\n\n## Consequences\n\nLogging must be put on top of the priority list.   \nWhen working through implementing this, the new knowledge will be used to revisit the open questions here.\n",
+          "date" : "2025-11-20T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "18",
+          "links" : [ {
+            "description" : "Supercedes",
+            "id" : "10"
+          } ],
+          "status" : "Open",
+          "title" : "Error handling implementation"
+        }, {
+          "content" : "# 19. Different type of Port Adapter combos\n\nDate: 2025-11-21\n\n## Status\n\nAccepted\n\nSupercedes [Cross context vs in context adapters](#8)\n\n## Context\n\nGlossar:\n*Context* as in the DDD meaning\n*Ports* as in hexagonal Ports\n\n### We have four different type of Port <> Adapter Combos\n \n#### Ports used in the service layer: \n\n1. Ports whose adapter is expected to be implemented in the same context by the db layer, i.e. repos and uows\n2. Ports whose adapter is expected to be implemented in the same context not in the db layer, e.g for interfacing with an external api, like the openai Adapter implementing the LlmPort\n3. Ports whose adapter is expected to be implemented by another same context\n\n#### Ports used directly in the http layer\n\n4. The queries skip the service layer and directly interact with our db. As such they are directly used in the endpoints, utilizing the session factory.\n\n### In depth\n#### 3. Ports whose adapter is expected to be implemented by another same context\nHere, we still have the following solution that is only practical for single-few consumer Adapters and a violation of the dependenvy inversion principle. Therefore we do not have to have 2 Ports per cross-context call.  \n\nAs of now: The consumer context defines a Port that it expects to be implemented. The provider implements the Port. This creates a dependency of the provider on the consumer.   \nThe alternative: \nProvider has an inbound port, Consumer has an outbound port, Integration adapter connects the two.\n>Now we add a third piece in an integration / anti-corruption layer (or just a technical module that’s allowed to depend on both):\nSee [here](https://chatgpt.com/s/t_6920846a63c08191b3dc198e7307f1e9) \n\n## Decision\n\nPoint three is our weak point for later scaling.   \nHowever, due to the scope of our project not changing in the forseeable future, and the current solution working rather well for this scope, we will stick with it for now and concentrate on other problematic areas first.\n\nThe cleaner way with one port per consumer and provider plus one adapter for wiring should be implemented more easily without much refactoring and should be considered.\nA message bus also fulfills a different role.    \nBest case would be to combine both: cleaner cross context Port<>Adapter structure as described above PLUS a message bus, as the both fulfill different roles.   [See here](https://chatgpt.com/s/t_692083aa6130819194f1eeef86effa79)\n\nHowever, we will test both alternatives in a toy project: The more complicated two ports version AND the message bus architecture.\n\n## Consequences\n\nWe will have a lower structural overhead for now\n",
+          "date" : "2025-11-21T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "19",
+          "links" : [ {
+            "description" : "Supercedes",
+            "id" : "8"
+          } ],
+          "status" : "Accepted",
+          "title" : "Different type of Port Adapter combos"
+        }, {
           "content" : "# Structurizr lite as http (no s!) root app\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\n\n>>No, Structurizr Lite is designed to work as the root application (i.e. via a context path of /) and will not work if deployed to a different path or used behind a reverse-proxy with a rewrite rule. The UI is shared between Structurizr Lite, the on-premises installation, and the cloud service so we have no plans to change this.\n\n## Decision\nOur software system utilizes https, so we can set up nginx such that we only proxy `https://domain` and use `http://domain` for structurizr alone.\n\n\n\n## Consequences\n\nIt is now less clear how the routing works, because we have port 443 with ssl displaying our software system and backend docs via nginx and port 8080 without ssl displaying our swa documentation.   \n\nNginx in dev only routes urls going to port 443 to the containers where needed and no other port.\n\nPort 8080 is reserved and used for the structurizr-lite with no ssl.",
           "date" : "2025-08-04T00:00:00Z",
           "format" : "Markdown",
@@ -409,10 +314,63 @@
           "status" : "ACCEPTED",
           "title" : " Structurizr lite as http (no s!) root app"
         }, {
-          "content" : "# Microservices Architecture\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\n\nWe want a base product -a customgpt and then enable customers to have the option to expand the product and include custom solutions.   \nThis will lead to us maintaining a shared base-product across all projects which include custom solutions.\n\nThis leads to the problem on how to keep the base product up to date across all instances. \n\n## Decision\nWe are going to try to utilize the micro-services architecture. \nThe hope is that this will make it possible to modularize our software package that we can host.  \n\n\n\n\n## Consequences\n\nWe will trial the usage of the microservice architecture in a limited period of time and evalate it then.",
+          "content" : "# 20. testing the backend\n\nDate: 2025-11-21\n\n## Status\n\nOPEN\n\n## Context\n\nIntegrating tests into the software development process is an established process with many benefits.  The downsides of initially more time investment quickly pay off and a net plus is reached fast. Other benefits like direct feedback if something accidentally was broken, tests working as documentation and so on not even included.\n\nOur hexagonal architecture is also made for easy testing, with the possibility of faking ones own adapters where needed and other benefits.   \n\nWe want e2e, unit, contract tests. Some tests are more detail oriented (adapter tests) while other fake some adapter and test the functionality of a layer further up.\nIn this way, we can create tests on different scopes:  \nTesting the functionality of an adapter in detail at the outer layer of our app.   \nDue to this we know how it works in detail.   \nAs such, we can go one layer inward, fake it and test the functionality in this layer with abstractions/fake adapters.\n\n## Decision\n\nWe require tests: \n\n- e2e tests utilizing a Fastapi test client For all the important use cases \n- service layer tests for every function\n- tests for each adapter\n- tests for dto mappers -i.e. from port dto to fastapi schema\n\n**If we find a (non-trivial) bug, we MUST write a test that catches it, and then fix it**\nIn this way we know that this edge case or behaviour is checked by our test and will be checked by our tests.\n\n*NON FINAL VERSION OF DOCUMENT*\n\n## Consequences\n\nWhat becomes easier or more difficult to do and any risks introduced by the change that will need to be mitigated.\n",
+          "date" : "2025-11-21T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "20",
+          "status" : "OPEN",
+          "title" : "testing the backend"
+        }, {
+          "content" : "# 21. Branching, release promotion, and quality gates\n\nDate: 2025-11-21\nStatus: Accepted\n\n## Context\n\nWe need a simple, reliable way to run multiple tracks of development:\n\n* **Feature/Dev** for fast iteration.\n* **Staging** for testing release candidates in a prod-like environment.\n* **Prod** as the stable version deployed for customers.\n\nTo keep quality high without slowing iteration, we establish **explicit promotion gates** between these branches and define how multi-branch features advance without breaking `dev`.\n\nWe’ll start with a minimal, enforceable process and iterate.\n\n## Decision\n\nAdopt a **three-stream** branching model with **explicit promotion** and quality gates.\n\n### Branches\n\n* Long-lived: `dev`, `staging`, `prod`\n* Short-lived: `feature/*`, `bugfix/*`, `hotfix/*`\n\n### Promotion flow\n\n```\nfeature/*  →  dev  →  staging  →  prod\n                 (merge)  (merge)  (merge)\n```\n\n* `dev` = integration of day-to-day work.\n* `staging` = release candidate tested in a prod-like environment.\n* `prod` = version deployed (or ready to deploy) for customers.\n\nCode must flow and transition in this way. It is not possible to go from feature straight to staging for example\n\n---\n\n## Quality gates\n\n### 1) Feature → Dev (integration-ready, with tests)\n\n**Must have (ALL):**\nAll previous tests pass, additionally\n* **Unit tests** for new/changed domain logic and **service functions** are created and pass on the dev machine\n* **Contract/adapter tests** for any new adapter (port compliance + error translation) are created and pass on the dev machine.\n* **DTO Mapper tests* for new or changed DTOs are created and pass on the dev machine.\n* For each **new service function**,tests are created and pass on the dev machine\n* **Docs updated** where applicable:\n  * ADR created if the change impacts architecture decisions.\n\n### 2) Dev → Staging (release candidate)\n\n**Must have (ALL):**\n\n* For any **major feature / new use case**, add at least one new backend E2E test.\n* Performance tests for the new features are added.\n* **Docs updated** where applicable:\n  * ADR created if the change impacts architecture decisions.\n\n### 3) Staging → Prod (release)\n\n**Must have (ALL):**\n* Code review from a person outside the core dev team responsible for the current changes\n* Only fast-forward/merge from **`staging`** (no direct commits to `prod`).\n* Deployed to a **staging environment** with **same or lower specs** than prod.\n* **Performance/sanity checks** are passed in the staging environment.\n* **Human testing window** completed (≥ **1 hour** for now; target: ≥ **2 weeks** with client testers).\n\n\n## Consequences\n\nPlaceholder",
+          "date" : "2025-11-21T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "21",
+          "status" : "Proposed",
+          "title" : "Branching, release promotion, and quality gates"
+        }, {
+          "content" : "# 22. frontend tests\n\nDate: 2025-11-21\n\n## Status\n\nOPEN\n\n## Context\n\nOur backend is now fully equipped with a testing process, while our frontend has no testing at all. \nThis is unusable and must change.\n\n## Decision\n\nThe change that we're proposing or have agreed to implement.\n\n## Consequences\n\nWhat becomes easier or more difficult to do and any risks introduced by the change that will need to be mitigated.\n",
+          "date" : "2025-11-21T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "22",
+          "status" : "OPEN",
+          "title" : "frontend tests"
+        }, {
+          "content" : "# 23. test structure\n\nDate: 2025-12-02\n\n## Status\n\nAccepted\n\n## Context\n\nThe issue motivating this decision, and any context that influences or constrains the decision.\n\n## Decision\n\nThe change that we're proposing or have agreed to implement.\n\n## Consequences\n\nWhat becomes easier or more difficult to do and any risks introduced by the change that will need to be mitigated.\n",
+          "date" : "2025-12-02T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "23",
+          "status" : "Accepted",
+          "title" : "test structure"
+        }, {
+          "content" : "# 24. Dependency factories vs. singletons\n\nDate: 2025-12-03\nStatus: Accepted\n\n## Context\n\nWe use Hexagonal Architecture (ports & adapters) and per-request **Unit of Work (UoW)** to manage DB sessions/transactions.\nSome adapters are **request-scoped** (e.g., UoW), while others can be **process-scoped** (e.g., LLM client) if safe.\n\nCreating all dependencies as factories (per request) is always safe but can be wasteful (e.g., repeatedly constructing heavyweight SDK clients). Using singletons reduces overhead but introduces concurrency concerns if adapters hold mutable or request-specific state.\n\n### Forces / Constraints\n\n* **Correctness & isolation:** UoW/DB `Session` must be per request.\n* **Simplicity:** Prefer decisions that are easy to apply consistently.\n* **Performance:** Avoid unnecessary construction of heavy clients.\n* **Safety:** Avoid subtle concurrency bugs in multi-threaded workers.\n\n## Decision\n\nAdopt a **conservative default**:\n\n1. **Must be a factory (per request)** if an adapter:\n\n   * Holds **request / UoW / transaction** state (e.g., SQLAlchemy `Session`, UoW).\n   * Keeps **mutable state** that isn’t explicitly concurrency-safe.\n   * Needs **per-user/tenant credentials** on the instance.\n   * Uses an SDK that is **not thread-safe**.\n\n2. **May be a singleton (per process)** if an adapter:\n\n   * Is **stateless / immutable**, **or**\n   * Only holds **thread-safe shared resources** (e.g., HTTP client connection pool, SDK documented as thread-safe), **and**\n   * Stores **no per-request state** on the instance.\n\n3. **Bias to factories.** We will default to factories unless we are **confident** a singleton is safe. We will **avoid adding concurrency control** (locks, etc.) in adapters for now; if that becomes necessary, we will revisit.\n\n### Rationale\n\n* Factories guarantee isolation and avoid shared mutable state across requests.\n* Singletons reduce overhead for heavy clients but require proof of thread safety and no per-request state.\n* A strict rule (“singletons only if immutable/stateless”) is easy to apply and error-resistant; we can relax it later case-by-case.\n\n### Considered Options\n\n* **Factories everywhere:** Safest, simplest; potentially wasteful for heavy clients.\n* **Singletons wherever possible:** Best performance; high risk without strict review and thread-safety guarantees.\n* **Hybrid (chosen):** Default to factories; allow singletons for immutable/stateless or documented thread-safe adapters.\n\n## Consequences\n\n**Positive**\n\n* Clear, low-cognitive-load rule for new dependencies.\n* Minimizes concurrency bugs from shared mutable state.\n* Keeps UoW semantics correct (new `Session` per request).\n\n**Negative / Trade-offs**\n\n* May incur extra object creation overhead (e.g., recreating external SDK clients) until we explicitly allow singletons.\n* Developers must occasionally recognize when performance warrants an exception and document it.\n\n### Risks & Mitigations\n\n* **Risk:** Overhead from factories for heavy clients.\n  **Mitigation:** Promote specific adapters to singletons when proven safe (documented thread safety, no per-request state).\n\n* **Risk:** Subtle shared-state bugs if a non-immutable adapter is mistakenly made singleton.\n  **Mitigation:** Code review checklist item (“lifetime: factory vs singleton?”) and ADR reference.\n\n### Examples / Rules of Thumb\n\n* **Always factory:** UoW, Repositories that wrap a `Session`, anything that holds request context.\n* **Singleton OK:** LLM/OpenAI client configured once; shared HTTP client with connection pooling; read-only config providers.\n\n### Future Work\n\n* Add a **lifetime annotation** to dependency factories (e.g., `@lifetime(\"request\")` vs `@lifetime(\"process\")`) to make intent explicit.\n* Provide a **bench + profiling** guide to justify promoting specific adapters to singletons.\n* If/when needed, introduce **concurrency control** inside specific adapters to enable safe singleton usage.\n* Document thread-safety guarantees for any SDKs we rely on.\n",
+          "date" : "2025-12-03T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "24",
+          "status" : "Proposed",
+          "title" : "Dependency factories vs. singletons"
+        }, {
+          "content" : "# 25. pragmatic performance tests\n\nDate: 2025-12-05\n\n## Status\n\nAccepted\n\n## Context\n\nRunning local tests on our dev machine can only test the basic functionality. However, to test how and if the app will later work as intended for the client when run on our server, this is not enough -we need performance tests for that, which test how our app can handle concurrent requests and edge cases of data sizes.\n\nDue to balancing our time, we want to do this in a minimalistic way only - utilizing pytest.\n\nWe can run these test on a vm/server with the same specs as our prod environment.    \nIn the case of this project, we do not have a seperate prod and staging environment.   \nAs such, we can simply test it on albert-test.wikinind.de and run the performance tests there. We can simply ssh into it and utilize our makefile to run the tests.   \n\nAdditionally, these tests can be a requirement for code to transition from staging to prod.\n\n\n## Decision\n\nWe simply test it on albert-test.wikinind.de and run the performance tests there.    \nWe ssh into it and utilize our makefile to run the tests. The tests do run in our docker container anyways, so we profit off this previous design decision - (more or less) same virtual environment in prod and dev.\n\nThe tests must test both things:\n- concurrent requests\n- edge cases of datastructure size (i.e. large files/ many files)\nThe success of both can be evaluated with absolute response time or variability of response time.\n\n## Consequences\n\nIt becomes easier to feel confident about the code working in production and bugs or bad optimization can be caught earlier, before being manually tested and used in prod.\n\nThe downside is more time needed to write tests. But with the pragmatic, minimalistic solution we propose here, the benefit is definetly worth the cost.",
+          "date" : "2025-12-05T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "25",
+          "status" : "Accepted",
+          "title" : "pragmatic performance tests"
+        }, {
+          "content" : "# 26. cosmic python as basis for architecture decisions\n\nDate: 2025-12-23\n\n## Status\n\nAccepted\n\n## Context\n\nThe issue motivating this decision, and any context that influences or constrains the decision.\n\n## Decision\n\nThe change that we're proposing or have agreed to implement.\n\n## Consequences\n\nWhat becomes easier or more difficult to do and any risks introduced by the change that will need to be mitigated.\n",
+          "date" : "2025-12-23T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "26",
+          "status" : "Accepted",
+          "title" : "cosmic python as basis for architecture decisions"
+        }, {
+          "content" : "# Microservices Architecture\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\nSuperceded by [16. Modulith](#16)\n\n## Context\n\nWe want a base product -a customgpt and then enable customers to have the option to expand the product and include custom solutions.   \nThis will lead to us maintaining a shared base-product across all projects which include custom solutions.\n\nThis leads to the problem on how to keep the base product up to date across all instances. \n\n## Decision\nWe are going to try to utilize the micro-services architecture. \nThe hope is that this will make it possible to modularize our software package that we can host.  \n\n\n\n\n## Consequences\n\nWe will trial the usage of the microservice architecture in a limited period of time and evalate it then.\n",
           "date" : "2025-08-04T00:00:00Z",
           "format" : "Markdown",
           "id" : "3",
+          "links" : [ {
+            "description" : "Superceded by",
+            "id" : "16"
+          } ],
           "status" : "ACCEPTED",
           "title" : " Microservices Architecture"
         }, {
@@ -423,26 +381,48 @@
           "status" : "ACCEPTED",
           "title" : " RAG, CustomGPT serve raw data to Chatservice instead of conversationsnippets"
         }, {
-          "content" : "# Seperating internal and external endpoints via nginx\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\nFor every Service with a rest api, we want some endpoints to only be accessible to other services in the docker network and not to the outside. This is due to the fact that these endpoints are part of system internal logic and are expected to only be called with specific data in specific circumstances by other services. \n\n## Decision\nThe simplest solution is to a fastapi router with a prefix that is not forwarded by our reverse proxy.\n```\npublic = APIRouter(prefix=\"/api\")\ninternal = APIRouter(prefix=\"/internal\")\n```\n\n```\n# Public API only\n    location /api/ {\n        proxy_pass http://fastapi:8000;\n        include proxy_params.conf;\n    }\n\n    # Just in case someone guesses the path: deny\n    location /internal/ { return 403; }\n    location / { return 404; }\n```\n\n\n## Consequences\n\nFastapi config must be changed to where it sees and can read the prefix that nginx gave it.\n\nExtra care is taken when writing endpoints that are meant for system internal consumption only! The nginx config must not contain a reverse proxy to those endpoints.   \nEndpoints only meant for internal consumption must use the `internal` route prefix.   \nIf endpoints are for external as well as internal consumption: Use a non-internal prefix.\n\nIn the future: extra authentication must be added for safety.",
+          "content" : "# Seperating internal and external endpoints via nginx\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\nSuperceded by [16. Modulith](#16)\n\n## Context\nFor every Service with a rest api, we want some endpoints to only be accessible to other services in the docker network and not to the outside. This is due to the fact that these endpoints are part of system internal logic and are expected to only be called with specific data in specific circumstances by other services. \n\n## Decision\nThe simplest solution is to a fastapi router with a prefix that is not forwarded by our reverse proxy.\n```\npublic = APIRouter(prefix=\"/api\")\ninternal = APIRouter(prefix=\"/internal\")\n```\n\n```\n# Public API only\n    location /api/ {\n        proxy_pass http://fastapi:8000;\n        include proxy_params.conf;\n    }\n\n    # Just in case someone guesses the path: deny\n    location /internal/ { return 403; }\n    location / { return 404; }\n```\n\n\n## Consequences\n\nFastapi config must be changed to where it sees and can read the prefix that nginx gave it.\n\nExtra care is taken when writing endpoints that are meant for system internal consumption only! The nginx config must not contain a reverse proxy to those endpoints.   \nEndpoints only meant for internal consumption must use the `internal` route prefix.   \nIf endpoints are for external as well as internal consumption: Use a non-internal prefix.\n\nIn the future: extra authentication must be added for safety.",
           "date" : "2025-08-04T00:00:00Z",
           "format" : "Markdown",
           "id" : "5",
+          "links" : [ {
+            "description" : "Superceded by",
+            "id" : "16"
+          } ],
           "status" : "ACCEPTED",
           "title" : " Seperating internal and external endpoints via nginx"
         }, {
-          "content" : "# Celery with redis/valkey for cpu heavy tasks\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\nConsider redis vs valkey \n\n## Decision\n\n## Consequences\n\n\n\n",
+          "content" : "# Celery with Redis/Valkey for long-running tasks\n\nDate: 2025-08-04\n\n## Status\n\nOpen\n\n## Context\n\nWe currently do **not** use a task queue or worker system.\nIn the near future we will have long-running and/or CPU-heavy tasks (e.g. preprocessing documents, creating embeddings via APIs).\n\nWe don’t want these tasks to block or slow down our FastAPI runtime, so we need an external worker. Celery is the primary candidate, and for its broker/result backend we are considering **Redis** or **Valkey**.\n\n### Redis vs Valkey (high-level)\n\n| Aspect                     | Redis                                                                         | Valkey                                                                                |\n| -------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |\n| **Origin**                 | Original upstream project, now partly source-available with licensing changes | Fully open-source community-driven fork created to preserve open licensing            |\n| **Celery Compatibility**   | Officially supported and widely used in production                            | Aims to be fully Redis-compatible; still newer and with fewer production case studies |\n| **Ecosystem & Hosting**    | Mature ecosystem, abundant tooling, many managed hosting options              | Compatibility is good, but managed hosting and ecosystem are still developing         |\n| **Stability / Provenness** | Long track record, battle-tested                                              | Stable but younger; long-term trajectory promising but less proven                    |\n| **Risk**                   | Some vendor lock-in concerns due to licensing changes                         | Lower licensing risk, but higher maturity risk                                        |\n\nWe have **not** yet chosen which one we will use.\n\n## Decision\n\nWe will introduce a **Celery-style worker architecture** (separate worker process and broker) for long-running and CPU-heavy tasks, using **either Redis or Valkey** as the broker/result backend.\n\nThe concrete choice between Redis and Valkey remains open and will be decided in a follow-up ADR.\n\n## Consequences\n\n* FastAPI stays responsive; long-running work moves to background workers.\n* We add an extra infrastructure component (broker + worker processes) to operate and monitor.\n* A future ADR must:\n\n  * Compare Redis vs Valkey in more depth for our specific workload.\n  * Decide which one to standardize on for Celery.\n",
           "date" : "2025-08-04T00:00:00Z",
           "format" : "Markdown",
           "id" : "6",
-          "status" : "ACCEPTED",
-          "title" : " Celery with redis/valkey for cpu heavy tasks"
+          "status" : "Open",
+          "title" : " Celery with Redis/Valkey for long-running tasks"
         }, {
-          "content" : "# Imporatant Standard libraries modules to utilize\n\nDate: 2025-08-04\n\n## Status\n\nACCEPTED    \n\n## Context\n\nPathlib instead of os.path\nshutil for file management\n\ntextwrap for text formatting\n\nfunctools for partial functions (&cache)\nitertools for working with lists -cyling through etc\n\n## Decision\n\n\n\n## Consequences\n\n\n\n",
+          "content" : "# Imporatant Standard libraries modules to utilize\n\nDate: 2025-08-04\n\n## Status\n\nOPEN    \n\n## Context\n\nPathlib instead of os.path\nshutil for file management\n\ntextwrap for text formatting\n\nfunctools for partial functions (&cache)\nitertools for working with lists -cyling through etc\n\n## Decision\n\n\n\n## Consequences\n\n\n\n",
           "date" : "2025-08-04T00:00:00Z",
           "format" : "Markdown",
           "id" : "7",
-          "status" : "ACCEPTED",
+          "status" : "OPEN",
           "title" : " Imporatant Standard libraries modules to utilize"
+        }, {
+          "content" : "# Cross context vs in context adapters\n\nDate: 2025-08-04\n\n## Status\n\nOPEN    \n\nSuperceded by [19. Different type of Port Adapter combos](#19)\n\n## Context\nWe have different sources of adapters: cross context adapters when it is absolutely necessary to have communication between different contexts.   \nAnd in-context adapters, e.g. for calling an external api, where, similar to our db implementation being hidden behind the repo port, we do not want to have the implementation details in our core layer. \n\nAs such, they differ completely in their nature: The cross context adapter providing core/domain level functionality, while the in-context adapter explicitly does not, it provides explicitly non core/domain level functionality.\n\nDue to that, they must be strucured completely differnt. -The logic in the cross context adapter must be minimal -it is merely an interface like our http layer. As such, we want to reroute the function call to a service layer function which provides this core layer functionality/logic.   \nFor the in-context adapter however, this would directly contradict its purpose: guranteeing that its implementation and logic is decoupled from the service/domain layer. \n\nFor the cross-context adapter:\nContext A utilizes an adapter of Context B.    \nContext B's adapter simply calls a service function and returns its value.   \nWe want this service function to work i) when called by the http layer and ii) if called by an adapter.  \n\n\n! However, we now have another problem: The provider context now depends on the consumer context (via the Port). This breaks the dependency inversion principle and does not necessarily scale well. \nIgnore Option B but else: https://chatgpt.com/s/t_690aa6070224819195b006b5f66dbdc3\n\n## Decision\nThe adapter function does not enter the passed UoW(or other dependency), it passes a uow directly to the service layer function. \n\nSee the following chatgpt snippet for how this ensures consistency\n```\n# HTTP controller → service (Context B)\n# DI provides an unopened handle\ndef get_b_uow() -> KnowledgeUoW: return make_b_uow()\n\n# controller\ndef route(uow: KnowledgeUoW = Depends(get_b_uow)):\n    return b_service.fetch(uow=uow, topic=...)\n\n# application service (owns the boundary)\ndef fetch(*, uow: KnowledgeUoW, topic: str) -> ResultDTO:\n    with uow:\n        data = uow.queries.find(topic)\n        # optionally uow.commit() if writing\n        return map_to_dto(data)\n\n# Cross-context adapter (Context A → B)\nclass RetrievalForChatAdapter(RetrievalPort):\n    def __init__(self, b_uow_factory: Callable[[], KnowledgeUoW]): \n        self._mk = b_uow_factory\n\n    def fetch_docs_for_chat(self, topic: str) -> RetrievedDocs:\n        uow = self._mk()                             # create handle\n        docs = b_service.fetch(uow=uow, topic=topic) # service owns the boundary\n        return map_to_chat_dto(docs)\n```\n\n## Consequences\n\nAdapter is initialized with a uow factory. In the adapter function: create uow from uow factory, pass uow to service function.\n\nDetails are not yet determined (init adapter with uow factory or uow directly)\n\n",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "8",
+          "links" : [ {
+            "description" : "Superceded by",
+            "id" : "19"
+          } ],
+          "status" : "OPEN",
+          "title" : " Cross context vs in context adapters"
+        }, {
+          "content" : "# Bootstrap and Dependency Wiring Strategy\n\nDate: 2025-08-04\n\n## Status\n\nOPEN\n\n## Context\n\nAs detailed further in ADR-16, the backend follows **hexagonal architecture** principles using **Ports and Adapters**.\nThe application relies on **dependency inversion**, ensuring that inner layers (the service layer) depend only on abstractions, never on concrete implementations.\n\n### Service Layer and Ports\n\nThe service layer exposes functionality exclusively via **Ports**, implemented as Python `Protocol`s.\nService functions are only aware of these port definitions and are completely decoupled from adapter implementations.\n\nExample service function:\n\n```python\ndef continue_conversation(\n    user_message: str,\n    conv_id: str,\n    conv_uow: ConversationUOW,  # Port\n    cgpt_retreiver: CustomGPTInstructionsRetreiver,  # Port\n    llm_adapter: LlmPort,  # Port\n    use_rag: bool = False,\n) -> str:\n```\n\nAll parameters except primitives are **Ports owned by the service layer**, not concrete adapters.\n\nExample port definitions:\n\n```python\nclass ConversationUOW(Protocol):\n    def __enter__(self) -> Self: ...\n    def __exit__(self, exc_type, exc, tb) -> None: ...\n    def commit(self) -> None: ...\n    def rollback(self) -> None: ...\n    @property\n    def conversation_repo(self) -> ConversationRepository: ...\n\n\nclass CustomGPTInstructionsRetreiver(Protocol):\n    def get_cgpt_sys_prompt(\n        self, cgpt_id: str\n    ) -> list[MessageDTORetreiver]: ...\n\n\nclass LlmPort(Protocol):\n    def get_assistant_text_response(\n        self,\n        messages_excluding_sys_prompt: list[MessageDTOllm],\n        cgpt_systemprompt: list[MessageDTOllm],\n    ) -> str: ...\n```\n\n### Dependency Injection via the HTTP Layer\n\nThe **HTTP layer (FastAPI)** is responsible for injecting concrete implementations of these ports using FastAPI’s `Depends` mechanism.\n\nHowever, just as the service layer must not depend on concrete adapters, **the HTTP layer must not be responsible for constructing or configuring adapters either**.\nBoth layers should depend only on service-defined ports.\n\nThis creates two additional requirements:\n\n1. A module responsible for **initializing and wiring dependencies** (e.g. DB engines, mappers, adapters).\n2. A mechanism to **connect those dependencies to FastAPI**, while preserving:\n\n   * dependency inversion\n   * type safety\n   * IDE and linter support\n\n### Configuration Requirements\n\nThe dependency wiring must be configurable (e.g. DB URLs, model names).\nThis can be achieved via:\n\n* default parameters,\n* environment variables,\n* or, in the future, `pydantic_settings`.\n\nFor now, configuration is read directly from environment variables.\n\n### Typing Constraints\n\nReturning a raw dictionary of dependencies from a bootstrap function would:\n\n* lose static typing,\n* prevent IDE autocompletion,\n* weaken linting and refactoring guarantees.\n\nTherefore, dependencies must be represented as a **typed object**.\n\n---\n\n## Decision\n\nWe adopt a solution that:\n\n* preserves strict dependency inversion,\n* keeps the HTTP layer free of wiring logic,\n* maintains strong typing,\n* and allows future changes without large-scale refactors.\n\n### Modules Introduced\n\nWe introduce three modules:\n\n1. **`bootstrap.py`**\n   Responsible for:\n\n   * initializing infrastructure (DB engines, mappers, events),\n   * constructing adapters and adapter factories,\n   * returning a typed container of dependencies.\n\n2. **`deps.py`**\n   Responsible for:\n\n   * reading environment variables,\n   * calling the bootstrap function,\n   * exporting the resulting dependency container.\n\n3. **HTTP routers**\n   Import the dependency container from `deps.py` and use it with `Depends`.\n\n### Bootstrap Function\n\n```python\ndef bootstrap(\n    *,\n    db_url_chat: str,\n    db_url_cgpt: str,\n    model_name: str,\n    create_schema: bool = False,\n) -> DependenciesContainer:\n```\n\n### Dependency Container\n\nTo retain type safety and IDE support, the bootstrap function returns a typed container:\n\n```python\n@dataclass(frozen=True)\nclass DependenciesContainer:\n    conversation_uow_factory: Factory[ConversationUOW]\n    cgpt_uow_factory: Factory[CgptUOW]\n    cgpt_retreiver_adapter_factory: Factory[CustomGPTInstructionsRetreiver]\n    llm_adapter_factory: Factory[LlmPort]\n    cgpt_queries_adapter_factory: Factory[CgptQueries]\n    chat_queries_adapter_factory: Factory[ChatQueries]\n    conversation_adapter_factory: Factory[ConversationPort]\n```\n\nThe container exposes **factories** (or singletons) returning objects that satisfy service-layer ports.\n\n### Bootstrap Implementation (Excerpt)\n\n```python\ndef bootstrap(...):\n    chat_start_mappers()\n    engine_chat = _make_engine(db_url_chat, chat_prepare_engine)\n    sessionMaker_Chat = _make_sessionmaker(engine_chat)\n\n    if create_schema:\n        chat_metadata.create_all(engine_chat)\n\n    register_last_message_at_events(sessionMaker_Chat)\n\n    def conversation_uow_factory() -> ConversationUOW:\n        return SQLAlchemyConversationUOW(sessionMaker_Chat)\n\n    _llm_adapter = OpenaiAdapter(model_name=model_name)\n\n    def llm_adapter_factory() -> LlmPort:\n        return _llm_adapter\n\n    ...\n\n    return DependenciesContainer(\n        conversation_uow_factory=conversation_uow_factory,\n        cgpt_uow_factory=cgpt_uow_factory,\n        cgpt_retreiver_adapter_factory=cgpt_instructions_adapter_factory,\n        llm_adapter_factory=llm_adapter_factory,\n        cgpt_queries_adapter_factory=cgpt_queries_adapter_factory,\n        chat_queries_adapter_factory=chat_queries_adapter_factory,\n        conversation_adapter_factory=conversation_adapter_factory,\n    )\n```\n\n(Decisions regarding singleton vs factory lifetimes are covered in a separate ADR.)\n\n### Connecting to the HTTP Layer\n\nIn `deps.py`, the bootstrap function is called exactly once at import time:\n\n```python\nfrom src.bootstrap import bootstrap, DependenciesContainer\n\ndeps: DependenciesContainer = bootstrap(\n    db_url_chat=require_env(\"DB_URL_CHAT\"),\n    db_url_cgpt=require_env(\"DB_URL_CGPT\"),\n    model_name=require_env(\"MODEL_NAME\"),\n    create_schema=require_env(\"CREATE_SCHEMA\").lower() == \"true\",  # dev/test only\n)\n```\n\nRouters then import and use this container:\n\n```python\nfrom src.interface.http.deps import deps\n\n@chat_commands_router.post(\"/send-user-message\")\nasync def send_user_message(\n    request: UserMessageRequest,\n    conv_uow: ConversationUOW = Depends(deps.conversation_uow_factory),\n    llm_adapter: LlmPort = Depends(deps.llm_adapter_factory),\n    cgpt_retreiver: CustomGPTInstructionsRetreiver = Depends(\n        deps.cgpt_retreiver_adapter_factory\n    ),\n):\n```\n\nBecause Python modules are only executed once per interpreter, this approach ensures:\n\n* mappers are not registered multiple times,\n* infrastructure is initialized exactly once per process.\n\n---\n\n## Consequences\n\n### Positive\n\n* The HTTP layer is fully decoupled from concrete adapters.\n* Dependency wiring is centralized and explicit.\n* Strong typing enables IDE support, static analysis, and safer refactoring.\n* Service-layer testing is straightforward: any adapter implementing a port can be passed directly.\n* The structure aligns closely with DDD and hexagonal architecture principles.\n\n### Testing Implications\n\n#### Service-layer tests\n\n* The bootstrap function is **not executed**.\n* Fake adapters and mapper setup are provided via `conftest.py`.\n* Mapper initialization must still be guarded to run once.\n\n#### Endpoint / E2E tests\n\n* The bootstrap function *does* execute due to module imports.\n* Dependencies can be overridden cleanly using FastAPI’s `dependency_overrides`.\n\nExample:\n\n```python\n@pytest.fixture()\ndef test_client(test_deps: DependenciesContainer):\n    from src.interface.http.deps import deps\n    from src.interface.http.app import app\n\n    app.dependency_overrides[deps.conversation_uow_factory] = (\n        test_deps.conversation_uow_factory\n    )\n\n    return TestClient(app)\n```\n\n### Known Risks and Future Improvements (according to chatgpt)\n\n* The setup is safe with **Uvicorn** (dev and prod) **without preload**.\n* If switching to **Gunicorn with `--preload`** or other pre-fork servers:\n\n  * `bootstrap()` must move into a FastAPI lifespan hook, or\n  * engines must be recreated post-fork.\n* Mapper and event registration should be made idempotent for resilience.\n* Introducing a `settings.py` using `pydantic_settings` is a planned improvement.\n\nThis design is inspired by *Cosmic Python*, adapted to:\n\n* a non–message-bus architecture,\n* FastAPI dependency injection,\n* and stronger typing guarantees.\n\nAs such, it is not a 1:1 adaptation and has not yet been validated at scale.\n",
+          "date" : "2025-08-04T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "9",
+          "status" : "OPEN",
+          "title" : " Bootstrap and Dependency Wiring Strategy"
         } ],
         "sections" : [ {
           "content" : "## Introduction and Goals\n\nThis document describes the Opensource CustomGPT Builder Software system. It can be used to create your own CustomGPTs outside of the OpenAI Software System.   \nThe goal of this system is to have a baseline product onto which we can build more customized solutions for clients. The aim is to have a product that targets a broad audience. We hope that this makes for broader adaption of our products and lead to more follow-up projects.  \nThe goal this system achives for the users is the following:   \nThey want to use the capabilities of CustomGPTs without directly giving their data to OpenAI while still getting a very simimalar user experience.  \n(Requirements describe what the system should do. Goals describe how the system will help the organization)\n\nThis specific project also has as goal for the team to learn&utilize design and architecture patterns as well as follow SWA documentation best practices.\n### Requirements Overview\n\n1. The UI must display a history of previous chats. Previous chats can be viewed, continued and deleted\n2. The user must be able to create, modify and delete CustomGPTs\n3. Document upload for OpenDocument Format files and PDFs is possible\n4. The information inside these documents is processed and CustomGPT will use and reference it in conversations\n5. The user can see all the data that is used by a CustomGPT, including the documents uploaded.\n\n### Quality Goals\n\n#### Usability\n- The UI must be similar to ChatGPT to enable fast adaption of new users.\nThe Feedback give to user input must be clear such that users know why a certain operation, like uploading unsupported document types, did not succeed.\n#### Performance\n*Latency*\n- A user interaction must trigger a UX response in 500ms. The answer of the backend, when serving assistant messages, can be slow, though other responses shall not exceed 1s response time. Uploading documents shall lead to a fast response initial response once the documents are saved to the backend. Afterwards, the Preprocessing shall take no longer than 10 minutes before the user can use the CustomGPT\n*Throughput*\n- The system is not designed for high throughput, so 2 concurrent preprocessing tasks can be made in parallel with the expected latency.\n#### Security\n- Basic Auth and https will suffice for this POC\n#### Reliability\n*Concurrent Users*\n- The system expects 5 concurrent users max as of now\n*Data volume*\n- The uploaded files are expected to not exceed 20MB and the storage for documents is expected to grow less then 10GB per year\n*Load*\n- The system should handle 4 preprocessing requests in parallel. the other tasks are less computationally heavy are expected to take more concurrent requests\n\n#### Transferability\n- The software system should be designed in such a way that enabling the usage of other LLM Apis is not too much work\n### Stakeholders\n#### Product Owner\nProduct owner must have a overview of the SWA to check if all features are implemented, which features can be implemented more easily and check the architecture decisions\n#### Management\nManagement wants a quick overview of the SWA capabilities\n#### Dev team\nThe dev team needs a place to document and reference architecture and architecture decisions\n",
@@ -525,113 +505,28 @@
       },
       "relationships" : [ {
         "description" : "Sends conversation (snippets) to get assistant messages as answers from",
-        "destinationId" : "18",
-        "id" : "38",
-        "linkedRelationshipId" : "36",
+        "destinationId" : "13",
+        "id" : "26",
+        "linkedRelationshipId" : "24",
         "sourceId" : "2",
         "technology" : "RESTApi"
-      }, {
-        "description" : "retreives repository content from",
-        "destinationId" : "21",
-        "id" : "63",
-        "linkedRelationshipId" : "59",
-        "sourceId" : "2"
-      }, {
-        "description" : "retreives repository content from",
-        "destinationId" : "19",
-        "id" : "64",
-        "linkedRelationshipId" : "59",
-        "sourceId" : "2"
       } ],
       "tags" : "Element,Software System"
     }, {
       "description" : "Pass conversation and Retreive assistant messages of OpenAI LLMs",
       "documentation" : { },
-      "id" : "18",
+      "id" : "13",
       "location" : "Unspecified",
       "name" : "OpenAIApi",
       "properties" : {
         "structurizr.dsl.identifier" : "openaiapi"
       },
       "tags" : "Element,Software System,External System"
-    }, {
-      "containers" : [ {
-        "description" : "Listens for new commits and sends Post call to specific url",
-        "documentation" : { },
-        "id" : "20",
-        "name" : "githubWebhook",
-        "properties" : {
-          "structurizr.dsl.identifier" : "github.webhook"
-        },
-        "relationships" : [ {
-          "description" : "Notifies about new commits",
-          "destinationId" : "17",
-          "id" : "53",
-          "sourceId" : "20",
-          "tags" : "Relationship",
-          "technology" : "POST Call"
-        }, {
-          "description" : "Notifies about new commits",
-          "destinationId" : "11",
-          "id" : "54",
-          "linkedRelationshipId" : "53",
-          "sourceId" : "20",
-          "technology" : "POST Call"
-        }, {
-          "description" : "Notifies about new commits",
-          "destinationId" : "2",
-          "id" : "55",
-          "linkedRelationshipId" : "53",
-          "sourceId" : "20",
-          "technology" : "POST Call"
-        } ],
-        "tags" : "Element,Container"
-      }, {
-        "description" : "Provides api for interacting with github repos, e.g. retreiving data",
-        "documentation" : { },
-        "id" : "21",
-        "name" : "GithubAPI",
-        "properties" : {
-          "structurizr.dsl.identifier" : "github.api"
-        },
-        "tags" : "Element,Container"
-      } ],
-      "description" : "Sends a Post message to all subscribers whenever a new commit was made",
-      "documentation" : { },
-      "id" : "19",
-      "location" : "Unspecified",
-      "name" : "github",
-      "properties" : {
-        "structurizr.dsl.identifier" : "github"
-      },
-      "relationships" : [ {
-        "description" : "Notifies about new commits",
-        "destinationId" : "17",
-        "id" : "56",
-        "linkedRelationshipId" : "53",
-        "sourceId" : "19",
-        "technology" : "POST Call"
-      }, {
-        "description" : "Notifies about new commits",
-        "destinationId" : "11",
-        "id" : "57",
-        "linkedRelationshipId" : "53",
-        "sourceId" : "19",
-        "technology" : "POST Call"
-      }, {
-        "description" : "Notifies about new commits",
-        "destinationId" : "2",
-        "id" : "58",
-        "linkedRelationshipId" : "53",
-        "sourceId" : "19",
-        "technology" : "POST Call"
-      } ],
-      "tags" : "Element,Software System,External System"
     } ]
   },
   "name" : "CustomGPT",
   "properties" : {
-    "structurizr.dsl" : "d29ya3NwYWNlICJDdXN0b21HUFQiICJVc2UgQ2hhdGdwdCBhcGkgd2l0aCBvd24gY3VzdG9tR1BUIGltcGxlbWVudGF0aW9uInsKICAgIC8vIHRoaXMgZW5hYmxlcyB1cyB0byB3cml0ZSBzcy5jb250YWluZXJuYW1lIGluc3RlYWQgb2YganVzdCBjb250YWluZXJuYW1lIC0KICAgICFpZGVudGlmaWVycyBoaWVyYXJjaGljYWwgCgoKICAgIG1vZGVsIHsKICAgICAgICB1ID0gcGVyc29uICJVc2VyIiAiQSB1c2VyIG9mIHRoZSBzeXN0ZW0gd2FudGluZyB0byBwcm9maXQgZnJvbSBjdXN0b21pemVkIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkiICJQZXJzb24iCiAgICAgICAgc3MgPSBzb2Z0d2FyZVN5c3RlbSAiT3BlbnNvdXJjZSBDdXN0b21HUFQgYnVpbGRlciJ7CiAgICAgICAgICAgIHJlYWN0ID0gY29udGFpbmVyICJGcm9udGVuZCIgIkEgd2ViIGFwcCBmb3IgY2hhdCB3aXRoIGN1c3RvbSBncHRzIGFuZCB5b3VyIGRhdGEiICJSZWFjdCArIFRTIiAiV2ViIEJyb3dzZXIiCiAgICAgICAgICAgIGdhdGV3YXkgPSBjb250YWluZXIgIkdhdGV3YXkiICJUaGlzIGdhdGV3YXkgcm91dGVzIHJlcXVlc3RzIHRvIHRoZSBjb3JyZWN0IG1pY3Jvc2VydmljZSIgIkZhc3RhcGkiCiAgICAgICAgICAgIGNoYXRzZXJ2aWNlID0gY29udGFpbmVyICJDaGF0U2VydmljZSIgIlByb3ZpZGVzIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkgYW5kIGNvbXBvc2VzIGxsbSBwcm9tcHRzIGZyb20gcmF3IGRhdGEgLXVzZXJpbnB1dCwgY3VzdG9tZ3B0LCByYWciewogICAgICAgICAgICAgICAgYXBpID0gY29tcG9uZW50ICJDaGF0c2VydmljZUFwaSIgIkFQSSBmb3IgY2hhdHRpbmcgd2l0aCBMTE1zIHV0aWxpemluZyBBZGRpdGlvbmFsIGRhdGEgZnJvbSBvdGhlciBzZXJ2aWNlcyIKICAgICAgICAgICAgICAgIGRiID0gY29tcG9uZW50ICJDb252ZXJzYXRpb25EQiIgIlN0b3JlcyB0aGUgY29udmVyc2F0aW9uIGhpc3RvcmllcyBhbmQgbWV0YWRhdGEgb2YgdGhlIGNvbnZlcnNhdGlvbiJ7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU1FMaXRlIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIGN1c3RvbWdwdFNlcnZpY2UgPSBjb250YWluZXIgIkN1c3RvbUdQVFNlcnZpY2UiICJTdG9yZXMgYW5kIFNlcnZlcyBiYXNpYyBDdXN0b21HUFQgaW5mb3JtYXRpb24iewogICAgICAgICAgICAgICAgYXBpID0gY29tcG9uZW50ICJDdXN0b21HcHRBcGkiIkFQSSB0byBzZXQgYW5kIHF1ZXJ5IHRoZSBCYXNpYyBpbmZvcm1hdGlvbiBhcyB3ZWxsIGFzIGNvbXBvc2luZyBjb252ZXJzYXRpb24gc25pcHBldHMgdG8gYmUgdXRpbGl6ZWQgaW4gbmV3IGNoYXRzIHdoaWNoIHVzZSB0aGlzIgogICAgICAgICAgICAgICAgZGIgPSBjb21wb25lbnQgIkN1c3RvbUdwdERCIiAiU3RvcmVzIHRoZSBiYXNpYyBpbmZvcm1hdGlvbiBvZiB0aGUgQ3VzdG9tR1BUcyJ7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU1FMaXRlIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIHJhZ1NlcnZpY2UgPSBjb250YWluZXIgIlJhZ1NlcnZpY2UiICJSZXRyZWl2ZSBmaXR0aW5nIGRvY3VtZW50IGNodW5rcyBhbmQgcHJvdmlkZSBhbiBhcGkgdG8gYWRkIG9yIHVwZGF0ZSBkYXRhInsKICAgICAgICAgICAgICAgIGFwaSA9IGNvbXBvbmVudCAiUmFnU2VydmljZUFQSSIgIkFQSSBmb3IgcHJvY2Vzc2luZyZzdG9yaW5nIHJhdyBkYXRhIGluIGEgdmVjdG9yIGRhdGFiYXNlIGFuZCByZXRyZWl2aW5nIHJlbGV2YW50IGNodW5rcyBhbmQgcmF3IGRhdGEiCiAgICAgICAgICAgICAgICB2ZWN0b3JEQiA9IGNvbXBvbmVudCAidmVjdG9yREIiewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlFkcmFudCIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIG1ldGFkYXRhREIgPSBjb21wb25lbnQgIk1ldGFkYXRhREIiewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlNRTGl0ZSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGJhY2tncm91bmRUYXNrID0gY29tcG9uZW50ICJCYWNrZ3JvdW5kIFRhc2siICJRdWV1ZSB0YXNrcyB0byBjb250aW51ZSBkaXJlY3RseSBhZnRlciByZXNwb25kaW5nIgogICAgICAgICAgICAgICAgbG9jYWxGUyA9IGNvbXBvbmVudCAiTG9jYWwgRmlsZSBTeXN0ZW0iICJVc2VkIHRvIHN0b3JlIG5vbi1wcm9jZXNzZWQgYW5kIHByZS1wcm9jZXNzZXMgIHdob2xlIGRvY3VtZW50cyIKICAgICAgICAgICAgICAgIGdpdGh1YkRhdGFTZXJ2aWNlID0gY29tcG9uZW50ICJnaXRodWJEYXRhU2VydmljZSIgIkxpc3RlbnMgZm9yIG5vdGlmaWNhdGlvbiB1cGRhdGVzIGZyb20gZ2l0aHViIGFuZCB1cGRhdGVzIHRoZSBjb3JyZXNwb25kaW5nIGRhdGEgaW4gdGhlIHZlY3RvckRCIgogICAgICAgICAgICB9CgogICAgICAgICAgICAhZG9jcyBkb2NzCiAgICAgICAgICAgICFhZHJzIGFkcnMKICAgICAgICAgICAgCiAgICAgICAgfQogICAgICAgIG9wZW5haWFwaSA9IHNvZnR3YXJlU3lzdGVtICJPcGVuQUlBcGkiICJQYXNzIGNvbnZlcnNhdGlvbiBhbmQgUmV0cmVpdmUgYXNzaXN0YW50IG1lc3NhZ2VzIG9mIE9wZW5BSSBMTE1zIiAiRXh0ZXJuYWwgU3lzdGVtIgogICAgICAgIGdpdGh1YiA9IHNvZnR3YXJlU3lzdGVtICJnaXRodWIiICJTZW5kcyBhIFBvc3QgbWVzc2FnZSB0byBhbGwgc3Vic2NyaWJlcnMgd2hlbmV2ZXIgYSBuZXcgY29tbWl0IHdhcyBtYWRlIiAiRXh0ZXJuYWwgU3lzdGVtIiB7CiAgICAgICAgICAgIHdlYmhvb2sgPSBjb250YWluZXIgImdpdGh1YldlYmhvb2siICJMaXN0ZW5zIGZvciBuZXcgY29tbWl0cyBhbmQgc2VuZHMgUG9zdCBjYWxsIHRvIHNwZWNpZmljIHVybCIKICAgICAgICAgICAgYXBpID0gY29udGFpbmVyICJHaXRodWJBUEkiICJQcm92aWRlcyBhcGkgZm9yIGludGVyYWN0aW5nIHdpdGggZ2l0aHViIHJlcG9zLCBlLmcuIHJldHJlaXZpbmcgZGF0YSIKICAgICAgICB9CgogICAgICAgIHUgLT4gc3MucmVhY3QgIkNoYXRzIHdpdGggTExNLCB1cGxvYWRzIGRhdGEgYW5kIGNyZWF0ZXMgb3IgdXNlcyBDdXN0b21HUFRzIHVzaW5nIiAiUmVzdEFQSSIKICAgICAgICBzcy5yZWFjdCAtPiBzcy5nYXRld2F5ICJHZXRzIGNvbnZlcnNhdGlvbnMsIGFzc2lzdGFudGVyc3BvbnNlcyBhbmQgZGF0YSBmcm9tIGFuZCBzZW5kIHVzZXIgbWVzc2FnZXMgYW5kIGRhdGEgdG8iCiAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5jaGF0c2VydmljZS5hcGkgIkdldHMgb3IgY3JlYXRlcyBjb252ZXJzYXRpb25zIHdpdGggTExNcywgb3B0aW9uYWxseSB1dGlsaXppbmcgUkFHIGFuZCBDdXN0b21HUFQgZGF0YSwgdXRpbGl6aW5nIHRoZSIgIlJFU1RBcGkiCiAgICAgICAgc3MuY2hhdHNlcnZpY2UuYXBpIC0+IHNzLmNoYXRzZXJ2aWNlLmRiICJTdG9yZXMgYW5kIHJldHJlaXZlcyBDb252ZXJzYXRpb25zIC1pbmNsdWRpbmcgbWV0YWRhdGEtIHRvIGFuZCBmcm9tIiAiU1FMTW9kZWwiCiAgICAgICAgc3MuY2hhdHNlcnZpY2UuYXBpIC0+IHNzLmN1c3RvbWdwdFNlcnZpY2UuYXBpICJSZXRyZWl2ZSBpbmZyb21hdGlvbiBhYm91dCBDdXN0b21HUFRzIGZyb20iICJSRVNUQXBpIgogICAgICAgIHNzLmNoYXRzZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLmFwaSAiU2VuZHMgdGV4dC1zbmlwZXQgYW5kIGdldHMgcmVsZXZhbnQgZG9jdW1lbnQgY2h1bmtzIGFuZCB0aGVpciBtZXRhZGF0YSBmcm9tIgogICAgICAgIHNzLmNoYXRzZXJ2aWNlLmFwaSAtPiBvcGVuYWlhcGkgIlNlbmRzIGNvbnZlcnNhdGlvbiAoc25pcHBldHMpIHRvIGdldCBhc3Npc3RhbnQgbWVzc2FnZXMgYXMgYW5zd2VycyBmcm9tIiAiUkVTVEFwaSIKICAgICAgICAKICAgICAgICAKICAgICAgICBzcy5nYXRld2F5IC0+IHNzLmN1c3RvbWdwdFNlcnZpY2UuYXBpICJHZXRzIG9yIGNyZWF0ZXMgQ3VzdG9tR1BUcyB1dGlsaXppbmciCiAgICAgICAgc3MuY3VzdG9tZ3B0U2VydmljZS5hcGkgLT4gc3MuY3VzdG9tZ3B0U2VydmljZS5kYiAiU3RvcmVzIGFuZCByZXRyZWl2ZXMgQ3VzdG9tR1BUIGluZm9ybWF0aW9uIC1pbmNsdWRpbmcgbWV0YWRhdGEtIHRvIGFuZCBmcm9tIiAiU1FMTW9kZWwiCgogICAgICAgIHNzLmdhdGV3YXkgLT4gc3MucmFnU2VydmljZS5hcGkgIlNlbmRzIGRvY3VtZW50cyB0byBwcm9jZXNzIGFuZCBlbWJlZGQgYW5kIHJldHJlaXZlcyByZWxldmFudCBkb2N1bWVudCBjaHVua3MgdG8gYSBnaXZlbiB0ZXh0IGZyb20iCiAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MucmFnU2VydmljZS5sb2NhbEZTICJzdG9yZSB1bnByb2Nlc3NlZCBhbmQgcHJvY2Vzc2VkIHdob2xlIGRvY3VtZW50cyBvbiIKICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLmJhY2tncm91bmRUYXNrICJxdWVyeSBwcm9jZXNzaW5nIHRhc2tzIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IG9wZW5haWFwaSAiY3JlYXRlIGVtYmVkZGluZ3MgZm9yIGNodW5rcyBvZiBkb2N1bWVudHMgdXRpbGl6aW5nIgogICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UudmVjdG9yREIgInN0b3JlIGFuZCByZXRyZWl2ZSAoc2ltaWxhcikgZG9jdW1lbnQgY2h1bmtzIGVtYmVkZGluZ3MiCiAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MucmFnU2VydmljZS5tZXRhZGF0YURCICJzdG9yZSBtZXRhZGF0YSBpbmZvcm1hdGlvbiBhYm91dCBkb2N1bWVudHMgc3RvcmVkIGluIHRoZSBWZWN0b3JEQiIKCiAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MuZ2F0ZXdheSAiU2VuZHMgbWVzc2FnZXMgd2hlbiB0aGUgcHJvY2Vzc2luZyBzdGF0dXMgb2YgdXBsb2FkZWQgZG9jdW1lbnRzIGhhcyBjaGFuZ2VkIiAiUkVTVEFwaSIKICAgICAgICBzcy5nYXRld2F5IC0+IHNzLnJlYWN0ICJTZW5kcyBtZXNzYWdlcyB3aGVuIHRoZSBwcm9jZXNzaW5nIHN0YXR1cyBvZiB1cGxvYWRlZCBkb2N1bWVudHMgaGFzIGNoYW5nZWQgdG8iICJXU01lc3NhZ2UiCiAgICAgICAgCiAgICAgICAgZ2l0aHViLndlYmhvb2sgLT4gc3MucmFnU2VydmljZS5naXRodWJEYXRhU2VydmljZSAiTm90aWZpZXMgYWJvdXQgbmV3IGNvbW1pdHMiICJQT1NUIENhbGwiCiAgICAgICAgc3MucmFnU2VydmljZS5naXRodWJEYXRhU2VydmljZSAtPiBnaXRodWIuYXBpICJyZXRyZWl2ZXMgcmVwb3NpdG9yeSBjb250ZW50IGZyb20iCiAgICAgICAgc3MucmFnU2VydmljZS5naXRodWJEYXRhU2VydmljZSAtPiBzcy5yYWdTZXJ2aWNlLmFwaSAidXBkYXRlcyBvdXRkYXRlIGdpdGh1YiByZXBvIGRhdGEgaW4iCiAgICAgICAgCiAgICAgICAgCgoKCiAgICAgICAgCiAgICB9CgogICAgdmlld3MgewogICAgICAgIHN5c3RlbUNvbnRleHQgc3MgIlN5c3RlbUNvbnRleCJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQogICAgICAgIGNvbnRhaW5lciBzcyAiQ29udGFpbmVyVmlldyJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQogICAgICAgIGNvbXBvbmVudCBzcy5jaGF0c2VydmljZSAiY2hhdFNlcnZpY2VWaWV3InsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgc3MucmFnU2VydmljZSAicmFnU2VydmljZVZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0gLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0iCiAgICAgICAgICAgIC8vIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBzcy5jdXN0b21HUFRTZXJ2aWNlICJjdXN0b21HUFRTZXJ2aWNlVmlldyJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSIKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBzcyAid3NNZXNzYWdlInsKICAgICAgICAgICAgdGl0bGUgImNsaWVudCBzdWJzY2liZXMgdG8gd2Vic29ja2V0TXNnIgogICAgICAgICAgICBzcy5yZWFjdCAtPiBzcy5nYXRld2F5ICJzdWJzY3JpYmVzIHRvIHdlYnNvY2tldG1lc3NhZ2VzIgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBzcy5yYWdTZXJ2aWNlICJ1cGxvYWREb2N1bWVudCJ7CiAgICAgICAgICAgIHRpdGxlICJ1cGxvYWQgZG9jdW1lbnQgYW5kIHN0YXJ0IHByb2Nlc3NpbmciIAogICAgICAgICAgICB1IC0+IHNzLnJlYWN0ICJVcGxvYWRzIGRvY3VtZW50IHRvIgogICAgICAgICAgICBzcy5yZWFjdCAtPiBzcy5nYXRld2F5ICJzZW5kcyBkb2N1bWVudCBmaWxlIHZpYSBQb3N0IGNhbGwgdG8iCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MucmFnU2VydmljZS5hcGkgInNlbmQgZG9jdW1lbnQgdG8iCiAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAic3RvcmUgb3JpZ2luYWwgZG9jdW1lbnQgaW4iCiAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubWV0YWRhdGFEQiAiYWRkcyBkb2N1bWVudCBpbmZvbWF0aW9uIHRvIGFuZCBzZXQgc3RhdHVzIHRvIHVwbG9hZGVkIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLmJhY2tncm91bmRUYXNrICJxdWV1ZSBwcm9jZXNzaW5nIGJhY2tncm91bmQgdGFzayIKICAgICAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MuZ2F0ZXdheSAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgdXBsb2FkIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICAgICAgc3MuZ2F0ZXdheSAtPiBzcy5yZWFjdCAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgdXBsb2FkIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MucmFnU2VydmljZSAicHJvY2Vzc0RvY3VtZW50InsKICAgICAgICAgICAgdGl0bGUgInVwbG9hZGVkIGRvY3VtZW50IGZpbmlzaGVkIHByb2Nlc3NpbmciCiAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYmFja2dyb3VuZFRhc2sgLT4gc3MucmFnU2VydmljZS5hcGkgInRyaWdnZXIgcHJlcHJvY2Vzc2luZyBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAic2F2ZSBwcmVwcm9jZXNzZWQgKHdob2xlKSBkb2N1bWVudCIKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IHNzLnJhZ1NlcnZpY2UubWV0YWRhdGFEQiAidXBkYXRlIG1ldGFkYXRhIGluZm9ybWF0aW9uIHRvIG5vdGUgcHJlcHJvY2Vzc2VkIGRvY3VtZW50IgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuYXBpIC0+IG9wZW5haWFwaSAiY3JlYXRlIGVtYmVkZGluZ3MgZm9yIGNyZWF0ZWQgZG9jdW1lbnQgY2h1bmtzIHV0aWxpemluZyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLnZlY3RvckRCICJzdG9yZSBlbWJlZGRpbmdzIGluIgogICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmFwaSAtPiBzcy5yYWdTZXJ2aWNlLm1ldGFkYXRhREIgInNldHMgZG9jdW1lbnQgc3RhdHVzIHRvIGF2YWlsYWJsZSBhbmQgdXBkYXRlcyBvdGhlciBtZXRhZGF0YSBpbmZvcm1hdGlvbiIKICAgICAgICAgICAgc3MucmFnU2VydmljZS5hcGkgLT4gc3MuZ2F0ZXdheSAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgcHJvY2Nlc2luZyBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MucmVhY3QgInNlbmQgbm90aWZpY2F0aW9uIGFib3V0IGF2YWlsYWJpbGl0eSBvZiB0aGUgZG9jdW1lbnQgdG8gc3Vic2NyaWJlZCIgIldTTWVzc2FnZSIKICAgICAgICB9CgogICAgICAgIAoKICAgICAgICBkeW5hbWljIHNzLmN1c3RvbWdwdFNlcnZpY2UgImN1c3RvbUdQVENyZWF0ZU9yRWRpdCJ7CiAgICAgICAgICAgIHRpdGxlICJjcmVhdGUgb3IgZWRpdCBjdXN0b20gZ3B0IgogICAgICAgICAgICBzcy5yZWFjdCAtPiBzcy5nYXRld2F5ICJzZW5kIGN1c3RvbWdwdCBmb3JtIGRhdGEgdG8iCiAgICAgICAgICAgIHNzLmdhdGV3YXkgLT4gc3MuY3VzdG9tR1BUU2VydmljZS5hcGkgImZvcndhZCBwb3N0IGNhbGwgdG8iCiAgICAgICAgICAgIHNzLmN1c3RvbUdQVFNlcnZpY2UuYXBpIC0+IHNzLmN1c3RvbUdQVFNlcnZpY2UuZGIgInNhdmUgZGF0YSBhbmQgbWV0YWRhdGEgaW4iCiAgICAgICAgICAgIHNzLmN1c3RvbUdQVFNlcnZpY2UuYXBpIC0+ICBzcy5nYXRld2F5ICJzdWNjZXNzIHJlc3BvbnNlIgogICAgICAgICAgICBzcy5nYXRld2F5IC0+IHNzLnJlYWN0ICJzdWNjZXNzIHJlc3BvbnNlIgogICAgICAgIH0KCgogICAgICAgIHN0eWxlcyB7CiAgICAgICAgICAgIGVsZW1lbnQgIlBlcnNvbiIgewogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICAgICAgZm9udFNpemUgMjIKICAgICAgICAgICAgICAgIHNoYXBlIFBlcnNvbgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIlNvZnR3YXJlIFN5c3RlbSIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjMTE2OGJkCiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRXh0ZXJuYWwgU3lzdGVtIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM5OTk5OTkKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJDb250YWluZXIiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzQzOGRkNQogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIldlYiBCcm93c2VyIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBXZWJCcm93c2VyCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgIHNoYXBlIEN5bGluZGVyCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29tcG9uZW50IiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM4NWJiZjAKICAgICAgICAgICAgICAgIGNvbG9yICMwMDAwMDAKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJGYWlsb3ZlciIgewogICAgICAgICAgICAgICAgb3BhY2l0eSAyNQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQp9"
+    "structurizr.dsl" : "d29ya3NwYWNlICJDdXN0b21HUFQiICJVc2UgQ2hhdGdwdCBhcGkgd2l0aCBvd24gY3VzdG9tR1BUIGltcGxlbWVudGF0aW9uInsKICAgIC8vIHRoaXMgZW5hYmxlcyB1cyB0byB3cml0ZSBzcy5jb250YWluZXJuYW1lIGluc3RlYWQgb2YganVzdCBjb250YWluZXJuYW1lIC0KICAgICFpZGVudGlmaWVycyBoaWVyYXJjaGljYWwgCgoKICAgIG1vZGVsIHsKICAgICAgICB1ID0gcGVyc29uICJVc2VyIiAiQSB1c2VyIG9mIHRoZSBzeXN0ZW0gd2FudGluZyB0byBwcm9maXQgZnJvbSBjdXN0b21pemVkIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkiICJQZXJzb24iCiAgICAgICAgc3MgPSBzb2Z0d2FyZVN5c3RlbSAiT3BlbnNvdXJjZSBDdXN0b21HUFQgYnVpbGRlciJ7CiAgICAgICAgICAgIHJlYWN0ID0gY29udGFpbmVyICJGcm9udGVuZCIgIkEgd2ViIGFwcCBmb3IgY2hhdCB3aXRoIGN1c3RvbSBncHRzIGFuZCB5b3VyIGRhdGEiICJSZWFjdCArIFRTIiAiV2ViIEJyb3dzZXIiCiAgICAgICAgICAgIGludGVyZmFjZSA9IGNvbnRhaW5lciAiSW50ZXJmYWNlIiAiUHJvdmlkZXMgZW5kcG9pbnRzIGFuZCBjYWxscyBzZXJ2aWNlIGZ1bmN0aW9ucyBvZiB0aGUgZml0dGluZyBjb250ZXh0cyIgIkZhc3RhcGkiCiAgICAgICAgICAgIGNoYXRzZXJ2aWNlID0gY29udGFpbmVyICJDaGF0U2VydmljZSIgIlByb3ZpZGVzIGNoYXQgZnVuY3Rpb25hbGl0eSB3aXRoIGFuIExMTSJ7CiAgICAgICAgICAgICAgICBsbG1BZGFwdGVyID0gY29tcG9uZW50ICJMTE1BZGFwdGVyIiAiUHJvY2Vzc2VzIG11bHRpcGxlIGlucHV0cyAoc3lzUHJvbXB0LCBjb250ZXh0LCBtZXNzYWdlcywgdG9vbHMpIHRvIGdldCBhIHJlc3BvbnNlIGZyb20gYW4gTExNIGNvbXBsZXRpb24gQVBJIgogICAgICAgICAgICAgICAgY29yZSA9IGNvbXBvbmVudCAiQ2hhdHNlcnZpY2VBcGkiICJBUEkgZm9yIGNoYXR0aW5nIHdpdGggTExNcyB1dGlsaXppbmcgQWRkaXRpb25hbCBkYXRhIGZyb20gb3RoZXIgc2VydmljZXMiCiAgICAgICAgICAgICAgICBkYiA9IGNvbXBvbmVudCAiQ29udmVyc2F0aW9uREIiICJTdG9yZXMgdGhlIGNvbnZlcnNhdGlvbiBoaXN0b3JpZXMgYW5kIG1ldGFkYXRhIG9mIHRoZSBjb252ZXJzYXRpb24iewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlNRTGl0ZSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAgICBjdXN0b21ncHRTZXJ2aWNlID0gY29udGFpbmVyICJDdXN0b21HUFRTZXJ2aWNlIiAiU3RvcmVzIGFuZCBTZXJ2ZXMgYmFzaWMgQ3VzdG9tR1BUIGluZm9ybWF0aW9uInsKICAgICAgICAgICAgICAgIGNncHRTeXNwcm9tcHRBZGFwdGVyID0gY29tcG9uZW50ICJjb25zdHJ1Y3RzIGFuZCByZXR1cm5zIGEgc3lzcHJvbXB0IGJhc2VkIG9uIGEgc3BlY2lmaWMgY2dwdCBJRCIKICAgICAgICAgICAgICAgIGNvcmUgPSBjb21wb25lbnQgIkN1c3RvbUdwdEFwaSIiQVBJIHRvIGdldC9jcmVhdGUvY2hhbmdlIGN1c3RvbWdwdHMiCiAgICAgICAgICAgICAgICBkYiA9IGNvbXBvbmVudCAiQ3VzdG9tR3B0REIiICJTdG9yZXMgdGhlIGJhc2ljIGluZm9ybWF0aW9uIG9mIHRoZSBDdXN0b21HUFRzInsKICAgICAgICAgICAgICAgICAgICB0YWdzICJEYXRhYmFzZSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJTUUxpdGUiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KICAgICAgICAgICAgLy8gcmFnU2VydmljZSA9IGNvbnRhaW5lciAiUmFnU2VydmljZSIgIlJldHJlaXZlIGZpdHRpbmcgZG9jdW1lbnQgY2h1bmtzIGFuZCBwcm92aWRlIGFuIGFwaSB0byBhZGQgb3IgdXBkYXRlIGRhdGEiewogICAgICAgICAgICAvLyAgICAgYXBpID0gY29tcG9uZW50ICJSYWdTZXJ2aWNlQVBJIiAiQVBJIGZvciBwcm9jZXNzaW5nJnN0b3JpbmcgcmF3IGRhdGEgaW4gYSB2ZWN0b3IgZGF0YWJhc2UgYW5kIHJldHJlaXZpbmcgcmVsZXZhbnQgY2h1bmtzIGFuZCByYXcgZGF0YSIKICAgICAgICAgICAgLy8gICAgIHZlY3RvckRCID0gY29tcG9uZW50ICJ2ZWN0b3JEQiJ7CiAgICAgICAgICAgIC8vICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgIC8vICAgICAgICAgdGVjaG5vbG9neSAiUWRyYW50IgogICAgICAgICAgICAvLyAgICAgfQogICAgICAgICAgICAvLyAgICAgbWV0YWRhdGFEQiA9IGNvbXBvbmVudCAiTWV0YWRhdGFEQiJ7CiAgICAgICAgICAgIC8vICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgIC8vICAgICAgICAgdGVjaG5vbG9neSAiU1FMaXRlIgogICAgICAgICAgICAvLyAgICAgfQogICAgICAgICAgICAvLyAgICAgYmFja2dyb3VuZFRhc2sgPSBjb21wb25lbnQgIkJhY2tncm91bmQgVGFzayIgIlF1ZXVlIHRhc2tzIHRvIGNvbnRpbnVlIGRpcmVjdGx5IGFmdGVyIHJlc3BvbmRpbmciCiAgICAgICAgICAgIC8vICAgICBsb2NhbEZTID0gY29tcG9uZW50ICJMb2NhbCBGaWxlIFN5c3RlbSIgIlVzZWQgdG8gc3RvcmUgbm9uLXByb2Nlc3NlZCBhbmQgcHJlLXByb2Nlc3NlcyAgd2hvbGUgZG9jdW1lbnRzIgogICAgICAgICAgICAvLyAgICAgZ2l0aHViRGF0YVNlcnZpY2UgPSBjb21wb25lbnQgImdpdGh1YkRhdGFTZXJ2aWNlIiAiTGlzdGVucyBmb3Igbm90aWZpY2F0aW9uIHVwZGF0ZXMgZnJvbSBnaXRodWIgYW5kIHVwZGF0ZXMgdGhlIGNvcnJlc3BvbmRpbmcgZGF0YSBpbiB0aGUgdmVjdG9yREIiCiAgICAgICAgICAgIC8vIH0KIAogICAgICAgICAgICAhZG9jcyBkb2NzCiAgICAgICAgICAgICFhZHJzIGFkcnMKICAgICAgICAgICAgCiAgICAgICAgfQogICAgICAgIG9wZW5haWFwaSA9IHNvZnR3YXJlU3lzdGVtICJPcGVuQUlBcGkiICJQYXNzIGNvbnZlcnNhdGlvbiBhbmQgUmV0cmVpdmUgYXNzaXN0YW50IG1lc3NhZ2VzIG9mIE9wZW5BSSBMTE1zIiAiRXh0ZXJuYWwgU3lzdGVtIgogICAgICAgIC8vIGdpdGh1YiA9IHNvZnR3YXJlU3lzdGVtICJnaXRodWIiICJTZW5kcyBhIFBvc3QgbWVzc2FnZSB0byBhbGwgc3Vic2NyaWJlcnMgd2hlbmV2ZXIgYSBuZXcgY29tbWl0IHdhcyBtYWRlIiAiRXh0ZXJuYWwgU3lzdGVtIiB7CiAgICAgICAgLy8gICAgIHdlYmhvb2sgPSBjb250YWluZXIgImdpdGh1YldlYmhvb2siICJMaXN0ZW5zIGZvciBuZXcgY29tbWl0cyBhbmQgc2VuZHMgUG9zdCBjYWxsIHRvIHNwZWNpZmljIHVybCIKICAgICAgICAvLyAgICAgYXBpID0gY29udGFpbmVyICJHaXRodWJBUEkiICJQcm92aWRlcyBhcGkgZm9yIGludGVyYWN0aW5nIHdpdGggZ2l0aHViIHJlcG9zLCBlLmcuIHJldHJlaXZpbmcgZGF0YSIKICAgICAgICAvLyB9CgogICAgICAgIHUgLT4gc3MucmVhY3QgIkNoYXRzIHdpdGggTExNLCBjcmVhdGVzIG9yIHVzZXMgQ3VzdG9tR1BUcyB1c2luZyIgIlJlc3RBUEkiCiAgICAgICAgc3MucmVhY3QgLT4gc3MuaW50ZXJmYWNlICJHZXRzIGNvbnZlcnNhdGlvbnMsIGFzc2lzdGFudGVyc3BvbnNlcyBhbmQgZGF0YSBmcm9tIGFuZCBzZW5kIHVzZXIgbWVzc2FnZXMgYW5kIGRhdGEgdG8iCiAgICAgICAgc3MuaW50ZXJmYWNlIC0+IHNzLmNoYXRzZXJ2aWNlLmNvcmUgIkdldHMgb3IgY3JlYXRlcyBjb252ZXJzYXRpb25zIHdpdGggTExNcywgb3B0aW9uYWxseSB1dGlsaXppbmcgUkFHIGFuZCBDdXN0b21HUFQgZGF0YSwgdXRpbGl6aW5nIHRoZSIgIlJFU1RBcGkiCiAgICAgICAgc3MuY2hhdHNlcnZpY2UuY29yZSAtPiBzcy5jaGF0c2VydmljZS5kYiAiU3RvcmVzIGFuZCByZXRyZWl2ZXMgQ29udmVyc2F0aW9ucyAtaW5jbHVkaW5nIG1ldGFkYXRhLSB0byBhbmQgZnJvbSIgIlNRTE1vZGVsIgogICAgICAgIHNzLmNoYXRzZXJ2aWNlLmNvcmUgLT4gc3MuY3VzdG9tZ3B0U2VydmljZS5jZ3B0U3lzcHJvbXB0QWRhcHRlciAiR2V0IHRoZSBzeXN0ZW1Qcm9tcHQgY3JlYXRlZCBmcm9tIHRoZSBjZ3B0IGluZm9ybWF0aW9uIGZyb20iICJSRVNUQXBpIgogICAgICAgIC8vIHNzLmNoYXRzZXJ2aWNlLmNvcmUgLT4gc3MucmFnU2VydmljZS5jb3JlICJTZW5kcyB0ZXh0LXNuaXBldCBhbmQgZ2V0cyByZWxldmFudCBkb2N1bWVudCBjaHVua3MgYW5kIHRoZWlyIG1ldGFkYXRhIGZyb20iCiAgICAgICAgc3MuY2hhdHNlcnZpY2UuY29yZSAtPiBvcGVuYWlhcGkgIlNlbmRzIGNvbnZlcnNhdGlvbiAoc25pcHBldHMpIHRvIGdldCBhc3Npc3RhbnQgbWVzc2FnZXMgYXMgYW5zd2VycyBmcm9tIiAiUkVTVEFwaSIKICAgICAgICAKICAgICAgICAKICAgICAgICBzcy5pbnRlcmZhY2UgLT4gc3MuY3VzdG9tZ3B0U2VydmljZS5jb3JlICJHZXRzIG9yIGNyZWF0ZXMgQ3VzdG9tR1BUcyB1dGlsaXppbmciCiAgICAgICAgc3MuY3VzdG9tZ3B0U2VydmljZS5jb3JlIC0+IHNzLmN1c3RvbWdwdFNlcnZpY2UuZGIgIlN0b3JlcyBhbmQgcmV0cmVpdmVzIEN1c3RvbUdQVCBpbmZvcm1hdGlvbiAtaW5jbHVkaW5nIG1ldGFkYXRhLSB0byBhbmQgZnJvbSIgIlNRTE1vZGVsIgoKICAgICAgICAvLyBzcy5pbnRlcmZhY2UgLT4gc3MucmFnU2VydmljZS5jb3JlICJTZW5kcyBkb2N1bWVudHMgdG8gcHJvY2VzcyBhbmQgZW1iZWRkIGFuZCByZXRyZWl2ZXMgcmVsZXZhbnQgZG9jdW1lbnQgY2h1bmtzIHRvIGEgZ2l2ZW4gdGV4dCBmcm9tIgogICAgICAgIC8vIHNzLnJhZ1NlcnZpY2UuY29yZSAtPiBzcy5yYWdTZXJ2aWNlLmxvY2FsRlMgInN0b3JlIHVucHJvY2Vzc2VkIGFuZCBwcm9jZXNzZWQgd2hvbGUgZG9jdW1lbnRzIG9uIgogICAgICAgIC8vIHNzLnJhZ1NlcnZpY2UuY29yZSAtPiBzcy5yYWdTZXJ2aWNlLmJhY2tncm91bmRUYXNrICJxdWVyeSBwcm9jZXNzaW5nIHRhc2tzIgogICAgICAgIC8vIHNzLnJhZ1NlcnZpY2UuY29yZSAtPiBvcGVuYWlhcGkgImNyZWF0ZSBlbWJlZGRpbmdzIGZvciBjaHVua3Mgb2YgZG9jdW1lbnRzIHV0aWxpemluZyIKICAgICAgICAvLyBzcy5yYWdTZXJ2aWNlLmNvcmUgLT4gc3MucmFnU2VydmljZS52ZWN0b3JEQiAic3RvcmUgYW5kIHJldHJlaXZlIChzaW1pbGFyKSBkb2N1bWVudCBjaHVua3MgZW1iZWRkaW5ncyIKICAgICAgICAvLyBzcy5yYWdTZXJ2aWNlLmNvcmUgLT4gc3MucmFnU2VydmljZS5tZXRhZGF0YURCICJzdG9yZSBtZXRhZGF0YSBpbmZvcm1hdGlvbiBhYm91dCBkb2N1bWVudHMgc3RvcmVkIGluIHRoZSBWZWN0b3JEQiIKCiAgICAgICAgLy8gc3MucmFnU2VydmljZS5jb3JlIC0+IHNzLmludGVyZmFjZSAiU2VuZHMgbWVzc2FnZXMgd2hlbiB0aGUgcHJvY2Vzc2luZyBzdGF0dXMgb2YgdXBsb2FkZWQgZG9jdW1lbnRzIGhhcyBjaGFuZ2VkIiAiUkVTVEFwaSIKICAgICAgICAvLyBzcy5pbnRlcmZhY2UgLT4gc3MucmVhY3QgIlNlbmRzIG1lc3NhZ2VzIHdoZW4gdGhlIHByb2Nlc3Npbmcgc3RhdHVzIG9mIHVwbG9hZGVkIGRvY3VtZW50cyBoYXMgY2hhbmdlZCB0byIgIldTTWVzc2FnZSIKICAgICAgICAKICAgICAgICAvLyBnaXRodWIud2ViaG9vayAtPiBzcy5yYWdTZXJ2aWNlLmdpdGh1YkRhdGFTZXJ2aWNlICJOb3RpZmllcyBhYm91dCBuZXcgY29tbWl0cyIgIlBPU1QgQ2FsbCIKICAgICAgICAvLyBzcy5yYWdTZXJ2aWNlLmdpdGh1YkRhdGFTZXJ2aWNlIC0+IGdpdGh1Yi5jb3JlICJyZXRyZWl2ZXMgcmVwb3NpdG9yeSBjb250ZW50IGZyb20iCiAgICAgICAgLy8gc3MucmFnU2VydmljZS5naXRodWJEYXRhU2VydmljZSAtPiBzcy5yYWdTZXJ2aWNlLmNvcmUgInVwZGF0ZXMgb3V0ZGF0ZSBnaXRodWIgcmVwbyBkYXRhIGluIgogICAgICAgIAogICAgICAgIAoKCgogICAgICAgIAogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IHNzICJTeXN0ZW1Db250ZXgiewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KICAgICAgICBjb250YWluZXIgc3MgIkNvbnRhaW5lclZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KICAgICAgICBjb21wb25lbnQgc3MuY2hhdHNlcnZpY2UgImNoYXRTZXJ2aWNlVmlldyJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSIKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgLy8gY29tcG9uZW50IHNzLnJhZ1NlcnZpY2UgInJhZ1NlcnZpY2VWaWV3InsKICAgICAgICAvLyAgICAgaW5jbHVkZSAqCiAgICAgICAgLy8gICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgIC8vICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgIC8vICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIgogICAgICAgIC8vICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgLy8gfQoKICAgICAgICBjb21wb25lbnQgc3MuY3VzdG9tR1BUU2VydmljZSAiY3VzdG9tR1BUU2VydmljZVZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0gLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0iCiAgICAgICAgICAgIC8vIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3MgIndzTWVzc2FnZSJ7CiAgICAgICAgICAgIHRpdGxlICJjbGllbnQgc3Vic2NpYmVzIHRvIHdlYnNvY2tldE1zZyIKICAgICAgICAgICAgc3MucmVhY3QgLT4gc3MuaW50ZXJmYWNlICJzdWJzY3JpYmVzIHRvIHdlYnNvY2tldG1lc3NhZ2VzIgogICAgICAgIH0KCiAgICAgICAgLy8gZHluYW1pYyBzcy5yYWdTZXJ2aWNlICJ1cGxvYWREb2N1bWVudCJ7CiAgICAgICAgLy8gICAgIHRpdGxlICJ1cGxvYWQgZG9jdW1lbnQgYW5kIHN0YXJ0IHByb2Nlc3NpbmciIAogICAgICAgIC8vICAgICB1IC0+IHNzLnJlYWN0ICJVcGxvYWRzIGRvY3VtZW50IHRvIgogICAgICAgIC8vICAgICBzcy5yZWFjdCAtPiBzcy5pbnRlcmZhY2UgInNlbmRzIGRvY3VtZW50IGZpbGUgdmlhIFBvc3QgY2FsbCB0byIKICAgICAgICAvLyAgICAgc3MuaW50ZXJmYWNlIC0+IHNzLnJhZ1NlcnZpY2UuY29yZSAic2VuZCBkb2N1bWVudCB0byIKICAgICAgICAvLyAgICAgc3MucmFnU2VydmljZS5jb3JlIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAic3RvcmUgb3JpZ2luYWwgZG9jdW1lbnQgaW4iCiAgICAgICAgLy8gICAgIHNzLnJhZ1NlcnZpY2UuY29yZSAtPiBzcy5yYWdTZXJ2aWNlLm1ldGFkYXRhREIgImFkZHMgZG9jdW1lbnQgaW5mb21hdGlvbiB0byBhbmQgc2V0IHN0YXR1cyB0byB1cGxvYWRlZCIKICAgICAgICAvLyAgICAgc3MucmFnU2VydmljZS5jb3JlIC0+IHNzLnJhZ1NlcnZpY2UuYmFja2dyb3VuZFRhc2sgInF1ZXVlIHByb2Nlc3NpbmcgYmFja2dyb3VuZCB0YXNrIgogICAgICAgIC8vICAgICBzcy5yYWdTZXJ2aWNlLmNvcmUgLT4gc3MuaW50ZXJmYWNlICJub3RpZmllcyBhYm91dCB0aGUgc3VjY2Vzc2Z1bCB1cGxvYWQgb2YgdGhlIGRvY3VtZW50IgogICAgICAgIC8vICAgICBzcy5pbnRlcmZhY2UgLT4gc3MucmVhY3QgIm5vdGlmaWVzIGFib3V0IHRoZSBzdWNjZXNzZnVsIHVwbG9hZCBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgLy8gfQoKICAgICAgICAvLyBkeW5hbWljIHNzLnJhZ1NlcnZpY2UgInByb2Nlc3NEb2N1bWVudCJ7CiAgICAgICAgLy8gICAgIHRpdGxlICJ1cGxvYWRlZCBkb2N1bWVudCBmaW5pc2hlZCBwcm9jZXNzaW5nIgogICAgICAgIC8vICAgICBzcy5yYWdTZXJ2aWNlLmJhY2tncm91bmRUYXNrIC0+IHNzLnJhZ1NlcnZpY2UuY29yZSAidHJpZ2dlciBwcmVwcm9jZXNzaW5nIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICAvLyAgICAgc3MucmFnU2VydmljZS5jb3JlIC0+IHNzLnJhZ1NlcnZpY2UubG9jYWxGUyAic2F2ZSBwcmVwcm9jZXNzZWQgKHdob2xlKSBkb2N1bWVudCIKICAgICAgICAvLyAgICAgewogICAgICAgIC8vICAgICAgICAgewogICAgICAgIC8vICAgICAgICAgICAgIHNzLnJhZ1NlcnZpY2UuY29yZSAtPiBzcy5yYWdTZXJ2aWNlLm1ldGFkYXRhREIgInVwZGF0ZSBtZXRhZGF0YSBpbmZvcm1hdGlvbiB0byBub3RlIHByZXByb2Nlc3NlZCBkb2N1bWVudCIKICAgICAgICAvLyAgICAgICAgIH0KICAgICAgICAvLyAgICAgICAgIHsKICAgICAgICAvLyAgICAgICAgICAgICBzcy5yYWdTZXJ2aWNlLmNvcmUgLT4gb3BlbmFpYXBpICJjcmVhdGUgZW1iZWRkaW5ncyBmb3IgY3JlYXRlZCBkb2N1bWVudCBjaHVua3MgdXRpbGl6aW5nIgogICAgICAgIC8vICAgICAgICAgfQogICAgICAgIC8vICAgICB9CiAgICAgICAgLy8gICAgIHNzLnJhZ1NlcnZpY2UuY29yZSAtPiBzcy5yYWdTZXJ2aWNlLnZlY3RvckRCICJzdG9yZSBlbWJlZGRpbmdzIGluIgogICAgICAgIC8vICAgICBzcy5yYWdTZXJ2aWNlLmNvcmUgLT4gc3MucmFnU2VydmljZS5tZXRhZGF0YURCICJzZXRzIGRvY3VtZW50IHN0YXR1cyB0byBhdmFpbGFibGUgYW5kIHVwZGF0ZXMgb3RoZXIgbWV0YWRhdGEgaW5mb3JtYXRpb24iCiAgICAgICAgLy8gICAgIHNzLnJhZ1NlcnZpY2UuY29yZSAtPiBzcy5pbnRlcmZhY2UgIm5vdGlmaWVzIGFib3V0IHRoZSBzdWNjZXNzZnVsIHByb2NjZXNpbmcgb2YgdGhlIGRvY3VtZW50IgogICAgICAgIC8vICAgICBzcy5pbnRlcmZhY2UgLT4gc3MucmVhY3QgInNlbmQgbm90aWZpY2F0aW9uIGFib3V0IGF2YWlsYWJpbGl0eSBvZiB0aGUgZG9jdW1lbnQgdG8gc3Vic2NyaWJlZCIgIldTTWVzc2FnZSIKICAgICAgICAvLyB9CgogICAgICAgIAoKICAgICAgICBkeW5hbWljIHNzLmN1c3RvbWdwdFNlcnZpY2UgImN1c3RvbUdQVENyZWF0ZU9yRWRpdCJ7CiAgICAgICAgICAgIHRpdGxlICJjcmVhdGUgb3IgZWRpdCBjdXN0b20gZ3B0IgogICAgICAgICAgICBzcy5yZWFjdCAtPiBzcy5pbnRlcmZhY2UgInNlbmQgY3VzdG9tZ3B0IGZvcm0gZGF0YSB0byIKICAgICAgICAgICAgc3MuaW50ZXJmYWNlIC0+IHNzLmN1c3RvbUdQVFNlcnZpY2UuY29yZSAiZm9yd2FkIHBvc3QgY2FsbCB0byIKICAgICAgICAgICAgc3MuY3VzdG9tR1BUU2VydmljZS5jb3JlIC0+IHNzLmN1c3RvbUdQVFNlcnZpY2UuZGIgInNhdmUgZGF0YSBhbmQgbWV0YWRhdGEgaW4iCiAgICAgICAgICAgIHNzLmN1c3RvbUdQVFNlcnZpY2UuY29yZSAtPiAgc3MuaW50ZXJmYWNlICJzdWNjZXNzIHJlc3BvbnNlIgogICAgICAgICAgICBzcy5pbnRlcmZhY2UgLT4gc3MucmVhY3QgInN1Y2Nlc3MgcmVzcG9uc2UiCiAgICAgICAgfQoKCiAgICAgICAgc3R5bGVzIHsKICAgICAgICAgICAgZWxlbWVudCAiUGVyc29uIiB7CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgICAgICBmb250U2l6ZSAyMgogICAgICAgICAgICAgICAgc2hhcGUgUGVyc29uCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiU29mdHdhcmUgU3lzdGVtIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICMxMTY4YmQKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJFeHRlcm5hbCBTeXN0ZW0iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzk5OTk5OQogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkNvbnRhaW5lciIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjNDM4ZGQ1CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiV2ViIEJyb3dzZXIiIHsKICAgICAgICAgICAgICAgIHNoYXBlIFdlYkJyb3dzZXIKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJEYXRhYmFzZSIgewogICAgICAgICAgICAgICAgc2hhcGUgQ3lsaW5kZXIKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJDb21wb25lbnQiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzg1YmJmMAogICAgICAgICAgICAgICAgY29sb3IgIzAwMDAwMAogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkZhaWxvdmVyIiB7CiAgICAgICAgICAgICAgICBvcGFjaXR5IDI1CiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9Cn0="
   },
   "views" : {
     "componentViews" : [ {
@@ -651,17 +546,17 @@
       }, {
         "id" : "7",
         "x" : 915,
-        "y" : 1335
+        "y" : 750
       }, {
         "id" : "8",
+        "x" : 915,
+        "y" : 1335
+      }, {
+        "id" : "9",
         "x" : 1770,
         "y" : 450
       }, {
-        "id" : "11",
-        "x" : 60,
-        "y" : 450
-      }, {
-        "id" : "18",
+        "id" : "13",
         "x" : 60,
         "y" : 1080
       } ],
@@ -670,111 +565,16 @@
       "order" : 3,
       "paperSize" : "A5_Landscape",
       "relationships" : [ {
-        "id" : "25"
+        "id" : "17"
       }, {
-        "id" : "27"
+        "id" : "19"
       }, {
-        "id" : "29"
+        "id" : "21"
       }, {
-        "id" : "33"
-      }, {
-        "id" : "36"
+        "id" : "24"
       } ]
     }, {
-      "containerId" : "11",
-      "dimensions" : {
-        "height" : 2484,
-        "width" : 2767
-      },
-      "elements" : [ {
-        "id" : "4",
-        "x" : 289,
-        "y" : 750
-      }, {
-        "id" : "5",
-        "x" : 290,
-        "y" : 1258
-      }, {
-        "id" : "12",
-        "x" : 1306,
-        "y" : 1258
-      }, {
-        "id" : "13",
-        "x" : 949,
-        "y" : 1858
-      }, {
-        "id" : "14",
-        "x" : 1510,
-        "y" : 1850
-      }, {
-        "id" : "15",
-        "x" : 2034,
-        "y" : 750
-      }, {
-        "id" : "16",
-        "x" : 2055,
-        "y" : 1850
-      }, {
-        "id" : "17",
-        "x" : 1305,
-        "y" : 750
-      }, {
-        "id" : "18",
-        "x" : 290,
-        "y" : 1887
-      }, {
-        "id" : "19",
-        "x" : 1306,
-        "y" : 165
-      } ],
-      "externalContainerBoundariesVisible" : false,
-      "key" : "ragServiceView",
-      "order" : 4,
-      "relationships" : [ {
-        "id" : "34",
-        "vertices" : [ {
-          "x" : 876,
-          "y" : 1408
-        } ]
-      }, {
-        "id" : "42",
-        "vertices" : [ {
-          "x" : 985,
-          "y" : 1170
-        } ]
-      }, {
-        "id" : "44"
-      }, {
-        "id" : "45"
-      }, {
-        "id" : "46"
-      }, {
-        "id" : "48"
-      }, {
-        "id" : "49"
-      }, {
-        "id" : "50",
-        "vertices" : [ {
-          "x" : 1065,
-          "y" : 925
-        } ]
-      }, {
-        "id" : "56",
-        "vertices" : [ {
-          "x" : 1450,
-          "y" : 595
-        } ]
-      }, {
-        "id" : "60",
-        "vertices" : [ {
-          "x" : 1655,
-          "y" : 610
-        } ]
-      }, {
-        "id" : "65"
-      } ]
-    }, {
-      "containerId" : "8",
+      "containerId" : "9",
       "dimensions" : {
         "height" : 1476,
         "width" : 1645
@@ -788,23 +588,27 @@
         "x" : 199,
         "y" : 185
       }, {
-        "id" : "9",
+        "id" : "10",
+        "x" : 974,
+        "y" : 850
+      }, {
+        "id" : "11",
         "x" : 974,
         "y" : 185
       }, {
-        "id" : "10",
+        "id" : "12",
         "x" : 974,
         "y" : 850
       } ],
       "externalContainerBoundariesVisible" : false,
       "key" : "customGPTServiceView",
-      "order" : 5,
+      "order" : 4,
       "relationships" : [ {
-        "id" : "30"
+        "id" : "22"
       }, {
-        "id" : "39"
+        "id" : "27"
       }, {
-        "id" : "41"
+        "id" : "29"
       } ]
     } ],
     "configuration" : {
@@ -867,78 +671,36 @@
         "x" : 1300,
         "y" : 1360
       }, {
-        "id" : "8",
+        "id" : "9",
         "x" : 1985,
         "y" : 1360
       }, {
-        "id" : "11",
-        "x" : 580,
-        "y" : 1365
-      }, {
-        "id" : "18",
+        "id" : "13",
         "x" : 1298,
         "y" : 1950
-      }, {
-        "id" : "19",
-        "x" : 595,
-        "y" : 1960
       } ],
       "externalSoftwareSystemBoundariesVisible" : false,
       "key" : "ContainerView",
       "order" : 2,
       "relationships" : [ {
-        "id" : "22"
+        "id" : "14"
       }, {
-        "id" : "24",
+        "id" : "16",
         "vertices" : [ {
           "x" : 1303,
           "y" : 502
         } ]
       }, {
-        "id" : "26"
+        "id" : "18"
       }, {
-        "id" : "31"
+        "id" : "23"
       }, {
-        "id" : "35"
+        "id" : "25"
       }, {
-        "id" : "37"
-      }, {
-        "id" : "40",
+        "id" : "28",
         "vertices" : [ {
           "x" : 2046,
           "y" : 985
-        } ]
-      }, {
-        "id" : "43",
-        "vertices" : [ {
-          "x" : 991,
-          "y" : 980
-        } ]
-      }, {
-        "id" : "47"
-      }, {
-        "id" : "51",
-        "vertices" : [ {
-          "x" : 1176,
-          "y" : 1210
-        } ]
-      }, {
-        "id" : "52",
-        "vertices" : [ {
-          "x" : 1668,
-          "y" : 542
-        } ]
-      }, {
-        "id" : "57",
-        "vertices" : [ {
-          "x" : 935,
-          "y" : 1830
-        } ]
-      }, {
-        "id" : "62",
-        "vertices" : [ {
-          "x" : 735,
-          "y" : 1820
         } ]
       } ],
       "softwareSystemId" : "2"
@@ -960,11 +722,11 @@
       } ],
       "externalBoundariesVisible" : false,
       "key" : "wsMessage",
-      "order" : 6,
+      "order" : 5,
       "paperSize" : "A6_Portrait",
       "relationships" : [ {
         "description" : "subscribes to websocketmessages",
-        "id" : "24",
+        "id" : "16",
         "order" : "1",
         "response" : false,
         "vertices" : [ {
@@ -975,198 +737,10 @@
       "title" : "client subscibes to websocketMsg"
     }, {
       "dimensions" : {
-        "height" : 2036,
-        "width" : 2390
-      },
-      "elementId" : "11",
-      "elements" : [ {
-        "id" : "1",
-        "x" : 214,
-        "y" : 165
-      }, {
-        "id" : "3",
-        "x" : 799,
-        "y" : 235
-      }, {
-        "id" : "4",
-        "x" : 1639,
-        "y" : 240
-      }, {
-        "id" : "12",
-        "x" : 964,
-        "y" : 855
-      }, {
-        "id" : "14",
-        "x" : 219,
-        "y" : 1410
-      }, {
-        "id" : "15",
-        "x" : 975,
-        "y" : 1570
-      }, {
-        "id" : "16",
-        "x" : 1719,
-        "y" : 1410
-      } ],
-      "externalBoundariesVisible" : false,
-      "key" : "uploadDocument",
-      "order" : 7,
-      "relationships" : [ {
-        "description" : "Uploads document to",
-        "id" : "22",
-        "order" : "1",
-        "response" : false
-      }, {
-        "description" : "sends document file via Post call to",
-        "id" : "24",
-        "order" : "2",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1439,
-          "y" : 335
-        } ]
-      }, {
-        "description" : "send document to",
-        "id" : "42",
-        "order" : "3",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1369,
-          "y" : 710
-        } ]
-      }, {
-        "description" : "store original document in",
-        "id" : "44",
-        "order" : "4",
-        "response" : false
-      }, {
-        "description" : "adds document infomation to and set status to uploaded",
-        "id" : "49",
-        "order" : "5",
-        "response" : false
-      }, {
-        "description" : "queue processing background task",
-        "id" : "45",
-        "order" : "6",
-        "response" : false
-      }, {
-        "description" : "notifies about the successful upload of the document",
-        "id" : "50",
-        "order" : "7",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1714,
-          "y" : 740
-        } ]
-      }, {
-        "description" : "notifies about the successful upload of the document",
-        "id" : "52",
-        "order" : "8",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1429,
-          "y" : 470
-        } ]
-      } ],
-      "title" : "upload document and start processing"
-    }, {
-      "dimensions" : {
-        "height" : 2105,
-        "width" : 2699
-      },
-      "elementId" : "11",
-      "elements" : [ {
-        "id" : "3",
-        "x" : 2050,
-        "y" : 1102
-      }, {
-        "id" : "4",
-        "x" : 2045,
-        "y" : 217
-      }, {
-        "id" : "12",
-        "x" : 965,
-        "y" : 687
-      }, {
-        "id" : "13",
-        "x" : 1460,
-        "y" : 1165
-      }, {
-        "id" : "14",
-        "x" : 380,
-        "y" : 1165
-      }, {
-        "id" : "15",
-        "x" : 217,
-        "y" : 217
-      }, {
-        "id" : "16",
-        "x" : 219,
-        "y" : 683
-      }, {
-        "id" : "18",
-        "x" : 965,
-        "y" : 1537
-      } ],
-      "externalBoundariesVisible" : false,
-      "key" : "processDocument",
-      "order" : 8,
-      "relationships" : [ {
-        "description" : "trigger preprocessing of the document",
-        "id" : "45",
-        "order" : "1",
-        "response" : true
-      }, {
-        "description" : "save preprocessed (whole) document",
-        "id" : "44",
-        "order" : "2",
-        "response" : false
-      }, {
-        "description" : "create embeddings for created document chunks utilizing",
-        "id" : "46",
-        "order" : "3",
-        "response" : false
-      }, {
-        "description" : "update metadata information to note preprocessed document",
-        "id" : "49",
-        "order" : "3",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 785,
-          "y" : 1015
-        } ]
-      }, {
-        "description" : "store embeddings in",
-        "id" : "48",
-        "order" : "4",
-        "response" : false
-      }, {
-        "description" : "sets document status to available and updates other metadata information",
-        "id" : "49",
-        "order" : "5",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1005,
-          "y" : 1130
-        } ]
-      }, {
-        "description" : "notifies about the successful proccesing of the document",
-        "id" : "50",
-        "order" : "6",
-        "response" : false
-      }, {
-        "description" : "send notification about availability of the document to subscribed",
-        "id" : "52",
-        "order" : "7",
-        "response" : false
-      } ],
-      "title" : "uploaded document finished processing"
-    }, {
-      "dimensions" : {
         "height" : 1410,
         "width" : 1634
       },
-      "elementId" : "8",
+      "elementId" : "9",
       "elements" : [ {
         "id" : "3",
         "x" : 971,
@@ -1176,20 +750,20 @@
         "x" : 971,
         "y" : 185
       }, {
-        "id" : "9",
+        "id" : "11",
         "x" : 221,
         "y" : 185
       }, {
-        "id" : "10",
+        "id" : "12",
         "x" : 220,
         "y" : 784
       } ],
       "externalBoundariesVisible" : false,
       "key" : "customGPTCreateOrEdit",
-      "order" : 9,
+      "order" : 6,
       "relationships" : [ {
         "description" : "send customgpt form data to",
-        "id" : "24",
+        "id" : "16",
         "order" : "1",
         "response" : false,
         "vertices" : [ {
@@ -1198,7 +772,7 @@
         } ]
       }, {
         "description" : "forwad post call to",
-        "id" : "39",
+        "id" : "27",
         "order" : "2",
         "response" : false,
         "vertices" : [ {
@@ -1207,12 +781,12 @@
         } ]
       }, {
         "description" : "save data and metadata in",
-        "id" : "41",
+        "id" : "29",
         "order" : "3",
         "response" : false
       }, {
         "description" : "success response",
-        "id" : "39",
+        "id" : "27",
         "order" : "4",
         "response" : true,
         "vertices" : [ {
@@ -1221,13 +795,9 @@
         } ]
       }, {
         "description" : "success response",
-        "id" : "52",
+        "id" : "16",
         "order" : "5",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1046,
-          "y" : 635
-        } ]
+        "response" : true
       } ],
       "title" : "create or edit custom gpt"
     } ],
@@ -1245,33 +815,17 @@
         "x" : 900,
         "y" : 215
       }, {
-        "id" : "18",
+        "id" : "13",
         "x" : 920,
         "y" : 865
-      }, {
-        "id" : "19",
-        "x" : 1650,
-        "y" : 215
       } ],
       "enterpriseBoundaryVisible" : true,
       "key" : "SystemContex",
       "order" : 1,
       "relationships" : [ {
-        "id" : "23"
+        "id" : "15"
       }, {
-        "id" : "38"
-      }, {
-        "id" : "58",
-        "vertices" : [ {
-          "x" : 1500,
-          "y" : 215
-        } ]
-      }, {
-        "id" : "64",
-        "vertices" : [ {
-          "x" : 1500,
-          "y" : 515
-        } ]
+        "id" : "26"
       } ],
       "softwareSystemId" : "2"
     } ]

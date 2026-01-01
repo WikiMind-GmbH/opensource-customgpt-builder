@@ -31,7 +31,7 @@ Additionally,
 
 
 
-## Consequences
+
 
 We will define per Cross context Port<>Adapter in the Port DTOs and a mapper function like this:
 
@@ -105,4 +105,6 @@ def bootstrap( ... ):
         ...
     )
 ```
+
+## Consequences
 
