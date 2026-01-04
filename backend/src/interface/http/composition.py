@@ -5,7 +5,7 @@ from backend_spanning_helpers import require_env
 from src.bootstrap import bootstrap, DependenciesContainer
 
 # Compose ONCE for this process (choose env-specific URL here)
-deps: DependenciesContainer = bootstrap(
+dependencies_container: DependenciesContainer = bootstrap(
     db_url_chat=require_env("DB_URL_CHAT"),
     db_url_cgpt=require_env("DB_URL_CGPT"),
     model_name=require_env("MODEL_NAME"),

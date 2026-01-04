@@ -189,7 +189,7 @@ In `workspace.dsl`:
 ```
 ### All ADRs
 The ADRs are created in the `adrs` folder. Please set up `adr-tools` accordingly:
-```
+```bash
 adr init ${PATH-TO-STRUCTURIZR-FOLDER}/adrs
 ```
 They are correctly imported by structurizr-lite due to the following line in `workspace.dsl`:
@@ -285,7 +285,7 @@ We use **ADR Tools CLI** to create ADRs in a consistent format:
 
 
 First, we set up the root path
-```
+```bash
 adr init ${PATH-TO-STRUCTURIZR-FOLDER}/adrs
 ```
 

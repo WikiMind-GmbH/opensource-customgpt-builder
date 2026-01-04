@@ -232,7 +232,7 @@ Because Python modules are only executed once per interpreter, this approach ens
 
 ## Consequences
 
-### Positive
+### General
 
 * The HTTP layer is fully decoupled from concrete adapters.
 * Dependency wiring is centralized and explicit.
@@ -250,7 +250,7 @@ Because Python modules are only executed once per interpreter, this approach ens
 
 #### Endpoint / E2E tests
 
-* The bootstrap function *does* execute due to module imports.
+* The bootstrap function *does* execute due to module imports. This does restrict us.
 * Dependencies can be overridden cleanly using FastAPI’s `dependency_overrides`.
 
 Example:

@@ -6,7 +6,7 @@ from src.interface.http.schemas.customGPTs.customGPT_commands import (
 )
 from src.bootstrap import DependenciesContainer
 from src.interface.http.schemas.common_command import CommandResult
-from src.interface.http.deps import deps
+from backend.src.interface.http.composition import dependencies_container
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
 from src.contexts.customGPTs.application.service_functions import (
     create_custom_gpt_service,
@@ -14,7 +14,7 @@ from src.contexts.customGPTs.application.service_functions import (
     edit_custom_gpt_service,
 )
 
-deps: DependenciesContainer = deps
+dependencies_container: DependenciesContainer = dependencies_container
 
 customgpt_commands_router = APIRouter(
     prefix="/customgpts", tags=["customGPTs: Commands"]
@@ -28,8 +28,8 @@ customgpt_commands_router = APIRouter(
 )
 async def delete_custom_gpt_endpoint(
     gpt_id: str,
-    uow: CgptUOW = Depends(deps.cgpt_uow_factory),
-    conv_adapter: ConversationPort = Depends(deps.conversation_adapter_factory)
+    uow: CgptUOW = Depends(dependencies_container.cgpt_uow_factory),
+    conv_adapter: ConversationPort = Depends(dependencies_container.conversation_adapter_factory)
 ) -> CommandResult:
     delete_custom_gpt_service(uow, gpt_id, conv_adapter)
     return CommandResult(resource_id=gpt_id, message="Succesfully deleted")
@@ -43,7 +43,7 @@ async def delete_custom_gpt_endpoint(
 )
 async def create_custom_gpt(
     custom_gpt_infos: CustomGptToCreate,
-    uow: CgptUOW = Depends(deps.cgpt_uow_factory),
+    uow: CgptUOW = Depends(dependencies_container.cgpt_uow_factory),
 ) -> CommandResult:
     cgpt_id: str = create_custom_gpt_service(
         name=custom_gpt_infos.custom_gpt_name,
@@ -64,7 +64,7 @@ async def create_custom_gpt(
 )
 async def edit_custom_gpt(
     custom_gpt_infos: CustomGptToEdit,
-    uow: CgptUOW = Depends(deps.cgpt_uow_factory),
+    uow: CgptUOW = Depends(dependencies_container.cgpt_uow_factory),
 ) -> CommandResult:
     edit_custom_gpt_service(
         id=custom_gpt_infos.custom_gpt_id,

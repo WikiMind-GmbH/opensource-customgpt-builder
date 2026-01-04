@@ -57,7 +57,7 @@ class DependenciesContainer:
     conversation_uow_factory: Factory[ConversationUOW]
     cgpt_uow_factory: Factory[CgptUOW]
     cgpt_retreiver_adapter_factory: Factory[CustomGPTInstructionsRetreiver]
-    llm_adapter_factory: Factory[LlmPort]
+    llm_adapter_factory: Factory[LlmPort] #ToDo: make it a singleton
     cgpt_queries_adapter_factory: Factory[CgptQueries]
     chat_queries_adapter_factory: Factory[ChatQueries]
     conversation_adapter_factory: Factory[ConversationPort]

@@ -151,15 +151,15 @@ def test_deps(
 
 @pytest.fixture()
 def test_client(test_deps:DependenciesContainer):
-    from src.interface.http.deps import deps
+    from backend.src.interface.http.composition import dependencies_container
     from src.interface.http.app import app
-    app.dependency_overrides[deps.conversation_uow_factory] = test_deps.conversation_uow_factory
-    app.dependency_overrides[deps.cgpt_uow_factory] = test_deps.cgpt_uow_factory
-    app.dependency_overrides[deps.cgpt_retreiver_adapter_factory] = test_deps.cgpt_retreiver_adapter_factory
-    app.dependency_overrides[deps.llm_adapter_factory] = test_deps.llm_adapter_factory
-    app.dependency_overrides[deps.cgpt_queries_adapter_factory] = test_deps.cgpt_queries_adapter_factory
-    app.dependency_overrides[deps.chat_queries_adapter_factory] = test_deps.chat_queries_adapter_factory
-    app.dependency_overrides[deps.conversation_adapter_factory] = test_deps.conversation_adapter_factory
+    app.dependency_overrides[dependencies_container.conversation_uow_factory] = test_deps.conversation_uow_factory
+    app.dependency_overrides[dependencies_container.cgpt_uow_factory] = test_deps.cgpt_uow_factory
+    app.dependency_overrides[dependencies_container.cgpt_retreiver_adapter_factory] = test_deps.cgpt_retreiver_adapter_factory
+    app.dependency_overrides[dependencies_container.llm_adapter_factory] = test_deps.llm_adapter_factory
+    app.dependency_overrides[dependencies_container.cgpt_queries_adapter_factory] = test_deps.cgpt_queries_adapter_factory
+    app.dependency_overrides[dependencies_container.chat_queries_adapter_factory] = test_deps.chat_queries_adapter_factory
+    app.dependency_overrides[dependencies_container.conversation_adapter_factory] = test_deps.conversation_adapter_factory
     test_app: TestClient = TestClient(app)
     return test_app
 

@@ -9,7 +9,7 @@ from src.interface.http.schemas.chat.chat_commands import (
     NewChatRequest,
     UserMessageRequest,
 )
-from src.interface.http.deps import deps
+from backend.src.interface.http.composition import dependencies_container
 
 
 from src.contexts.chat.application.service_functions import (
@@ -20,7 +20,7 @@ from src.contexts.chat.application.ports.uow import ConversationUOW
 
 chat_commands_router = APIRouter(prefix="/chat", tags=["Chat: Commands"])
 
-deps: DependenciesContainer = deps
+dependencies_container: DependenciesContainer = dependencies_container
 
 
 @chat_commands_router.post(
@@ -30,10 +30,10 @@ deps: DependenciesContainer = deps
 )
 async def send_user_message(
     request: UserMessageRequest,
-    conv_uow: ConversationUOW = Depends(deps.conversation_uow_factory),
-    llm_adapter: LlmPort = Depends(deps.llm_adapter_factory),
+    conv_uow: ConversationUOW = Depends(dependencies_container.conversation_uow_factory),
+    llm_adapter: LlmPort = Depends(dependencies_container.llm_adapter_factory),
     cgpt_retreiver: CustomGPTInstructionsRetreiver = Depends(
-        deps.cgpt_retreiver_adapter_factory
+        dependencies_container.cgpt_retreiver_adapter_factory
     ),
 ) -> AssistantMessage:
     if isinstance(request, NewChatRequest):
