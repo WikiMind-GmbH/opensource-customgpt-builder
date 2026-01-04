@@ -142,12 +142,6 @@ Diagrams are just different views of that truth.
 This is fundamentally different from manually drawn diagrams, where individual diagrams can easily drift apart or become outdated independently, making the documentation **trustworthy, maintainable, and scalable**.
 
 
-#### Official Resources
-
-* DSL reference: [https://docs.structurizr.com/dsl](https://docs.structurizr.com/dsl)
-* C4 model overview: [https://c4model.com](https://c4model.com)
-* Our internal *Video tutorial*: [https://nextcloud.wikimind.de/index.php/apps/files/files/3132?dir=/WikiMind%20Share/Knowledge%20base/Tutorial%20Videos/ARC42%2BStructurizr](https://nextcloud.wikimind.de/index.php/apps/files/files/3132?dir=/WikiMind%20Share/Knowledge%20base/Tutorial%20Videos/ARC42%2BStructurizr)
-
 Quick recap:   
 > **Structurizr DSL** = a code-based format for defining architecture models and diagrams.
 > **Structurizr Lite** = a runtime that reads Structurizr DSL + Markdown → displays the complete architecture doc.
@@ -158,19 +152,10 @@ ADRs document **why** architectural decisions were made, which constraints exist
 
 To streamline creation and status management of ADRs (e.g. deprication relationships), we always use "[adr-tools](https://github.com/npryce/adr-tools)" cli tool to create new adrs.  
 
-With it, we can simply mark previous adrs as superseded by a new one.
-For example, this creates a new adr named `modulith`, which supersedes the adrs number three and five. 
-```.sh
-adr new -s 3 -s 5 modulith
-```
-With that, a new adr named modulith is created, and the adrs three and five are marked as being superseded by the new one.   
-```
-Superceded by [16. Modulith](0016-modulith.md)
-```
-This is official formatting and picked up in the structurizr-lite UIs ADR viewer and Decision tree viewer.
+ADRs can explicitly supersede earlier decisions, preserving a clear decision history over time.
+`adr-tools` simply automates this by updating the superseded ADRs for us, which structurizr-lite then visualizes in its ADR explorer and decision tree.     
 
-
->*For windows user: you must install and use adr-tools via the WSL git bash*
+>*For windows user: you must install and use adr-tools via the WSL git bash.* (Create a new git bash terminal in VSCode for easy utilization)
 
 #### Recommended Reading
 
@@ -182,32 +167,39 @@ This is official formatting and picked up in the structurizr-lite UIs ADR viewer
 
 
 
-## Structurizr-lite: Creating and maintaining SWA docs
+## Creating and maintaining SWA docs utilizing structurizr-lite
 
-### What the different components are and where we organise them
+### `workspace.dsl` as our single source of truth
 
 Our Structurizr-lite tool has one central file - `workspace.dsl`, whose content is the sole determinant for what we can see when we view our SWA in the Structurizr Web App. Here, all components are either explicitly defined in, or linked.
 
+This includes:
+
 #### The C4 model and its views(=diagrams)
-Are explicitly defined in `workspace.dsl`. Layout changes made to views in the web UI are read from and written to the `workspace.json` file.
+They are explicitly defined in `workspace.dsl`. Layout changes made to views in the web UI are read from and written to the `workspace.json` file.
 
-* all Markdown/AsciiDoc files in the `docs/` folder
-* all ADRs in the `adr/` folder
 
-and render the complete:
 
-* ARC42 documentation
-* interactive C4 diagrams
-* ADR timeline + navigation
-* dynamic views
+#### The ARC42 chapters
+Each ARC42 chapters is written as a single (structurizr dsl extended) markdown or Asciidoc file and placed into the `docs` folder.
+They are correctly imported by structurizr-lite due to the following line in `workspace.dsl`:
+In `workspace.dsl`:
+```dsl
+!docs docs
+```
+### All ADRs
+The ADRs are created in the `adrs` folder. Please set up `adr-tools` accordingly:
+```
+adr init ${PATH-TO-STRUCTURIZR-FOLDER}/adrs
+```
+They are correctly imported by structurizr-lite due to the following line in `workspace.dsl`:
+```dsl
+!adrs adr
+```
 
-No build step is needed — changes update immediately.
 
----
-
-### Creating SWA Documentation in Structurizr Lite
-
-#### 1. Organizing Documentation Files
+### Creating the ARC42 chapters
+#### Organizing Documentation Files
 
 We place ARC42 chapters in the `docs/` directory as Markdown or AsciiDoc files.
 
@@ -280,22 +272,24 @@ Structurizr Lite automatically displays the chapters in the UI.
 More info:
 [https://docs.structurizr.com/ui/documentation/](https://docs.structurizr.com/ui/documentation/)
 
----
 
 ### ADR Workflow
 
-We manage ADRs **separately from the ARC42 doc** using Structurizr Lite’s dedicated UI.
+ADRs are included in ARC42 as chapter nine. Due to better management and viewing experience, we will use the dedicated adr integration of sturcturizr-lite instead of trying to fit them into the docs folder.
 
-Reasons:
-
-* ADRs evolve over time (supersessions)
-* ADRs are decision-focused, not narrative-focused
-* Structurizr provides filtering, linking, status tracking, and automatic navigation
-
-### Creating ADRs
+#### Creating ADRs
 
 We use **ADR Tools CLI** to create ADRs in a consistent format:
 
+>*For windows user: you must install and use adr-tools via the WSL git bash.* (Create a new git bash terminal in VSCode for easy utilization) 
+
+
+First, we set up the root path
+```
+adr init ${PATH-TO-STRUCTURIZR-FOLDER}/adrs
+```
+
+Then we create a new adr:
 ```bash
 adr new "Decision title here"
 ```
@@ -314,21 +308,22 @@ adr new -s ${NumberOfADRToSupercede} Decision title here
 ```
 e.g.
 ```bash
-adr new -s 3 Modulith
+adr new -s 3 Modulith architecture
 ```
 
-### Importing ADRs into Structurizr
-
-In `workspace.dsl`:
-
-```dsl
-!adrs adr
+e.g.
+```bash
+adr new -s 3 -s 5 -s 7 Modulith architecture
 ```
 
-Structurizr Lite automatically imports, displays, and links the ADRs.
-
-### Editing ADRs — Our Team Policy
+#### Editing ADRs — Our Team Policy
 
 * **Proposed/Open ADRs** may be edited freely.
 * **Accepted ADRs** are immutable; to change one, create a new ADR that *supersedes* the previous one.
 * Only stylistic or formatting corrections should be applied to accepted ADRs.
+
+### Creating the C4 model and its views
++ The [official tutorial](https://docs.structurizr.com/dsl/tutorial)
+* DSL reference: [https://docs.structurizr.com/dsl](https://docs.structurizr.com/dsl)
+* C4 model overview: [https://c4model.com](https://c4model.com)
+* Our internal [*Video tutorial*](https://nextcloud.wikimind.de/index.php/apps/files/files/3132?dir=/WikiMind%20Share/Knowledge%20base/Tutorial%20Videos/ARC42%2BStructurizr)
