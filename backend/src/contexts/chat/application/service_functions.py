@@ -37,7 +37,7 @@ def continue_conversation(
     with conv_uow as uow:
         conv: Conversation = uow.conversation_repo.get(conv_id)
         conv.add_user_text_message(user_text_message=user_message)
-        uow.commit()
+        # uow.commit() <- no functionality exists to retry llm, so makes no sense to keep user msg
 
         cgpt_id: str | None = conv.customGPT_id
         cgpt_sys_prompt_dto: list[MessageDTORetreiver] = (
