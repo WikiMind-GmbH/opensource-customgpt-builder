@@ -1,3 +1,4 @@
 pytest
 pytest-benchmark
 debugpy[standard]
+ruff

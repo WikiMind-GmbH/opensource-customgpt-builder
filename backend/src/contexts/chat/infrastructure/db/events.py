@@ -1,9 +1,15 @@
 # infrastructure/db/events.py
 from typing import Set
-from sqlalchemy import event, select, update, func
+
+from sqlalchemy import event, func, select, update
 from sqlalchemy.orm import Session, sessionmaker
-from src.contexts.chat.infrastructure.db.orm import conversations, messages_excl_sysPrompt  # your Table objects
+
 from src.contexts.chat.domain.models import Conversation
+from src.contexts.chat.infrastructure.db.orm import (
+    conversations,
+    messages_excl_sysPrompt,
+)  # your Table objects
+
 
 def register_last_message_at_events(SessionFactory: sessionmaker) -> None:
     @event.listens_for(SessionFactory, "before_flush")
@@ -30,4 +36,4 @@ def register_last_message_at_events(SessionFactory: sessionmaker) -> None:
             )
         )
         session.execute(stmt)
-        # Splitting in two sets/cases: Conversation with new messages (check only new message created ats instead of all) and conversations where we also deleted messages is not worth the efficiency gain 
+        # Splitting in two sets/cases: Conversation with new messages (check only new message created ats instead of all) and conversations where we also deleted messages is not worth the efficiency gain

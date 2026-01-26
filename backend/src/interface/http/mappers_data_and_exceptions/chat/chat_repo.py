@@ -1,8 +1,10 @@
-from fastapi.responses import JSONResponse
-from src.contexts.chat.application.ports.chat_repo import TemporaryConvRepoError, ConversationNotFoundError
-
-
 from fastapi import FastAPI, status
+from fastapi.responses import JSONResponse
+
+from src.contexts.chat.application.ports.chat_repo import (
+    ConversationNotFoundError,
+    TemporaryConvRepoError,
+)
 
 
 def register_query_exception_handlers_chat_repo_port(app: FastAPI) -> None:
@@ -19,5 +21,7 @@ def register_query_exception_handlers_chat_repo_port(app: FastAPI) -> None:
     async def not_found(_, exc: ConversationNotFoundError):
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content={"detail": f"Conversation was not found{getattr(exc, 'args', [''])[0]}"},
+            content={
+                "detail": f"Conversation was not found{getattr(exc, 'args', [''])[0]}"
+            },
         )

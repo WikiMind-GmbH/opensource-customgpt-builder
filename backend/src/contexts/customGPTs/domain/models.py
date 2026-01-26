@@ -1,9 +1,6 @@
 from uuid import uuid4
 
 
-
-
-
 class CustomGPT:
     def __init__(
         self,

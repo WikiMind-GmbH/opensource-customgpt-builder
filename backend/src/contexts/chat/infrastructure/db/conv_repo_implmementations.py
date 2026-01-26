@@ -1,10 +1,11 @@
 from sqlalchemy import delete
+from sqlalchemy.orm import Session
+
 from src.contexts.chat.application.ports.chat_repo import (
     ConversationNotFoundError,
     ConversationRepository,
 )
 from src.contexts.chat.domain.models import Conversation
-from sqlalchemy.orm import Session
 
 
 class SQAlchemyConversartionRepository(ConversationRepository):
@@ -13,7 +14,7 @@ class SQAlchemyConversartionRepository(ConversationRepository):
 
     def get(self, conv_id: str) -> Conversation:
         conv = self._session.get(Conversation, conv_id)
-        if conv == None:
+        if conv is None:
             raise ConversationNotFoundError(f"conv_id = {conv_id}")
         return conv
 

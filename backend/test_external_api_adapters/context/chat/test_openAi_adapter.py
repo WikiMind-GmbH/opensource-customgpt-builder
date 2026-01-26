@@ -1,14 +1,9 @@
-from src.contexts.chat.infrastructure.adapters.openai_adapter import OpenaiAdapter
 
 from src.contexts.chat.application.ports.llm_port import (
-    ErrorWhileCallingAPI,
-    LlmPort,
     MessageDTOllm,
-    NoAssistantResponse,
     RoleDTOllm,
 )
-
-import pytest
+from src.contexts.chat.infrastructure.adapters.openai_adapter import OpenaiAdapter
 
 
 def test_openai_adapter():

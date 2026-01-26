@@ -1,15 +1,24 @@
-
 from datetime import datetime, timezone
 
 from sqlalchemy import Engine, update
-from src.contexts.customGPTs.application.ports.cgpt_queries import CustomGPTInfosDTO
-from src.contexts.customGPTs.infrastructure.db.customgpt_repo_implmementations import SQAlchemyCustomGPTRepository
-from src.contexts.shared.typing_aliases import Factory
-from src.contexts.customGPTs.infrastructure.db.orm import custom_gpts
 from sqlalchemy.orm import Session
-from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import CgptQueriesImplementation
 
-def test_get_overviews(session_factory: Factory[Session], engine:Engine, cgpt_query_factory:Factory[CgptQueriesImplementation]):
+from src.contexts.customGPTs.application.ports.cgpt_queries import CustomGPTInfosDTO
+from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
+    CgptQueriesImplementation,
+)
+from src.contexts.customGPTs.infrastructure.db.customgpt_repo_implmementations import (
+    SQAlchemyCustomGPTRepository,
+)
+from src.contexts.customGPTs.infrastructure.db.orm import custom_gpts
+from src.contexts.shared.typing_aliases import Factory
+
+
+def test_get_overviews(
+    session_factory: Factory[Session],
+    engine: Engine,
+    cgpt_query_factory: Factory[CgptQueriesImplementation],
+):
     """
     We create 3 rows, then set their created_at explicitly so ordering is deterministic.
     Then we assert the repository returns them in DESC order by created_at.
@@ -51,7 +60,12 @@ def test_get_overviews(session_factory: Factory[Session], engine:Engine, cgpt_qu
     ordered_ids = [o.id for o in overviews]
     assert ordered_ids == [third.id, second.id, first.id]
 
-def test_get_custom_gpt_infos(session_factory: Factory[Session], engine:Engine, cgpt_query_factory:Factory[CgptQueriesImplementation]):
+
+def test_get_custom_gpt_infos(
+    session_factory: Factory[Session],
+    engine: Engine,
+    cgpt_query_factory: Factory[CgptQueriesImplementation],
+):
     session = session_factory()
     repo = SQAlchemyCustomGPTRepository(session)
     name = "name"
@@ -59,15 +73,22 @@ def test_get_custom_gpt_infos(session_factory: Factory[Session], engine:Engine, 
     instructions = "instructions"
 
     # create three entities (ids come from your domain model)
-    first = repo.create_cgpt(name=name, instructions=instructions, description=description)
+    first = repo.create_cgpt(
+        name=name, instructions=instructions, description=description
+    )
     session.commit()
     id = first.id
-    cgpt_first:CustomGPTInfosDTO = cgpt_query_factory().get_custom_gpt_infos(id)
+    cgpt_first: CustomGPTInfosDTO = cgpt_query_factory().get_custom_gpt_infos(id)
     assert cgpt_first.id == id
     assert cgpt_first.instructions == instructions
     assert cgpt_first.description == description
 
-def test_sessions_are_closed(session_factory: Factory[Session], engine:Engine, cgpt_query_factory:Factory[CgptQueriesImplementation]):
+
+def test_sessions_are_closed(
+    session_factory: Factory[Session],
+    engine: Engine,
+    cgpt_query_factory: Factory[CgptQueriesImplementation],
+):
     session = session_factory()
     repo = SQAlchemyCustomGPTRepository(session)
     name = "name"
@@ -75,10 +96,11 @@ def test_sessions_are_closed(session_factory: Factory[Session], engine:Engine, c
     instructions = "instructions"
 
     # create three entities (ids come from your domain model)
-    first = repo.create_cgpt(name=name, instructions=instructions, description=description)
+    first = repo.create_cgpt(
+        name=name, instructions=instructions, description=description
+    )
     session.commit()
     id = first.id
     for x in range(10):
-        cgpt_first:CustomGPTInfosDTO = cgpt_query_factory().get_custom_gpt_infos(id)
+        cgpt_first: CustomGPTInfosDTO = cgpt_query_factory().get_custom_gpt_infos(id)
         assert cgpt_first.id == id
-

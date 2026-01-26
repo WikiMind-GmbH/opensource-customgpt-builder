@@ -1,19 +1,23 @@
+from src.contexts.chat.application.mappers import (
+    message_domain_to_message_llm_port_dto,
+    message_dto_cgpt_retreiver_to_message_domain,
+)
+from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
+    MessageDTORetreiver,
+    RoleDTORetreiver,
+)
 from src.contexts.chat.application.ports.llm_port import (
     MessageDTOllm,
     RoleDTOllm,
 )
 from src.contexts.chat.domain.models import (
     ContentType,
+)
+from src.contexts.chat.domain.models import (
     Message as DomainMessage,
+)
+from src.contexts.chat.domain.models import (
     Role as DomainRole,
-)
-from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
-    MessageDTORetreiver,
-    RoleDTORetreiver,
-)
-from src.contexts.chat.application.mappers import (
-    message_domain_to_message_llm_port_dto,
-    message_dto_cgpt_retreiver_to_message_domain,
 )
 
 

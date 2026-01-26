@@ -1,15 +1,17 @@
 # tests/test_custom_gpt_repo.py
 from datetime import datetime, timedelta, timezone
 
-from src.contexts.shared.typing_aliases import Factory
-from src.contexts.customGPTs.infrastructure.db.customgpt_repo_implmementations import SQAlchemyCustomGPTRepository
-from src.contexts.customGPTs.application.ports.customgpt_repo import CgptNotFound
-
 import pytest
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.contexts.customGPTs.application.ports.customgpt_repo import CgptNotFound
+from src.contexts.customGPTs.infrastructure.db.customgpt_repo_implmementations import (
+    SQAlchemyCustomGPTRepository,
+)
 from src.contexts.customGPTs.infrastructure.db.orm import custom_gpts  # table
+from src.contexts.shared.typing_aliases import Factory
+
 # ⬇️ Adjust this import to wherever your repo class actually lives
 
 
@@ -33,9 +35,9 @@ def test_created_at_is_set(session_factory: Factory[Session]):
         created_at_cmp = created_at
 
     after = datetime.utcnow() + timedelta(seconds=5)
-    assert before <= created_at_cmp <= after, "created_at should be set to 'now' on insert"
-
-
+    assert before <= created_at_cmp <= after, (
+        "created_at should be set to 'now' on insert"
+    )
 
 
 def test_get_raises_for_nonexistent(session_factory: Factory[Session]):

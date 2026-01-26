@@ -1,19 +1,23 @@
-from fastapi import Response
-from fastapi.testclient import TestClient
-from fastapi.encoders import jsonable_encoder
 import httpx
+from fastapi.encoders import jsonable_encoder
+from fastapi.testclient import TestClient
 from pydantic import TypeAdapter
-from src.interface.http.schemas.customGPTs.customGPT_queries import CustomGPTInfosSchema, CustomGPTOverviewSchema
-from src.interface.http.schemas.chat.chat_queries import ChatHistory, ChatSummary
-from src.interface.http.schemas.common_command import CommandResult
-from src.interface.http.schemas.customGPTs.customGPT_commands import CustomGptToCreate, CustomGptToEdit
+
 from src.interface.http.schemas.chat.chat_commands import (
     AssistantMessage,
     ContinueChatRequest,
     NewChatRequest,
 )
-
-
+from src.interface.http.schemas.chat.chat_queries import ChatHistory, ChatSummary
+from src.interface.http.schemas.common_command import CommandResult
+from src.interface.http.schemas.customGPTs.customGPT_commands import (
+    CustomGptToCreate,
+    CustomGptToEdit,
+)
+from src.interface.http.schemas.customGPTs.customGPT_queries import (
+    CustomGPTInfosSchema,
+    CustomGPTOverviewSchema,
+)
 
 
 def test_create_cgpt_start_conv_chat_then_delete_cgpt(test_client: TestClient):
@@ -89,7 +93,6 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(test_client: TestClient):
         msg_assistant_2,
     ]
 
-
     # ----------CONVERSATION WITH OTHER CGPT----------------------------------------------
     res: httpx.Response = test_client.post(
         "/customgpts/create-custom-gpt", json=jsonable_encoder(cgpt_to_create)
@@ -110,7 +113,6 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(test_client: TestClient):
     assistant_message: AssistantMessage = AssistantMessage.model_validate(res_json)
     conv_id_other_cgpt: str = assistant_message.conversation_id
 
-
     # ----------CONVERSATION WITHOUT ANY CGPT----------------------------------------------
     request_message_1: str = "User message 1"
     new_chat_req: NewChatRequest = NewChatRequest(
@@ -130,7 +132,9 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(test_client: TestClient):
     summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(
         res.json()
     )
-    assert [conv_id_no_cgpt, conv_id_other_cgpt, conv_id] == [summary.chat_id for summary in summaries]
+    assert [conv_id_no_cgpt, conv_id_other_cgpt, conv_id] == [
+        summary.chat_id for summary in summaries
+    ]
 
     # ----------CONFIRM: DELETING CGPT (ONLY) DELETES CONV WITH THAT CGPT-----------------
 
@@ -139,7 +143,7 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(test_client: TestClient):
         "/customgpts/delete-custom-gpt", params={"gpt_id": cgpt_id}
     )
     assert res.status_code == 200, res.text
-    
+
     # Deleting cgpt should delete the conv
     res: httpx.Response = test_client.get("/chat/get-chat-summaries")
     assert res.status_code == 200, res.text
@@ -147,10 +151,14 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(test_client: TestClient):
         res.json()
     )
 
-    assert [conv_id_no_cgpt, conv_id_other_cgpt] == [summary.chat_id for summary in summaries]
+    assert [conv_id_no_cgpt, conv_id_other_cgpt] == [
+        summary.chat_id for summary in summaries
+    ]
 
 
-def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(test_client: TestClient):
+def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(
+    test_client: TestClient,
+):
     # --- Create initial conversation with two messages ---
     # 1) first message -> creates conversation
     res: httpx.Response = test_client.post(
@@ -165,14 +173,18 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(test_c
     # 2) second message -> continue same conversation
     res = test_client.post(
         "/chat/send-user-message",
-        json=jsonable_encoder(ContinueChatRequest(request_message="u2", conversation_id=conv_id_initial)),
+        json=jsonable_encoder(
+            ContinueChatRequest(request_message="u2", conversation_id=conv_id_initial)
+        ),
     )
     assert res.status_code == 200, res.text
     am2 = AssistantMessage.model_validate(res.json())
     a2 = am2.response_message.message
 
     # --- Check: chat history is ordered NEWEST → OLDEST ---
-    res = test_client.get("/chat/chat-history-by-id", params={"chat_id": conv_id_initial})
+    res = test_client.get(
+        "/chat/chat-history-by-id", params={"chat_id": conv_id_initial}
+    )
     assert res.status_code == 200, res.text
     history_initial = ChatHistory.model_validate(res.json())
     # expected: u2/a2 first, then u1/a1
@@ -189,21 +201,27 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(test_c
     # --- Summaries ordered by last_message_at ---
     res = test_client.get("/chat/get-chat-summaries")
     assert res.status_code == 200, res.text
-    summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(res.json())
+    summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(
+        res.json()
+    )
     assert [s.chat_id for s in summaries] == [conv_id_other, conv_id_initial], summaries
 
     # --- Add a new message to the initial conversation to make it the newest ---
     res = test_client.post(
         "/chat/send-user-message",
-        json=jsonable_encoder(ContinueChatRequest(request_message="u3", conversation_id=conv_id_initial)),
+        json=jsonable_encoder(
+            ContinueChatRequest(request_message="u3", conversation_id=conv_id_initial)
+        ),
     )
     assert res.status_code == 200, res.text
-    a3 = AssistantMessage.model_validate(res.json()).response_message.message
+    # a3 = AssistantMessage.model_validate(res.json()).response_message.message
 
     # --- Summaries should now flip: [initial (newest), other] ---
     res = test_client.get("/chat/get-chat-summaries")
     assert res.status_code == 200, res.text
-    summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(res.json())
+    summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(
+        res.json()
+    )
     assert [s.chat_id for s in summaries] == [conv_id_initial, conv_id_other], summaries
 
 
@@ -239,7 +257,7 @@ def test_cgpt_creation_editing_querying_functionality(test_client: TestClient):
     )
     assert res.status_code == 200, res.text
     B_id = CommandResult.model_validate(res.json()).resource_id
-    
+    assert B_id is not None
 
     # ---------- Create CGPT #3 (C) - same as A ----------
     create_C = CustomGptToCreate(
@@ -254,7 +272,7 @@ def test_cgpt_creation_editing_querying_functionality(test_client: TestClient):
     C_id = CommandResult.model_validate(res.json()).resource_id
 
     # ---------- List: expect created_at DESC -> [C, B, A] ----------
-    assert not None in  [A_id, B_id, C_id]
+    assert None not in [A_id, B_id, C_id]
     res = test_client.get("/customgpts/retreive-all-custom-gpts")
     assert res.status_code == 200, res.text
     overviews: list[CustomGPTOverviewSchema] = TypeAdapter(
@@ -281,16 +299,12 @@ def test_cgpt_creation_editing_querying_functionality(test_client: TestClient):
         custom_gpt_description="desc",
         custom_gpt_instructions="inst",
     )
-    res = test_client.post(
-        "/customgpts/edit-custom-gpt", json=jsonable_encoder(edit_B)
-    )
+    res = test_client.post("/customgpts/edit-custom-gpt", json=jsonable_encoder(edit_B))
     assert res.status_code == 200, res.text
     assert CommandResult.model_validate(res.json()).resource_id == B_id
 
     # ---------- Delete C ----------
-    res = test_client.delete(
-        "/customgpts/delete-custom-gpt", params={"gpt_id": C_id}
-    )
+    res = test_client.delete("/customgpts/delete-custom-gpt", params={"gpt_id": C_id})
     assert res.status_code == 200, res.text
 
     # ---------- List again: only A and B remain (still ordered by created_at DESC) ----------
@@ -314,16 +328,25 @@ def test_cgpt_creation_editing_querying_functionality(test_client: TestClient):
     assert res.status_code == 200, res.text
     B_info_after = CustomGPTInfosSchema.model_validate(res.json())
 
-    assert (A_info.custom_gpt_name, A_info.custom_gpt_description, A_info.custom_gpt_instructions) == (
+    assert (
+        A_info.custom_gpt_name,
+        A_info.custom_gpt_description,
+        A_info.custom_gpt_instructions,
+    ) == (
         "A",
         "desc",
         "inst",
     )
-    assert (B_info_after.custom_gpt_name, B_info_after.custom_gpt_description, B_info_after.custom_gpt_instructions) == (
+    assert (
+        B_info_after.custom_gpt_name,
+        B_info_after.custom_gpt_description,
+        B_info_after.custom_gpt_instructions,
+    ) == (
         "A",
         "desc",
         "inst",
     )
+
 
 def test_cant_chat_with_non_existent_conv_or_cgpt(test_client: TestClient):
     continue_chat_req: ContinueChatRequest = ContinueChatRequest(
@@ -342,5 +365,3 @@ def test_cant_chat_with_non_existent_conv_or_cgpt(test_client: TestClient):
         "/chat/send-user-message", json=jsonable_encoder(new_chat_req)
     )
     assert res.status_code == 404
-
-

@@ -1,4 +1,5 @@
 from enum import StrEnum
+
 from pydantic import BaseModel
 
 
@@ -17,13 +18,14 @@ class AssistantMessage(BaseModel):
     response_message: SimplifiedMessageCmd
 
 
-
 class NewChatRequest(BaseModel):
     request_message: str
     custom_gpt_id: str | None
 
+
 class ContinueChatRequest(BaseModel):
     request_message: str
     conversation_id: str
+
 
 UserMessageRequest = NewChatRequest | ContinueChatRequest

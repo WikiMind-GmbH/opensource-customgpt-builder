@@ -1,27 +1,29 @@
 # Structure of test-suit in future https://docs.locust.io/en/stable/writing-a-locustfile.html#how-to-structure-your-test-code
 import os
 import random
-from locust import HttpUser, task, between
 import uuid
+
+from locust import HttpUser, between, task
 
 
 def require_env_locust(name: str) -> str:
     value = os.getenv(name)
     if value is None:
-        raise RuntimeError(f'Missing required environment variable: {name}')
+        raise RuntimeError(f"Missing required environment variable: {name}")
     return value
 
 
 DEBUG_MODE: bool = require_env_locust("DEBUG_MODE_LOCUST").lower() == "true"
 if DEBUG_MODE:
     import debugpy
+
     debugpy.listen(("0.0.0.0", 5678))  # Debugger listens on port 5678
 
 
 # *weight*: weight 3 is executed/created 3 times as often as weight 1
 class CgptCreatorUser(HttpUser):
     weight = 2
-    
+
     wait_time = between(10, 15)
     host = require_env_locust("LOCUST_DESTINATION")
 
@@ -50,14 +52,18 @@ class CgptCreatorUser(HttpUser):
         }
 
         # create cgpt + get cgpt_id from response.resource_id
-        with self.client.post(
-            "/customgpts/create-custom-gpt",
-            json=payload,
-            catch_response=True,
-            name="/customgpts/create-custom-gpt" #without this, each base+query url gets its own metrics/logs
-        ) as resp:
+        with (
+            self.client.post(
+                "/customgpts/create-custom-gpt",
+                json=payload,
+                catch_response=True,
+                name="/customgpts/create-custom-gpt",  # without this, each base+query url gets its own metrics/logs
+            ) as resp
+        ):
             if resp.status_code != 200:
-                resp.failure(f"Unexpected status {resp.status_code}: {resp.text}") # maybe due to the high load errors occur that are not caught in the functional tests -> with resp.failure, we let locust know to mark the test as failure
+                resp.failure(
+                    f"Unexpected status {resp.status_code}: {resp.text}"
+                )  # maybe due to the high load errors occur that are not caught in the functional tests -> with resp.failure, we let locust know to mark the test as failure
                 return
 
             try:
@@ -76,7 +82,7 @@ class CgptCreatorUser(HttpUser):
             "/customgpts/get-custom-gpt-infos",
             params={"custom_gpt_id": cgpt_id},
             catch_response=True,
-            name="/customgpts/get-custom-gpt-infos"
+            name="/customgpts/get-custom-gpt-infos",
         ) as resp:
             if resp.status_code != 200:
                 resp.failure(f"Unexpected status {resp.status_code}: {resp.text}")
@@ -99,7 +105,7 @@ class CgptCreatorUser(HttpUser):
         with self.client.get(
             "/customgpts/retreive-all-custom-gpts",
             catch_response=True,
-            name="/customgpts/retreive-all-custom-gpts"
+            name="/customgpts/retreive-all-custom-gpts",
         ) as resp:
             if resp.status_code != 200:
                 resp.failure(f"Unexpected status {resp.status_code}: {resp.text}")
@@ -134,19 +140,10 @@ class CgptCreatorUser(HttpUser):
             "/customgpts/edit-custom-gpt",
             json=payload,
             catch_response=True,
-            name="/customgpts/edit-custom-gpt"
+            name="/customgpts/edit-custom-gpt",
         ) as resp:
             if resp.status_code != 200:
                 resp.failure(f"Unexpected status {resp.status_code}: {resp.text}")
-
-
-
-
-
-
-
-
-    
 
 
 class ChatUser(HttpUser):
@@ -178,7 +175,9 @@ class ChatUser(HttpUser):
                 resp.failure(f"Invalid JSON: {resp.text}")
                 return
 
-            if not isinstance(body.get("conversation_id"), str) or not body.get("conversation_id"):
+            if not isinstance(body.get("conversation_id"), str) or not body.get(
+                "conversation_id"
+            ):
                 resp.failure(f"Missing/invalid conversation_id: {body}")
                 return
 

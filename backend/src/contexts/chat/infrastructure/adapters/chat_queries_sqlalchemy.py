@@ -1,20 +1,20 @@
 from sqlalchemy import select
-from src.contexts.chat.domain.models import ContentType
-from src.contexts.shared.typing_aliases import Factory
+from sqlalchemy.orm import Session
+
 from src.contexts.chat.application.ports.chat_queries import (
     ChatQueries,
+    ConversationOverviewDTO,
+    ConversationTextOnlyDTO,
     NotFoundError,
     RoleDTO,
     TextMessageDTO,
-    ConversationTextOnlyDTO,
-    ConversationOverviewDTO,
 )
+from src.contexts.chat.domain.models import ContentType
 from src.contexts.chat.infrastructure.db.orm import (
     conversations,
     messages_excl_sysPrompt,
 )
-
-from sqlalchemy.orm import Session
+from src.contexts.shared.typing_aliases import Factory
 
 
 class ChatQueriesAdapter(ChatQueries):
@@ -35,9 +35,9 @@ class ChatQueriesAdapter(ChatQueries):
 
     def get_chat_history(self, conv_id: str) -> ConversationTextOnlyDTO:
         with self._session_factory() as session:
-            stmt_cgpt_id = select(conversations.c._customGPT_id, conversations.c.id).where(
-                conversations.c.id == conv_id
-            )
+            stmt_cgpt_id = select(
+                conversations.c._customGPT_id, conversations.c.id
+            ).where(conversations.c.id == conv_id)
             row = session.execute(stmt_cgpt_id).one_or_none()
             if row is None:
                 raise NotFoundError(f"No Conv with id {conv_id} exists")
@@ -45,7 +45,8 @@ class ChatQueriesAdapter(ChatQueries):
 
             stmt_msgs = (
                 select(
-                    messages_excl_sysPrompt.c.role, messages_excl_sysPrompt.c.imageUrlOrText
+                    messages_excl_sysPrompt.c.role,
+                    messages_excl_sysPrompt.c.imageUrlOrText,
                 )
                 .where(
                     (messages_excl_sysPrompt.c.conversation_id == conv_id)

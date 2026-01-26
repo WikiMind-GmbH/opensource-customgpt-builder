@@ -2,24 +2,19 @@ from src.contexts.chat.application.mappers import (
     message_domain_to_message_llm_port_dto,
     message_dto_cgpt_retreiver_to_message_domain,
 )
-from src.contexts.chat.application.ports.llm_port import (
-    LlmPort,
-    MessageDTOllm,
-)
 from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
     CustomGPTInstructionsRetreiver,
     MessageDTORetreiver,
 )
-from src.contexts.chat.application.ports.uow import ConversationUOW
-from src.contexts.chat.domain.models import (
-    Conversation
+from src.contexts.chat.application.ports.llm_port import (
+    LlmPort,
+    MessageDTOllm,
 )
+from src.contexts.chat.application.ports.uow import ConversationUOW
+from src.contexts.chat.domain.models import Conversation
 
 
-def create_conversation(
-    conv_uow: ConversationUOW,
-    cgpt_id:str | None = None
-) -> str:
+def create_conversation(conv_uow: ConversationUOW, cgpt_id: str | None = None) -> str:
     with conv_uow as uow:
         conv: Conversation = uow.conversation_repo.create_conversation(cgpt_id=cgpt_id)
         uow.commit()

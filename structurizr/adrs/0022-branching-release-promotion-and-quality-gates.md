@@ -4,7 +4,7 @@ Date: 2025-11-21
 Status: Accepted
 
 ## Context
-
+◊
 We need a simple, reliable way to run multiple tracks of development:
 
 * **Feature/Dev** for fast iteration.
@@ -28,8 +28,9 @@ Adopt a **three-stream** branching model with **explicit promotion** and quality
 
 ```
 feature/*  →  dev  →  staging  →  prod
-                 (merge)  (merge)  (merge)
+         (merge)  (merge)  (merge)
 ```
+
 
 * `dev` = integration of day-to-day work.
 * `staging` = release candidate tested in a prod-like environment.
@@ -57,7 +58,7 @@ All previous tests pass, additionally
 **Must have (ALL):**
 
 * For any **major feature / new use case**, add at least one new backend E2E test.
-* Performance tests for the new features are added.
+* If new features/use cases are implemented, performance tests must be written in locust
 * **Docs updated** where applicable:
   * ADR created if the change impacts architecture decisions.
 
@@ -67,8 +68,8 @@ All previous tests pass, additionally
 * Code review from a person outside the core dev team responsible for the current changes
 * Only fast-forward/merge from **`staging`** (no direct commits to `prod`).
 * Deployed to a **staging environment** with **same or lower specs** than prod.
-* **Performance/sanity checks** are passed in the staging environment.
-* **Human testing window** completed (≥ **1 hour** for now; target: ≥ **2 weeks** with client testers).
+* **Performance/sanity checks** are passed in the staging environment. (utilizing makefile)
+* **Human testing window** completed on staging
 
 
 ## Consequences

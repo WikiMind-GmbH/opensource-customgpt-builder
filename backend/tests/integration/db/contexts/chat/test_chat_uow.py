@@ -1,9 +1,12 @@
-from src.contexts.shared.typing_aliases import Factory
 import pytest
-from src.contexts.chat.infrastructure.db.uow_implementations import SQLAlchemyConversationUOW
-from src.contexts.chat.domain.models import Conversation
-from src.contexts.chat.application.ports.chat_repo import ConversationNotFoundError
 from sqlalchemy.orm import Session
+
+from src.contexts.chat.application.ports.chat_repo import ConversationNotFoundError
+from src.contexts.chat.domain.models import Conversation
+from src.contexts.chat.infrastructure.db.uow_implementations import (
+    SQLAlchemyConversationUOW,
+)
+from src.contexts.shared.typing_aliases import Factory
 
 
 def test_uow_commit_persists(session_factory: Factory[Session]):

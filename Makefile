@@ -69,6 +69,11 @@ locust:
 	$(COMPOSE_LOCUST) run --rm locust sh -c "locust -f locustfile.py --html 'results/locust_results_$$(date +%Y%m%d_%H%M%S).html'"
 
 
+## ----------------------LINTING, TYPECHECKING AND CO----------------------
+ruff:
+	ruff check backend
+ruff-fix-save:
+	ruff check backend --fix
 
 
 

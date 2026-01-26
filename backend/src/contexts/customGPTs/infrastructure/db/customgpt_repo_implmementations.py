@@ -1,7 +1,10 @@
-from sqlalchemy import delete
-from src.contexts.customGPTs.domain.models import CustomGPT
-from src.contexts.customGPTs.application.ports.customgpt_repo import CgptNotFound, CustomGPTRepository
 from sqlalchemy.orm import Session
+
+from src.contexts.customGPTs.application.ports.customgpt_repo import (
+    CgptNotFound,
+    CustomGPTRepository,
+)
+from src.contexts.customGPTs.domain.models import CustomGPT
 
 
 class SQAlchemyCustomGPTRepository(CustomGPTRepository):
@@ -10,7 +13,7 @@ class SQAlchemyCustomGPTRepository(CustomGPTRepository):
 
     def get(self, cgpt_id: str) -> CustomGPT:
         cgpt = self._session.get(CustomGPT, cgpt_id)
-        if cgpt == None:
+        if cgpt is None:
             raise CgptNotFound(cgpt_id)
         return cgpt
 
@@ -25,7 +28,7 @@ class SQAlchemyCustomGPTRepository(CustomGPTRepository):
 
     def delete(self, cgpt_id: str):
         cgpt = self._session.get(CustomGPT, cgpt_id)
-        if cgpt == None:
+        if cgpt is None:
             raise CgptNotFound(cgpt_id)
         self._session.delete(cgpt)
 

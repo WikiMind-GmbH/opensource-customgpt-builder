@@ -1,19 +1,20 @@
 # adapters/orm.py
 from datetime import datetime, timezone
+
 from sqlalchemy import (
+    Column,
+    DateTime,
     Engine,
     Enum,
-    event,
-    Index,
-    Table,
-    Column,
-    String,
-    Integer,
-    DateTime,
     ForeignKey,
+    Integer,
     MetaData,
+    String,
+    Table,
+    event,
 )
 from sqlalchemy.orm import registry, relationship
+
 from src.contexts.chat.domain.models import ContentType, Conversation, Message, Role
 
 metadata = MetaData()
@@ -41,12 +42,27 @@ messages_excl_sysPrompt = Table(
     Column(
         "conversation_id",
         String,
-        ForeignKey("conversations.id", ondelete="CASCADE"), # if the conversation with this id is deleted, this message row will be deleted as well -additionally need `PRAGMA foreign_keys=ON`
+        ForeignKey(
+            "conversations.id", ondelete="CASCADE"
+        ),  # if the conversation with this id is deleted, this message row will be deleted as well -additionally need `PRAGMA foreign_keys=ON`
         index=True,
         nullable=False,
     ),
-    Column("role", Enum(Role, name="role_enum",native_enum=False, validate_strings=True), nullable=False),
-    Column("contentType", Enum(ContentType, name="contenttype_enum",native_enum=False, validate_strings=True), nullable=False),
+    Column(
+        "role",
+        Enum(Role, name="role_enum", native_enum=False, validate_strings=True),
+        nullable=False,
+    ),
+    Column(
+        "contentType",
+        Enum(
+            ContentType,
+            name="contenttype_enum",
+            native_enum=False,
+            validate_strings=True,
+        ),
+        nullable=False,
+    ),
     Column("imageUrlOrText", String, nullable=False),
     Column(
         "created_at",
@@ -55,12 +71,17 @@ messages_excl_sysPrompt = Table(
         nullable=False,
     ),
 )
+
+
 def prepare_engine(engine: Engine) -> Engine:
     if engine.url.get_backend_name() == "sqlite":
+
         @event.listens_for(engine, "connect")
         def _fk_on(dbapi_conn, _):
-            dbapi_conn.execute("PRAGMA foreign_keys=ON") # for cascading deletes
+            dbapi_conn.execute("PRAGMA foreign_keys=ON")  # for cascading deletes
+
     return engine
+
 
 # Index("ix_messages_conv_created_at", messages.c.conversation_id, messages.c.created_at)
 ## Later: alembic revision -m "add composite index" → write op.create_index('ix_messages_conv_created_at', 'messages', ['conversation_id', 'created_at']) → alembic upgrade head.
@@ -76,7 +97,8 @@ def start_mappers() -> None:
             # one-to-many; SQLAlchemy instruments `Conversation.messages`
             "_messages_excl_sysPrompt": relationship(
                 Message,
-                primaryjoin=messages_excl_sysPrompt.c.conversation_id == conversations.c.id,
+                primaryjoin=messages_excl_sysPrompt.c.conversation_id
+                == conversations.c.id,
                 backref=None,
                 order_by=messages_excl_sysPrompt.c.created_at.asc(),
                 cascade="all, delete-orphan",

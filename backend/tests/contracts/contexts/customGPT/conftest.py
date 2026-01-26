@@ -1,10 +1,12 @@
-from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import CgptQueriesImplementation
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+
+from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
+    CgptQueriesImplementation,
+)
 from src.contexts.customGPTs.infrastructure.db.orm import metadata
 from src.contexts.shared.typing_aliases import Factory
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-import pytest
-
 
 
 @pytest.fixture()
@@ -14,13 +16,16 @@ def engine(start_cgpt_mappers):
     yield eng
     eng.dispose()
 
+
 @pytest.fixture()
 def session_factory(engine):
     SessionFactory = sessionmaker(engine, expire_on_commit=False)
     return SessionFactory
 
-@pytest.fixture()
-def cgpt_query_factory(session_factory: Factory[Session])-> Factory[CgptQueriesImplementation]:
-    # fresh UoW per test
-    return lambda: CgptQueriesImplementation(cgpt_session_factory = session_factory)
 
+@pytest.fixture()
+def cgpt_query_factory(
+    session_factory: Factory[Session],
+) -> Factory[CgptQueriesImplementation]:
+    # fresh UoW per test
+    return lambda: CgptQueriesImplementation(cgpt_session_factory=session_factory)

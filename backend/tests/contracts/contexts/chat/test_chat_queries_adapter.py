@@ -1,9 +1,15 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
-from src.contexts.shared.typing_aliases import Factory
 import pytest
 from sqlalchemy import insert
+from sqlalchemy.orm import Session
 
+from src.contexts.chat.application.ports.chat_queries import (
+    ConversationOverviewDTO,
+    NotFoundError,
+    RoleDTO,
+)
+from src.contexts.chat.domain.models import ContentType, Role
 from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
     ChatQueriesAdapter,
 )
@@ -11,13 +17,7 @@ from src.contexts.chat.infrastructure.db.orm import (
     conversations,
     messages_excl_sysPrompt,
 )
-from src.contexts.chat.domain.models import Role, ContentType
-from src.contexts.chat.application.ports.chat_queries import (
-    ConversationOverviewDTO,
-    NotFoundError,
-    RoleDTO,
-)
-from sqlalchemy.orm import Session
+from src.contexts.shared.typing_aliases import Factory
 
 
 def test_get_chat_summaries_ordered_by_last_message(
@@ -130,8 +130,8 @@ def test_get_chat_history_returns_only_text_messages_and_maps_roles(
     assert dto.customgpt_id == "cgpt-123"
 
     # Only TEXT messages, sorted by created_at DESC per adapter
-    assert [m.text for m in dto.messages] == [ "hello","hi!"]
-    assert [m.role for m in dto.messages] == [RoleDTO.user,RoleDTO.assistant]
+    assert [m.text for m in dto.messages] == ["hello", "hi!"]
+    assert [m.role for m in dto.messages] == [RoleDTO.user, RoleDTO.assistant]
 
 
 def test_get_chat_history_unknown_conversation_raises(adapter: ChatQueriesAdapter):
@@ -159,5 +159,5 @@ def test_sessions_are_closed(
         ],
     )
     session.commit()
-    for n in range(10):
-        items = adapter.get_chat_summaries_ordered_by_last_message()
+    for _ in range(10):
+        adapter.get_chat_summaries_ordered_by_last_message()

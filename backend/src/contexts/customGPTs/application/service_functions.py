@@ -1,14 +1,15 @@
 from src.contexts.customGPTs.application.ports.conversation_port import ConversationPort
-from src.contexts.customGPTs.domain.models import CustomGPT
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
+from src.contexts.customGPTs.domain.models import CustomGPT
 
 
-def delete_custom_gpt_service(uow: CgptUOW, cgpt_id: str, conv_adapter: ConversationPort):
+def delete_custom_gpt_service(
+    uow: CgptUOW, cgpt_id: str, conv_adapter: ConversationPort
+):
     with uow:
         uow.cgpt_repo.delete(cgpt_id=cgpt_id)
         conv_adapter.delete_conversations_with_cgpt(cgpt_id=cgpt_id)
         uow.commit()
-    
 
 
 def create_custom_gpt_service(

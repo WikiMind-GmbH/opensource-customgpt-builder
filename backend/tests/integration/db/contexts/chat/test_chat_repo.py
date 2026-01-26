@@ -1,15 +1,19 @@
+import itertools
+
+import pytest
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
 from src.contexts.chat.application.ports.chat_repo import ConversationNotFoundError
-from src.contexts.shared.typing_aliases import Factory
+from src.contexts.chat.domain.models import ContentType, Conversation, Message, Role
 from src.contexts.chat.infrastructure.db.conv_repo_implmementations import (
     SQAlchemyConversartionRepository,
 )
-from src.contexts.chat.domain.models import ContentType, Message, Role, Conversation
 from src.contexts.chat.infrastructure.db.orm import conversations as conversations_table
-from sqlalchemy import select, func
-from sqlalchemy.orm import Session
-from src.contexts.chat.infrastructure.db.orm import messages_excl_sysPrompt as messages_table
-import itertools
-import pytest
+from src.contexts.chat.infrastructure.db.orm import (
+    messages_excl_sysPrompt as messages_table,
+)
+from src.contexts.shared.typing_aliases import Factory
 
 
 def test_repository_get_roundtrip(session_factory: Factory[Session]):
@@ -31,7 +35,10 @@ def test_repository_get_raises_when_missing(session_factory: Factory[Session]):
         with pytest.raises(ConversationNotFoundError):
             repository.get("non-existent-id")
 
-def test_add_text_messages_domain_functions_translate(session_factory: Factory[Session]):
+
+def test_add_text_messages_domain_functions_translate(
+    session_factory: Factory[Session],
+):
     assistant_text: str = "assistant_text"
     user_text: str = "user_text"
     with session_factory() as session:
@@ -53,8 +60,6 @@ def test_add_text_messages_domain_functions_translate(session_factory: Factory[S
         assert messages[1].role == Role.assistant
         assert messages[0].imageUrlOrText == user_text
         assert messages[1].imageUrlOrText == assistant_text
-
-
 
 
 def test_delete_conversation_cascades_messages(session_factory: Factory[Session]):
@@ -83,13 +88,15 @@ def _fetch_last_message_at(session: Session, conversation_id: str):
     ).scalar_one()
 
 
-def test_last_message_at_recomputes_on_delete_of_latest_message(session_factory: Factory[Session]):
+def test_last_message_at_recomputes_on_delete_of_latest_message(
+    session_factory: Factory[Session],
+):
     with session_factory() as session:
         repository = SQAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
         conversation.title = "LMA"
 
-        msg:Message =conversation.add_user_text_message("1")
+        msg: Message = conversation.add_user_text_message("1")
         session.commit()
         assert msg is not None
         timestamp_after_first = _fetch_last_message_at(session, conversation.id)
@@ -102,16 +109,19 @@ def test_last_message_at_recomputes_on_delete_of_latest_message(session_factory:
         )
 
         # Remove the latest message → timestamp should step yback
-        conversation._messages_excl_sysPrompt = conversation.messages_excl_sysPrompt[:-1]
+        conversation._messages_excl_sysPrompt = conversation.messages_excl_sysPrompt[
+            :-1
+        ]
         session.commit()
         timestamp_after_deletion = _fetch_last_message_at(session, conversation.id)
         assert timestamp_after_deletion == timestamp_after_first
+
 
 def test_delete_conversations_with_cgpt(session_factory: Factory[Session]):
     with session_factory() as session:
         repository = SQAlchemyConversartionRepository(session)
         cgpt_id = "id"
-        cgpt_other_id ="other_id"
+        cgpt_other_id = "other_id"
         convs_with_cgpt: list[Conversation] = []
         unrelated_convs: list[Conversation] = []
         convs_with_cgpt.append(repository.create_conversation(cgpt_id=cgpt_id))
@@ -126,19 +136,25 @@ def test_delete_conversations_with_cgpt(session_factory: Factory[Session]):
         all_convs: list[Conversation] = convs_with_cgpt + unrelated_convs
         session.commit()
 
-    
     # Test: all convs exist
     with session_factory() as session:
-        assert(not None in [SQAlchemyConversartionRepository(session).get(conv.id) for conv in all_convs])
-    
+        assert None not in [
+            SQAlchemyConversartionRepository(session).get(conv.id) for conv in all_convs
+        ]
+
     # delete
     with session_factory() as session:
-        SQAlchemyConversartionRepository(session).delete_conversations_with_cgpt(cgpt_id=cgpt_id)
+        SQAlchemyConversartionRepository(session).delete_conversations_with_cgpt(
+            cgpt_id=cgpt_id
+        )
         session.commit()
     # Test: unrelated converstions still exist
     with session_factory() as session:
-        assert(not None in [SQAlchemyConversartionRepository(session).get(conv.id) for conv in unrelated_convs])
-    
+        assert None not in [
+            SQAlchemyConversartionRepository(session).get(conv.id)
+            for conv in unrelated_convs
+        ]
+
     # Test: convs with cgpt_id were deleted
     with session_factory() as session:
         for conv in convs_with_cgpt:
@@ -146,9 +162,9 @@ def test_delete_conversations_with_cgpt(session_factory: Factory[Session]):
                 SQAlchemyConversartionRepository(session).get(conv.id)
 
 
-
-
-def test_last_message_at_becomes_null_when_all_messages_deleted(session_factory: Factory[Session]):
+def test_last_message_at_becomes_null_when_all_messages_deleted(
+    session_factory: Factory[Session],
+):
     with session_factory() as session:
         repository = SQAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
@@ -164,7 +180,9 @@ def test_last_message_at_becomes_null_when_all_messages_deleted(session_factory:
 @pytest.mark.parametrize(
     "role,content_type", list(itertools.product(list(Role), list(ContentType)))
 )
-def test_message_enum_roundtrip(session_factory: Factory[Session], role: Role, content_type: ContentType):
+def test_message_enum_roundtrip(
+    session_factory: Factory[Session], role: Role, content_type: ContentType
+):
     with session_factory() as session:
         repository = SQAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
@@ -178,4 +196,3 @@ def test_message_enum_roundtrip(session_factory: Factory[Session], role: Role, c
         fetched = repository_verify.get(conversation.id)
         assert fetched._messages_excl_sysPrompt[0].role == role
         assert fetched._messages_excl_sysPrompt[0].contentType == content_type
-

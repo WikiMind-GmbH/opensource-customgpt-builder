@@ -1,5 +1,3 @@
-
-
 # @app.get("/gpts/{custom_gpt_id}/files", response_model=list[str], tags=["customGPTs"], operation_id="listFilesToGpt",)
 # async def get_files(custom_gpt_id: int):
 #     return list_loaded_files(custom_gpt_id)

@@ -1,8 +1,14 @@
 # from __future__ import annotations
 
-from tests.unit.contexts.chat.application.FakeAdapters import FakeLLMAdapter
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
-from src.contexts.chat.application.ports.llm_port import LlmPort
+from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
+from src.contexts.chat.infrastructure.db.orm import metadata as chat_metadata
+from src.contexts.chat.infrastructure.db.orm import (
+    prepare_engine,
+)
 from src.contexts.chat.infrastructure.db.uow_implementations import (
     SQLAlchemyConversationUOW,
 )
@@ -10,22 +16,12 @@ from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
 from src.contexts.customGPTs.infrastructure.adapters.retreive_instructions import (
     CustomGPTInstructionsRetreiverAdapter,
 )
+from src.contexts.customGPTs.infrastructure.db.orm import metadata as cgpt_metadata
 from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
     SQLAlchemyCgptUOW,
 )
 from src.contexts.shared.typing_aliases import Factory
-from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
-from src.contexts.chat.infrastructure.db.orm import (
-    prepare_engine,
-)
-from src.contexts.chat.infrastructure.db.orm import metadata as chat_metadata
-
-from src.contexts.customGPTs.infrastructure.db.orm import metadata as cgpt_metadata
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-
-import pytest
-
+from tests.unit.contexts.chat.application.FakeAdapters import FakeLLMAdapter
 
 # --------------  ConversationUOW  -----------------
 
@@ -50,10 +46,8 @@ def conv_session_factory(conv_engine):
 def conv_uow_factory(conv_session_factory):
     return lambda: SQLAlchemyConversationUOW(session_factory=conv_session_factory)
 
+
 # # --------------  CustomGPTInstructionsRetreiver  -----------------
-
-
-
 
 
 @pytest.fixture()
@@ -85,9 +79,6 @@ def cgpt_retreiver_factory(cgpt_uow_factory: Factory[CgptUOW]):
 # --------------  LLM Adapter  -----------------
 
 
-
-    
 @pytest.fixture()
-def fake_llm_adapter_factory()->Factory[FakeLLMAdapter]:
+def fake_llm_adapter_factory() -> Factory[FakeLLMAdapter]:
     return lambda: FakeLLMAdapter()
-

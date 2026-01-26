@@ -3,3 +3,8 @@ markers = [
   "performance: performance tests (exclude with -m 'not performance')",
   "benchmark: benchmark-related tests",
 ]
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+[tool.ruff.lint]
+extend-select = ["FAST", "I"]  # https://docs.astral.sh/ruff/settings/#lint_extend-select https://docs.astral.sh/ruff/rules/

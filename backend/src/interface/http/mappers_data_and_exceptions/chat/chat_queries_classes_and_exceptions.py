@@ -1,18 +1,17 @@
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
+from src.contexts.chat.application.ports.chat_queries import (
+    ConversationOverviewDTO,
+    ConversationTextOnlyDTO,
+    NotFoundError,
+    RoleDTO,
+)
 from src.interface.http.schemas.chat.chat_queries import (
     ChatHistory,
     ChatSummary,
     RoleQuery,
     SimplifiedMessageQueries,
-)
-from src.contexts.chat.application.ports.chat_queries import (
-    ConversationOverviewDTO,
-    ConversationTextOnlyDTO,
-    TextMessageDTO,
-    RoleDTO,
-    NotFoundError,
 )
 
 

@@ -11,9 +11,9 @@ Supercedes [ADR-XXX: Error Handling Pattern (Ports Own Errors, Global HTTP Trans
 ## Context
 
 In the process of refactoring, testing and working with the ideas of previous adr, a baseline was established that still holds some technical debt.   
-However, the core aspects are covered in the current application version:
+The core aspects still hold true:
 
-- Layer specific errors with upper layer translating errors
+- Layer specific errors with upper layer translating  (most) errors
 - Ports defining errors that the Adapters implement (incl. data layer ports)
 - Ports and Domain errors are the only errors that are thrown
 - Service layer does not catch/translate nor implement any errors
@@ -63,6 +63,8 @@ Not all exceptions should be caught and translated, some must be passed as is, l
 ```
 This specific wrapper is not yet implemented.
 As of now, we simply do not catch and translate all errors, but those we want the client to know of. Like a missing resource throwing a `NotFound` Error of some kind. This might not be perfect, but the most important errors that the client should know of (after a translation) are.
+We must also pay attention to not share too much with the client via error messages due to security reasons!
+For example, if a client tries to access a resource that he has insufficient authorization for, we might want to simply return a 404 message instead of a access-not-granted message to not expose the existence of this resource.
 
 Additionally, creating Base Errors which can be inherited to structure the erros better should also be considered
 

@@ -1,17 +1,18 @@
+from fastapi import FastAPI, status
+from fastapi.responses import JSONResponse
+
 from src.contexts.customGPTs.application.ports.cgpt_queries import (
     CustomGPTInfosDTO,
     CustomGPTOverviewDTO,
-)
-from src.interface.http.schemas.customGPTs.customGPT_queries import (
-    CustomGPTInfosSchema,
-    CustomGPTOverviewSchema,
 )
 from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
     NotFoundError,
     QueryError,
 )
-from fastapi import FastAPI, status
-from fastapi.responses import JSONResponse
+from src.interface.http.schemas.customGPTs.customGPT_queries import (
+    CustomGPTInfosSchema,
+    CustomGPTOverviewSchema,
+)
 
 
 def register_query_exception_handlers_cgpt_query_port(app: FastAPI) -> None:

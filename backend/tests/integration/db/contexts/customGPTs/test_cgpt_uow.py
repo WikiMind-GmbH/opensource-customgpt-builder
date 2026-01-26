@@ -1,19 +1,25 @@
 # tests/test_cgpt_uow.py
 from __future__ import annotations
-from src.contexts.shared.typing_aliases import Factory
+
 import pytest
 from sqlalchemy.orm import Session
+
 from src.contexts.customGPTs.application.ports.customgpt_repo import CgptNotFound
-from src.contexts.customGPTs.infrastructure.db.uow_implementations import SQLAlchemyCgptUOW
+from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
+    SQLAlchemyCgptUOW,
+)
+from src.contexts.shared.typing_aliases import Factory
 
 
 def test_uow_commit_persists(session_factory: Factory[Session]):
     # create & commit via repo on the UoW
-    name: str ="alpha"
-    instruction: str ="do x"
-    description: str ="desc"
+    name: str = "alpha"
+    instruction: str = "do x"
+    description: str = "desc"
     with SQLAlchemyCgptUOW(session_factory) as uow:
-        cgpt = uow.cgpt_repo.create_cgpt(name=name, instructions=instruction, description=description)
+        cgpt = uow.cgpt_repo.create_cgpt(
+            name=name, instructions=instruction, description=description
+        )
         cgpt_id = cgpt.id
         uow.commit()
 
@@ -26,6 +32,7 @@ def test_uow_commit_persists(session_factory: Factory[Session]):
         assert got.id == cgpt_id
         # (optional sanity checks)
         # assert got.name == "alpha"
+
 
 def test_uow_rollback_on_exception(session_factory: Factory[Session]):
     with pytest.raises(RuntimeError):

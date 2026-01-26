@@ -1,5 +1,6 @@
 # bootstrap.py
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Callable
 
@@ -7,48 +8,53 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from src.contexts.chat.infrastructure.adapters.conv_adapter import ConversationAdapter
-from src.contexts.customGPTs.application.ports.conversation_port import ConversationPort
-from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
-    ChatQueriesAdapter,
-)
 from src.contexts.chat.application.ports.chat_queries import ChatQueries
-from src.contexts.customGPTs.application.ports.cgpt_queries import CgptQueries
-from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
-    CgptQueriesImplementation,
+from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
+    CustomGPTInstructionsRetreiver,
 )
-from src.contexts.shared.typing_aliases import Factory  # alias for Callable[[], T]
+from src.contexts.chat.application.ports.llm_port import LlmPort
 
 # ---------------- CHAT ----------------
 from src.contexts.chat.application.ports.uow import ConversationUOW
-from src.contexts.chat.infrastructure.db.uow_implementations import (
-    SQLAlchemyConversationUOW,
+from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
+    ChatQueriesAdapter,
+)
+from src.contexts.chat.infrastructure.adapters.conv_adapter import ConversationAdapter
+from src.contexts.chat.infrastructure.adapters.openai_adapter import OpenaiAdapter
+from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
+from src.contexts.chat.infrastructure.db.orm import (
+    metadata as chat_metadata,
 )
 from src.contexts.chat.infrastructure.db.orm import (
     prepare_engine as chat_prepare_engine,
-    start_mappers as chat_start_mappers,
-    metadata as chat_metadata,
 )
-from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
-
-from src.contexts.chat.application.ports.llm_port import LlmPort
-from src.contexts.chat.infrastructure.adapters.openai_adapter import OpenaiAdapter
+from src.contexts.chat.infrastructure.db.orm import (
+    start_mappers as chat_start_mappers,
+)
+from src.contexts.chat.infrastructure.db.uow_implementations import (
+    SQLAlchemyConversationUOW,
+)
+from src.contexts.customGPTs.application.ports.cgpt_queries import CgptQueries
+from src.contexts.customGPTs.application.ports.conversation_port import ConversationPort
 
 # ---------------- CGPT ----------------
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
-from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
-    SQLAlchemyCgptUOW,
-)
-from src.contexts.customGPTs.infrastructure.db.orm import (
-    start_mappers as cgpt_start_mappers,
-    metadata as cgpt_metadata,
+from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
+    CgptQueriesImplementation,
 )
 from src.contexts.customGPTs.infrastructure.adapters.retreive_instructions import (
     CustomGPTInstructionsRetreiverAdapter,
 )
-from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
-    CustomGPTInstructionsRetreiver,
+from src.contexts.customGPTs.infrastructure.db.orm import (
+    metadata as cgpt_metadata,
 )
+from src.contexts.customGPTs.infrastructure.db.orm import (
+    start_mappers as cgpt_start_mappers,
+)
+from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
+    SQLAlchemyCgptUOW,
+)
+from src.contexts.shared.typing_aliases import Factory  # alias for Callable[[], T]
 
 
 @dataclass(frozen=True)
@@ -57,7 +63,7 @@ class DependenciesContainer:
     conversation_uow_factory: Factory[ConversationUOW]
     cgpt_uow_factory: Factory[CgptUOW]
     cgpt_retreiver_adapter_factory: Factory[CustomGPTInstructionsRetreiver]
-    llm_adapter_factory: Factory[LlmPort] #ToDo: make it a singleton
+    llm_adapter_factory: Factory[LlmPort]  # ToDo: make it a singleton
     cgpt_queries_adapter_factory: Factory[CgptQueries]
     chat_queries_adapter_factory: Factory[ChatQueries]
     conversation_adapter_factory: Factory[ConversationPort]
@@ -122,7 +128,7 @@ def bootstrap(
 
     def chat_queries_adapter_factory() -> ChatQueries:
         return ChatQueriesAdapter(chat_session_factory=sessionMaker_Chat)
-    
+
     def conversation_adapter_factory() -> ConversationPort:
         return ConversationAdapter(conv_uow_factory=conversation_uow_factory)
 

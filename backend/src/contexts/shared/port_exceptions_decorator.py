@@ -1,11 +1,14 @@
 from __future__ import annotations
-import asyncio, concurrent.futures, inspect
-from functools import wraps
-from typing import Callable, Type, Tuple, ParamSpec, TypeVar
 
+import asyncio
+import concurrent.futures
+import inspect
+from functools import wraps
+from typing import Callable, ParamSpec, Tuple, Type, TypeVar
 
 P = ParamSpec("P")
 R = TypeVar("R")
+
 
 def port_boundary(
     *,
@@ -17,15 +20,17 @@ def port_boundary(
         asyncio.CancelledError,
         concurrent.futures.CancelledError,
     ),
-) : #-> Callable[[Callable[P, R]], Callable[P, R]]
+):  # -> Callable[[Callable[P, R]], Callable[P, R]]
     """Decorator factory for port methods.
 
     - Lets control-flow/process exceptions pass through.
     - Avoids double-wrapping if it's already a port error.
     - Wraps anything else into a port-specific 'unexpected' error, chaining cause.
     """
+
     def wrap(fn: Callable[P, R]) -> Callable[P, R]:
         if inspect.iscoroutinefunction(fn):
+
             @wraps(fn)
             async def inner(*args: P.args, **kwargs: P.kwargs) -> R:
                 try:
@@ -37,6 +42,7 @@ def port_boundary(
                 except Exception as e:
                     raise port_error_base() from e
         else:
+
             @wraps(fn)
             def inner(*args: P.args, **kwargs: P.kwargs) -> R:
                 try:
@@ -47,9 +53,10 @@ def port_boundary(
                     raise
                 except Exception as e:
                     raise port_error_base() from e
-        return inner
-    return wrap
 
+        return inner
+
+    return wrap
 
 
 # #----------------------ORIGINAL-------------------------

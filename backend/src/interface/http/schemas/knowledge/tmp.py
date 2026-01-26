@@ -1,10 +1,9 @@
-
 from pathlib import Path
+
 from fastapi import UploadFile
 from pydantic import BaseModel, field_validator
 
 from backend_spanning_helpers import require_env
-    
 
 
 class CustomGPTFiles(BaseModel):
@@ -19,7 +18,7 @@ class CustomGPTFiles(BaseModel):
         suffix = Path(v).suffix.lower()
         if suffix not in allowed_suffixes:
             raise ValueError(
-                f"File name must end with {require_env("UPLOAD_ALLOWED_SUFFIXES")}. Other formats are not supported"
+                f"File name must end with {require_env('UPLOAD_ALLOWED_SUFFIXES')}. Other formats are not supported"
             )
         return v
 
@@ -32,7 +31,7 @@ class UploadFileFileFormatValidated(BaseModel):
     @field_validator("uploadFile", mode="after")
     @classmethod
     def file_name_is_valid_filename(cls, value: UploadFile) -> UploadFile:
-        if value.filename == None:
+        if value.filename is None:
             raise ValueError("File must have a name")
         CustomGPTFiles(filename=value.filename)
         return value
