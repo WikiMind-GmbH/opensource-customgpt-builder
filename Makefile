@@ -72,8 +72,11 @@ locust:
 ## ----------------------LINTING, TYPECHECKING AND CO----------------------
 ruff:
 	ruff check backend
+	ruff format backend
 ruff-fix-save:
 	ruff check backend --fix
+	ruff format backend
+
 
 
 

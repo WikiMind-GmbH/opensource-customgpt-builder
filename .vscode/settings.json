@@ -1,10 +1,43 @@
 {
+  // python extension namespace
   "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.include": ["backend"],
+  "python.analysis.autoImportCompletions": true, // Improves auto-import suggestions
+  "python.analysis.useLibraryCodeForTypes": true, //Use library source when stubs are missing
+  
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingTypeStubs": "none", //Stops warnings like “Library X has no type information”.
+    "reportUnknownParameterType": "none", // Stops complaints when a library gives you Unknown types.
+    "reportUnknownArgumentType": "none" // Stops the cascade of errors when passing those Unknowns around.
+    // ---- Optional noise reducers at dynamic/framework boundaries ----
+    
+    // "reportUnknownMemberType": "none", // Stops "member access on Unknown" chains from ORMs / frameworks
+    // "reportUnknownVariableType": "none", // Prevents warnings about locals inferred as Unknown in glue code
+    // "reportUnknownLambdaType": "none" // Useful if you use many lambdas (factories, callbacks)
+  },
+  
+  // ---- Optional quality-of-life / resolution helpers ----
+
+
+  // "python.analysis.extraPaths": ["./backend"], // Helps if you use a src/ style layout and imports confuse Pylance
+
+  // "python.analysis.exclude": [
+  //   "**/.venv",          // Don't analyze virtual environments
+  //   "**/__pycache__",    // Ignore bytecode caches
+  //   "**/.pytest_cache", // Ignore pytest cache
+  //   "**/.mypy_cache",   // Ignore mypy cache
+  //   "**/dist",          // Ignore build artifacts
+  //   "**/build"
+  // ],
+
+
   "notebook.formatOnSave.enabled": true,
   "notebook.codeActionsOnSave": {
     "notebook.source.fixAll": "explicit",
     "notebook.source.organizeImports": "explicit",
   },
+  //[python] programming language (.py files) settings
   "[python]": {
     //ruff section
     "editor.formatOnSave": true,
