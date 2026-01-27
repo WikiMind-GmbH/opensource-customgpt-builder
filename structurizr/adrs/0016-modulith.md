@@ -202,7 +202,7 @@ A lightweight CQRS style is applied:
 
 ### Benefits
 
-* Clear bounded-context isolation within a single deployable.
+* Microservice-like bounded-context isolation while remaining a single deployable.
 * Strong separation of domain, application, and infrastructure concerns.
 * High testability at all levels (domain, use case, adapter, integration, performance).
 * Stable contracts enabling future service extraction.
