@@ -1,149 +1,230 @@
 # 21. Branching, release promotion, and quality gates
 
-Date: 2025-11-21
+Date: 2025-11-21  
 Status: OPEN
+
+This ADR documents a first-iteration process and is expected to be revised
+after practical experience has been gained.
 
 ## Context
 
-We have two contrasting goals:   
-1. **Stability**: We want to make sure that the app that we deploy in prod to our customer stays reliable - in functionality and in performance.      
-2. **Constant change**: We need to change the code to add new features or adapt existing, adding new components, or changing existing ones. We want new versions of our software to deploy to our clients.
+We have two contrasting goals:
 
-Therefore, we need to find a way to reach both opposing goals.
+1. **Stability**:
+   The application deployed to production must remain reliable in both
+   functionality and performance.
 
-To achive this, we want to have a branching and environment strategy where code changes mature from a freshly created to well tested and evaluated as stable version.
+2. **Constant change**:
+   We need to continuously evolve the codebase by adding new features,
+   adapting existing behavior, and introducing or modifying components.
+
+To reconcile these opposing goals, we need a branching and environment
+strategy in which code changes mature from freshly created work to
+well-tested, production-ready versions.
+
 
 ## Alternatives considered
 
-There are multiple things that we consider to include in our process. It is now a decision on how to combine them. 
+### Tools to check code-style quality
 
-### Tools to check code-style-quality
-- Linters
-- Typecheckers
+* Linters
+* Type checkers
 
 ### Tests
-- Functional tests
-- Performance tests
 
-### Promotion strategy
-We need a promotion strategy which has the following goal: Taking code from fresh feature to prod ready, tested code.   
-This is now a combination of the environments and branches.
-We could work with different branches that correspond to one maturity level and environment or create naming conventions for branches and using statuses or tags to mark maturity.
+* Functional tests
+* Performance tests
 
-### Quality gates for promotion strategy
-For code to be promoted to the next branch (staging -> prod) or status (release branch is promoted from `in testing` to `production tested`), we want to define quality gates - e.g. a code review, unit or performance tests to be written and passed, linters and typecheckers not throwing any errors, or similar things.
+### Promotion strategy markers
 
-### Using CI/CD or not
-We could use github actions for ci cd tasks, or just define a process and do the testing and building manually.
+We need a promotion strategy that moves code from new feature work to
+production-ready code.
 
-### How to integrate performance tests
-- Due to experience with them, we want to stay with pytest benchmark and locust for now. 
-However, it is unclear how we want to utilize pytest-benchmark. Only for components, also for full user-stories on a local machine, on critical components or only when e2e tests have already failed us.  
-With locust, the question is: a) do we want to use it outside the staging env for local smoke tests 2) Do we want to define p95 goals that must be met?
+This can be marked by:
 
+* branches that correspond to maturity levels and environments, or
+* naming conventions, tags, or statuses that indicate maturity.
 
+### Quality gates
+
+For promotion to the next maturity level (e.g. `staging → prod`), we want
+explicit quality gates such as:
+
+* code reviews
+* tests to be written and passed
+* linting and type checking
+* performance validation
+
+### CI/CD usage
+
+We considered whether to rely on CI/CD tooling or to start with a
+well-defined, mostly manual process.
+
+### Performance testing approach
+
+We plan to use:
+
+* **pytest-benchmark** for local performance measurements
+* **Locust** for request-level and concurrency testing
+
+At this stage, it is intentionally left open:
+
+* how extensively pytest-benchmark should be used
+* whether it should focus on components or higher-level flows
+* whether explicit performance thresholds should be defined
+
+---
 
 ## Decision
-To keep things simple, matching environments, maturity level and branch name, we choose this first iteration approach:
 
-We have the following branches
-- **Feature/bugfix** branches for fast iteration.
-- one **dev** branch for continous integration of new feature or bugfix branches
-- one **Staging** branch for testing release candidates in a prod-like environment.
-- one **Prod** branch as the stable version deployed for customers.
-
-To keep quality high without slowing iteration, we establish **explicit promotion gates** between these branches and define how multi-branch features advance without breaking `dev`.
-
-We’ll start with a minimal, enforceable process and iterate.
-
-Adopt a **three-stream** branching model with **explicit promotion** and quality gates.
+To keep the process simple and enforceable in a first iteration, we align
+**branch names, maturity levels, and deployment environments**.
 
 ### Branches
 
-- Long-lived: `dev`, `staging`, `prod`
-- Short-lived: `feature/*`, `bugfix/*`, `hotfix/*`
+* Long-lived: `dev`, `staging`, `prod`
+* Short-lived: `feature/*`, `bugfix/*`, `hotfix/*`
 
-Our prod branch will be our stable branch, acting as the main or master branch. 
-Because we want to also use ci to build and deploy directly when pushing to this branch, we name it prod:
-Code that is pushed there is ready for prod and will also be deployed to prod once pushed. It is our default branch.
+The `prod` branch is the stable, production-truth branch and acts as the
+repository’s default branch (equivalent to `main` in other setups).
+
+Code pushed to `prod` is considered production-ready and is deployed to
+the production environment.
+
+Code pushed to staging is deployed to the staging environment for testing. 
+
+---
 
 ### Promotion flow
 
 ```
-feature/*  →  dev  →  staging  →  prod
-         (merge)  (merge)  (merge)
+feature/* → dev → staging → prod
+       (merge) (merge) (merge)
 ```
 
-- `dev` = integration of day-to-day work.
-- `staging` = release candidate tested in a prod-like environment.
-- `prod` = version deployed (or ready to deploy) for customers.
+* `dev`: continuous integration of feature and bugfix work
+* `staging`: release candidate tested in a prod-like environment
+* `prod`: version deployed to customers
 
-Code must flow and transition in this way. It is not possible to go from feature straight to staging for example
+**Code must progress through these steps in order. Direct promotion
+(e.g. feature → staging) is not allowed.**
+
+The staging environment always deploys the `staging` branch, and the
+production environment always deploys the `prod` branch.
 
 ---
 
 ## Quality gates
 
-### 1) Feature → Dev (integration-ready, with tests)
+### 1) Feature → Dev (integration-ready)
 
 **Must have (ALL):**
+
 #### Tests
-All previous tests pass, additionally
-- **Unit tests** for (new or) changed domain logic and **service functions** (are created and) pass on the dev machine
-- **Contract/adapter tests** for any new adapter (port compliance + error translation) are created and pass on the dev machine.
-- **DTO Mapper tests** for new or changed DTOs are created and pass on the dev machine.
-- For each **new service function**,tests are created and pass on the dev machine
+
+* All existing unit tests pass locally.
+* For new or changed domain logic and service functions unit tests exist and pass.
+* Each new service function has corresponding tests.
+* Contract/adapter tests exist and pass for new adapters.
+* DTO mapper tests exist and pass for new or changed DTOs.
 
 #### Documentation
-- **Docs updated** where applicable:
-  - ADR created if the change impacts architecture decisions.
-  - Decision was made on whether addtional documentation should be added(e.g. for new technology)
-  - If positive: Documentation was made
 
-#### Linting & Typechecking
-The reference are the typechecking and linting configurations shared in the repository.
+* An ADR is created if architectural decisions are impacted.
+* Documentation is updated where applicable.
+* A conscious decision is made whether additional documentation is required.
 
-With those configurations:
-- All linter checks must have passed
-- The type checker shows no problemss
+#### Linting & type checking
 
+* All configured linter checks pass.
+* The type checker reports no errors.
+
+---
 
 ### 2) Dev → Staging (release candidate)
 
 **Must have (ALL):**
 
-- For any **major feature / new use case**, add 1) at least one new backend E2E test. 2) One locust test
-- If new features/use cases are implemented, performance tests must be written in locust
-- **Docs updated** where applicable:
-  - ADR created if the change impacts architecture decisions.
+* For any major feature or new use case:
 
+  * functional: at least one backend E2E test is added
+  * performance: at least one Locust test is written
+* Documentation is updated where applicable.
+
+
+
+---
 
 ### 3) Staging → Prod (release)
 
 **Must have (ALL):**
 
-- Code review from a person outside the core dev team responsible for the current changes
-- Only fast-forward/merge from **`staging`** (no direct commits to `prod`).
-- Deployed to a **staging environment** with **same or lower specs** than prod.
-- **Performance/sanity checks** are passed in the staging environment. (utilizing makefile)
-- **Human testing window** completed on staging
+* Code is deployed to a staging environment with equal or lower specs than prod.
+Locust execution on staging is mandatory
+* Locust tests are executed **against the staging environment**.
+* Results of these tests must be evaluated, even if no explicit performance thresholds are defined yet.
 
+* Code review by a developer not responsible for the changes.
+* Performance and sanity checks pass on staging (using Makefile-driven tooling).
+* A human testing window on staging is completed.
 
-## Performance tests OPEN
-I need more experience to be able to judge if a specific process is a good idea. 
+---
 
-What i do know: 
-1. we need to run locust with all user stories against staging and if we see an outlier where performance is inexcusable bad, it must be changed
-2. To narrow the problem down, pytest-benchmark can be used
+## Performance tests (OPEN)
 
-What is yet to be decided:
-- (How) do we want to use performance regression tests with pytest-benchmark for critical components
-- Is it feasible to run locust against a local instance such that we can have a smoke test and utilize it as an early warning sign, before we deploy to staging
-- Do we want to use explicit tresholds, or decide on an individual basis
-- 
+More experience is needed to finalize a strict performance-testing policy.
 
+What is currently understood:
 
+1. **Locust runs against the staging environment are the authoritative
+   performance signal.**
+   All user stories must be exercised via Locust on staging. If results show
+   unacceptable performance, promotion must stop and the issue must be addressed.
+
+2. **pytest-benchmark may be used diagnostically**, not as a primary gate.
+   When high-level Locust results indicate unexpected latency or behavior,
+   pytest-benchmark can be used to narrow the problem down to individual
+   components or functions.
+
+3. Locust may optionally be run against local deployments as a smoke test
+   and early warning signal, but these results are non-authoritative.
+
+Open questions to be revisited:
+
+* How and when to introduce performance regression checks with pytest-benchmark
+* Whether explicit performance thresholds should be defined
+
+---
 
 ## Consequences
 
-Placeholder
+* Establishes a **clear and predictable promotion path** from feature
+  development to production by aligning branch names, environments, and
+  maturity levels.
+* Keeps the initial process **simple and enforceable**, avoiding premature
+  complexity such as release branches or strict performance SLAs.
+* Ensures **baseline quality** through mandatory testing, linting, and type
+  checking before code reaches staging or production.
+* Introduces **performance awareness early** by mandating Locust tests for
+  new user stories, even before explicit performance policies exist.
+* Encourages a **top-down performance investigation strategy**:
+  start with end-to-end behavior and introduce component benchmarks only
+  when needed.
+
+### Accepted technical debt and limitations
+
+* Performance testing policy is intentionally incomplete:
+
+  * no formal thresholds are defined
+  * results are evaluated manually
+* pytest-benchmark usage is not standardized:
+
+  * benchmarks may vary in scope and coverage
+  * no enforced regression baselines exist
+* Local performance results vary by machine and are used only as relative signals.
+* The process relies on **manual execution** of tests and checks due to the
+  absence of CI/CD.
+* Accumulation of unfinished features in `dev` may require future mitigation
+  (e.g. feature flags or release branches).
+* This ADR is expected to evolve once real performance data and operational
+  experience are available.
