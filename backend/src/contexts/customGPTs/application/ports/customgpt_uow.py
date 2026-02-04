@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Protocol
+from types import TracebackType
+from typing import Protocol, Type
 
 from src.contexts.customGPTs.application.ports.customgpt_repo import CustomGPTRepository
 
@@ -10,7 +11,12 @@ from src.contexts.customGPTs.application.ports.customgpt_repo import CustomGPTRe
 class CgptUOW(Protocol):
     # make sure that one session per unit of work
     def __enter__(self) -> CgptUOW: ...
-    def __exit__(self, exc_type, exc, tb) -> None: ...
+    def __exit__(
+        self,
+        exc_type: Type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ): ...
     def commit(self): ...
     def rollback(self): ...
     @property

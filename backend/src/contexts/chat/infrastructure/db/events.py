@@ -1,8 +1,9 @@
 # infrastructure/db/events.py
-from typing import Set
+from typing import Any, Set
 
 from sqlalchemy import event, func, select, update
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm.unitofwork import UOWTransaction
 
 from src.contexts.chat.domain.models import Conversation
 from src.contexts.chat.infrastructure.db.orm import (
@@ -11,17 +12,19 @@ from src.contexts.chat.infrastructure.db.orm import (
 )  # your Table objects
 
 
-def register_last_message_at_events(SessionFactory: sessionmaker) -> None:
+def register_last_message_at_events(SessionFactory: sessionmaker[Session]) -> None:
     @event.listens_for(SessionFactory, "before_flush")
-    def _collect_conversation_ids(session: Session, flush_context, instances):
+    def _collect_conversation_ids(  # type: ignore
+        session: Session, flush_context: UOWTransaction, instances: Any
+    ):
         ids: Set[str] = session.info.setdefault("last_msg_touch_ids", set())
         # any Conversation made dirty/new by message changes will appear here
         for obj in session.new.union(session.dirty).union(session.deleted):
-            if isinstance(obj, Conversation) and obj.id is not None:
+            if isinstance(obj, Conversation):
                 ids.add(obj.id)
 
     @event.listens_for(SessionFactory, "after_flush_postexec")
-    def _update_last_message_at(session: Session, flush_context):
+    def _update_last_message_at(session: Session, flush_context: UOWTransaction):  # type: ignore
         ids: Set[str] | None = session.info.pop("last_msg_touch_ids", None)
         if not ids:
             return

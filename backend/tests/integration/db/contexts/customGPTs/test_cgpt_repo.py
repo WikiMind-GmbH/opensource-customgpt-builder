@@ -19,7 +19,7 @@ def test_created_at_is_set(session_factory: Factory[Session]):
     session: Session = session_factory()
     repo = SQAlchemyCustomGPTRepository(session)
 
-    before = datetime.utcnow() - timedelta(seconds=5)
+    before = datetime.now(timezone.utc) - timedelta(seconds=5)
     cgpt = repo.create_cgpt(name="A", instructions="do A")
     session.commit()
     created_at = session.execute(
@@ -34,7 +34,7 @@ def test_created_at_is_set(session_factory: Factory[Session]):
     else:
         created_at_cmp = created_at
 
-    after = datetime.utcnow() + timedelta(seconds=5)
+    after = datetime.now(timezone.utc) + timedelta(seconds=5)
     assert before <= created_at_cmp <= after, (
         "created_at should be set to 'now' on insert"
     )

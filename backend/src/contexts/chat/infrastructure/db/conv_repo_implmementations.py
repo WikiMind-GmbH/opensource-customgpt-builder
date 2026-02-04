@@ -6,6 +6,7 @@ from src.contexts.chat.application.ports.chat_repo import (
     ConversationRepository,
 )
 from src.contexts.chat.domain.models import Conversation
+from src.contexts.chat.infrastructure.db.orm import conversations
 
 
 class SQAlchemyConversartionRepository(ConversationRepository):
@@ -27,10 +28,12 @@ class SQAlchemyConversartionRepository(ConversationRepository):
         self._session.delete(conversation)
 
     def delete_conversations_with_cgpt(self, cgpt_id: str):
-        # stmt = delete(Conversation).where(conversations.c.customGPT_id == cgpt_id) # <- core style working with tables
         stmt = delete(Conversation).where(
-            Conversation._customGPT_id == cgpt_id
-        )  # <- ORM style working with our mapped domain models
+            conversations.c._customGPT_id == cgpt_id
+        )  # <- core style working with tables
+        # stmt = delete(Conversation).where(
+        #     Conversation._customGPT_id == cgpt_id
+        # )  # <- ORM style working with our mapped domain models
         self._session.execute(stmt)
 
 

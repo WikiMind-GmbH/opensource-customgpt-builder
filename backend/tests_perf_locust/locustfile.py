@@ -3,7 +3,7 @@ import os
 import random
 import uuid
 
-from locust import HttpUser, between, task
+from locust import HttpUser, between, task  # type: ignore
 
 
 def require_env_locust(name: str) -> str:

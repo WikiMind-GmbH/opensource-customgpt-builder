@@ -1,3 +1,6 @@
+from types import TracebackType
+from typing import Type
+
 from sqlalchemy.orm import Session
 
 from src.contexts.chat.application.ports.chat_repo import ConversationRepository
@@ -21,7 +24,12 @@ class SQLAlchemyConversationUOW(ConversationUOW):
         self._sqla_conv_repo = SQAlchemyConversartionRepository(session=self._session)
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> None:
+    def __exit__(
+        self,
+        exc_type: Type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         try:
             if exc_type is not None:
                 self.rollback()

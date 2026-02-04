@@ -1,4 +1,5 @@
 # adapters/orm.py
+import sqlite3
 from datetime import datetime, timezone
 
 from sqlalchemy import (
@@ -73,13 +74,13 @@ messages_excl_sysPrompt = Table(
 )
 
 
+def _sqlite_enable_fk(dbapi_conn: sqlite3.Connection, _) -> None:
+    dbapi_conn.execute("PRAGMA foreign_keys=ON")
+
+
 def prepare_engine(engine: Engine) -> Engine:
     if engine.url.get_backend_name() == "sqlite":
-
-        @event.listens_for(engine, "connect")
-        def _fk_on(dbapi_conn, _):
-            dbapi_conn.execute("PRAGMA foreign_keys=ON")  # for cascading deletes
-
+        event.listen(engine, "connect", _sqlite_enable_fk)
     return engine
 
 

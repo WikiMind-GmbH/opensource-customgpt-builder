@@ -1,4 +1,5 @@
-from typing import Protocol, Self
+from types import TracebackType
+from typing import Protocol, Self, Type
 
 from src.contexts.chat.application.ports.chat_repo import ConversationRepository
 
@@ -8,7 +9,12 @@ from src.contexts.chat.application.ports.chat_repo import ConversationRepository
 class ConversationUOW(Protocol):
     # make sure that one session per unit of work
     def __enter__(self) -> Self: ...
-    def __exit__(self, exc_type, exc, tb) -> None: ...
+    def __exit__(
+        self,
+        exc_type: Type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ): ...
     def commit(self): ...
     def rollback(self): ...
     @property
