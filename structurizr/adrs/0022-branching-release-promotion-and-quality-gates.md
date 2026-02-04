@@ -24,6 +24,7 @@ well-tested, production-ready versions.
 
 
 ## Alternatives considered
+Instead of comparing "alternative-packages", we list different sub-topics. Each sub topic must be considered if we want to include it in our solution and for each sub topic we might have to decide between explicit alternatives or how we implement it.
 
 ### Tools to check code-style quality
 
@@ -91,7 +92,7 @@ repository’s default branch (equivalent to `main` in other setups).
 Code pushed to `prod` is considered production-ready and is deployed to
 the production environment.
 
-Code pushed to staging is deployed to the staging environment for testing. 
+Code pushed to `staging` is deployed to the staging environment for testing. 
 
 ---
 
@@ -135,7 +136,7 @@ production environment always deploys the `prod` branch.
 * A conscious decision is made whether additional documentation is required.
 
 #### Linting & type checking
-
+Always using the config files committed to the repo:
 * All configured linter checks pass.
 * The type checker reports no errors.
 
@@ -145,7 +146,7 @@ production environment always deploys the `prod` branch.
 
 **Must have (ALL):**
 
-* For any major feature or new use case:
+* For any major new feature or new use case:
 
   * functional: at least one backend E2E test is added
   * performance: at least one Locust test is written
@@ -160,8 +161,7 @@ production environment always deploys the `prod` branch.
 **Must have (ALL):**
 
 * Code is deployed to a staging environment with equal or lower specs than prod.
-Locust execution on staging is mandatory
-* Locust tests are executed **against the staging environment**.
+* Locust tests have been executed **against the staging environment**.
 * Results of these tests must be evaluated, even if no explicit performance thresholds are defined yet.
 
 * Code review by a developer not responsible for the changes.
@@ -180,6 +180,7 @@ What is currently understood:
    performance signal.**
    All user stories must be exercised via Locust on staging. If results show
    unacceptable performance, promotion must stop and the issue must be addressed.
+   We fix one parameter only for now: `users = 20` - the rest is still open.
 
 2. **pytest-benchmark may be used diagnostically**, not as a primary gate.
    When high-level Locust results indicate unexpected latency or behavior,
@@ -192,7 +193,7 @@ What is currently understood:
 Open questions to be revisited:
 
 * How and when to introduce performance regression checks with pytest-benchmark
-* Whether explicit performance thresholds should be defined
+* How explicit performance thresholds should be defined for locust.
 
 ---
 
