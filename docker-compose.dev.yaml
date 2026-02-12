@@ -24,15 +24,9 @@ services:
     build:
       context: .
       dockerfile: ./frontend/Dockerfile.dev
-      args:
-        VITE_APP_DOMAIN: ${APP_DOMAIN}
-        UPLOAD_MAX_FILE_SIZE: ${UPLOAD_MAX_FILE_SIZE}
-        UPLOAD_ALLOWED_SUFFIXES: ${UPLOAD_ALLOWED_SUFFIXES}
+# Use vite prefix for envs
 
     environment:
-      VITE_APP_DOMAIN: ${APP_DOMAIN}
-      UPLOAD_MAX_FILE_SIZE: ${UPLOAD_MAX_FILE_SIZE}
-      UPLOAD_ALLOWED_SUFFIXES: ${UPLOAD_ALLOWED_SUFFIXES}
       CHOKIDAR_USEPOLLING: true
       # NODE_ENV: development
     volumes:
@@ -56,6 +50,31 @@ services:
     # override entrypoint to make sure it picks up our data dir
     command: ["java", "-Djdk.util.jar.enableMultiRelease=false", "-jar", "/usr/local/structurizr-lite.war", "/usr/local/structurizr"]
 
+  postgres:
+    build:
+      context: ./database/postgres
+      dockerfile: Dockerfile.dev
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: chat_context_db
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
+      CHAT_APP_PASSWORD: ${CHAT_APP_PASSWORD}
+      CGPT_APP_PASSWORD: ${CGPT_APP_PASSWORD}
+
+    volumes:
+      - pgdata:/var/lib/postgresql
+# bind mount lead to permission problems; just copying init now works 
+    # Dev only: expose to host
+    ports:
+      - "127.0.0.1:5432:5432"
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_ADMIN_USER} -d chat_context_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 
   nginx:
@@ -77,3 +96,4 @@ volumes:
   loaded_images:
   prompt_files:
   certs:
+  pgdata:

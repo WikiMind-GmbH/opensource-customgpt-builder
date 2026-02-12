@@ -5,6 +5,11 @@ COMPOSE_LOCUST := docker compose -f backend/tests_perf_locust/docker-compose.loc
 PYTEST_FLAGS := -q -s --maxfail=1 -m 'not performance'
 PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
+PROJECT_NAME = opensource-customgpt-builder
+COMPOSE_DEV = docker compose -p $(PROJECT_NAME) -f docker-compose.dev.yaml
+PG_VOLUME = $(PROJECT_NAME)_pgdata
+
+
 .PHONY: generate-client-prod test test-unit test-integration test-unit-exec test-integration-exec test-clean
 
 ## ----------------------PYTEST FUNCTIONAL----------------------
@@ -77,6 +82,11 @@ ruff-fix-save:
 	ruff check backend --fix
 	ruff format backend
 
+## ----------------------Postgresql----------------------
+db-delete:
+	$(COMPOSE_DEV) down
+	docker volume rm $(PG_VOLUME)
+# 	$(COMPOSE_DEV) up -d postgres
 
 
 

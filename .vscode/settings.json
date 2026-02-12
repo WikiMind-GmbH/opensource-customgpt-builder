@@ -16,6 +16,7 @@
     // "reportUnknownVariableType": "none", // Prevents warnings about locals inferred as Unknown in glue code
     // "reportUnknownLambdaType": "none" // Useful if you use many lambdas (factories, callbacks)
   },
+//******* cleaner future version: create stubs if missing: e.g. `pyright --createstub locust` //*******
   
   // ---- Optional quality-of-life / resolution helpers ----
 

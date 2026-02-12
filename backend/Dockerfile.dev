@@ -28,6 +28,8 @@ COPY . .
 
 # Expose the port FastAPI will run on
 EXPOSE 5173
+# And the debugpy Port
+EXPOSE 5678
 
 # Start the app using uvicorn
 
