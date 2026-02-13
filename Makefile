@@ -10,7 +10,29 @@ COMPOSE_DEV = docker compose -p $(PROJECT_NAME) -f docker-compose.dev.yaml
 PG_VOLUME = $(PROJECT_NAME)_pgdata
 
 
-.PHONY: generate-client-prod test test-unit test-integration test-unit-exec test-integration-exec test-clean
+.PHONY: generate-client-prod test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
+
+## ----------------------DEV STACK----------------------
+
+up:
+	$(COMPOSE_DEV) up -d
+
+down:
+	$(COMPOSE_DEV) down
+
+restart:
+	$(COMPOSE_DEV) down
+	$(COMPOSE_DEV) up -d
+
+logs:
+	$(COMPOSE_DEV) logs -f
+
+ps:
+	$(COMPOSE_DEV) ps
+
+rebuild:
+	$(COMPOSE_DEV) build --no-cache
+
 
 ## ----------------------PYTEST FUNCTIONAL----------------------
 test:
@@ -36,6 +58,7 @@ test-contracts:
 
 ## Run only integration tests
 test-integration:
+	$(COMPOSE_DEV) up -d postgres
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/integration"
 
 ## (Optional) Run tests in an already-running backend container
@@ -83,10 +106,12 @@ ruff-fix-save:
 	ruff format backend
 
 ## ----------------------Postgresql----------------------
-db-delete:
-	$(COMPOSE_DEV) down
-	docker volume rm $(PG_VOLUME)
-# 	$(COMPOSE_DEV) up -d postgres
+clean-restart-db:
+	$(COMPOSE_DEV) stop postgres
+	$(COMPOSE_DEV) rm -f postgres
+	docker volume rm $(PG_VOLUME) || true
+	$(COMPOSE_DEV) build --no-cache postgres
+	$(COMPOSE_DEV) up -d postgres
 
 
 

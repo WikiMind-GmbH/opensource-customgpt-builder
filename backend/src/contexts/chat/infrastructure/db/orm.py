@@ -1,18 +1,15 @@
 # adapters/orm.py
-import sqlite3
 from datetime import datetime, timezone
 
 from sqlalchemy import (
     Column,
     DateTime,
-    Engine,
     Enum,
     ForeignKey,
     Integer,
     MetaData,
     String,
     Table,
-    event,
 )
 from sqlalchemy.orm import registry, relationship
 
@@ -72,16 +69,6 @@ messages_excl_sysPrompt = Table(
         nullable=False,
     ),
 )
-
-
-def _sqlite_enable_fk(dbapi_conn: sqlite3.Connection, _) -> None:
-    dbapi_conn.execute("PRAGMA foreign_keys=ON")
-
-
-def prepare_engine(engine: Engine) -> Engine:
-    if engine.url.get_backend_name() == "sqlite":
-        event.listen(engine, "connect", _sqlite_enable_fk)
-    return engine
 
 
 # Index("ix_messages_conv_created_at", messages.c.conversation_id, messages.c.created_at)

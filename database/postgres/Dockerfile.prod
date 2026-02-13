@@ -2,7 +2,6 @@ FROM postgres:18.1
 
 # Copy init script into the official init directory
 COPY init/01-init-global.sh /docker-entrypoint-initdb.d/01-init-global.sh
-COPY init/02-init-test-dbs-dev.sh /docker-entrypoint-initdb.d/02-init-test-dbs-dev.sh
 
 # Ensure it is executable inside the image
 RUN chmod +x /docker-entrypoint-initdb.d/*.sh

@@ -1,6 +1,5 @@
 from typing import Annotated
 
-from backend.src.interface.http.composition import dependencies_container
 from fastapi import APIRouter, Depends
 
 from src.bootstrap import DependenciesContainer
@@ -13,6 +12,7 @@ from src.contexts.chat.application.service_functions import (
     continue_conversation,
     create_conversation,
 )
+from src.interface.http.composition import dependencies_container
 from src.interface.http.schemas.chat.chat_commands import (
     AssistantMessage,
     NewChatRequest,

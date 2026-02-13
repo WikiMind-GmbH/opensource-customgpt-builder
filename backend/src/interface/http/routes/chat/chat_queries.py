@@ -1,6 +1,5 @@
 from typing import Annotated
 
-from backend.src.interface.http.composition import dependencies_container
 from fastapi import APIRouter, Depends
 
 from src.bootstrap import DependenciesContainer
@@ -9,6 +8,7 @@ from src.contexts.chat.application.ports.chat_queries import (
     ConversationOverviewDTO,
     ConversationTextOnlyDTO,
 )
+from src.interface.http.composition import dependencies_container
 from src.interface.http.mappers_data_and_exceptions.chat.chat_queries_classes_and_exceptions import (
     conversationOverviewsDTO_to_chatSummaries,
     conversationTextOnlyDTO_to_chat,

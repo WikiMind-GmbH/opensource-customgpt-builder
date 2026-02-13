@@ -1,6 +1,5 @@
 from typing import Annotated
 
-from backend.src.interface.http.composition import dependencies_container
 from fastapi import APIRouter, Depends
 
 from src.bootstrap import DependenciesContainer
@@ -9,6 +8,7 @@ from src.contexts.customGPTs.application.ports.cgpt_queries import (
     CustomGPTInfosDTO,
     CustomGPTOverviewDTO,
 )
+from src.interface.http.composition import dependencies_container
 from src.interface.http.mappers_data_and_exceptions.customGPTs.cgpt_queries_classes_and_exceptions import (
     CustomGPTInfosMapper,
     CustomGPTOverviewsMapper,

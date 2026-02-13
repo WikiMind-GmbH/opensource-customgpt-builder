@@ -6,3 +6,4 @@ requests
 fastapi[standard]
 sqlmodel
 alembic
+psycopg[binary]

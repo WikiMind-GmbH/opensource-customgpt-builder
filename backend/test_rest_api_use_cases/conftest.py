@@ -148,8 +148,8 @@ def test_deps(
 
 @pytest.fixture()
 def test_client(test_deps: DependenciesContainer):
-    from backend.src.interface.http.composition import dependencies_container
     from src.interface.http.app import app
+    from src.interface.http.composition import dependencies_container
 
     app.dependency_overrides[dependencies_container.conversation_uow_factory] = (
         test_deps.conversation_uow_factory
