@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
@@ -24,9 +23,6 @@ from src.contexts.chat.infrastructure.adapters.openai_adapter import OpenaiAdapt
 from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
 from src.contexts.chat.infrastructure.db.orm import (
     metadata as chat_metadata,
-)
-from src.contexts.chat.infrastructure.db.orm import (
-    prepare_engine as chat_prepare_engine,
 )
 from src.contexts.chat.infrastructure.db.orm import (
     start_mappers as chat_start_mappers,
@@ -70,13 +66,16 @@ class DependenciesContainer:
 
 
 def _make_engine(
-    db_url: str, prepare: Callable[[Engine], Engine] = (lambda e: e)
+    db_url: str,  # , prepare: Callable[[Engine], Engine] = (lambda e: e)
 ) -> Engine:
-    connect_args: dict[str, object] = (
-        {"check_same_thread": False} if db_url.startswith("sqlite") else {}
-    )
-    engine = create_engine(db_url, connect_args=connect_args)
-    return prepare(engine)
+    eng = create_engine(db_url)
+    return eng  # prepare(engine)
+    # engine = create_engine(
+    #     db_url,
+    #     pool_pre_ping=True,
+    #     pool_size=10,
+    #     max_overflow=20,
+    # )
 
 
 def _make_sessionmaker(engine: Engine) -> sessionmaker[Session]:
@@ -92,14 +91,14 @@ def bootstrap(
 ) -> DependenciesContainer:
     # ----- CHAT -----
     chat_start_mappers()
-    engine_chat = _make_engine(db_url_chat, chat_prepare_engine)
-    sessionMaker_Chat: sessionmaker[Session] = _make_sessionmaker(engine_chat)
+    engine_chat = _make_engine(db_url_chat)
+    sessionFactory_Chat: sessionmaker[Session] = _make_sessionmaker(engine_chat)
     if create_schema:
         chat_metadata.create_all(engine_chat)
-    register_last_message_at_events(sessionMaker_Chat)
+    register_last_message_at_events(sessionFactory_Chat)
 
     def conversation_uow_factory() -> ConversationUOW:
-        return SQLAlchemyConversationUOW(sessionMaker_Chat)
+        return SQLAlchemyConversationUOW(sessionFactory_Chat)
 
     # Stateless LLM adapter can be a singleton or a factory; both fine.
     _llm_adapter = OpenaiAdapter(model_name=model_name)
@@ -110,24 +109,24 @@ def bootstrap(
     # ----- CGPT -----
     cgpt_start_mappers()
     engine_cgpt = _make_engine(db_url_cgpt)
-    sessionMaker_CGPT: sessionmaker[Session] = _make_sessionmaker(engine_cgpt)
+    sessionFactory_CGPT: sessionmaker[Session] = _make_sessionmaker(engine_cgpt)
     if create_schema:
         cgpt_metadata.create_all(engine_cgpt)
     # If CGPT has its own events, register them here (do NOT reuse chat’s)
     # register_cgpt_events(SessionMaker_CGPT)
 
     def cgpt_uow_factory() -> CgptUOW:
-        return SQLAlchemyCgptUOW(sessionMaker_CGPT)
+        return SQLAlchemyCgptUOW(sessionFactory_CGPT)
 
     def cgpt_instructions_adapter_factory() -> CustomGPTInstructionsRetreiver:
         # Adapter owns its own context’s UoW factory
         return CustomGPTInstructionsRetreiverAdapter(cgpt_uow_factory)
 
     def cgpt_queries_adapter_factory() -> CgptQueries:
-        return CgptQueriesImplementation(cgpt_session_factory=sessionMaker_CGPT)
+        return CgptQueriesImplementation(cgpt_session_factory=sessionFactory_CGPT)
 
     def chat_queries_adapter_factory() -> ChatQueries:
-        return ChatQueriesAdapter(chat_session_factory=sessionMaker_Chat)
+        return ChatQueriesAdapter(chat_session_factory=sessionFactory_Chat)
 
     def conversation_adapter_factory() -> ConversationPort:
         return ConversationAdapter(conv_uow_factory=conversation_uow_factory)

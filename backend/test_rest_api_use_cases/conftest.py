@@ -1,10 +1,9 @@
-import os
-
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import Connection, NullPool, RootTransaction, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from backend_spanning_helpers import require_env
 from src.bootstrap import DependenciesContainer
 from src.contexts.chat.application.ports.uow import ConversationUOW
 from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
@@ -13,9 +12,6 @@ from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
 from src.contexts.chat.infrastructure.adapters.conv_adapter import ConversationAdapter
 from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
 from src.contexts.chat.infrastructure.db.orm import metadata as chat_metadata
-from src.contexts.chat.infrastructure.db.orm import (
-    prepare_engine,
-)
 from src.contexts.chat.infrastructure.db.uow_implementations import (
     SQLAlchemyConversationUOW,
 )
@@ -41,25 +37,35 @@ from test_rest_api_use_cases.FakeAdapters import FakeLLMAdapter
 
 @pytest.fixture()
 def conv_engine():  # importing app <- importst deps <- runs bootstrap <- runs mappers : No mapping possible/needed
-    eng = create_engine("sqlite:///test-conv.db")
-    eng = prepare_engine(eng)
+    eng = create_engine(
+        require_env("DB_URL_CHAT_TEST"), poolclass=NullPool
+    )  # No connection pooling
     chat_metadata.create_all(eng)
-    try:
-        yield eng
-        eng.dispose()
-    finally:
-        os.remove("test-conv.db")
+    yield eng
+    eng.dispose()
 
 
 @pytest.fixture()
 def conv_session_factory(conv_engine):
-    SessionFactory = sessionmaker(conv_engine, expire_on_commit=False)
+    """
+    Provides a sessionmaker that creates NEW sessions, all bound to the same
+    connection+outer transaction for this test.
+    """
+    connection: Connection = conv_engine.connect()
+    outer_tx: RootTransaction = connection.begin()
+
+    SessionFactory = sessionmaker(bind=connection, expire_on_commit=False)
     register_last_message_at_events(SessionFactory)
-    return SessionFactory
+
+    try:
+        yield SessionFactory
+    finally:
+        outer_tx.rollback()
+        connection.close()
 
 
 @pytest.fixture()
-def conv_uow_factory(conv_session_factory):
+def conv_uow_factory(conv_session_factory: Factory[Session]):
     return lambda: SQLAlchemyConversationUOW(session_factory=conv_session_factory)
 
 
@@ -82,19 +88,30 @@ def conversation_adapter_factory(
 
 @pytest.fixture()
 def cgpt_engine():  # importing app <- importst deps <- runs bootstrap <- runs mappers : No mapping possible/needed
-    eng = create_engine("sqlite:///test-cgpt.db")
+    eng = create_engine(
+        require_env("DB_URL_CGPT_TEST"), poolclass=NullPool
+    )  # No connection pooling
     cgpt_metadata.create_all(eng)
-    try:
-        yield eng
-        eng.dispose()
-    finally:
-        os.remove("test-cgpt.db")
+    yield eng
+    eng.dispose()
 
 
 @pytest.fixture()
-def cgpt_session_factory(cgpt_engine) -> Factory[Session]:
-    SessionFactory = sessionmaker(cgpt_engine, expire_on_commit=False)
-    return SessionFactory
+def cgpt_session_factory(cgpt_engine):
+    """
+    Provides a sessionmaker that creates NEW sessions, all bound to the same
+    connection+outer transaction for this test.
+    """
+    connection: Connection = cgpt_engine.connect()
+    outer_tx: RootTransaction = connection.begin()
+
+    SessionFactory = sessionmaker(bind=connection, expire_on_commit=False)
+
+    try:
+        yield SessionFactory
+    finally:
+        outer_tx.rollback()
+        connection.close()
 
 
 @pytest.fixture()
@@ -126,8 +143,8 @@ def fake_llm_adapter_factory() -> Factory[FakeLLMAdapter]:
 
 @pytest.fixture()
 def test_deps(
-    conv_uow_factory,
-    cgpt_uow_factory,
+    conv_uow_factory: Factory[ConversationUOW],
+    cgpt_uow_factory: Factory[CgptUOW],
     cgpt_retreiver_factory,
     fake_llm_adapter_factory,
     cgpt_query_factory,

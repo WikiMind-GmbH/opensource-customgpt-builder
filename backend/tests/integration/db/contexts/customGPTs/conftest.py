@@ -3,7 +3,7 @@ from sqlalchemy import Connection, NullPool, RootTransaction, create_engine
 from sqlalchemy.orm import sessionmaker
 
 from backend_spanning_helpers import require_env
-from src.contexts.chat.infrastructure.db.orm import metadata as cgpt_metadata
+from src.contexts.customGPTs.infrastructure.db.orm import metadata as cgpt_metadata
 
 
 @pytest.fixture()
