@@ -153,3 +153,9 @@ To mitigate these risks:
 
 * Ignore statements must always include an explanation.
 * Refactoring efforts must explicitly review existing ignore directives.
+
+#### When ignoring at badly typed libraries boundaries
+Using ignores where it is mostly lazily pragmatic at untyped library boundaries:
+one should rather Seal Unknown/Any at the boundary:
+cast once right after you call the framework/untyped lib
+then keep everything inside your app strongly typed
