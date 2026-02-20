@@ -1,3 +1,5 @@
+from collections.abc import Generator
+
 import pytest
 from sqlalchemy import Connection, Engine, NullPool, RootTransaction, create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -22,7 +24,7 @@ from src.contexts.shared.typing_aliases import Factory
 
 
 @pytest.fixture()
-def cgpt_engine(start_cgpt_mappers):
+def cgpt_engine(start_cgpt_mappers: None) -> Generator[Engine, None, None]:
     eng = create_engine(
         require_env("DB_URL_CGPT_TEST"), poolclass=NullPool
     )  # No connection pooling
@@ -32,7 +34,9 @@ def cgpt_engine(start_cgpt_mappers):
 
 
 @pytest.fixture()
-def cgpt_session_factory(cgpt_engine):
+def cgpt_session_factory(
+    cgpt_engine: Engine,
+) -> Generator[sessionmaker[Session], None, None]:
     """
     Provides a sessionmaker that creates NEW sessions, all bound to the same
     connection+outer transaction for this test.
@@ -58,7 +62,7 @@ def cgpt_uow_factory(cgpt_session_factory: Factory[Session]) -> Factory[CgptUOW]
 
 
 @pytest.fixture()
-def conv_engine(start_chat_mappers) -> Engine:
+def conv_engine(start_chat_mappers: None) -> Generator[Engine, None, None]:
     eng = create_engine(
         require_env("DB_URL_CHAT_TEST"), poolclass=NullPool
     )  # No connection pooling
@@ -68,7 +72,9 @@ def conv_engine(start_chat_mappers) -> Engine:
 
 
 @pytest.fixture()
-def conv_session_factory(conv_engine):
+def conv_session_factory(
+    conv_engine: Engine,
+) -> Generator[sessionmaker[Session], None, None]:
     """
     Provides a sessionmaker that creates NEW sessions, all bound to the same
     connection+outer transaction for this test.
@@ -87,7 +93,9 @@ def conv_session_factory(conv_engine):
 
 
 @pytest.fixture()
-def conv_uow_factory(conv_session_factory):
+def conv_uow_factory(
+    conv_session_factory: sessionmaker[Session],
+) -> Factory[SQLAlchemyConversationUOW]:
     return lambda: SQLAlchemyConversationUOW(session_factory=conv_session_factory)
 
 

@@ -1,13 +1,15 @@
+from collections.abc import Generator
+
 import pytest
-from sqlalchemy import Connection, NullPool, RootTransaction, create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Connection, Engine, NullPool, RootTransaction, create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from backend_spanning_helpers import require_env
 from src.contexts.customGPTs.infrastructure.db.orm import metadata as cgpt_metadata
 
 
 @pytest.fixture()
-def engine(start_cgpt_mappers):
+def engine(start_cgpt_mappers: None) -> Generator[Engine, None, None]:
     eng = create_engine(
         require_env("DB_URL_CGPT_TEST"), poolclass=NullPool
     )  # No connection pooling
@@ -17,7 +19,7 @@ def engine(start_cgpt_mappers):
 
 
 @pytest.fixture()
-def session_factory(engine):
+def session_factory(engine: Engine) -> Generator[sessionmaker[Session], None, None]:
     """
     Provides a sessionmaker that creates NEW sessions, all bound to the same
     connection+outer transaction for this test.

@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
 from pydantic import TypeAdapter
 
+from src.contexts.shared.typing_aliases import Benchmark
 from src.interface.http.schemas.chat.chat_commands import (
     AssistantMessage,
     ContinueChatRequest,
@@ -12,7 +13,7 @@ from src.interface.http.schemas.chat.chat_commands import (
 from src.interface.http.schemas.chat.chat_queries import ChatSummary
 
 
-def minimal_new_conversation(test_client: TestClient):
+def minimal_new_conversation(test_client: TestClient) -> str:
     res: httpx.Response = test_client.post(
         "/chat/send-user-message",
         json=jsonable_encoder(NewChatRequest(request_message="u1", custom_gpt_id=None)),
@@ -41,7 +42,9 @@ def minimal_new_conversation(test_client: TestClient):
     disable_gc=True,
     warmup=False,
 )
-def test_perf_many_conversations(test_client: TestClient, benchmark):
+def test_perf_many_conversations(
+    test_client: TestClient, benchmark: Benchmark
+):  # BenchmarkFixture
     conv_id_initial = benchmark(minimal_new_conversation, test_client)
 
     summaries_res = test_client.get("/chat/get-chat-summaries")

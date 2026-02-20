@@ -17,7 +17,7 @@ from src.interface.http.schemas.customGPTs.customGPT_queries import (
 
 def register_query_exception_handlers_cgpt_query_port(app: FastAPI) -> None:
     @app.exception_handler(NotFoundError)
-    async def _not_found(_, exc: NotFoundError):
+    async def _not_found(_, exc: NotFoundError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={
@@ -26,7 +26,7 @@ def register_query_exception_handlers_cgpt_query_port(app: FastAPI) -> None:
         )
 
     @app.exception_handler(QueryError)
-    async def _query_error(_, exc: QueryError):
+    async def _query_error(_, exc: QueryError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         return JSONResponse(
             status_code=status.HTTP_502_BAD_GATEWAY,
             content={"detail": "Query failed"},

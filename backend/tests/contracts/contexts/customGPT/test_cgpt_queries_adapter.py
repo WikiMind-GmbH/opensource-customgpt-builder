@@ -101,6 +101,6 @@ def test_sessions_are_closed(
     )
     session.commit()
     id = first.id
-    for x in range(10):
+    for _ in range(10):
         cgpt_first: CustomGPTInfosDTO = cgpt_query_factory().get_custom_gpt_infos(id)
         assert cgpt_first.id == id

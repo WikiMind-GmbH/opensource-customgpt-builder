@@ -46,12 +46,12 @@ class CgptQueriesImplementation(CgptQueries):
                 if row is None:
                     raise NotFoundError(f"Cgpt with id {cgpt_id} was not found")
                 try:
-                    row_mapped = row._mapping
+                    # should not be needed (tests pass), also using a  private function.. ;; row_mapped = row._mapping
                     return CustomGPTInfosDTO(
-                        id=row_mapped.id,
-                        name=row_mapped.name,
-                        instructions=row_mapped.instructions,
-                        description=row_mapped.description,
+                        id=row.id,
+                        name=row.name,
+                        instructions=row.instructions,
+                        description=row.description,
                     )
                 except Exception as e:
                     raise MappingError("Couldn't map the row {row}") from e

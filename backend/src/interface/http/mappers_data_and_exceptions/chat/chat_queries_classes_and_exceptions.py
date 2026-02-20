@@ -17,7 +17,7 @@ from src.interface.http.schemas.chat.chat_queries import (
 
 def register_query_exception_handlers_queries_port(app: FastAPI) -> None:
     @app.exception_handler(NotFoundError)
-    async def _not_found(_, exc: NotFoundError):
+    async def _not_found(_, exc: NotFoundError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={

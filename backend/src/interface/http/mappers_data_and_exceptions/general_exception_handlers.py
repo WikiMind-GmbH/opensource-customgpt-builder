@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 
 def register_general_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(
+    async def validation_exception_handler(  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         request: Request, exc: RequestValidationError
     ) -> JSONResponse:
         # return PlainTextResponse(str(exc), status_code=400)

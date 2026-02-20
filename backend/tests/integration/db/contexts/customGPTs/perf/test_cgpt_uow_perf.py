@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
     SQLAlchemyCgptUOW,
 )
-from src.contexts.shared.typing_aliases import Factory
+from src.contexts.shared.typing_aliases import Benchmark, Factory
 
 
 def retreive_cgpt(session_factory: Factory[Session], cgpt_id: str):
@@ -25,7 +25,7 @@ def retreive_cgpt(session_factory: Factory[Session], cgpt_id: str):
     warmup=False,
 )
 def test_cgpt_retreival(
-    session_factory: Factory[Session], create_cgpt_return_id: str, benchmark
+    session_factory: Factory[Session], create_cgpt_return_id: str, benchmark: Benchmark
 ):
     cgpt_id = create_cgpt_return_id
     got = benchmark(retreive_cgpt, session_factory, cgpt_id)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Self
+from types import TracebackType
+from typing import Self, Type
 
 from sqlalchemy.orm import Session
 
@@ -27,7 +28,12 @@ class SQLAlchemyCgptUOW(CgptUOW):
         self._sqla_cgpt_repo = SQAlchemyCustomGPTRepository(session=self._session)
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> None:
+    def __exit__(
+        self,
+        exc_type: Type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         try:
             if exc_type is not None:
                 self.rollback()

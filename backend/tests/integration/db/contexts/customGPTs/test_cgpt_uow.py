@@ -35,17 +35,18 @@ def test_uow_commit_persists(session_factory: Factory[Session]):
 
 
 def test_uow_rollback_on_exception(session_factory: Factory[Session]):
+    cgpt_id: str | None = None
     with pytest.raises(RuntimeError):
         with SQLAlchemyCgptUOW(session_factory) as uow:
             cgpt = uow.cgpt_repo.create_cgpt(name="beta", instructions="do y")
             cgpt_id = cgpt.id
             # cause an exception before commit → __exit__ should rollback
             raise RuntimeError("boom")
-
+    assert cgpt_id is not None
     # After rollback, that id should not exist
     with SQLAlchemyCgptUOW(session_factory) as uow2:
         with pytest.raises(CgptNotFound):
-            uow2.cgpt_repo.get(cgpt_id)  # type: ignore[name-defined]  # created in the with-block above
+            uow2.cgpt_repo.get(cgpt_id)
             # (the exception is the assertion that rollback actually happened)
 
 

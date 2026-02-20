@@ -1,6 +1,8 @@
+from collections.abc import Generator
+
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import Connection, NullPool, RootTransaction, create_engine
+from sqlalchemy import Connection, Engine, NullPool, RootTransaction, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend_spanning_helpers import require_env
@@ -36,7 +38,9 @@ from test_rest_api_use_cases.FakeAdapters import FakeLLMAdapter
 
 
 @pytest.fixture()
-def conv_engine():  # importing app <- importst deps <- runs bootstrap <- runs mappers : No mapping possible/needed
+def conv_engine() -> (
+    Generator[Engine, None, None]
+):  # importing app <- importst deps <- runs bootstrap <- runs mappers : No mapping possible/needed
     eng = create_engine(
         require_env("DB_URL_CHAT_TEST"), poolclass=NullPool
     )  # No connection pooling
@@ -46,7 +50,9 @@ def conv_engine():  # importing app <- importst deps <- runs bootstrap <- runs m
 
 
 @pytest.fixture()
-def conv_session_factory(conv_engine):
+def conv_session_factory(
+    conv_engine: Engine,
+) -> Generator[sessionmaker[Session], None, None]:
     """
     Provides a sessionmaker that creates NEW sessions, all bound to the same
     connection+outer transaction for this test.
@@ -65,13 +71,15 @@ def conv_session_factory(conv_engine):
 
 
 @pytest.fixture()
-def conv_uow_factory(conv_session_factory: Factory[Session]):
+def conv_uow_factory(
+    conv_session_factory: sessionmaker[Session],
+) -> Factory[SQLAlchemyConversationUOW]:
     return lambda: SQLAlchemyConversationUOW(session_factory=conv_session_factory)
 
 
 @pytest.fixture()
 def chat_query_factory(
-    conv_session_factory: Factory[Session],
+    conv_session_factory: sessionmaker[Session],
 ) -> Factory[ChatQueriesAdapter]:
     return lambda: ChatQueriesAdapter(chat_session_factory=conv_session_factory)
 
@@ -87,7 +95,9 @@ def conversation_adapter_factory(
 
 
 @pytest.fixture()
-def cgpt_engine():  # importing app <- importst deps <- runs bootstrap <- runs mappers : No mapping possible/needed
+def cgpt_engine() -> (
+    Generator[Engine, None, None]
+):  # importing app <- importst deps <- runs bootstrap <- runs mappers : No mapping possible/needed
     eng = create_engine(
         require_env("DB_URL_CGPT_TEST"), poolclass=NullPool
     )  # No connection pooling
@@ -97,7 +107,9 @@ def cgpt_engine():  # importing app <- importst deps <- runs bootstrap <- runs m
 
 
 @pytest.fixture()
-def cgpt_session_factory(cgpt_engine):
+def cgpt_session_factory(
+    cgpt_engine: Engine,
+) -> Generator[sessionmaker[Session], None, None]:
     """
     Provides a sessionmaker that creates NEW sessions, all bound to the same
     connection+outer transaction for this test.
@@ -115,12 +127,14 @@ def cgpt_session_factory(cgpt_engine):
 
 
 @pytest.fixture()
-def cgpt_uow_factory(cgpt_session_factory: Factory[Session]) -> Factory[CgptUOW]:
+def cgpt_uow_factory(cgpt_session_factory: sessionmaker[Session]) -> Factory[CgptUOW]:
     return lambda: SQLAlchemyCgptUOW(session_factory=cgpt_session_factory)
 
 
 @pytest.fixture()
-def cgpt_retreiver_factory(cgpt_uow_factory: Factory[CgptUOW]):
+def cgpt_retreiver_factory(
+    cgpt_uow_factory: Factory[CgptUOW],
+) -> Factory[CustomGPTInstructionsRetreiverAdapter]:
     return lambda: CustomGPTInstructionsRetreiverAdapter(
         cgpt_uow_factory=cgpt_uow_factory
     )
@@ -145,11 +159,11 @@ def fake_llm_adapter_factory() -> Factory[FakeLLMAdapter]:
 def test_deps(
     conv_uow_factory: Factory[ConversationUOW],
     cgpt_uow_factory: Factory[CgptUOW],
-    cgpt_retreiver_factory,
-    fake_llm_adapter_factory,
-    cgpt_query_factory,
-    chat_query_factory,
-    conversation_adapter_factory,
+    cgpt_retreiver_factory: Factory[CustomGPTInstructionsRetreiverAdapter],
+    fake_llm_adapter_factory: Factory[FakeLLMAdapter],
+    cgpt_query_factory: Factory[CgptQueriesImplementation],
+    chat_query_factory: Factory[ChatQueriesAdapter],
+    conversation_adapter_factory: Factory[ConversationPort],
 ) -> DependenciesContainer:
     test_deps_container: DependenciesContainer = DependenciesContainer(
         conversation_uow_factory=conv_uow_factory,

@@ -1,6 +1,8 @@
+from collections.abc import Generator
+
 import pytest
-from sqlalchemy import Connection, NullPool, RootTransaction, create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Connection, Engine, NullPool, RootTransaction, create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from backend_spanning_helpers import require_env
 from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
@@ -8,7 +10,7 @@ from src.contexts.chat.infrastructure.db.orm import metadata as chat_metadata
 
 
 @pytest.fixture(scope="session")
-def engine(start_chat_mappers):
+def engine(start_chat_mappers: None) -> Generator[Engine, None, None]:
     eng = create_engine(
         require_env("DB_URL_CHAT_TEST"), poolclass=NullPool
     )  # No connection pooling
@@ -18,7 +20,7 @@ def engine(start_chat_mappers):
 
 
 @pytest.fixture()
-def session_factory(engine):
+def session_factory(engine: Engine) -> Generator[sessionmaker[Session], None, None]:
     """
     Provides a sessionmaker that creates NEW sessions, all bound to the same
     connection+outer transaction for this test.

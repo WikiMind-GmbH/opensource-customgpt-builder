@@ -28,12 +28,15 @@ def test_uow_commit_persists(session_factory: Factory[Session]):
 
 def test_uow_rollback_on_exception(session_factory: Factory[Session]):
     # create and then raise to trigger rollback
+    conv_id: str | None = None
     with pytest.raises(RuntimeError):
         with SQLAlchemyConversationUOW(session_factory) as tx:
             conv = tx.conversation_repo.create_conversation()
             conv_id = conv.id
             conv.add_user_text_message("temporary")
             raise RuntimeError("Error before exiting the uow should lead to rollback")
+
+    assert conv_id is not None
 
     # after rollback, the specific ID must not exist
     with SQLAlchemyConversationUOW(session_factory) as tx2:

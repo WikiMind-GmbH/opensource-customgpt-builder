@@ -14,7 +14,7 @@ from src.contexts.chat.infrastructure.db.orm import (
 
 def register_last_message_at_events(SessionFactory: sessionmaker[Session]) -> None:
     @event.listens_for(SessionFactory, "before_flush")
-    def _collect_conversation_ids(  # type: ignore
+    def _collect_conversation_ids(  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         session: Session, flush_context: UOWTransaction, instances: Any
     ):
         ids: Set[str] = session.info.setdefault("last_msg_touch_ids", set())
@@ -24,7 +24,7 @@ def register_last_message_at_events(SessionFactory: sessionmaker[Session]) -> No
                 ids.add(obj.id)
 
     @event.listens_for(SessionFactory, "after_flush_postexec")
-    def _update_last_message_at(session: Session, flush_context: UOWTransaction):  # type: ignore
+    def _update_last_message_at(session: Session, flush_context: UOWTransaction):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         ids: Set[str] | None = session.info.pop("last_msg_touch_ids", None)
         if not ids:
             return

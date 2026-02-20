@@ -3,7 +3,11 @@ import os
 import random
 import uuid
 
-from locust import HttpUser, between, task  # type: ignore
+from locust import (
+    HttpUser,
+    between,  # pyright: ignore [reportUnknownVariableType] | wait_time between is locust internal only, never referenced besides this declaration
+    task,
+)
 
 
 def require_env_locust(name: str) -> str:
@@ -24,7 +28,7 @@ if DEBUG_MODE:
 class CgptCreatorUser(HttpUser):
     weight = 2
 
-    wait_time = between(10, 15)
+    wait_time = between(10, 15)  # pyright: ignore [reportUnknownVariableType] | wait_time is locust internal only, never referenced besides this declaration
     host = require_env_locust("LOCUST_DESTINATION")
 
     def on_start(self) -> None:
@@ -148,7 +152,7 @@ class CgptCreatorUser(HttpUser):
 
 class ChatUser(HttpUser):
     host = require_env_locust("LOCUST_DESTINATION")
-    wait_time = between(10, 15)
+    wait_time = between(10, 15)  # pyright: ignore [reportUnknownVariableType] | wait_time is locust internal only, never referenced besides this declaration
 
     def on_start(self) -> None:
         user = require_env_locust("LOCUST_BASIC_AUTH_USER")

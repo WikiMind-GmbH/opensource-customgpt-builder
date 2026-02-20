@@ -9,7 +9,7 @@ from src.contexts.chat.application.ports.chat_repo import (
 
 def register_query_exception_handlers_chat_repo_port(app: FastAPI) -> None:
     @app.exception_handler(TemporaryConvRepoError)
-    async def _tbd(_, exc: TemporaryConvRepoError):
+    async def _tbd(_, exc: TemporaryConvRepoError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
@@ -18,7 +18,7 @@ def register_query_exception_handlers_chat_repo_port(app: FastAPI) -> None:
         )
 
     @app.exception_handler(ConversationNotFoundError)
-    async def not_found(_, exc: ConversationNotFoundError):
+    async def _not_found(_, exc: ConversationNotFoundError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={
