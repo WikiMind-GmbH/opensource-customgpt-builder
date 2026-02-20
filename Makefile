@@ -1,13 +1,14 @@
 
 
-COMPOSE_DEV := docker compose -f docker-compose.dev.yaml
+PROJECT_NAME = opensource-customgpt-builder
+PG_VOLUME = $(PROJECT_NAME)_pgdata
+FRONTEND_VOLUME = $(PROJECT_NAME)_frontend_node_modules
+
+COMPOSE_DEV = docker compose -p $(PROJECT_NAME) -f docker-compose.dev.yaml
 COMPOSE_LOCUST := docker compose -f backend/tests_perf_locust/docker-compose.locust-perf.yaml
 PYTEST_FLAGS := -q -s --maxfail=1 -m 'not performance'
 PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
-PROJECT_NAME = opensource-customgpt-builder
-COMPOSE_DEV = docker compose -p $(PROJECT_NAME) -f docker-compose.dev.yaml
-PG_VOLUME = $(PROJECT_NAME)_pgdata
 
 
 .PHONY: generate-client-prod test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
@@ -33,9 +34,22 @@ ps:
 rebuild:
 	$(COMPOSE_DEV) build --no-cache
 
+clean-restart-frontend:
+	$(COMPOSE_DEV) stop frontend
+	$(COMPOSE_DEV) rm -f frontend
+	docker volume rm $(FRONTEND_VOLUME) || true
+	$(COMPOSE_DEV) build --no-cache frontend
+	$(COMPOSE_DEV) up -d frontend
+
+clean-restart-db:
+	$(COMPOSE_DEV) stop postgres
+	$(COMPOSE_DEV) rm -f postgres
+	docker volume rm $(PG_VOLUME) || true
+	$(COMPOSE_DEV) build --no-cache postgres
+	$(COMPOSE_DEV) up -d postgres
 
 ## ----------------------PYTEST FUNCTIONAL----------------------
-test:
+tests:
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests"
 
 test-show-setup:
@@ -104,14 +118,6 @@ ruff:
 ruff-fix-save:
 	ruff check backend --fix
 	ruff format backend
-
-## ----------------------Postgresql----------------------
-clean-restart-db:
-	$(COMPOSE_DEV) stop postgres
-	$(COMPOSE_DEV) rm -f postgres
-	docker volume rm $(PG_VOLUME) || true
-	$(COMPOSE_DEV) build --no-cache postgres
-	$(COMPOSE_DEV) up -d postgres
 
 
 

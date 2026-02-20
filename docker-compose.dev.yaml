@@ -31,7 +31,8 @@ services:
       # NODE_ENV: development
     volumes:
       - ./frontend:/app
-      - /app/node_modules #decouples node_module in container from frontend so this will not be synced back to the host
+      - frontend_node_modules:/app/node_modules #decouples node_module in container -> can get stale -use make target to update modules‚
+      
       
     container_name: frontend
     stdin_open: true
@@ -99,3 +100,4 @@ volumes:
   prompt_files:
   certs:
   pgdata:
+  frontend_node_modules:
