@@ -1,0 +1,24 @@
+services:
+  locust:
+    build:
+        dockerfile: Dockerfile.tests_perf_locust
+    container_name: locust
+    environment:
+      LOCUST_DESTINATION: ${LOCUST_DESTINATION_LOCAL}
+      LOCUST_BASIC_AUTH_USER: ${LOCUST_BASIC_AUTH_USER}
+      LOCUST_BASIC_AUTH_PASSWORD: ${LOCUST_BASIC_AUTH_PASSWORD}
+      DEBUG_MODE_LOCUST: ${DEBUG_MODE_LOCUST}
+      GEVENT_SUPPORT: "True"
+    ports:
+      - "8089:8089"
+      - "127.0.0.1:5678:5678" # for debugging 
+    volumes:
+      - ./:/work/loadtests
+    command: ["sleep", "infinity"]
+    networks:
+      - locust-backend-share
+
+networks:
+  locust-backend-share:
+    external: true
+    name: locust-backend-share

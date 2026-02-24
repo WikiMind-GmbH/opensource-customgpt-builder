@@ -1,13 +1,59 @@
 # Structure of test-suit in future https://docs.locust.io/en/stable/writing-a-locustfile.html#how-to-structure-your-test-code
+import logging
 import os
 import random
 import uuid
+from enum import StrEnum
 
 from locust import (
     HttpUser,
     between,  # pyright: ignore [reportUnknownVariableType] | wait_time between is locust internal only, never referenced besides this declaration
     task,
 )
+from pydantic import BaseModel, TypeAdapter
+
+logger = logging.getLogger(__name__)
+
+
+# temporary solution: locust decoupled from backend -> manually copy dto types :(
+# -----------------------------------------------------
+class ChatSummary(BaseModel):
+    chat_id: str
+    chat_summary: str
+
+
+class CustomGPTOverviewSchema(BaseModel):
+    custom_gpt_id: str
+    custom_gpt_name: str
+
+
+class RoleCmd(StrEnum):
+    user = "user"
+    assistant = "assistant"
+
+
+class SimplifiedMessageCmd(BaseModel):
+    role: RoleCmd
+    message: str
+
+
+class AssistantMessage(BaseModel):
+    conversation_id: str
+    response_message: SimplifiedMessageCmd
+
+
+class NewChatRequest(BaseModel):
+    request_message: str
+    custom_gpt_id: str | None
+
+
+class ContinueChatRequest(BaseModel):
+    request_message: str
+    conversation_id: str
+
+
+UserMessageRequest = NewChatRequest | ContinueChatRequest
+# -----------------------------------------------------
 
 
 def require_env_locust(name: str) -> str:
@@ -17,11 +63,12 @@ def require_env_locust(name: str) -> str:
     return value
 
 
-DEBUG_MODE: bool = require_env_locust("DEBUG_MODE_LOCUST").lower() == "true"
-if DEBUG_MODE:
+DEBUG_MODE_LOCUST: bool = require_env_locust("DEBUG_MODE_LOCUST").lower() == "true"
+if DEBUG_MODE_LOCUST:
     import debugpy
 
     debugpy.listen(("0.0.0.0", 5678))  # Debugger listens on port 5678
+    debugpy.wait_for_client()
 
 
 # *weight*: weight 3 is executed/created 3 times as often as weight 1
@@ -125,14 +172,18 @@ class CgptCreatorUser(HttpUser):
                 resp.failure(f"Expected list, got {type(all_gpts)}: {all_gpts}")
                 return
 
-        if not all_gpts:
-            return
+            if len(all_gpts) == 0:
+                return
 
-        chosen = random.choice(all_gpts)
-        cgpt_id = chosen.get("custom_gpt_id")
-        if not isinstance(cgpt_id, str) or not cgpt_id:
-            return
+            try:
+                chosen: CustomGPTOverviewSchema = (
+                    CustomGPTOverviewSchema.model_validate(random.choice(all_gpts))
+                )
+            except Exception:
+                resp.failure("List items are malformed")
+                return
 
+        cgpt_id = chosen.custom_gpt_id
         payload = {
             "custom_gpt_id": cgpt_id,
             "custom_gpt_name": f"gpt-{uuid.uuid4()}",
@@ -161,11 +212,12 @@ class ChatUser(HttpUser):
 
     @task(5)
     def create_new_chat(self):
-        payload = {"request_message": "Hello!", "custom_gpt_id": None}
-
+        new_chat_req: NewChatRequest = NewChatRequest(
+            request_message="Hello", custom_gpt_id=None
+        )
         with self.client.post(
             "/chat/send-user-message",
-            json=payload,
+            json=new_chat_req.model_dump(mode="json"),
             name="POST /chat/send-user-message (new)",
             catch_response=True,
         ) as resp:
@@ -205,14 +257,19 @@ class ChatUser(HttpUser):
             if not isinstance(summaries, list):
                 resp.failure(f"Expected list, got {type(summaries)}: {summaries}")
                 return
+            if len(summaries) == 0:
+                return
+            try:
+                random.sample(summaries, k=min(3, len(summaries)))
+                three_random_chats: list[ChatSummary] = TypeAdapter(
+                    list[ChatSummary]
+                ).validate_python(random.sample(summaries, k=min(3, len(summaries))))
+            except Exception:
+                resp.failure("Chatsummary response objects malformed")
+                return
 
-        if not summaries:
-            return
-
-        for item in random.sample(summaries, k=min(3, len(summaries))):
-            chat_id = item.get("chat_id")
-            if not isinstance(chat_id, str) or not chat_id:
-                continue
+        for chat in three_random_chats:
+            chat_id = chat.chat_id
 
             with self.client.get(
                 "/chat/chat-history-by-id",
@@ -250,13 +307,14 @@ class ChatUser(HttpUser):
             if not isinstance(summaries, list):
                 resp.failure(f"Expected list, got {type(summaries)}: {summaries}")
                 return
-
-        if not summaries:
-            return
-
-        chat_id = random.choice(summaries).get("chat_id")
-        if not isinstance(chat_id, str) or not chat_id:
-            return
+            if len(summaries) == 0:
+                return
+            try:
+                chat: ChatSummary = ChatSummary.model_validate(random.choice(summaries))
+                chat_id = chat.chat_id
+            except Exception:
+                resp.failure("Chatsummary response objects malformed")
+                return
 
         for _ in range(20):
             payload = {
@@ -276,11 +334,14 @@ class ChatUser(HttpUser):
 
                 try:
                     body = resp.json()
+                    assistant_response: AssistantMessage = (
+                        AssistantMessage.model_validate(body)
+                    )
                 except Exception:
                     resp.failure(f"Invalid JSON: {resp.text}")
                     return
 
-                msg = (body.get("response_message") or {}).get("message")
-                if not isinstance(msg, str) or not msg.strip():
-                    resp.failure(f"Empty/non-string assistant message: {body}")
+                msg = assistant_response.response_message.message
+                if len(msg) == 0:
+                    resp.failure("Empty assistant message")
                     return

@@ -10,10 +10,13 @@ services:
     volumes:
       - ./backend:/app
       # - loaded_images:${LOADED_IMAGES_PATH}
-      # - prompt_files:${PROMPT_FILES_PATH}
-    ports:
-      - "127.0.0.1:5678:5678"
+      # - prompt_files:${PROMPT_FILES_PATH} 
+    # ports:
+      # - "127.0.0.1:5678:5678"
     tty: true
+    networks:
+      - default
+      - locust-backend-share
     healthcheck:
       test: ["CMD", "curl", "-f", "http://0.0.0.0:5173/openapi.json"]
       interval: 60s
@@ -48,6 +51,8 @@ services:
     environment:
       # make sure this matches the port exposed by the container
       - PORT=8080
+    # networks: # should not be needed -test it
+    #   - default
     # override entrypoint to make sure it picks up our data dir
     command: ["java", "-Djdk.util.jar.enableMultiRelease=false", "-jar", "/usr/local/structurizr-lite.war", "/usr/local/structurizr"]
 
@@ -72,6 +77,9 @@ services:
     # Dev only: expose to host
     ports:
       - "127.0.0.1:5432:5432"
+    
+    networks:
+      - default
 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_ADMIN_USER} -d chat_context_db"]
@@ -93,6 +101,8 @@ services:
       - structurizr-lite
     volumes:
       - ./nginx/certs:/etc/nginx/certs:ro
+    networks:
+      - default
 
 volumes:
   frontend_build:
@@ -101,3 +111,9 @@ volumes:
   certs:
   pgdata:
   frontend_node_modules:
+
+networks:
+  default:
+  locust-backend-share:
+    name: locust-backend-share
+    driver: bridge

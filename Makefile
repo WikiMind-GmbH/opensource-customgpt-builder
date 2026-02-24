@@ -5,7 +5,8 @@ PG_VOLUME = $(PROJECT_NAME)_pgdata
 FRONTEND_VOLUME = $(PROJECT_NAME)_frontend_node_modules
 
 COMPOSE_DEV = docker compose -p $(PROJECT_NAME) -f docker-compose.dev.yaml
-COMPOSE_LOCUST := docker compose -f backend/tests_perf_locust/docker-compose.locust-perf.yaml
+COMPOSE_LOCUST_LOCAL := docker compose -f backend/tests_perf_locust/docker-compose.locust-perf-local.yaml
+COMPOSE_LOCUST_STAGING := docker compose -f backend/tests_perf_locust/docker-compose.locust-perf-staging.yaml
 PYTEST_FLAGS := -q -s --maxfail=1 -m 'not performance'
 PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
@@ -107,9 +108,16 @@ test-perf:
 # NOT YET WORKING
 
 ## ----------------------LOCUST PERFORMANCE----------------------
-locust:
-	$(COMPOSE_LOCUST) run --rm locust sh -c "locust -f locustfile.py --html 'results/locust_results_$$(date +%Y%m%d_%H%M%S).html'"
-
+locust-staging:
+	$(COMPOSE_LOCUST_STAGING) run --rm locust sh -c "locust -f locustfile.py --html 'results/locust_results_$$(date +%Y%m%d_%H%M%S).html'"
+locust-local:
+	$(COMPOSE_DEV) up -d
+	$(COMPOSE_LOCUST_LOCAL) up -d locust
+	$(COMPOSE_LOCUST_LOCAL) exec locust sh -c "locust -f locustfile.py --html 'results/locust_results_$$(date +%Y%m%d_%H%M%S).html'"
+locust-local-debugging:
+	$(COMPOSE_DEV) up -d
+	$(COMPOSE_LOCUST_LOCAL) up -d locust
+	$(COMPOSE_LOCUST_LOCAL) exec locust sh -c "locust -f locustfile.py"
 
 ## ----------------------LINTING, TYPECHECKING AND CO----------------------
 ruff:

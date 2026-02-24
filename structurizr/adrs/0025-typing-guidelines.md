@@ -62,7 +62,25 @@ Although `sessionmaker[Session]` is callable and compatible with `Callable[[], S
 **Rule of thumb:**
 If a richer or domain-specific type exists, use it instead of a structurally compatible but more general type.
 
-
+### Current version of settings.py for reference
+```
+python.analysis.typeCheckingMode": "strict",
+  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.include": ["backend"],
+  "python.analysis.autoImportCompletions": true, // Improves auto-import suggestions
+  "python.analysis.useLibraryCodeForTypes": true, //Use library source when stubs are missing
+  
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingTypeStubs": "none", //Stops warnings like “Library X has no type information”.
+    "reportUnknownParameterType": "none", // Stops complaints when a library gives you Unknown types.
+    "reportUnknownArgumentType": "none", // Stops the cascade of errors when passing those Unknowns around.
+    // ---- Optional noise reducers at dynamic/framework boundaries ----
+    
+    "reportUnknownMemberType": "none", // Stops "member access on Unknown" chains from ORMs / frameworks
+    // "reportUnknownVariableType": "none", // Prevents warnings about locals inferred as Unknown in glue code
+    // "reportUnknownLambdaType": "none" // Useful if you use many lambdas (factories, callbacks)
+  }
+```
 
 
 
