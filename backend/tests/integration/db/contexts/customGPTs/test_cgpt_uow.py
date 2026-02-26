@@ -34,6 +34,22 @@ def test_uow_commit_persists(session_factory: Factory[Session]):
         # assert got.name == "alpha"
 
 
+def uow_commit_needs_to_be_done_manually(session_factory: Factory[Session]):
+    name: str = "alpha"
+    instruction: str = "do x"
+    description: str = "desc"
+    with SQLAlchemyCgptUOW(session_factory) as uow:
+        cgpt = uow.cgpt_repo.create_cgpt(
+            name=name, instructions=instruction, description=description
+        )
+        cgpt_id = cgpt.id
+
+    # new UoW / new Session → the row must be there
+    with SQLAlchemyCgptUOW(session_factory) as uow2:
+        with pytest.raises(Exception):
+            _ = uow2.cgpt_repo.get(cgpt_id)
+
+
 def test_uow_rollback_on_exception(session_factory: Factory[Session]):
     cgpt_id: str | None = None
     with pytest.raises(RuntimeError):

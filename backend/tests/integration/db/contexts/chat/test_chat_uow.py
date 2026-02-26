@@ -26,6 +26,17 @@ def test_uow_commit_persists(session_factory: Factory[Session]):
         assert len(got.messages_excl_sysPrompt) == 1
 
 
+def uow_commit_needs_to_be_done_manually(session_factory: Factory[Session]):
+    with SQLAlchemyConversationUOW(session_factory=session_factory) as uow:
+        conv: Conversation = uow.conversation_repo.create_conversation()
+        conv_id = conv.id
+        conv.add_user_text_message("text")
+
+    with SQLAlchemyConversationUOW(session_factory) as uow2:
+        with pytest.raises(Exception):
+            _ = uow2.conversation_repo.get(conv_id)
+
+
 def test_uow_rollback_on_exception(session_factory: Factory[Session]):
     # create and then raise to trigger rollback
     conv_id: str | None = None
