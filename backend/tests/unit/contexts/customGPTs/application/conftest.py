@@ -44,7 +44,11 @@ def cgpt_session_factory(
     connection: Connection = cgpt_engine.connect()
     outer_tx: RootTransaction = connection.begin()
 
-    SessionFactory = sessionmaker(bind=connection, expire_on_commit=False)
+    SessionFactory = sessionmaker(
+        bind=connection,
+        expire_on_commit=False,
+        join_transaction_mode="create_savepoint",
+    )
 
     try:
         yield SessionFactory
@@ -82,7 +86,11 @@ def conv_session_factory(
     connection: Connection = conv_engine.connect()
     outer_tx: RootTransaction = connection.begin()
 
-    SessionFactory = sessionmaker(bind=connection, expire_on_commit=False)
+    SessionFactory = sessionmaker(
+        bind=connection,
+        expire_on_commit=False,
+        join_transaction_mode="create_savepoint",
+    )
     register_last_message_at_events(SessionFactory)
 
     try:

@@ -28,7 +28,11 @@ def session_factory(engine: Engine) -> Generator[sessionmaker[Session], None, No
     connection: Connection = engine.connect()
     outer_tx: RootTransaction = connection.begin()
 
-    SessionFactory = sessionmaker(bind=connection, expire_on_commit=False)
+    SessionFactory = sessionmaker(
+        bind=connection,
+        expire_on_commit=False,
+        join_transaction_mode="create_savepoint",
+    )
     register_last_message_at_events(SessionFactory)
 
     try:

@@ -21,7 +21,11 @@ def engine(start_cgpt_mappers: None) -> Generator[Engine, None, None]:
 
 @pytest.fixture()
 def session_factory(engine: Engine) -> sessionmaker[Session]:
-    SessionFactory = sessionmaker(engine, expire_on_commit=False)
+    SessionFactory = sessionmaker(
+        engine,
+        expire_on_commit=False,
+        join_transaction_mode="create_savepoint",
+    )
     return SessionFactory
 
 
