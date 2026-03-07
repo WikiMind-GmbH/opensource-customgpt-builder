@@ -4,8 +4,6 @@ Date: 2025-08-04
 
 ## Status
 
-ACCEPTED    
-
 Superceded by [16. Modulith](0016-modulith.md)
 
 ## Context

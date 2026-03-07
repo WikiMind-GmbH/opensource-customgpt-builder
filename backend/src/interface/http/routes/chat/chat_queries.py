@@ -40,7 +40,7 @@ def get_chat_summaries(
     "/chat-history-by-id",
     operation_id="chatHistoryById",
 )
-async def get_chat_history(
+def get_chat_history(
     chat_id: str,
     queries_adapter: Annotated[
         ChatQueries, Depends(dependencies_container.chat_queries_adapter_factory)

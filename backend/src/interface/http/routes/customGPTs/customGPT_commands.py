@@ -28,7 +28,7 @@ customgpt_commands_router = APIRouter(
     "/delete-custom-gpt",
     operation_id="deleteCustomGpt",
 )
-async def delete_custom_gpt_endpoint(
+def delete_custom_gpt_endpoint(
     gpt_id: str,
     uow: Annotated[CgptUOW, Depends(dependencies_container.cgpt_uow_factory)],
     conv_adapter: Annotated[
@@ -44,7 +44,7 @@ async def delete_custom_gpt_endpoint(
     "/create-custom-gpt",
     operation_id="createCustomGpt",
 )
-async def create_custom_gpt(
+def create_custom_gpt(
     custom_gpt_infos: CustomGptToCreate,
     uow: Annotated[CgptUOW, Depends(dependencies_container.cgpt_uow_factory)],
 ) -> CommandResult:
@@ -64,7 +64,7 @@ async def create_custom_gpt(
     "/edit-custom-gpt",
     operation_id="editCustomGpt",
 )
-async def edit_custom_gpt(
+def edit_custom_gpt(
     custom_gpt_infos: CustomGptToEdit,
     uow: Annotated[CgptUOW, Depends(dependencies_container.cgpt_uow_factory)],
 ) -> CommandResult:

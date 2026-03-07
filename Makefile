@@ -1,12 +1,30 @@
-
+# =============================================================================
+# Makefile conventions (READ ME)
+#
+# - This Makefile is the primary developer interface: prefer `make <target>` over
+#   long docker/pytest/ruff commands.
+#
+# - Document targets inline using `##` on the *same line*:
+#     up: ## Start dev stack (detached)
+#
+# - Group targets using section headers that start with `## ` (note the space):
+#     ## ----------------------DEV STACK----------------------
+#
+# - The `help` target parses these conventions:
+#   - Lines matching `<target>: ... ## <description>` are listed as commands.
+#   - Lines starting with `## ` are printed as bold section headings.
+#
+# - Tip: keep target names verb-first and consistent:
+#   - `test-*` for pytest suites, `locust-*` for load tests, `clean-*` for resets.
+# =============================================================================
 
 PROJECT_NAME = opensource-customgpt-builder
 PG_VOLUME = $(PROJECT_NAME)_pgdata
 FRONTEND_VOLUME = $(PROJECT_NAME)_frontend_node_modules
 
 COMPOSE_DEV = docker compose -p $(PROJECT_NAME) -f docker-compose.dev.yaml
-COMPOSE_LOCUST_LOCAL := docker compose -f backend/tests_perf_locust/docker-compose.locust-perf-local.yaml
-COMPOSE_LOCUST_STAGING := docker compose -f backend/tests_perf_locust/docker-compose.locust-perf-staging.yaml
+COMPOSE_LOCUST_LOCAL := docker compose -f backend/tests/tests_perf_locust/docker-compose.locust-perf-local.yaml
+COMPOSE_LOCUST_STAGING := docker compose -f backend/tests/tests_perf_locust/docker-compose.locust-perf-staging.yaml
 PYTEST_FLAGS := -q -s --maxfail=1 -m 'not performance'
 PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
@@ -14,7 +32,7 @@ PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
 .PHONY: generate-client-prod test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
 
-## ----------------------DEV STACK----------------------
+## ----------------------DOCKER----------------------
 
 up:
 	$(COMPOSE_DEV) up -d
@@ -35,70 +53,68 @@ ps:
 rebuild:
 	$(COMPOSE_DEV) build --no-cache
 
-clean-restart-frontend:
+clean-restart-frontend: ## clean restart the frontend, might be needed to update the npm_libraries in node_modules
 	$(COMPOSE_DEV) stop frontend
 	$(COMPOSE_DEV) rm -f frontend
 	docker volume rm $(FRONTEND_VOLUME) || true
 	$(COMPOSE_DEV) build --no-cache frontend
 	$(COMPOSE_DEV) up -d frontend
 
-clean-restart-db:
+clean-restart-db: ## clean restart the db, helpful if init has changed while we do not use migrations
 	$(COMPOSE_DEV) stop postgres
 	$(COMPOSE_DEV) rm -f postgres
 	docker volume rm $(PG_VOLUME) || true
 	$(COMPOSE_DEV) build --no-cache postgres
 	$(COMPOSE_DEV) up -d postgres
 
-## ----------------------PYTEST FUNCTIONAL----------------------
-tests:
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests"
+## ----------------------PYTEST FUNCTIONAL MAIN TESTS----------------------
 
-test-show-setup:
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) --setup-show -s tests"
+test-external-api-adapters: ## Testing adapters that utilize external apis- might cost money, thus its outside the tests/test folder
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/test_external_api_adapters"
 
-test-use-cases:
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) -s test_rest_api_use_cases"
+test-use-cases: ## run the light e2e tests (directly using the Fastapi TestApp)
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) -s tests/test_rest_api_use_cases"
 
-## Run only unit tests
-test-unit:
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/unit"
+tests: ## run all the remaining functional tests not covered by test-use-cases or test-external-api-adapters
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests"
 
-## Run only external api tests -might cost money
-test-external-api-adapters:
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) test_external_api_adapters"
-
-
-test-contracts:
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/contracts"
-
-## Run only integration tests
-test-integration:
+test-show-setup: ## same as tests target, but with additional infos printed
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) --setup-show -s tests/tests"
+## ----------------------PYTEST FUNCTIONAL subset of `test-show-setup`-----
+test-unit: ## Run only unit tests
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests/unit"
+test-contracts: ## Run only contract tests
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests/contracts"
+test-integration: ## Run only integration tests
 	$(COMPOSE_DEV) up -d postgres
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/integration"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests/integration"
 
-## (Optional) Run tests in an already-running backend container
-test-unit-exec:
-	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/unit
 
-test-integration-exec:
-	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/integration
 
-## Clean up any stopped test containers
-test-clean:
+# ## (Optional) Run tests in an already-running backend container
+# test-unit-exec:
+# 	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/tests/unit
+
+# test-integration-exec:
+# 	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/tests/integration
+
+
+test-clean: ## Clean up any stopped test containers
 	$(COMPOSE_DEV) rm -f
+## ------------------------------------------------------------------------
 
 
 ## ----------------------PYTEST PERFORMANCE----------------------
 
-test-use-cases-perf:
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s test_rest_api_use_cases"
+test-use-cases-perf: ## run all pytest-performance tests in the test_rest_api_use_cases folder
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s tests/test_rest_api_use_cases"
 
-test-integration-perf:
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/integration"
+test-integration-perf: ## run all pytest-performance tests in the integratioin folder
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/tests/integration"
 
-test-perf:
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests"
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s test_rest_api_use_cases"
+test-perf: # combines the targets `test-use-cases-perf` `test-integration-perf`
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/tests"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s tests/test_rest_api_use_cases"
 # 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE)" tests
 # #replace the automatically generated base/url of the backend api 
 # #with the one defined as environment variable (if not already done)
@@ -108,29 +124,28 @@ test-perf:
 # NOT YET WORKING
 
 ## ----------------------LOCUST PERFORMANCE----------------------
-locust-staging:
+locust-staging: ## run locust against the staging environment, save results html
 	$(COMPOSE_LOCUST_STAGING) run --rm locust sh -c "locust -f locustfile.py --html 'results/locust_results_$$(date +%Y%m%d_%H%M%S).html'"
-locust-local:
+locust-local: ## run locust against the local environment, save results html
 	$(COMPOSE_DEV) up -d
 	$(COMPOSE_LOCUST_LOCAL) up -d locust
 	$(COMPOSE_LOCUST_LOCAL) exec locust sh -c "locust -f locustfile.py --html 'results/locust_results_$$(date +%Y%m%d_%H%M%S).html'"
-locust-local-debugging:
+locust-local-debugging: ## run locust for debugging - no results html is generated
 	$(COMPOSE_DEV) up -d
 	$(COMPOSE_LOCUST_LOCAL) up -d locust
 	$(COMPOSE_LOCUST_LOCAL) exec locust sh -c "locust -f locustfile.py"
 
 ## ----------------------LINTING, TYPECHECKING AND CO----------------------
-ruff:
+ruff: ## run ruff, incl. formatting
 	ruff check backend
 	ruff format backend
-ruff-fix-save:
+ruff-fix-save: ## run ruff, incl. formatting and auto-apply fixes where save
 	ruff check backend --fix
 	ruff format backend
 
 
-
-# Waits until the backend container is marked as healthy, then runs codegen
-generate-client-prod:
+## ----------------------GENERATING FRONTEND CLIENT----------------------
+generate-client-prod: ## creates the typescript client based on the openaipi provided by the backend
 	@echo "🔄 Starting containers..."
 	docker-compose -f docker-compose.dev.yaml up -d
 
@@ -149,3 +164,14 @@ generate-client-prod:
 
 	@echo "✅ Client generated successfully"
 
+
+
+## ----------------------OTHER----------------------
+help: ## Show available make targets
+	@echo ""
+	@echo "Available targets:"
+	@echo ""
+	@awk 'BEGIN {FS = ":.*##"} \
+		/^[a-zA-Z0-9_.-]+:.*##/ {printf "  \033[36m%-28s\033[0m %s\n", $$1, $$2} \
+		/^## / {printf "\n\033[1m%s\033[0m\n", substr($$0, 4)}' $(MAKEFILE_LIST)
+	@echo ""

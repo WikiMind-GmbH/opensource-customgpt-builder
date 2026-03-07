@@ -4,8 +4,6 @@ Date: 2025-08-04
 
 ## Status
 
-OPEN
-
 Superceded by [19. Different type of Port Adapter combos](0019-different-type-of-port-adapter-combos.md)
 
 ## Context

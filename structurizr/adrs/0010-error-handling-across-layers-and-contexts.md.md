@@ -1,9 +1,14 @@
 # Error Handling Pattern (Ports Own Errors, Global HTTP Translation)
 
-**Status:** Open
+## Status
+Superceded by [18. Error handling implementation](0018-error-handling-implementation)
+
+
 **Date:** 2025-10-03
 
 ## Context
+!!!!!!!!! THIS IS A SKETCH ONLY AS OF NOW
+
 
 We need a simple, consistent approach to error handling across multiple bounded contexts and layers.
 
@@ -14,7 +19,6 @@ For more details on how catch-all exceptions can be applied, and possible pitfal
 https://chatgpt.com/s/t_68faad13da78819190b985d0e0c62b4b
 
 
-Absolutely—here’s a single, coherent guide that merges both threads: **where to define exceptions across layers** and **how to handle/reraise them safely (including a per-port catch-all).**
 
 #### Exception ownership by layer
 

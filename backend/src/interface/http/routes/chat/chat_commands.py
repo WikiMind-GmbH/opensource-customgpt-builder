@@ -30,7 +30,7 @@ dependencies_container: DependenciesContainer = dependencies_container
     "/send-user-message",
     operation_id="sendUserMessage",
 )
-async def send_user_message(
+def send_user_message(
     request: UserMessageRequest,
     conv_uow: Annotated[
         ConversationUOW, Depends(dependencies_container.conversation_uow_factory)

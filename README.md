@@ -1,13 +1,20 @@
 # Project Setup
 
 This project uses Docker Compose for managing development and production environments.
-
+A lot of 
 ## Prerequisites
+### Assure that you can run makefile targets
+On macOS, you don't need to install anything
+
+On Windows, *you need to use Git Bash* not the powershell or cmd.exe.
+
+In the git bash, use chocolately to install `choco install make`
+
 
 - [Docker](https://www.docker.com/get-started) installed on your system.
 - [Docker Compose](https://docs.docker.com/compose/) installed.
-- It is advised to use VSCode and to install all the necessary extensions published by Microsoft for Docker (Docker, Container Tools) and the Python Debugger extension. These change from time to time -check the VSCode Pop Ups to the bottom right which recommends fitting extensions when opening up files.
-- Please also install the VSCode black formatter extension from Microsoft and use it to format the python code with it. For JS/TS and CSS use the Prettier Formatter extension from Prettier.
+- To profit from all It is advised to use VSCode and to install all the necessary extensions published by Microsoft for Docker (Docker, Container Tools) and the Python Debugger extension. These change from time to time -check the VSCode Pop Ups to the bottom right which recommends fitting extensions when opening up files.
+- For JS/TS and CSS use the Prettier Formatter extension from Prettier.
 - For local development, mkcert must be used to create ssl certs. The Readme.md in the nginx folder explains how to do this.
 - The frontend uses a client generated from the fastapi openapi documentation to reach the endpoints and provide interfaces detailing the expected structure of the bodys. When changing endpoint signatures or adding new endpoints, you must use `make generate-client-prod`
 

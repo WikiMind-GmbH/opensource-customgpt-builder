@@ -2,7 +2,7 @@
 
 Not having the type checker throw errors is a great sign. However, it does not mean that everything was done cleanly and that the types chosen guarantee best readability.
 
-## Accepted
+## Status
 OPEN 
 
 ## Created by

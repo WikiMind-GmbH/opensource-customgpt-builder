@@ -1,4 +1,6 @@
 # HTTPS certificates
+We need to create our own ssl certs and ca on our local machine to be able to test our app, which utilizes https. Thus, this is needed:
+
 ## Mac
 ### Local - mkcert
 
@@ -42,13 +44,6 @@ Extracted via `tar -xvzf ${yourfile}.tar.gz`
 ### 1. Install mkcert
 run
 ```powershell choco install mkcert ```
-
-
-
-
-
-
-
 
 
 | OS | Command |

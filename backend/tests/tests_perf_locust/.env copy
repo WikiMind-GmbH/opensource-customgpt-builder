@@ -1,0 +1,8 @@
+# Locust settings
+LOCUST_DESTINATION_LOCAL=http://backend:5173/ # for debugging + connecting locally
+LOCUST_DESTINATION_STAGING=https://albert-test.wikimind.de/api
+# LOCUST_DESTINATION= local container path if it would share a network
+LOCUST_BASIC_AUTH_USER=wikimind
+LOCUST_BASIC_AUTH_PASSWORD=bi039d2qmqozyn
+
+DEBUG_MODE_LOCUST=false # true

@@ -8,6 +8,10 @@ ACCEPTED
 
 ## Context
 
+We want single responsibility and clear boundaries between our different sub-domains.
+Each context of our modulith mus have clear responisbilities.
+The rag service and chat service context must be cleanly seperated with their responsibilities
+ 
 When composing a text, we will not only take into account the user input but also relevant data of the rag system as well as the data stored in the customgpt service.   
 Now theoretically, the RAG Service or customgpt service could process their raw data before giving it back to the chatservice.   
 I.e. the customgpt service could return not just the values of the description, name, id of the customgpt. It could already process this data and transform it into a conversation object for the chatservice -i.e. a system prompt.   
@@ -30,5 +34,5 @@ This also makes the services more cohesive: The RAG and customgpt service are on
 
 ## Consequences
 
-The interfaces/apis of the customgpt as well as the RAG service will provide the 'raw' data in a well readable format. They will not return conversation-snippets or do any kind of prompt-engineering.   
+The interfaces/apis of the customgpt as well as the RAG service will provide the 'raw' data in a well readable format. They will not return conversation-snippets or do any kind of prompt-compositioin.   
 Any Prompt-engineering is the responsibility of the chatservice.

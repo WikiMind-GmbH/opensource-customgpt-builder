@@ -27,7 +27,7 @@ This gives you access to the container environment where you can safely run npm 
 
 ### Generate client from openapi definition of backend
 
-#### Assure that you can run makefiles
+#### Assure that you can run makefile targets
 On macOS, you don't need to install anything
 
 On Windows, *you need to use Git Bash* not the powershell or cmd.exe.

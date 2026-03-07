@@ -27,7 +27,7 @@ customgpt_queries_router = APIRouter(prefix="/customgpts", tags=["customGPTs: Qu
     "/retreive-all-custom-gpts",
     operation_id="retreiveAllCustomGpts",
 )
-async def retreive_all_custom_gpts(
+def retreive_all_custom_gpts(
     cgpt_queries_adapter: Annotated[
         CgptQueries, Depends(dependencies_container.cgpt_queries_adapter_factory)
     ],
@@ -45,7 +45,7 @@ async def retreive_all_custom_gpts(
     "/get-custom-gpt-infos",
     operation_id="getCustomGptInfos",
 )
-async def get_custom_gpt_by_id(
+def get_custom_gpt_by_id(
     custom_gpt_id: str,
     cgpt_queries_adapter: Annotated[
         CgptQueries, Depends(dependencies_container.cgpt_queries_adapter_factory)

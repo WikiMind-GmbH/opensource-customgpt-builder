@@ -6,4 +6,3 @@ While we don't need to install anything locally to get the docker set up running
 ## Backend config
 
 Use pip to install the requirements.
-

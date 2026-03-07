@@ -15,7 +15,7 @@ from src.contexts.chat.domain.models import Conversation, Role
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
 from src.contexts.customGPTs.domain.models import CustomGPT
 from src.contexts.shared.typing_aliases import Factory
-from tests.unit.contexts.chat.application.FakeAdapters import FakeLLMAdapter
+from tests.tests.unit.contexts.chat.application.FakeAdapters import FakeLLMAdapter
 
 
 def test_create_conversation_cgpt_registered_correctly(
