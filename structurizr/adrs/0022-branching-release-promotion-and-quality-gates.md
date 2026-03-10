@@ -131,7 +131,7 @@ production environment always deploys the `prod` branch.
 
 #### Documentation
 
-* An ADR is created if architectural decisions are impacted.
+* An ADR is created if architectural decisions are impacted - **check also if old adrs are to be superseded or impacted**
 * Documentation is updated where applicable.
 * A conscious decision is made whether additional documentation is required.
 
