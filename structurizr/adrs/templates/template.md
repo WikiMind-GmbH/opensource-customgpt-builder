@@ -1,17 +1,13 @@
-# TITLE
+# NUMBER. TITLE
+
+Date: DATE
 
 A short, descriptive statement of the architectural decision.
 It should be specific enough to be understandable without reading the full document.
 
-## STATUS
+## Status
 
-Choose one:
-
-OPEN | PROPOSED | ACCEPTED
-
-* **OPEN** – The ADR is being drafted and is not yet ready for review.
-* **PROPOSED** – The decision is formulated and under review/discussion.
-* **ACCEPTED** – The decision has been formally approved and is binding.
+STATUS
 
 ## Created by
 
