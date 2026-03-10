@@ -48,6 +48,7 @@ docker-compose -f docker-compose.dev.yaml exec frontend /bin/sh
 ```
 
 This gives you access to the container environment where you can safely run npm commands (e.g. `npm install some-package`).
+
 ---
 
 ## Generated API client (required workflow)
