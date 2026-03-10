@@ -34,24 +34,38 @@ PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
 ## ----------------------DOCKER----------------------
 
-up:
+up: ## Start dev stack (fast). Use after pulling latest or normal day-to-day work.
 	$(COMPOSE_DEV) up -d
 
-down:
+up-build: ## Start dev stack + rebuild if Dockerfile/requirements changed (cached rebuild).
+	$(COMPOSE_DEV) up -d --build
+
+up-rebuild: ## Clean rebuild (no cache) + start. Use if build cache seems stale or deps won't update.
+	$(COMPOSE_DEV) build --no-cache
+	$(COMPOSE_DEV) up -d
+
+down: ## Stop stack and remove containers/network. Volumes remain unless explicitly removed.
 	$(COMPOSE_DEV) down
 
-restart:
+restart: ## Recreate containers (no rebuild). Use after .env/compose changes or to reset a weird runtime state.
 	$(COMPOSE_DEV) down
 	$(COMPOSE_DEV) up -d
 
-logs:
+restart-build: ## Recreate containers + rebuild if needed. Use after Dockerfile/requirements changes + you want a clean restart.
+	$(COMPOSE_DEV) down
+	$(COMPOSE_DEV) up -d --build
+
+restart-rebuild: ## Recreate containers + clean rebuild. Use for "it still uses old deps" or suspected cache issues.
+	$(COMPOSE_DEV) down
+	$(COMPOSE_DEV) build --no-cache
+	$(COMPOSE_DEV) up -d
+
+logs: ## Follow logs for the whole dev stack (ctrl+c to stop following).
 	$(COMPOSE_DEV) logs -f
 
-ps:
+ps: ## Show container status for the dev stack.
 	$(COMPOSE_DEV) ps
 
-rebuild:
-	$(COMPOSE_DEV) build --no-cache
 
 clean-restart-frontend: ## clean restart the frontend, might be needed to update the npm_libraries in node_modules
 	$(COMPOSE_DEV) stop frontend
