@@ -1,7 +1,7 @@
 # 24. Dependency factories vs. singletons
 
-Date: 2025-12-03
-Status: Accepted
+# Status
+Accepted
 
 ## Context
 

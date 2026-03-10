@@ -3,7 +3,7 @@ Date: 2025-08-04
 
 ## Status
 
-OPEN    
+Superceded by [27. Chat context owns prompt and conversation composition](0027-chat-context-owns-prompt-and-conversation-composition.md)
 
 ## Context
 

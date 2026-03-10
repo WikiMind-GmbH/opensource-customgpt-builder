@@ -6,7 +6,7 @@ Date: 2025-11-20
 
 Open
 
-Supercedes [ADR-XXX: Error Handling Pattern (Ports Own Errors, Global HTTP Translation)](0010-error-handling-across-layers-and-contexts.md.md)
+Supercedes [ADR-XXX: Error Handling Pattern (Ports Own Errors, Global HTTP Translation)](0010-error-handling-across-layers-and-contexts.md)
 
 ## Context
 

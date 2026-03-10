@@ -4,12 +4,12 @@ Date: 2025-08-04
 
 ## Status
 
-ACCEPTED    
+Superceded by [27. Chat context owns prompt and conversation composition](0027-chat-context-owns-prompt-and-conversation-composition.md)  
 
 ## Context
 
 We want single responsibility and clear boundaries between our different sub-domains.
-Each context of our modulith mus have clear responisbilities.
+Each context of our modulith must have clear responisbilities.
 The rag service and chat service context must be cleanly seperated with their responsibilities
  
 When composing a text, we will not only take into account the user input but also relevant data of the rag system as well as the data stored in the customgpt service.   

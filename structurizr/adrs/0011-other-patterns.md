@@ -7,7 +7,8 @@ OPEN
 
 ## Context
 
-Patterns that I have not yet finely sorted and put into their own adr will find its place here
+This is a sketch board for architectural topics.
+Maybe this should not be an adr but jira tickets, but I want all architecture thoughts to be in one source for now.
 
 ## Decision
 

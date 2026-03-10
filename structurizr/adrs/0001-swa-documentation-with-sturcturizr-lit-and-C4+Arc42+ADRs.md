@@ -4,7 +4,7 @@ Date: 2025-08-04
 
 ## Status
 
-ACCEPTED    
+Superceded by [17. ADRs with tools](0017-adrs-with-tools.md)   
 
 ## Context
 
