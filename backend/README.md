@@ -7,9 +7,10 @@ This backend is Docker-first and designed around:
 - architecture rules captured in ADRs (ports/adapters, modulith boundaries, DTO/mappers, etc.)
 
 > This README describes **how to work** with this backend.
-> The guidelines on writing and commiting code + the **why** (trade-offs & rationale) are documented in ADRs. Please read them - preferably by using the structuriz web app
-> For an onboarding overview of the architecture, check out 
-[backend architecture overview onboarding](backend/backend architecture overview onboarding.md)
+> The guidelines on writing and commiting code + the **why** (trade-offs & rationale) are documented in ADRs. Please read them.
+
+>For an onboarding overview of the architecture, check out 
+[backend architecture overview onboarding](backend_architecture_overview_onboarding.md)
 
 ---
 ## Prerequisites for local dev
