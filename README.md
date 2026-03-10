@@ -1,171 +1,132 @@
-# Project Setup
+# opensource-customgpt-builder
 
-This project uses Docker Compose for managing development and production environments.
-A lot of 
+Docker-first development setup for a full-stack app (FastAPI backend + React frontend) with supporting services (Postgres, Nginx, Structurizr Lite).
+
+> This README is intentionally **operational**: how to run, test, lint, and troubleshoot.
+> Architecture and decisions (incl. guidelines) live in **Structurizr Lite + ADRs**.
+
+
+---
+
 ## Prerequisites
-### Assure that you can run makefile targets
-On macOS, you don't need to install anything
 
-On Windows, *you need to use Git Bash* not the powershell or cmd.exe.
+* Docker + Docker Compose
+* `make`
 
-In the git bash, use chocolately to install `choco install make`
+### Windows note
 
-
-- [Docker](https://www.docker.com/get-started) installed on your system.
-- [Docker Compose](https://docs.docker.com/compose/) installed.
-- To profit from all It is advised to use VSCode and to install all the necessary extensions published by Microsoft for Docker (Docker, Container Tools) and the Python Debugger extension. These change from time to time -check the VSCode Pop Ups to the bottom right which recommends fitting extensions when opening up files.
-- For JS/TS and CSS use the Prettier Formatter extension from Prettier.
-- For local development, mkcert must be used to create ssl certs. The Readme.md in the nginx folder explains how to do this.
-- The frontend uses a client generated from the fastapi openapi documentation to reach the endpoints and provide interfaces detailing the expected structure of the bodys. When changing endpoint signatures or adding new endpoints, you must use `make generate-client-prod`
-
-## Environment Setup
-
-- The project uses a single `.env` file for environment variables. Ensure that it is correctly set up before running the containers. Copy the `.env.example`, paste it in the same folder, rename the copy to `.env` and fill in the values that are not defaults. Some values are only needed for the prod environment, no need to set them for development.
-
-## Software Architecture
-
-The SWA must be documented using structurizr lite. 
-The ADRS will be documented as part of the software architecture using [ADR Tools](https://github.com/npryce/adr-tools) command line tool.
-
-## Development
-You must install mkcert for https to work. See nginx/README.md on how to do it.
-
-
-(*All `sh`/`bash` commands must be executed from the repo root path*)
-
-Start the application via the `docker-compose.dev.yaml` file.    
+Use **Git Bash** (not PowerShell/cmd). Then install make via Chocolatey:
 
 ```sh
-docker-compose -f docker-compose.dev.yaml up -d
+choco install make
 ```
 
-For VSCode, debugging configs are provided in the `.vscode` folder. Please use them when debugging front- or backend. You must open the root folder of the repo (the parent folder of this readme) for vscode to automatically detect and provide them.
+### HTTPS for local development
 
-Live reloading & bind mounts are set up for back- and frontend. The changes you make in the code locally will be reflected immediatly after saving in the app.
+Local HTTPS uses **mkcert**. See `nginx/README.md`.
 
-Use the React debugging config of launch.json to makes sure that you will not use a cached version of the frontend.
+### VSCode & Ruff
 
-*Keep the automatically generated frontend client up-to-date and use it!*    
-If you add or change endpoints in the backend, you need to run the makefile and change the base path in `OpenAPI.ts`. In this way, the client will always expect the correct properties/body structure of backend answers, query parameters,  request body.
+This repo ships `.vscode/settings.json` + `.vscode/launch.json`    
+as well as `pyproject.toml`
 
+* Use them (don’t fight them) — they contain **type checker configuration** and **debug presets**    
+as well as **ruff configuration** and **pytest configuration**
+* Python type checking is expected via **Pylance/Pyright** (see backend README for details).
+* Linting and formatting is expected via **Ruff** (see backend README for details).
 
-## Production
+---
 
-To start the production environment
+## Quickstart (Development)
 
-### Utilizing VSCodes UI features and quality of life improvements on the remote server
-Connect via vscode+ssh to the server.
+All commands are expected to run **from the repo root**.
 
-Install the docker extension inside the server.
-
--> Control docker via vscode UI instead of cmd tool. No manual docker &docker-compose install needed either
-
-Utilize the Version Control UI in VSCoder -> Vscode authenticates you to git, no set up of ssh key & manual setup needed
-
-### Set up the Certificates
-1. Correctly fill out the following files:
-a) `.env`
-For example:
 ```sh
-CERTBOT_DOMAINS="-d www.albert.wikimind.de"
-CERTBOT_EMAIL=albert.sandritter@wikimind.de
-```
-b) nginx_lets_encrypt_setup.conf + nginx_prod.conf
-```
+make up
+````
 
-server {
-    listen 80;
-    server_name albert-test.wikimind.de www.albert-test.wikimind.de;
-}
-```
-```
-server {
-    listen 80;
-    server_name ${DOMAIN} www.${DOMAIN}; <---- !!!
-    # ACME challenge (Let’s Encrypt)
-    ...
-}
+Then open:
 
-server {
-    listen 443 ssl ;
-    http2 on;
-    server_name ${DOMAIN}; <---- !!!
+* Frontend: [https://localhost](https://localhost)
+* Backend API docs (Swagger): [https://localhost/api/docs](https://localhost/api/docs)
+* Structurizr Lite: [http://localhost:8080](http://localhost:8080)
 
-    ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem; <---- !!!
-    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem; <---- !!!
-```
-2. from the repo root, spin up the `docker-compose.letsencryptsetup.yaml`
+Useful commands:
+
 ```sh
-docker compose -f docker-compose.letsencryptsetup.yaml up
+make logs
+make down
+make ps
 ```
-3. Check the logs of the certbot container if it worked.
+
+
+
+## Daily workflow
+Run `make help` to see:
+- **all available targets**.
+- **more information on each target**
+
+### Start / stop
+
 ```sh
-docker ps -a # check the name of the certbot container
-docker logs ${name_of_certbot_container}
+make up
+make down
+make restart
 ```
-It should read like this:
+
+### Generate the frontend API client (after backend endpoint changes)
+
 ```sh
-Saving debug log to /var/log/letsencrypt/letsencrypt.log
-Account registered.
-Requesting a certificate for albert.wikimind.de and www.albert.wikimind.de
-
-Successfully received certificate.
-Certificate is saved at: /etc/letsencrypt/live/albert.wikimind.de/fullchain.pem
-Key is saved at:         /etc/letsencrypt/live/albert.wikimind.de/privkey.pem
-This certificate expires on 2025-08-17.
-These files will be updated when the certificate renews.
-NEXT STEPS:
-- The certificate will need to be renewed before it expires. Certbot can automatically renew the certificate in the background, but you may need to take steps to enable that functionality. See https://certbot.org/renewal-setup for instructions.
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-If you like Certbot, please consider supporting our work by:
- * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
- * Donating to EFF:                    https://eff.org/donate-le
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+make generate-client-prod
 ```
-4. Shut down the containers with 
+
+### Lint + format (backend)
+
 ```sh
-docker-compose -f docker-compose.letsencryptsetup.yaml down
+make ruff
+make ruff-fix-save
 ```
 
-5. Set up Basic Auth
-Install apache2-utils to get htpasswd
-```bash
-sudo apt update
-sudo apt install apache2-utils
-```
-Create the .htpasswd file
+### Tests (functional, non-performance)
+
 ```sh
-htpasswd -c ./nginx/.htpasswd ${userName}
+make tests
+make test-use-cases
+make test-external-api-adapters
 ```
-Create a password, write it down
 
+### Performance tests
 
-### If the certificates & `.htpasswd` were created, start the prod docker compose
-1. Start up the prod docker compose
 ```sh
-docker-compose -f docker-compose.prod.yaml up -d
-```
-
-2. Make sure to correctly set the `BASE_PATH` in `OpenApi.ts`
-```ts
-export const OpenAPI: OpenAPIConfig = {
-    BASE: 'https://${hostname}/api',
+make test-perf
+make locust-local
+make locust-staging
 ```
 
 
 
-## Nginx Configuration
+---
 
-For production, set the `server_name` in `nginx_prod.conf` to match your domain or IP address.
+## Architecture & quality rules (must-read)
 
-## Best practices
-The FastAPI backend API must be documented in enought detail to understand all endpoints and their functionality soley by reading the openapi config/looking at the swag ui API documenttation at `app/docs`
+* **Architecture docs + ADRs** are best viewed via Structurizr Lite → see `structurizr/README.md`.
+* Backend architecture follows a modulith with ports/adapters; cross-context data must use DTOs/mappers (see ADRs).
+* Quality gates (linting/typechecking/testing) are part of the engineering contract.
 
+---
 
+## Troubleshooting
 
-## Additional Notes
+### Frontend dependencies seem stale / weird after changing `package.json`
 
-- Make sure to update `nginx_prod.conf` before deploying in production.
-- The same `.env` file is used across both environments.
-- If needed, modify the `docker-compose` files to suit your setup.
+The frontend uses a named volume for `node_modules`. Sometimes old dependencies remain.
+
+```sh
+make clean-restart-frontend
+```
+
+### Reset Postgres data
+
+```sh
+make clean-restart-db
+```
