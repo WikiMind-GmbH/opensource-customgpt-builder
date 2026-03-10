@@ -6,7 +6,7 @@ Docker-first development setup for a full-stack app (FastAPI backend + React fro
 
 > It does not cover Architecture and decisions (incl. guidelines). They live in **Structurizr Lite + ADRs**. You can read the adrs in [structurizr/adrs](structurizr/adrs) or on http://localhost:8080 after starting the project. For more on SWA see [structurizr/README.md](structurizr/README.md)
 
-> Here is an onboarding overview of the architecture: [backend architecture overview onboarding](backend_architecture_overview_onboarding.md)
+> Here is an onboarding overview of the architecture: [backend architecture overview onboarding](backend/backend_architecture_overview_onboarding.md)
 
 
 ---
