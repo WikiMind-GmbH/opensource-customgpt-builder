@@ -116,7 +116,7 @@ We introduce three modules:
    * constructing adapters and adapter factories,
    * returning a typed container of dependencies.
 
-2. **`deps.py`**
+2. **`composition.py`**
    Responsible for:
 
    * reading environment variables,
@@ -124,7 +124,7 @@ We introduce three modules:
    * exporting the resulting dependency container.
 
 3. **HTTP routers**
-   Import the dependency container from `deps.py` and use it with `Depends`.
+   Import the dependency container from `composition.py` and use it with `Depends`.
 
 ### Bootstrap Function
 
@@ -194,7 +194,7 @@ def bootstrap(...):
 
 ### Connecting to the HTTP Layer
 
-In `deps.py`, the bootstrap function is called exactly once at import time:
+In `composition.py`, the bootstrap function is called exactly once at import time:
 
 ```python
 from src.bootstrap import bootstrap, DependenciesContainer

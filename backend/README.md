@@ -7,8 +7,9 @@ This backend is Docker-first and designed around:
 - architecture rules captured in ADRs (ports/adapters, modulith boundaries, DTO/mappers, etc.)
 
 > This README describes **how to work** with this backend.
-> The guidelines on writing and commiting code + the **why** (trade-offs & rationale) are documented in ADRs. Please read them - preferably by using the structuriz
-> Check out ADR 16 and ADR 22 for starters
+> The guidelines on writing and commiting code + the **why** (trade-offs & rationale) are documented in ADRs. Please read them - preferably by using the structuriz web app
+> For an onboarding overview of the architecture, check out 
+[backend architecture overview onboarding](backend/backend architecture overview onboarding.md)
 
 ---
 ## Prerequisites for local dev
@@ -134,4 +135,4 @@ This backend follows architecture rules documented as ADRs and in Structurizr Li
 Start here:
 
 * Structurizr docs: `structurizr/README.md`
-* ADRs: see the `adrs/` folder (rendered in Structurizr Lite)
+* ADRs: see the `adrs/` folder (rendered in Structurizr Lite) -view them, after `make up` on http://localhost:8080
