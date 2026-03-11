@@ -17,7 +17,7 @@ class SQLAlchemyConversationUOW(ConversationUOW):
     def __init__(self, session_factory: Factory[Session]) -> None:
         self._session_factory = session_factory
         self._session: Session | None = None
-        self._sqla_conv_repo: SQAlchemyConversartionRepository | None
+        self._sqla_conv_repo: SQAlchemyConversartionRepository | None = None
 
     def __enter__(self) -> "SQLAlchemyConversationUOW":
         self._session = self._session_factory()
@@ -39,11 +39,11 @@ class SQLAlchemyConversationUOW(ConversationUOW):
             self._session = None
             self._sqla_conv_repo = None
 
-    def commit(self):
+    def commit(self) -> None:
         assert self._session is not None
         self._session.commit()
 
-    def rollback(self):
+    def rollback(self) -> None:
         assert self._session is not None
         self._session.rollback()
 
