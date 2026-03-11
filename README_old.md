@@ -16,7 +16,7 @@ In the git bash, use chocolately to install `choco install make`
 - To profit from all It is advised to use VSCode and to install all the necessary extensions published by Microsoft for Docker (Docker, Container Tools) and the Python Debugger extension. These change from time to time -check the VSCode Pop Ups to the bottom right which recommends fitting extensions when opening up files.
 - For JS/TS and CSS use the Prettier Formatter extension from Prettier.
 - For local development, mkcert must be used to create ssl certs. The Readme.md in the nginx folder explains how to do this.
-- The frontend uses a client generated from the fastapi openapi documentation to reach the endpoints and provide interfaces detailing the expected structure of the bodys. When changing endpoint signatures or adding new endpoints, you must use `make generate-client-prod`
+- The frontend uses a client generated from the fastapi openapi documentation to reach the endpoints and provide interfaces detailing the expected structure of the bodys. When changing endpoint signatures or adding new endpoints, you must use `make generate-client-ts-frontend`
 
 ## Environment Setup
 

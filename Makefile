@@ -30,7 +30,7 @@ PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
 
 
-.PHONY: generate-client-prod test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
+.PHONY: generate-client-ts-frontend test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
 
 ## ----------------------DOCKER----------------------
 
@@ -159,7 +159,7 @@ ruff-fix-save: ## run ruff, incl. formatting and auto-apply fixes where save
 
 
 ## ----------------------GENERATING FRONTEND CLIENT----------------------
-generate-client-prod: ## creates the typescript client based on the openaipi provided by the backend
+generate-client-ts-frontend: ## creates the typescript client based on the openaipi provided by the backend
 	@echo "🔄 Starting containers..."
 	docker-compose -f docker-compose.dev.yaml up -d
 

@@ -56,7 +56,7 @@ This gives you access to the container environment where you can safely run npm 
 When backend endpoints change, regenerate the client:
 
 ```sh
-make generate-client-prod
+make generate-client-ts-frontend
 ```
 
 This:

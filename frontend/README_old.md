@@ -43,7 +43,7 @@ To generate a TypeScript client from the FastAPI backend:
 2. Run the following Makefile command from the root of the full project:
 
    ```bash
-   make generate-client-prod
+   make generate-client-ts-frontend
    ```
 
 3. As of now, we need to manually set the baseurl of the backend in the automatically generated frontend client. In the future, a makefile script might be used to do this.
@@ -193,7 +193,7 @@ This results in a complete, typed OpenAPI schema that accurately represents the 
 
 We use the `openapi-typescript-codegen` Node library to generate a strongly-typed TypeScript client from this spec. The generated client can be imported into the frontend to safely call backend endpoints with full type support.
 
-The Makefile script `generate-client-prod` automates this process:
+The Makefile script `generate-client-ts-frontend` automates this process:
 
 1. It checks that the backend container is healthy (i.e. that the OpenAPI spec is reachable).
 2. It uses the OpenAPI spec to generate the client code.

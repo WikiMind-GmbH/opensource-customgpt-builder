@@ -91,7 +91,7 @@ make ps
 ### Generate the frontend API client (after backend endpoint changes)
 
 ```sh
-make generate-client-prod
+make generate-client-ts-frontend
 ```
 
 ### Lint + format (backend)
