@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from src.contexts.customGPTs.application.ports.customgpt_repo import CustomGPTRepository
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
 from src.contexts.customGPTs.infrastructure.db.customgpt_repo_implmementations import (
-    SQAlchemyCustomGPTRepository,
+    SQLAlchemyCustomGPTRepository,
 )
 from src.contexts.shared.typing_aliases import Factory
 
@@ -19,13 +19,13 @@ class SQLAlchemyCgptUOW(CgptUOW):
     def __init__(self, session_factory: Factory[Session]) -> None:
         self._session_factory = session_factory
         self._session: Session | None = None
-        self._sqla_cgpt_repo: SQAlchemyCustomGPTRepository | None
+        self._sqla_cgpt_repo: SQLAlchemyCustomGPTRepository | None
 
     def __enter__(
         self,
     ) -> Self:  # because contextmanager ->Self is better style than ->SQLAlchemyCgptUOW
         self._session = self._session_factory()
-        self._sqla_cgpt_repo = SQAlchemyCustomGPTRepository(session=self._session)
+        self._sqla_cgpt_repo = SQLAlchemyCustomGPTRepository(session=self._session)
         return self
 
     def __exit__(

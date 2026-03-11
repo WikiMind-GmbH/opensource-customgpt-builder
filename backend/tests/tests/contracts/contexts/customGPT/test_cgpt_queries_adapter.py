@@ -8,7 +8,7 @@ from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
     CgptQueriesImplementation,
 )
 from src.contexts.customGPTs.infrastructure.db.customgpt_repo_implmementations import (
-    SQAlchemyCustomGPTRepository,
+    SQLAlchemyCustomGPTRepository,
 )
 from src.contexts.customGPTs.infrastructure.db.orm import custom_gpts
 from src.contexts.shared.typing_aliases import Factory
@@ -24,7 +24,7 @@ def test_get_overviews(
     Then we assert the repository returns them in DESC order by created_at.
     """
     session = session_factory()
-    repo = SQAlchemyCustomGPTRepository(session)
+    repo = SQLAlchemyCustomGPTRepository(session)
 
     # create three entities (ids come from your domain model)
     first = repo.create_cgpt(name="first", instructions="i1")
@@ -67,7 +67,7 @@ def test_get_custom_gpt_infos(
     cgpt_query_factory: Factory[CgptQueriesImplementation],
 ):
     session = session_factory()
-    repo = SQAlchemyCustomGPTRepository(session)
+    repo = SQLAlchemyCustomGPTRepository(session)
     name = "name"
     description = "description"
     instructions = "instructions"
@@ -90,7 +90,7 @@ def test_sessions_are_closed(
     cgpt_query_factory: Factory[CgptQueriesImplementation],
 ):
     session = session_factory()
-    repo = SQAlchemyCustomGPTRepository(session)
+    repo = SQLAlchemyCustomGPTRepository(session)
     name = "name"
     description = "description"
     instructions = "instructions"

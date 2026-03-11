@@ -8,7 +8,7 @@ from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
     ChatQueriesAdapter,
 )
 from src.contexts.chat.infrastructure.db.conv_repo_implmementations import (
-    SQAlchemyConversartionRepository,
+    SQLAlchemyConversartionRepository,
 )
 from src.contexts.chat.infrastructure.db.orm import metadata
 from src.contexts.shared.typing_aliases import Factory
@@ -34,7 +34,7 @@ def session_factory(engine: Engine) -> sessionmaker[Session]:
 
 @pytest.fixture()
 def sqla_conv_repo_factory(session_factory: sessionmaker[Session]):
-    return lambda: SQAlchemyConversartionRepository(session=session_factory())
+    return lambda: SQLAlchemyConversartionRepository(session=session_factory())
 
 
 @pytest.fixture()

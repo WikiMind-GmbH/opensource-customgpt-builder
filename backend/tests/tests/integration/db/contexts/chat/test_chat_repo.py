@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.contexts.chat.application.ports.chat_repo import ConversationNotFoundError
 from src.contexts.chat.domain.models import ContentType, Conversation, Message, Role
 from src.contexts.chat.infrastructure.db.conv_repo_implmementations import (
-    SQAlchemyConversartionRepository,
+    SQLAlchemyConversartionRepository,
 )
 from src.contexts.chat.infrastructure.db.orm import (
     messages_excl_sysPrompt as messages_table,
@@ -15,20 +15,22 @@ from src.contexts.shared.typing_aliases import Factory
 
 def test_repository_get_roundtrip(session_factory: Factory[Session]):
     with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
+        repository = SQLAlchemyConversartionRepository(session)
         created_conversation = repository.create_conversation()
         created_conversation_id = created_conversation.id
         session.commit()
 
     with session_factory() as verification_session:
-        verification_repository = SQAlchemyConversartionRepository(verification_session)
+        verification_repository = SQLAlchemyConversartionRepository(
+            verification_session
+        )
         fetched_conversation = verification_repository.get(created_conversation_id)
         assert fetched_conversation.id == created_conversation_id
 
 
 def test_repository_get_raises_when_missing(session_factory: Factory[Session]):
     with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
+        repository = SQLAlchemyConversartionRepository(session)
         with pytest.raises(ConversationNotFoundError):
             repository.get("non-existent-id")
 
@@ -39,7 +41,7 @@ def test_add_text_messages_domain_functions_translate(
     assistant_text: str = "assistant_text"
     user_text: str = "user_text"
     with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
+        repository = SQLAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
         conv_id: str = conversation.id
         conversation.add_user_text_message(user_text)
@@ -47,7 +49,7 @@ def test_add_text_messages_domain_functions_translate(
         conversation.add_assistant_text_message(assistant_text)
         session.commit()
     with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
+        repository = SQLAlchemyConversartionRepository(session)
         conv: Conversation = repository.get(conv_id=conv_id)
         messages: list[Message] = conv.messages_excl_sysPrompt
         assert len(messages) == 2
@@ -61,7 +63,7 @@ def test_add_text_messages_domain_functions_translate(
 
 def test_delete_conversation_cascades_messages(session_factory: Factory[Session]):
     with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
+        repository = SQLAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
         conversation.title = "X"
         conversation.add_user_text_message("hi")
@@ -79,7 +81,7 @@ def test_delete_conversation_cascades_messages(session_factory: Factory[Session]
 
 def test_delete_conversations_with_cgpt(session_factory: Factory[Session]):
     with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
+        repository = SQLAlchemyConversartionRepository(session)
         cgpt_id = "id"
         cgpt_other_id = "other_id"
         convs_with_cgpt: list[Conversation] = []
@@ -99,19 +101,20 @@ def test_delete_conversations_with_cgpt(session_factory: Factory[Session]):
     # Test: all convs exist
     with session_factory() as session:
         assert None not in [
-            SQAlchemyConversartionRepository(session).get(conv.id) for conv in all_convs
+            SQLAlchemyConversartionRepository(session).get(conv.id)
+            for conv in all_convs
         ]
 
     # delete
     with session_factory() as session:
-        SQAlchemyConversartionRepository(session).delete_conversations_with_cgpt(
+        SQLAlchemyConversartionRepository(session).delete_conversations_with_cgpt(
             cgpt_id=cgpt_id
         )
         session.commit()
     # Test: unrelated converstions still exist
     with session_factory() as session:
         assert None not in [
-            SQAlchemyConversartionRepository(session).get(conv.id)
+            SQLAlchemyConversartionRepository(session).get(conv.id)
             for conv in unrelated_convs
         ]
 
@@ -119,20 +122,20 @@ def test_delete_conversations_with_cgpt(session_factory: Factory[Session]):
     with session_factory() as session:
         for conv in convs_with_cgpt:
             with pytest.raises(ConversationNotFoundError):
-                SQAlchemyConversartionRepository(session).get(conv.id)
+                SQLAlchemyConversartionRepository(session).get(conv.id)
 
 
 def test_add_user_text_message_roundtrip(session_factory: Factory[Session]):
     user_text = "user_text"
     with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
+        repository = SQLAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
         conversation.add_user_text_message(user_text)
 
         session.commit()
 
     with session_factory() as verification_session:
-        repository_verify = SQAlchemyConversartionRepository(verification_session)
+        repository_verify = SQLAlchemyConversartionRepository(verification_session)
         fetched: Conversation = repository_verify.get(conversation.id)
         assert fetched.messages_excl_sysPrompt[0].role == Role.user
         assert fetched.messages_excl_sysPrompt[0].contentType == ContentType.text
@@ -142,14 +145,14 @@ def test_add_user_text_message_roundtrip(session_factory: Factory[Session]):
 def test_add_assistant_text_message_roundtrip(session_factory: Factory[Session]):
     assistant_text = "assistant_text"
     with session_factory() as session:
-        repository = SQAlchemyConversartionRepository(session)
+        repository = SQLAlchemyConversartionRepository(session)
         conversation = repository.create_conversation()
         conversation.add_assistant_text_message(assistant_text)
 
         session.commit()
 
     with session_factory() as verification_session:
-        repository_verify = SQAlchemyConversartionRepository(verification_session)
+        repository_verify = SQLAlchemyConversartionRepository(verification_session)
         fetched: Conversation = repository_verify.get(conversation.id)
         assert fetched.messages_excl_sysPrompt[0].role == Role.assistant
         assert fetched.messages_excl_sysPrompt[0].contentType == ContentType.text
@@ -171,7 +174,7 @@ def test_add_assistant_text_message_roundtrip(session_factory: Factory[Session])
 #     session_factory: Factory[Session],
 # ):
 #     with session_factory() as session:
-#         repository = SQAlchemyConversartionRepository(session)
+#         repository = SQLAlchemyConversartionRepository(session)
 #         conversation = repository.create_conversation()
 #         conversation.title = "LMA"
 
@@ -199,7 +202,7 @@ def test_add_assistant_text_message_roundtrip(session_factory: Factory[Session])
 #     session_factory: Factory[Session],
 # ):
 #     with session_factory() as session:
-#         repository = SQAlchemyConversartionRepository(session)
+#         repository = SQLAlchemyConversartionRepository(session)
 #         conversation = repository.create_conversation()
 #         conversation.add_user_text_message("x")
 #         session.commit()

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.contexts.chat.application.ports.chat_repo import ConversationRepository
 from src.contexts.chat.application.ports.uow import ConversationUOW
 from src.contexts.chat.infrastructure.db.conv_repo_implmementations import (
-    SQAlchemyConversartionRepository,
+    SQLAlchemyConversartionRepository,
 )
 from src.contexts.shared.typing_aliases import Factory
 
@@ -17,11 +17,11 @@ class SQLAlchemyConversationUOW(ConversationUOW):
     def __init__(self, session_factory: Factory[Session]) -> None:
         self._session_factory = session_factory
         self._session: Session | None = None
-        self._sqla_conv_repo: SQAlchemyConversartionRepository | None = None
+        self._sqla_conv_repo: SQLAlchemyConversartionRepository | None = None
 
     def __enter__(self) -> "SQLAlchemyConversationUOW":
         self._session = self._session_factory()
-        self._sqla_conv_repo = SQAlchemyConversartionRepository(session=self._session)
+        self._sqla_conv_repo = SQLAlchemyConversartionRepository(session=self._session)
         return self
 
     def __exit__(

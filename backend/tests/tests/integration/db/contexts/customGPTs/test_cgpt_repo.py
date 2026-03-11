@@ -7,7 +7,7 @@
 
 # from src.contexts.customGPTs.application.ports.customgpt_repo import CgptNotFound
 # from src.contexts.customGPTs.infrastructure.db.customgpt_repo_implmementations import (
-#     SQAlchemyCustomGPTRepository,
+#     SQLAlchemyCustomGPTRepository,
 # )
 # from src.contexts.customGPTs.infrastructure.db.orm import custom_gpts  # table
 # from src.contexts.shared.typing_aliases import Factory
@@ -17,7 +17,7 @@
 
 # def test_created_at_is_set(session_factory: Factory[Session]):
 #     session: Session = session_factory()
-#     repo = SQAlchemyCustomGPTRepository(session)
+#     repo = SQLAlchemyCustomGPTRepository(session)
 
 #     before = datetime.now(timezone.utc) - timedelta(seconds=5)
 #     cgpt = repo.create_cgpt(name="A", instructions="do A")
@@ -42,7 +42,7 @@
 
 # def test_get_raises_for_nonexistent(session_factory: Factory[Session]):
 #     session = session_factory()
-#     repo = SQAlchemyCustomGPTRepository(session)
+#     repo = SQLAlchemyCustomGPTRepository(session)
 
 #     with pytest.raises(CgptNotFound):
 #         repo.get("does-not-exist")
@@ -50,7 +50,7 @@
 
 # def test_delete_removes_entity(session_factory: Factory[Session]):
 #     with session_factory() as session:
-#         repo = SQAlchemyCustomGPTRepository(session)
+#         repo = SQLAlchemyCustomGPTRepository(session)
 
 #         cgpt = repo.create_cgpt(name="to-delete", instructions="clean up")
 #         session.commit()
@@ -58,7 +58,7 @@
 #         assert cgpt_id is not None
 
 #     with session_factory() as verification_session:
-#         repo = SQAlchemyCustomGPTRepository(verification_session)
+#         repo = SQLAlchemyCustomGPTRepository(verification_session)
 #         assert repo.get(cgpt_id=cgpt_id) is not None
 
 #         repo.delete(cgpt.id)

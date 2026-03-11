@@ -7,7 +7,7 @@ from src.contexts.customGPTs.application.ports.customgpt_repo import (
 from src.contexts.customGPTs.domain.models import CustomGPT
 
 
-class SQAlchemyCustomGPTRepository(CustomGPTRepository):
+class SQLAlchemyCustomGPTRepository(CustomGPTRepository):
     def __init__(self, session: Session) -> None:
         self._session = session
 

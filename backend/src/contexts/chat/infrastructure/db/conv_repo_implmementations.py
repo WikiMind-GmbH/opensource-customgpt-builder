@@ -9,7 +9,7 @@ from src.contexts.chat.domain.models import Conversation
 from src.contexts.chat.infrastructure.db.orm import conversations
 
 
-class SQAlchemyConversartionRepository(ConversationRepository):
+class SQLAlchemyConversartionRepository(ConversationRepository):
     def __init__(self, session: Session) -> None:
         self._session = session
 
