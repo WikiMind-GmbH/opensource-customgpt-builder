@@ -10,7 +10,7 @@ services:
       - ./.env
     volumes:
       - ./backend:/app
-      - loaded_images:${LOADED_IMAGES_PATH}
+      # - loaded_images:${LOADED_IMAGES_PATH}
     # networks:
     #   - nginx_network
     deploy:
@@ -24,13 +24,12 @@ services:
       retries: 5
 
   frontend:
-    build: 
+    build:
       context: .
       dockerfile: ./frontend/Dockerfile.prod
     volumes:
       - frontend_build:/app/dist
-      - /app/node_modules #decouples node_module in container from frontend so we can have
-      
+
     container_name: frontend
     # networks:
     #   - nginx_network
@@ -39,6 +38,30 @@ services:
         limits:
           memory: 256M
 
+  postgres:
+    build:
+      context: ./database/postgres
+      dockerfile: Dockerfile.prod
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: chat_context_db
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
+      CHAT_APP_PASSWORD: ${CHAT_APP_PASSWORD}
+      CGPT_APP_PASSWORD: ${CGPT_APP_PASSWORD}
+
+    volumes:
+      - pgdata:/var/lib/postgresql
+    
+    networks:
+      - default
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_ADMIN_USER} -d chat_context_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   nginx:
     build:

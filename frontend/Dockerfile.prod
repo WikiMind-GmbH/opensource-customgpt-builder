@@ -3,7 +3,7 @@
 ###############################
 # Stage 1: Build the App
 ###############################
-FROM node:23-alpine AS deps
+FROM node:25-alpine AS deps
 WORKDIR /app
 
 # Copy package management files and install dependencies
