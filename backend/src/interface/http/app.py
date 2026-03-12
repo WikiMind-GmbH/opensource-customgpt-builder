@@ -19,6 +19,7 @@ from src.interface.http.routes.customGPTs.customGPT_queries import (
 DEBUG_MODE: bool = require_env("DEBUG_MODE").lower() == "true"
 if DEBUG_MODE:
     import debugpy
+
     debugpy.listen(("0.0.0.0", 5678))  # Debugger listens on port 5678
 
 
