@@ -23,6 +23,7 @@ PG_VOLUME = $(PROJECT_NAME)_pgdata
 FRONTEND_VOLUME = $(PROJECT_NAME)_frontend_node_modules
 
 COMPOSE_DEV = docker compose -p $(PROJECT_NAME) -f docker-compose.dev.yaml
+COMPOSE_PROD = docker compose -p $(PROJECT_NAME) -f docker-compose.prod.yaml
 COMPOSE_LOCUST_LOCAL := docker compose -f backend/tests/tests_perf_locust/docker-compose.locust-perf-local.yaml
 COMPOSE_LOCUST_STAGING := docker compose -f backend/tests/tests_perf_locust/docker-compose.locust-perf-staging.yaml
 PYTEST_FLAGS := -q -s --maxfail=1 -m 'not performance'
@@ -40,12 +41,21 @@ up: ## Start dev stack (fast). Use after pulling latest or normal day-to-day wor
 up-build: ## Start dev stack + rebuild if Dockerfile/requirements changed (cached rebuild).
 	$(COMPOSE_DEV) up -d --build
 
-up-rebuild: ## Clean rebuild (no cache) + start. Use if build cache seems stale or deps won't update.
-	$(COMPOSE_DEV) build --no-cache
-	$(COMPOSE_DEV) up -d
+define rebuild
+	$1 build --no-cache
+	$1 up -d
+endef
+
+up-rebuild: ## in dev: Clean rebuild (no cache) + start. Use if build cache seems stale or deps won't update.
+	$(call(rebuild, $(COMPOSE_DEV)))
+
+up-rebuild-prod: ## in prod: Clean rebuild (no cache) + start. Use if build cache seems stale or deps won't update.
+	$(call(rebuild, $(COMPOSE_PROD)))
 
 down: ## Stop stack and remove containers/network. Volumes remain unless explicitly removed.
 	$(COMPOSE_DEV) down
+
+down-prod:
 
 restart: ## Recreate containers (no rebuild). Use after .env/compose changes or to reset a weird runtime state.
 	$(COMPOSE_DEV) down
@@ -67,19 +77,34 @@ ps: ## Show container status for the dev stack.
 	$(COMPOSE_DEV) ps
 
 
-clean-restart-frontend: ## clean restart the frontend, might be needed to update the npm_libraries in node_modules
-	$(COMPOSE_DEV) stop frontend
-	$(COMPOSE_DEV) rm -f frontend
-	docker volume rm $(FRONTEND_VOLUME) || true
-	$(COMPOSE_DEV) build --no-cache frontend
-	$(COMPOSE_DEV) up -d frontend
+define clean_restart_frontend
+	$1 stop frontend
+	$1 rm -f frontend
+	-docker volume rm $2
+	$1 build --no-cache frontend
+	$1 up -d frontend
+endef
 
-clean-restart-db: ## clean restart the db, helpful if init has changed while we do not use migrations
-	$(COMPOSE_DEV) stop postgres
-	$(COMPOSE_DEV) rm -f postgres
+clean-restart-frontend: ## clean restart frontend in dev
+	$(call clean_restart_frontend,$(COMPOSE_DEV),$(FRONTEND_VOLUME))
+
+clean-restart-frontend-prod: ## clean restart frontend in prod
+	$(call clean_restart_frontend,$(COMPOSE_PROD),$(FRONTEND_VOLUME))
+
+
+define clean_restart_db
+	$1 stop postgres
+	$1 rm -f postgres
 	docker volume rm $(PG_VOLUME) || true
-	$(COMPOSE_DEV) build --no-cache postgres
-	$(COMPOSE_DEV) up -d postgres
+	$1 build --no-cache postgres
+	$1 up -d postgres
+endef
+
+clean-restart-db: ## clean restart the db in dev, helpful if init has changed while we do not use migrations
+	$(call clean_restart_db, $(COMPOSE_DEV))
+
+clean-restart-db: ## clean restart the db in prod, helpful if init has changed while we do not use migrations
+	$(call clean_restart_db, $(COMPOSE_PROD))
 
 ## ----------------------PYTEST FUNCTIONAL MAIN TESTS----------------------
 
