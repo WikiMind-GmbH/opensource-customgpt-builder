@@ -128,6 +128,7 @@ production environment always deploys the `prod` branch.
 * Each new service function has corresponding tests.
 * Contract/adapter tests exist and pass for new adapters.
 * DTO mapper tests exist and pass for new or changed DTOs.
+* Typescript client from openapi.json is generated via the make target (`generate-client-ts-frontend`)
 
 #### Documentation
 
