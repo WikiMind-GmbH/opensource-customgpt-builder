@@ -107,7 +107,7 @@ endef
 clean-restart-db: ## clean restart the db in dev, helpful if init has changed while we do not use migrations
 	$(call clean_restart_db, $(COMPOSE_DEV))
 
-clean-restart-db: ## clean restart the db in prod, helpful if init has changed while we do not use migrations
+clean-restart-db-prod: ## clean restart the db in prod, helpful if init has changed while we do not use migrations
 	$(call clean_restart_db, $(COMPOSE_PROD))
 
 ## ----------------------PYTEST FUNCTIONAL MAIN TESTS----------------------
