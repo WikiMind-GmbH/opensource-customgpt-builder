@@ -38,6 +38,9 @@ PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 up: ## Start dev stack (fast). Use after pulling latest or normal day-to-day work.
 	$(COMPOSE_DEV) up -d
 
+up-prod: ## Start dev stack (fast). Use after pulling latest or normal day-to-day work.
+	$(COMPOSE_PROD) up -d
+
 up-build: ## Start dev stack + rebuild if Dockerfile/requirements changed (cached rebuild).
 	$(COMPOSE_DEV) up -d --build
 
@@ -47,15 +50,16 @@ define rebuild
 endef
 
 up-rebuild: ## in dev: Clean rebuild (no cache) + start. Use if build cache seems stale or deps won't update.
-	$(call(rebuild, $(COMPOSE_DEV)))
+	$(call rebuild, $(COMPOSE_DEV))
 
 up-rebuild-prod: ## in prod: Clean rebuild (no cache) + start. Use if build cache seems stale or deps won't update.
-	$(call(rebuild, $(COMPOSE_PROD)))
+	$(call rebuild, $(COMPOSE_PROD))
 
-down: ## Stop stack and remove containers/network. Volumes remain unless explicitly removed.
+down: ##in dev: Stop stack and remove containers/network. Volumes remain unless explicitly removed.
 	$(COMPOSE_DEV) down
 
-down-prod:
+down-prod: ##in prod: Stop stack and remove containers/network. Volumes remain unless explicitly removed.
+	$(COMPOSE_DEV) down
 
 restart: ## Recreate containers (no rebuild). Use after .env/compose changes or to reset a weird runtime state.
 	$(COMPOSE_DEV) down

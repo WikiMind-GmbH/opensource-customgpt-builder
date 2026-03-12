@@ -8,6 +8,8 @@ services:
     # Pass in environment variables from the .env file (avoid baking secrets)
     env_file:
       - ./.env
+    environment:
+      DEBUG_MODE: false
     volumes:
       - ./backend:/app
       # - loaded_images:${LOADED_IMAGES_PATH}
@@ -18,7 +20,7 @@ services:
         limits:
           memory: 1024MB  # Limit to 512MB RAM
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://${APP_DOMAIN}:5173/openapi.json"]
+      test: ["CMD", "curl", "-f", "http://${APP_DOMAIN}:8000/openapi.json"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -101,6 +103,7 @@ services:
              done"
 
 volumes:
+  pgdata:
   frontend_build:
   loaded_images:
   certbot_www:
