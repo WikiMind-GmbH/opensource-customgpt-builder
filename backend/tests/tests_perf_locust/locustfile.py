@@ -2,6 +2,7 @@
 import logging
 import os
 import random
+import time
 import uuid
 from enum import StrEnum
 
@@ -210,7 +211,7 @@ class ChatUser(HttpUser):
         pwd = require_env_locust("LOCUST_BASIC_AUTH_PASSWORD")
         self.client.auth = (user, pwd)
 
-    @task(5)
+    @task(1)
     def create_new_chat(self):
         new_chat_req: NewChatRequest = NewChatRequest(
             request_message="Hello", custom_gpt_id=None
@@ -237,7 +238,7 @@ class ChatUser(HttpUser):
                 resp.failure(f"Missing/invalid conversation_id: {body}")
                 return
 
-    @task(10)
+    @task(2)
     def look_up_chats(self):
         with self.client.get(
             "/chat/get-chat-summaries",
@@ -316,7 +317,8 @@ class ChatUser(HttpUser):
                 resp.failure("Chatsummary response objects malformed")
                 return
 
-        for _ in range(20):
+        for _ in range(7):
+            time.sleep(8)
             payload = {
                 "request_message": "Please create a small poem with approx. 100 words",
                 "conversation_id": chat_id,
