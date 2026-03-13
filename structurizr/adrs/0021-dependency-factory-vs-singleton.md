@@ -1,4 +1,4 @@
-# 24. Dependency factories vs. singletons
+# 21. Dependency factories vs. singletons
 
 # Status
 Accepted

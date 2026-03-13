@@ -1,4 +1,4 @@
-# 21. Branching, release promotion, and quality gates
+# 22. Branching, release promotion, and quality gates
 
 Date: 2025-11-21  
 Status: OPEN
@@ -46,6 +46,10 @@ This can be marked by:
 * branches that correspond to maturity levels and environments, or
 * naming conventions, tags, or statuses that indicate maturity.
 
+Typical solutions include:
+- [git-flow](https://nvie.com/posts/a-successful-git-branching-model/), which uses multiple long-lived branch types and explicit release/hotfix flows
+- [github flow](https://docs.github.com/en/get-started/using-github/github-flow), which keeps the model minimal and centers development around short-lived branches and a single mainline
+
 ### Quality gates
 
 For promotion to the next maturity level (e.g. `staging → prod`), we want
@@ -81,6 +85,10 @@ At this stage, it is intentionally left open:
 To keep the process simple and enforceable in a first iteration, we align
 **branch names, maturity levels, and deployment environments**.
 
+This results in a workflow that is intentionally simpler than git-flow, but
+more explicit than pure github-flow, because release-candidate stabilization
+and production promotion are represented explicitly.
+
 ### Branches
 
 * Long-lived: `dev`, `staging`, `prod`
@@ -98,20 +106,25 @@ Code pushed to `staging` is deployed to the staging environment for testing.
 
 ### Promotion flow
 
+```                           
+                              ┌──────────────────────┐
+feature/* (from dev)──┐       ▼                      │
+bugfix/* (from dev) ──┴────→ dev ─────────→ staging ─┴───────→ prod
+                                               ▲
+hotfix/* (from staging) ───────────────────────┘
 ```
-feature/* → dev → staging → prod
-       (merge) (merge) (merge)
-```
 
-* `dev`: continuous integration of feature and bugfix work
-* `staging`: release candidate tested in a prod-like environment
-* `prod`: version deployed to customers
+* `dev`: main integration branch for ongoing development. Features and ordinary bug fixes are merged into `dev`.
+* `staging`: release candidate branch for validation in a prod-like environment. Direct development on this branch is not allowed. Bug fixes whose sole purpose is to stabilize the current release candidate may be implemented on a dedicated `hotfix/*` branch created from `staging` and merged back into `staging`, provided the same quality gates apply as for `dev` → `staging`.
+* `prod`: version deployed to customers. Changes reach `prod` via merge from `staging` only.
 
-**Code must progress through these steps in order. Direct promotion
-(e.g. feature → staging) is not allowed.**
+At minimum after each promotion from `staging` to `prod`, `staging` must also be merged back into `dev` so release fixes are propagated into ongoing development. Feature branches should receive such updates via `dev`, not directly from `staging`.
 
-The staging environment always deploys the `staging` branch, and the
-production environment always deploys the `prod` branch.
+**Code must progress through these steps as detailed here. Paths not
+defined here (e.g. `feature/*` → `staging`) are not allowed.
+
+The staging environment deploys the `staging` branch by default. For validation of release-candidate fixes, it may temporarily deploy a dedicated hotfix branch created from `staging`.
+The production environment deploys the `prod` branch only.
 
 ---
 
@@ -128,6 +141,8 @@ production environment always deploys the `prod` branch.
 * Each new service function has corresponding tests.
 * Contract/adapter tests exist and pass for new adapters.
 * DTO mapper tests exist and pass for new or changed DTOs.
+
+#### Generated client up-to-date
 * Typescript client from openapi.json is generated via the make target (`generate-client-ts-frontend`)
 
 #### Documentation
@@ -162,8 +177,15 @@ Always using the config files committed to the repo:
 **Must have (ALL):**
 
 * Code is deployed to a staging environment with equal or lower specs than prod.
-* Locust tests have been executed **against the staging environment**.
+* Locust tests have been executed against the staging environment.
 * Results of these tests must be evaluated, even if no explicit performance thresholds are defined yet.
+* If defects are found during staging validation:
+  * direct development on `staging` is not allowed
+  * bug fixes whose sole purpose is to stabilize the current release candidate must be implemented on a dedicated hotfix branch created from `staging` and merged back into `staging`
+  * where required for validation, that hotfix branch may be deployed temporarily to the staging environment before merge-back
+  * the same quality gates apply as for `dev` → `staging`
+  * this path must not be used for feature work, scope expansion, or unrelated refactoring
+  * if the required change is closer to a feature than to a defect correction, a feature branch must be created and the normal `dev` → `staging` promotion path must be used instead
 
 * Code review by a developer not responsible for the changes.
 * Performance and sanity checks pass on staging (using Makefile-driven tooling).
