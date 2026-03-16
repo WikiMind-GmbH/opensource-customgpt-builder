@@ -92,7 +92,7 @@ and production promotion are represented explicitly.
 ### Branches
 
 * Long-lived: `dev`, `staging`, `prod`
-* Short-lived: `feature/*`, `bugfix/*`, `hotfix/*`, `refactor`
+* Short-lived: `feature/*`, `bugfix/*`, `hotfix/*`, `refactor/*`
 
 The `prod` branch is the stable, production-truth branch and acts as the
 repository’s default branch (equivalent to `main` in other setups).
