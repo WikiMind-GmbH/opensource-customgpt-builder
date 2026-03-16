@@ -92,7 +92,7 @@ and production promotion are represented explicitly.
 ### Branches
 
 * Long-lived: `dev`, `staging`, `prod`
-* Short-lived: `feature/*`, `bugfix/*`, `hotfix/*`
+* Short-lived: `feature/*`, `bugfix/*`, `hotfix/*`, `refactor`
 
 The `prod` branch is the stable, production-truth branch and acts as the
 repository’s default branch (equivalent to `main` in other setups).
@@ -107,8 +107,8 @@ Code pushed to `staging` is deployed to the staging environment for testing.
 ### Promotion flow
 
 ```                           
-                              ┌──────────────────────┐
-feature/* (from dev)──┐       ▼                      │
+refactor/* (from dev)─┐       ┌──────────────────────┐
+feature/* (from dev)──│       ▼                      │
 bugfix/* (from dev) ──┴────→ dev ─────────→ staging ─┴───────→ prod
                                                ▲
 hotfix/* (from staging) ───────────────────────┘
