@@ -24,6 +24,7 @@ from src.contexts.chat.application.ports.llm_port import (
 class OpenaiAdapter(LlmPort):
     def __init__(self, model_name: str) -> None:
         self.model_name: str = model_name
+        self.client: OpenAI = OpenAI()
 
     def transform_message_dto_llm_to_message_openai_chat_completion(
         self, msg: MessageDTOllm
@@ -57,9 +58,7 @@ class OpenaiAdapter(LlmPort):
             )
 
         try:
-            client = OpenAI()
-
-            response: ChatCompletion = client.chat.completions.create(
+            response: ChatCompletion = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
             )
