@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import StrEnum
 from typing import Protocol
 
 
@@ -11,20 +10,14 @@ class CgptNotFoundError(DefaultCGPTRetreiverError):
     "CGPT does not exist"
 
 
-class RoleDTORetreiver(StrEnum):
-    user = "user"
-    assistant = "assistant"
-    system = "system"
-
-
 @dataclass(frozen=True)
-class MessageDTORetreiver:
-    role: RoleDTORetreiver
-    text_content: str
+class CustomGPTInfosDTO:
+    name: str
+    instructions: str
 
 
 class CustomGPTInstructionsRetreiver(Protocol):
-    def get_cgpt_sys_prompt(
+    def get_cgpt_infos_for_prompt(
         self,
         cgpt_id: str,
-    ) -> list[MessageDTORetreiver]: ...
+    ) -> CustomGPTInfosDTO: ...

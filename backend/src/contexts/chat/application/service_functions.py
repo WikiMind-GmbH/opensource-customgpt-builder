@@ -1,17 +1,15 @@
 from src.contexts.chat.application.mappers import (
-    message_domain_to_message_llm_port_dto,
-    message_dto_cgpt_retreiver_to_message_domain,
+    messages_domain_to_messages_llm_port_dto,
 )
 from src.contexts.chat.application.ports.customgpt_instructions_retreiver import (
+    CustomGPTInfosDTO,
     CustomGPTInstructionsRetreiver,
-    MessageDTORetreiver,
 )
 from src.contexts.chat.application.ports.llm_port import (
     LlmPort,
-    MessageDTOllm,
 )
 from src.contexts.chat.application.ports.uow import ConversationUOW
-from src.contexts.chat.domain.models import Conversation
+from src.contexts.chat.domain.models import Conversation, Message
 
 
 def create_conversation(conv_uow: ConversationUOW, cgpt_id: str | None = None) -> str:
@@ -34,27 +32,21 @@ def continue_conversation(
         conv.add_user_text_message(user_text_message=user_message)
         # uow.commit() <- no functionality exists to retry llm, so makes no sense to keep user msg
 
-        cgpt_id: str | None = conv.customGPT_id
-        cgpt_sys_prompt_dto: list[MessageDTORetreiver] = (
-            cgpt_retreiver.get_cgpt_sys_prompt(cgpt_id=cgpt_id)
-            if cgpt_id is not None
-            else []
-        )
-        cgpt_sys_prompt: list[MessageDTOllm] = [
-            message_domain_to_message_llm_port_dto(
-                message_dto_cgpt_retreiver_to_message_domain(msg)
+        cgpt_name: str | None = None
+        cgpt_instructions: str | None = None
+        if conv.customGPT_id is not None:
+            cgpt_infos: CustomGPTInfosDTO = cgpt_retreiver.get_cgpt_infos_for_prompt(
+                conv.customGPT_id
             )
-            for msg in cgpt_sys_prompt_dto
-        ]
+            cgpt_name = cgpt_infos.name
+            cgpt_instructions = cgpt_infos.instructions
 
-        messages_excluding_sys_prompt: list[MessageDTOllm] = [
-            message_domain_to_message_llm_port_dto(msg)
-            for msg in conv.messages_excl_sysPrompt
-        ]
+        messages: list[Message] = conv.create_prompt(
+            cgpt_name=cgpt_name, cgpt_instructions=cgpt_instructions
+        )
 
         assistant_response: str = llm_adapter.get_assistant_text_response(
-            messages_excluding_sys_prompt=messages_excluding_sys_prompt,
-            cgpt_systemprompt=cgpt_sys_prompt,
+            messages_dto=messages_domain_to_messages_llm_port_dto(messages)
         )
         conv.add_assistant_text_message(assistant_text_response=assistant_response)
         uow.commit()

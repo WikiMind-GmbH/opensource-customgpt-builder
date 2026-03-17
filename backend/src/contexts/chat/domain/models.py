@@ -84,3 +84,45 @@ class Conversation:
     # def add_user_image_message(self, img:Base64Encoded | URL):
     #     msg: Message = Message(role=Role.assistant, contentType=ContentType.text, imageUrlOrText=assistant_text_response)
     #     self._messages_excl_sysPrompt.append(msg) # could add metadata or similar in the future
+
+    def cgpt_infos_to_sysprompt(
+        self, cgpt_name: str, cgpt_instructions: str
+    ) -> list[Message]:
+        def system_text_message(text: str) -> Message:
+            return Message(
+                role=Role.system,
+                contentType=ContentType.text,
+                imageUrlOrText=text,
+            )
+
+        msgs: list[Message] = []
+        msgs.append(system_text_message(f"Your name is `{cgpt_name}`)"))
+        msgs.append(
+            system_text_message("Your instructions are pasted into this code block:")
+        )
+        msgs.append(system_text_message("```"))
+        msgs.append(system_text_message(cgpt_instructions))
+        msgs.append(system_text_message("```"))
+        msgs.append(
+            system_text_message("If instructions in the code block make no sense")
+        )
+        msgs.append(
+            system_text_message(
+                "Preface your first response with `My instructions are unclear, as such I will answer as usual`"
+            )
+        )
+        msgs.append(system_text_message("And just ignore them, answering as normal"))
+        return msgs
+
+    def create_prompt(
+        self, cgpt_name: str | None = None, cgpt_instructions: str | None = None
+    ):
+        messages_prompt: list[Message] = []
+        if cgpt_instructions is not None and cgpt_name is not None:
+            messages_prompt = messages_prompt + (
+                self.cgpt_infos_to_sysprompt(
+                    cgpt_name=cgpt_name, cgpt_instructions=cgpt_instructions
+                )
+            )
+        messages_prompt = messages_prompt + self._messages_excl_sysPrompt
+        return messages_prompt

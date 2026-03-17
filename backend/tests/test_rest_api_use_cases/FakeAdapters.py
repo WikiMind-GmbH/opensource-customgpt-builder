@@ -5,8 +5,7 @@ from src.contexts.chat.application.ports.llm_port import LlmPort, MessageDTOllm
 
 @dataclass
 class FnxCallArgs:
-    messages_excluding_sys_prompt: list[MessageDTOllm]
-    cgpt_systemprompt: list[MessageDTOllm]
+    messages_dto: list[MessageDTOllm]
 
 
 class FakeLLMAdapter(LlmPort):
@@ -15,15 +14,9 @@ class FakeLLMAdapter(LlmPort):
 
     def get_assistant_text_response(
         self,
-        messages_excluding_sys_prompt: list[MessageDTOllm],
-        cgpt_systemprompt: list[MessageDTOllm],
+        messages_dto: list[MessageDTOllm],
     ) -> str:
-        self.function_call_parameters.append(
-            FnxCallArgs(
-                messages_excluding_sys_prompt=messages_excluding_sys_prompt,
-                cgpt_systemprompt=cgpt_systemprompt,
-            )
-        )
+        self.function_call_parameters.append(FnxCallArgs(messages_dto=messages_dto))
         return f"assistant_response {len(self._function_call_parameters)}"
 
     @property

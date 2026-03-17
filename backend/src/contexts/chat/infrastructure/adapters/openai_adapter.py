@@ -45,13 +45,12 @@ class OpenaiAdapter(LlmPort):
 
     def get_assistant_text_response(
         self,
-        messages_excluding_sys_prompt: list[MessageDTOllm],
-        cgpt_systemprompt: list[MessageDTOllm],
+        messages_dto: list[MessageDTOllm],
     ) -> str:
-        messages: list[ChatCompletionMessageParam] = []
+        messages_openai_chat_completion: list[ChatCompletionMessageParam] = []
 
-        for msg in cgpt_systemprompt + messages_excluding_sys_prompt:
-            messages.append(
+        for msg in messages_dto:
+            messages_openai_chat_completion.append(
                 self.transform_message_dto_llm_to_message_openai_chat_completion(
                     msg=msg
                 )
@@ -60,19 +59,19 @@ class OpenaiAdapter(LlmPort):
         try:
             response: ChatCompletion = self.client.chat.completions.create(
                 model=self.model_name,
-                messages=messages,
+                messages=messages_openai_chat_completion,
             )
             assistant_response: ChatCompletionMessage = response.choices[0].message
         except Exception as e:
             raise ErrorWhileCallingAPI(
-                f"An error was raised when calling the openain endpoint with  {len(messages_excluding_sys_prompt)} Messages with the system prompt of length {len(cgpt_systemprompt)}"
+                f"An error was raised when calling the openain endpoint with  {len(messages_openai_chat_completion)} Messages"
             ) from e
 
         if assistant_response.tool_calls is not None:
             raise NotImplementedError
         if assistant_response.content is None:
             raise NoAssistantResponse(
-                f"No response was given for the following {len(messages_excluding_sys_prompt)} Messages with the system prompt of length {len(cgpt_systemprompt)}"
+                f"No response was given for the following {len(messages_openai_chat_completion)} Messages"
             )
 
         return (

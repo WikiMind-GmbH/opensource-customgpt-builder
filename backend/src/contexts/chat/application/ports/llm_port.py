@@ -26,6 +26,5 @@ class ErrorWhileCallingAPI(RuntimeError):
 class LlmPort(Protocol):
     def get_assistant_text_response(
         self,
-        messages_excluding_sys_prompt: list[MessageDTOllm],
-        cgpt_systemprompt: list[MessageDTOllm],
+        messages_dto: list[MessageDTOllm],
     ) -> str: ...

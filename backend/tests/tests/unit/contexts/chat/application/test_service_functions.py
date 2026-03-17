@@ -81,17 +81,43 @@ def test_continue_conversation_not_found_error_raised_for_non_existent_conv_id(
         )
 
 
-def test_continue_conversation_llm_adapter_populated_correctly(
+def test_continue_conversation_llm_adapter_containes_user_message_and_cgpt_infos_if_available(
     conv_uow_factory: Factory[ConversationUOW],
     cgpt_uow_factory: Factory[CgptUOW],
     cgpt_retreiver_factory: Factory[CustomGPTInstructionsRetreiver],
     fake_llm_adapter_factory: Factory[FakeLLMAdapter],
 ):
-    # Case 1: Conv has cgpt
+    # Case 1: Conv doesn't have cgpt
+
     fake_llm_adapter_cgpt_exists: FakeLLMAdapter = fake_llm_adapter_factory()
+    user_message = "user_text"
+    with conv_uow_factory() as uow:
+        conv: Conversation = uow.conversation_repo.create_conversation()
+        conv_id: str = conv.id
+        uow.commit()
+    _: str = continue_conversation(
+        user_message=user_message,
+        conv_id=conv_id,
+        conv_uow=conv_uow_factory(),
+        cgpt_retreiver=cgpt_retreiver_factory(),
+        llm_adapter=fake_llm_adapter_cgpt_exists,
+    )
+    msgs_passed_to_llm_adapter = fake_llm_adapter_cgpt_exists.function_call_parameters[
+        0
+    ].messages_dto
+    content_of_messages = str(
+        [msg.imageUrlOrText for msg in msgs_passed_to_llm_adapter]
+    )
+
+    assert user_message in content_of_messages
+    # Case 2: Conv has cgpt
+    fake_llm_adapter_cgpt_exists: FakeLLMAdapter = fake_llm_adapter_factory()
+    cgpt_name = "cgpt_1"
+    cgpt_instructions = "Do sth"
+    user_message = "user_text"
     with cgpt_uow_factory() as uow:
         cgpt: CustomGPT = uow.cgpt_repo.create_cgpt(
-            name="cgpt_1", instructions="Do sth"
+            name=cgpt_name, instructions=cgpt_instructions
         )
         cgpt_id: str = cgpt.id
         uow.commit()
@@ -101,36 +127,18 @@ def test_continue_conversation_llm_adapter_populated_correctly(
         conv_id: str = conv.id
         uow.commit()
     _: str = continue_conversation(
-        user_message="user_text",
+        user_message=user_message,
         conv_id=conv_id,
         conv_uow=conv_uow_factory(),
         cgpt_retreiver=cgpt_retreiver_factory(),
         llm_adapter=fake_llm_adapter_cgpt_exists,
     )
-    sysprompt_was_passed = (
-        len(fake_llm_adapter_cgpt_exists.function_call_parameters[0].cgpt_systemprompt)
-        > 0
+    msgs_passed_to_llm_adapter = fake_llm_adapter_cgpt_exists.function_call_parameters[
+        0
+    ].messages_dto
+    content_of_messages = str(
+        [msg.imageUrlOrText for msg in msgs_passed_to_llm_adapter]
     )
-
-    assert sysprompt_was_passed
-
-    # Case 2: Conv does not have cgpt
-    fake_llm_adapter_cgpt_exists: FakeLLMAdapter = fake_llm_adapter_factory()
-
-    with conv_uow_factory() as uow:
-        conv: Conversation = uow.conversation_repo.create_conversation()
-        conv_id: str = conv.id
-        uow.commit()
-    _: str = continue_conversation(
-        user_message="user_text",
-        conv_id=conv_id,
-        conv_uow=conv_uow_factory(),
-        cgpt_retreiver=cgpt_retreiver_factory(),
-        llm_adapter=fake_llm_adapter_cgpt_exists,
-    )
-    sysprompt_was_passed = (
-        len(fake_llm_adapter_cgpt_exists.function_call_parameters[0].cgpt_systemprompt)
-        > 0
-    )
-
-    assert not sysprompt_was_passed
+    assert user_message in content_of_messages
+    assert cgpt_name in content_of_messages
+    assert cgpt_instructions in content_of_messages

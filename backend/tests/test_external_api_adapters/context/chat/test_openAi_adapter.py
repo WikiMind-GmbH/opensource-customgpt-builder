@@ -27,7 +27,7 @@ def test_openai_adapter():
     )
 
     res: str = openai_adapter.get_assistant_text_response(
-        messages_excluding_sys_prompt=msgs, cgpt_systemprompt=sys_prompt
+        messages_dto=sys_prompt + msgs
     )
 
     assert res == "Yes"

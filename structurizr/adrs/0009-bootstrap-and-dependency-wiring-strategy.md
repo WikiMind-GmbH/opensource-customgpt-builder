@@ -44,16 +44,16 @@ class ConversationUOW(Protocol):
 
 
 class CustomGPTInstructionsRetreiver(Protocol):
-    def get_cgpt_sys_prompt(
-        self, cgpt_id: str
-    ) -> list[MessageDTORetreiver]: ...
+    def get_cgpt_infos_for_prompt(
+        self,
+        cgpt_id: str,
+    ) -> CustomGPTInfosDTO: ...
 
 
 class LlmPort(Protocol):
     def get_assistant_text_response(
         self,
-        messages_excluding_sys_prompt: list[MessageDTOllm],
-        cgpt_systemprompt: list[MessageDTOllm],
+        messages_dto: list[MessageDTOllm],
     ) -> str: ...
 ```
 
