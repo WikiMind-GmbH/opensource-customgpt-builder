@@ -123,7 +123,7 @@ tests: ## run all the remaining functional tests not covered by test-use-cases o
 
 test-show-setup: ## same as tests target, but with additional infos printed
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) --setup-show -s tests/tests"
-## ----------------------PYTEST FUNCTIONAL subset of `test-show-setup`-----
+## ----------------------PYTEST FUNCTIONAL subset of `tests`-----
 test-unit: ## Run only unit tests
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests/unit"
 test-contracts: ## Run only contract tests
