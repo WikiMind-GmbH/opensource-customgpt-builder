@@ -42,8 +42,8 @@ as well as `pyproject.toml`
 
 * Use them (don’t fight them) — they contain **type checker configuration** and **debug presets**    
 as well as **ruff configuration** and **pytest configuration**
-* Python type checking is expected via **Pylance/Pyright** (see backend README for details).
-* Linting and formatting is expected via **Ruff** (see backend README for details).
+* Python type checking is expected via **Pylance/Pyright** (see [backend/README.md](backend/README.md) for details).
+* Linting and formatting is expected via **Ruff** (see [backend/README.md](backend/README.md) for details).
 
 ---
 
