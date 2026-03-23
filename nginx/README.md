@@ -58,9 +58,7 @@ run
 > **Firefox users (any OS):** you need the extra `nss`/`libnss3-tools` package; Chrome/Edge/Safari pick up the cert from the OS store automatically.
 
 ### 2. Install the certificates
-Create a `certs` folder inside the `nginx` folder. So you have `nginx/cerst`
-
-Then run from the root of the repo the following command:
+Run from the root of the repo the following command to create the local certs files:
 ```
 mkcert -key-file nginx/certs/dev.key \
        -cert-file nginx/certs/dev.crt \
