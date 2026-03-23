@@ -1,0 +1,1 @@
+This folder contains the .crt and .key file for the certificates.
