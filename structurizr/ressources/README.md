@@ -1,0 +1,1 @@
+This contains an example workspace dsl for reference how to create and structure the real workspace dsl for our project.
