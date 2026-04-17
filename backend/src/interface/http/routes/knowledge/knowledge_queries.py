@@ -1,21 +1,42 @@
-# @app.get("/gpts/{custom_gpt_id}/files", response_model=list[str], tags=["customGPTs"], operation_id="listFilesToGpt",)
-# async def get_files(custom_gpt_id: int):
-#     return list_loaded_files(custom_gpt_id)
+from fastapi import APIRouter
+
+from src.bootstrap import DependenciesContainer
+from src.interface.http.composition import dependencies_container
+
+dependencies_container: DependenciesContainer = dependencies_container
+
+customgpt_queries_router = APIRouter(prefix="/customgpts", tags=["customGPTs: Queries"])
 
 
-# def list_loaded_files(custom_gpt_id: int) -> list[str]:
-#     """
-#     Ensure the folder for this GPT exists and return a sorted list of file names in it.
-#     If the folder is empty, returns [].
-#     """
-#     base_dir = Path(require_env("LOADED_FILES_PATH")) / str(custom_gpt_id)
-#     base_dir.mkdir(parents=True, exist_ok=True)  # create if missing
+# @customgpt_queries_router.get(
+#     "/retreive-all-custom-gpts",
+#     operation_id="retreiveAllCustomGpts",
+# )
+# def retreive_all_custom_gpts(
+#     cgpt_queries_adapter: Annotated[
+#         CgptQueries, Depends(dependencies_container.cgpt_queries_adapter_factory)
+#     ],
+# ) -> list[CustomGPTOverviewSchema]:
+#     overviews_dto: list[CustomGPTOverviewDTO] = (
+#         cgpt_queries_adapter.get_custom_gpt_overviews_ordered_by_created_at()
+#     )
+#     overviews_schema: list[CustomGPTOverviewSchema] = CustomGPTOverviewsMapper(
+#         overviews_dto
+#     )
+#     return overviews_schema
 
-#     # list only regular files (ignore subfolders)
-#     try:
-#         files = [p.name for p in base_dir.iterdir() if p.is_file()]
-#     except FileNotFoundError:
-#         # extremely rare (e.g., race condition on network FS); treat as empty
-#         return []
 
-#     return sorted(files)
+# @customgpt_queries_router.get(
+#     "/get-custom-gpt-infos",
+#     operation_id="getCustomGptInfos",
+# )
+# def get_custom_gpt_by_id(
+#     custom_gpt_id: str,
+#     cgpt_queries_adapter: Annotated[
+#         CgptQueries, Depends(dependencies_container.cgpt_queries_adapter_factory)
+#     ],
+# ) -> CustomGPTInfosSchema:
+#     cgpt_dto: CustomGPTInfosDTO = cgpt_queries_adapter.get_custom_gpt_infos(
+#         cgpt_id=custom_gpt_id
+#     )
+#     return CustomGPTInfosMapper(dto=cgpt_dto)

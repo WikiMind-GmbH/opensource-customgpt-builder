@@ -18,6 +18,9 @@ from src.interface.http.mappers_data_and_exceptions.customGPTs.cgpt_queries_clas
 from src.interface.http.mappers_data_and_exceptions.customGPTs.conversation_port import (
     register_query_exception_handlers_conv_port,
 )
+from src.interface.http.mappers_data_and_exceptions.knowledge.ports.cgpt_permissions_adapter_exceptions import (
+    register_query_exception_handlers_cgpt_permission_port,
+)
 
 
 def register_all_handlers(app: FastAPI):
@@ -27,3 +30,5 @@ def register_all_handlers(app: FastAPI):
     register_query_exception_handlers_llm_port(app)
     register_query_exception_handlers_cgpt_query_port(app)
     register_query_exception_handlers_conv_port(app)
+    # Knowledge Context
+    register_query_exception_handlers_cgpt_permission_port(app)

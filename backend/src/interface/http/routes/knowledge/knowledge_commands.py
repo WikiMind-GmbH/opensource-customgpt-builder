@@ -1,47 +1,36 @@
-# @app.post(
-#     "/add-files-to-gpt",
-#     tags=["customGPTs"],
-#     response_model=StandardResponse,
-#     operation_id="addFilesToGpt",
-# )
-# async def add_files_to_gpt(
-#     validated_custom_gpt_id: int = Depends(validateGptExistsQuery),
-#     validated_files: list[UploadFileFileFormatValidated] = Depends(validateFileFormat),
-#     session: Session = Depends(get_session),
-# ) -> StandardResponse:
-#     res: StandardResponse = await add_files_to_gpt_helper(
-#         validated_custom_gpt_id=validated_custom_gpt_id,
-#         validated_files=validated_files,
-#         session=session
-#     )
-#     return res
+from fastapi import APIRouter
 
-# TODO:
-# async def add_files_to_gpt_helper(
-#     validated_custom_gpt_id: int,
-#     validated_files: list[UploadFileFileFormatValidated],
-#     session: Session,
-# )-> StandardResponse:
-#     max_size: int = int(require_env("UPLOAD_MAX_FILE_SIZE"))
+from src.bootstrap import DependenciesContainer
+from src.interface.http.composition import dependencies_container
+from src.interface.http.schemas.common_command import CommandResult
+from src.interface.http.schemas.knowledge.knowledge_commands import (
+    UploadFileForKnowledgeContext,
+)
 
-#     customGpt: ExistingCustomGPT = retrieve_custom_gpt_by_id(custom_gpt_id=validated_custom_gpt_id, session=session)
-#     files: list[UploadFile] = [file.uploadFile for file in validated_files]
-#     if not files:
-#         raise HTTPException(status.HTTP_400_BAD_REQUEST, "No files supplied")
-#     for f in files:
-#         contents = await f.read()
-#         if len(contents) > max_size:
-#             raise HTTPException(
-#                 status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-#                 f"{f.filename} exceeds 10 MB limit",
-#             )
-#         if f.filename is None:      # should be impossible
-#             raise RuntimeError("Invariant violated: value cannot be None here")
-#         base_dir = Path(require_env("LOADED_FILES_PATH")) / str(customGpt.custom_gpt_id)
-#         base_dir.mkdir(parents=True, exist_ok=True)
-#         file_path:str = os.path.join(base_dir, f.filename)
-#         async with aiofiles.open(file_path, "wb") as out:
-#             await out.write(contents)
+dependencies_container: DependenciesContainer = dependencies_container
 
-#     return StandardResponse(res=StatusOfStandardResponse.success)
+knowledge_commands_router = APIRouter(prefix="/knowledge", tags=["knowledge: Commands"])
 
+
+@knowledge_commands_router.delete(
+    "/delete-files",
+    operation_id="deleteFiles",
+)
+def delete_files_endpoint(
+    file_ids: list[str],
+    # uow_metadata db
+    # adapter vector db
+) -> list[CommandResult]:
+    delete_files_service(file_ids)
+    return
+
+
+# WIP
+@knowledge_commands_router.post(
+    "/upload-files",
+    operation_id="uploadFiles",
+)
+async def upload_files(
+    files: list[UploadFileForKnowledgeContext],
+) -> CommandResult:
+    

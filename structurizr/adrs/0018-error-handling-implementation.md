@@ -13,7 +13,7 @@ Supercedes [ADR-XXX: Error Handling Pattern (Ports Own Errors, Global HTTP Trans
 In the process of refactoring, testing and working with the ideas of previous adr, a baseline was established that still holds some technical debt.   
 The core aspects still hold true:
 
-- Layer specific errors with upper layer translating  (most) errors
+- Layer specific errors with upper layer translating  (most) errors (for cross context Port<>Adapter pairs, the mappers are defined where the Port is defined in)
 - Ports defining errors that the Adapters implement (incl. data layer ports)
 - Ports and Domain errors are the only errors that are thrown
 - Service layer does not catch/translate nor implement any errors

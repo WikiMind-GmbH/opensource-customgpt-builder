@@ -1,0 +1,110 @@
+# adapters/orm.py
+
+from sqlalchemy import (
+    Column,
+    Enum,
+    ForeignKey,
+    MetaData,
+    String,
+    Table,
+)
+from sqlalchemy.orm import registry, relationship
+
+from src.contexts.knowledge.domain.models import (
+    CgptPermissionsToFile,
+    ParentOrChild,
+    TextFileChunk,
+    UploadedTextLikeFile,
+)
+
+# _id: str
+#     _name: str
+#     _file_type: FileType
+
+#     # created_at: datetime.datetime
+#     # user: UserId,
+#     _raw_file_is_stored: bool
+#     _transformed_text: str | None
+#     _corresponding_chunks: list[TextFileChunk]
+#     _hash_of_raw_file: str | None
+
+metadata = MetaData()
+mapper_registry = registry(metadata=metadata)
+
+uploaded_text_like_file = Table(
+    "uploaded_text_like_file",
+    metadata,
+    Column("id", String, primary_key=True),
+    Column("name", String, nullable=False),
+    Column("raw_file_is_stored", String, nullable=False),
+    Column("file_type", String, nullable=False),
+    Column("transformed_text", String, nullable=True),
+    Column("hash_of_raw_file", String, nullable=True),
+)
+
+cgpt_permissions_to_files = Table(
+    "cgpt_permissions_to_files",
+    metadata,
+    Column("permission_id", String, primary_key=True),
+    Column("file_id", String, ForeignKey("uploaded_text_like_file.id"), nullable=False),
+    Column("cgpt_id", String, nullable=False),
+)
+
+# _id: str
+# _corresponding_TextFile_id: str
+# _text_content_of_chunk: str
+# _chunking_stragegy: str
+# _hierarchy_of_chunk: ParentOrChild
+# _parent_id_if_child: str | None
+
+text_chunks_of_files = Table(
+    "text_chunks_of_files",
+    metadata,
+    Column(
+        "corresponding_TextFile_id",
+        String,
+        ForeignKey("uploaded_text_like_file.id"),
+        nullable=False,
+    ),
+    Column("text_content_of_chunk", String, nullable=False),
+    Column("chunking_stragegy", String, nullable=False),
+    Column(
+        "hierarchy_of_chunk",
+        Enum(
+            ParentOrChild,
+            name="ParentOrChild",
+            native_enum=False,
+            validate_strings=True,
+        ),
+        nullable=False,
+    ),
+    Column("parent_id_if_child", String, nullable=True),
+)
+
+
+# Index("ix_messages_conv_created_at", messages.c.conversation_id, messages.c.created_at)
+## Later: alembic revision -m "add composite index" → write op.create_index('ix_messages_conv_created_at', 'messages', ['conversation_id', 'created_at']) → alembic upgrade head.
+def start_mappers() -> None:
+    mapper_registry.map_imperatively(
+        CgptPermissionsToFile,
+        cgpt_permissions_to_files,
+    )
+    mapper_registry.map_imperatively(
+        TextFileChunk,
+        text_chunks_of_files,
+    )
+    mapper_registry.map_imperatively(
+        UploadedTextLikeFile,
+        uploaded_text_like_file,
+        properties={
+            # one-to-many; SQLAlchemy instruments `Conversation.messages`
+            "_corresponding_chunks": relationship(
+                TextFileChunk,
+                primaryjoin=text_chunks_of_files.c.corresponding_TextFile_id
+                == uploaded_text_like_file.c.id,
+                backref=None,
+                cascade="all, delete-orphan",
+                passive_deletes=True,
+            )
+        },
+    )
