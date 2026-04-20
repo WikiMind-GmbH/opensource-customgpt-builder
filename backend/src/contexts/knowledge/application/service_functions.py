@@ -4,16 +4,25 @@ from src.contexts.knowledge.application.ports.cgpt_permissions_port import (
     CgptPermissionCheckerPort,
     UserHasNoPermissionForCgptOrTheyDontExist,
 )
+from src.contexts.knowledge.application.ports.embedding_generator_port import (
+    EmbeddingGeneratorPort,
+)
 from src.contexts.knowledge.application.ports.file_storage_port import RawFileStorePort
 from src.contexts.knowledge.application.ports.knowledge_db_queries import (
     KnowledgeDBQueriesPort,
+)
+from src.contexts.knowledge.application.ports.knowledge_repo import (
+    AddChunkEmbeddingsDTO,
 )
 from src.contexts.knowledge.application.ports.knowledge_uow import KnowledgeUOW
 from src.contexts.knowledge.application.ports.pre_process_text_likes_port import (
     PreProcessTextLikesPort,
 )
+from src.contexts.knowledge.application.ports.vector_store_port import (
+    VectorStorePortTextChunks,
+)
 from src.contexts.knowledge.domain.models import (
-    InvalidInitializationError,
+    TextFileChunk,
     TextFileTypeEnum,
     UnsupportedFileTypeError,
     UploadedTextLikeFile,
@@ -30,6 +39,8 @@ def upload_document_complete_workflow(
     knowledge_db_queries_adapter: KnowledgeDBQueriesPort,
     file_storage_adapter: RawFileStorePort,
     background_tasks: BackgroundTasks,
+    vector_store_adapter: VectorStorePortTextChunks,
+    embedding_generator_adapter: EmbeddingGeneratorPort,
 ) -> CommandResult:
     # uow
     try:
@@ -54,6 +65,8 @@ def upload_document_complete_workflow(
         filename=filename,
         file_storage_adapter=file_storage_adapter,
         background_tasks=background_tasks,
+        vector_store_adapter=vector_store_adapter,
+        embedding_generator_adapter=embedding_generator_adapter,
     )
     return result
     # if exception, e.g. no text was able to be recovered: rollback, throw exception notifying also client, ROLLBACK, delete file if it was stored
@@ -69,6 +82,8 @@ def _upload_document_complete_workflow_after_further_validation(
     filename: str,
     file_storage_adapter: RawFileStorePort,
     background_tasks: BackgroundTasks,
+    vector_store_adapter: VectorStorePortTextChunks,
+    embedding_generator_adapter: EmbeddingGeneratorPort,
 ) -> CommandResult:
     file_contents: bytes = uploadFile.file.read()
     hash: str = UploadedTextLikeFile.calculate_hash_based_on_text_like_file_type(
@@ -105,11 +120,13 @@ def _upload_document_complete_workflow_after_further_validation(
         uploaded_file.set_raw_file_was_stored()
         uow.commit()
     background_tasks.add_task(
-        _preprocess_and_chunk_document,
+        _preprocess_and_chunk_document_then_embedd,
         uploaded_file,
         knowledge_uow,
         preProcessAdapter,
         file_storage_adapter,
+        vector_store_adapter,
+        embedding_generator_adapter,
     )
     return CommandResult(
         resource_id=str(uploaded_file.id),
@@ -117,11 +134,40 @@ def _upload_document_complete_workflow_after_further_validation(
     )
 
 
-def _preprocess_and_chunk_document(
+# def _preprocess_and_chunk_document(
+#     uploaded_file: UploadedTextLikeFile,
+#     knowledge_uow: KnowledgeUOW,
+#     preProcessAdapter: PreProcessTextLikesPort,
+#     file_storage_adapter: RawFileStorePort,
+# ):
+#     file_contents: bytes = file_storage_adapter.get_file(file_id=uploaded_file.id)
+#     file_content_processed_to_string: str = (
+#         preProcessAdapter.process_document_to_string_based_on_file_type(
+#             uploadedTextLikeFile=uploaded_file, raw_file_content=file_contents
+#         )
+#     )
+#     with knowledge_uow as uow:
+#         uploaded_file = uow.knowledge_repo.get_file(uploaded_file.id)
+#         uploaded_file.set_transformed_text(text=file_content_processed_to_string)
+#         uow.commit()
+
+#     chunks_of_document: list[TextFileChunk] = (
+#         uploaded_file.create_chunks_from_raw_text()
+#     )  # outside of uow -> not blocking the db pool; also: no relationships needed -> lazy loading should not be a problem
+
+#     with knowledge_uow as setter_uow:
+#         uploaded_file = setter_uow.knowledge_repo.get_file(uploaded_file.id)
+#         uploaded_file.set_chunks(chunks_of_document)
+#         setter_uow.commit()
+
+
+def _preprocess_and_chunk_document_then_embedd(
     uploaded_file: UploadedTextLikeFile,
-    knowldedge_uow: KnowledgeUOW,
+    knowledge_uow: KnowledgeUOW,
     preProcessAdapter: PreProcessTextLikesPort,
     file_storage_adapter: RawFileStorePort,
+    vector_store_adapter: VectorStorePortTextChunks,
+    embedding_generator_adapter: EmbeddingGeneratorPort,
 ):
     file_contents: bytes = file_storage_adapter.get_file(file_id=uploaded_file.id)
     file_content_processed_to_string: str = (
@@ -129,9 +175,43 @@ def _preprocess_and_chunk_document(
             uploadedTextLikeFile=uploaded_file, raw_file_content=file_contents
         )
     )
-    with knowldedge_uow as uow:
+    with knowledge_uow as uow:
         uploaded_file = uow.knowledge_repo.get_file(uploaded_file.id)
-        try:
-            uploaded_file.set_transformed_text(text=file_content_processed_to_string)
-        except InvalidInitializationError as e:
-            raise e
+        uploaded_file.set_transformed_text(text=file_content_processed_to_string)
+        uow.commit()
+
+    chunks_of_document: list[TextFileChunk] = (
+        uploaded_file.create_chunks_from_raw_text()
+    )  # outside of uow -> not blocking the db pool; also: no relationships needed -> lazy loading should not be a problem
+
+    with knowledge_uow as setter_uow:
+        uploaded_file = setter_uow.knowledge_repo.get_file(uploaded_file.id)
+        uploaded_file.set_chunks(chunks_of_document)
+        setter_uow.commit()
+
+
+def _embedd_document_chunks_all_at_once(
+    uploaded_file: UploadedTextLikeFile,
+    knowledge_uow: KnowledgeUOW,
+    preProcessAdapter: PreProcessTextLikesPort,
+    file_storage_adapter: RawFileStorePort,
+    vector_store_adapter: VectorStorePortTextChunks,
+    embedding_generator_adapter: EmbeddingGeneratorPort,
+    chunks_of_document: list[TextFileChunk],
+):
+    chunks_texts = [chunk.text for chunk in chunks_of_document]
+    chunks_embeddings = embedding_generator_adapter.create_embeddings_for_texts(
+        texts=chunks_texts
+    )
+    update_information_dto: AddChunkEmbeddingsDTO = AddChunkEmbeddingsDTO(
+        file_id=uploaded_file.id,
+        id_and_embedding_pairs_of_chunks=[
+            (chunks_of_document[i].id, chunks_embeddings[i])
+            for i in range(len(chunks_of_document))
+        ],
+    )
+    with knowledge_uow as setter_uow:
+        setter_uow.knowledge_repo.add_chunk_embeddings_update_file_and_chunks(
+            update_information=update_information_dto
+        )
+    # save in vectorstore,

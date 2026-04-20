@@ -32,6 +32,14 @@ class InvalidInitializationError(RuntimeError):
     "Values passed to init would break invariant rules"
 
 
+class DocumentIsAlreadyChunkedError(RuntimeError):
+    "Document is already chunked. (All chunks are set at once)"
+
+
+class InvalidTransformedTextError(RuntimeError):
+    "Can't chunk unitialized transformed text or incorrectly transformed text (empty string)"
+
+
 def createParentAndChildChunksFromTextCharacterSplit(
     full_text: str,
     corresponding_TextFile_id: str,
@@ -125,8 +133,68 @@ class UploadedTextLikeFile:
 
     _raw_file_is_stored: bool
     _transformed_text: str | None
-    _corresponding_chunks: list[TextFileChunk]
+    _corresponding_chunks: list[TextFileChunk] | None
     _hash_of_raw_file: str | None
+    _chunks_are_embedded: bool
+    _chunks_are_embedded_and_added_to_vectorstore: bool
+
+    def __init__(
+        self,
+        name: str,
+        file_type: TextFileTypeEnum,
+        was_stored: bool = False,
+        transformed_text: str | None = None,
+        hash_of_raw_file: str | None = None,
+    ) -> None:
+        self._id = str(uuid4())
+        self._name = name
+        self._file_type = file_type
+        self._raw_file_is_stored = was_stored
+        self._transformed_text = transformed_text
+        self._hash_of_raw_file = hash_of_raw_file
+        self._corresponding_chunks = None
+        self._chunks_are_embedded = False
+        self._chunks_are_embedded_and_added_to_vectorstore = False
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def hash_of_raw_file(self):
+        return self._hash_of_raw_file
+
+    @property
+    def file_type(self):
+        return self._file_type
+
+    @property
+    def chunks_are_embedded(self):
+        return self._chunks_are_embedded
+
+    def set_chunks_are_embedded(self):
+        self._chunks_are_embedded = True
+
+    @property
+    def chunks_are_embedded_and_added_to_vectorstore(self):
+        return self._chunks_are_embedded_and_added_to_vectorstore
+
+    def set_chunks_are_embedded_and_added_to_vectorstore(self):
+        self._chunks_are_embedded_and_added_to_vectorstore = True
+
+    def set_raw_file_was_stored(self):
+        self._raw_file_is_stored = True
+
+    def set_transformed_text(self, text: str):
+        if text == "":
+            raise InvalidInitializationError(
+                "Zero length string can't be content of doc - something must have went wrong in the preprocessing step"
+            )
+        self._transformed_text = text
 
     @staticmethod
     def get_TextFileTypeEnum_from_filename_throw_error_if_not_supported(
@@ -151,59 +219,27 @@ class UploadedTextLikeFile:
             case _:
                 assert_never(txt_like_file_type)
 
-    def __init__(
+    def create_chunks_from_raw_text(  # due to not wanting to block the db connection pool, we must run this on a snapshot and update the object itself in a new uow
         self,
-        name: str,
-        file_type: TextFileTypeEnum,
-        was_stored: bool = False,
-        transformed_text: str | None = None,
-        hash_of_raw_file: str | None = None,
-    ) -> None:
-        self._id = str(uuid4())
-        self._name = name
-        self._file_type = file_type
-        self._raw_file_is_stored = was_stored
-        self._transformed_text = transformed_text
-        self._hash_of_raw_file = hash_of_raw_file
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def id(self):
-        return self._id
-
-    @property
-    def hash_of_raw_file(self):
-        return self._hash_of_raw_file
-
-    @property
-    def file_type(self):
-        return self._file_type
-
-    def set_raw_file_was_stored(self):
-        self._raw_file_is_stored = True
-
-    def set_transformed_text(self, text: str):
-        if text == "":
-            raise InvalidInitializationError(
-                "Zero length string can't be content of doc - something must have went wrong in the preprocessing step"
-            )
-        self._transformed_text = text
-
-    def chunk_raw_text(
-        self,
-    ) -> None:  # I wanted to put this in a domain function instead of in an adapter because this is a core subdomain and the "how do we chunk" is central to the functionality
+    ) -> list[
+        TextFileChunk
+    ]:  # I wanted to put this in a domain function instead of in an adapter because this is a core subdomain and the "how do we chunk" is central to the functionality
         if self._transformed_text is None or self.set_transformed_text == "":
-            raise Exception(
-                "Can't chunk unitialized transformed text or incorrectly transformed text (empty string)"
-            )
+            raise InvalidTransformedTextError
+        if self._corresponding_chunks is not None:
+            raise DocumentIsAlreadyChunkedError
         chunks = createParentAndChildChunksFromTextCharacterSplit(
             full_text=self._transformed_text,
             corresponding_TextFile_id=self._id,
         )
-        self._corresponding_chunks = chunks
+        return chunks
+
+    def set_chunks(self, all_chunks: list[TextFileChunk]):
+        if self._transformed_text is None or self.set_transformed_text == "":
+            raise InvalidTransformedTextError
+        if self._corresponding_chunks is not None:
+            raise DocumentIsAlreadyChunkedError
+        self._corresponding_chunks = all_chunks
 
 
 class CgptPermissionsToFile:
@@ -239,6 +275,8 @@ class TextFileChunk:
         self._chunking_stragegy = chunking_stragegy
         self._hierarchy_level_of_chunk = hierarchy_level_of_chunk
         self._parent_id_if_child = parent_id_if_child
+        self._embedding_for_duplication_reason = None
+        self._embedding_dimension = None
 
     _id: str
     _corresponding_TextFile_id: str
@@ -246,6 +284,28 @@ class TextFileChunk:
     _chunking_stragegy: str
     _hierarchy_of_chunk: ParentOrChild
     _parent_id_if_child: str | None
+    _embedding_for_duplication_reason: list[float] | None
+    _embedding_dimension: int | None
+
+    @property
+    def is_parent_or_child(self) -> ParentOrChild:
+        return self._hierarchy_level_of_chunk
+
+    @property
+    def return_parent_id_if_this_is_child(self):
+        if self._hierarchy_of_chunk == ParentOrChild.parent:
+            raise RuntimeError(
+                "Can't call this function on parent chunks, only child chunks"
+            )
+        return self._parent_id_if_child
+
+    @property
+    def text(self):
+        return self._text_content_of_chunk
+
+    def set_embedding(self, embedding: list[float], embedding_dim: int):
+        self._embedding_dimension = embedding_dim
+        self._embedding_for_duplication_reason = embedding
 
     def set_hierarchy(
         self, parent_or_child: ParentOrChild, parent_id: str | None = None
@@ -271,19 +331,3 @@ class TextFileChunk:
                 "Only child Chunks can have a parent_id - we have only two hierarchy levels"
             )
         self._parent_id_if_child = parent_id
-
-    @property
-    def is_parent_or_child(self) -> ParentOrChild:
-        return self._hierarchy_level_of_chunk
-
-    @property
-    def return_parent_id_if_this_is_child(self):
-        if self._hierarchy_of_chunk == ParentOrChild.parent:
-            raise RuntimeError(
-                "Can't call this function on parent chunks, only child chunks"
-            )
-        return self._parent_id_if_child
-
-    @property
-    def text(self):
-        return self._text_content_of_chunk

@@ -1,4 +1,4 @@
-# 28. domain invariants with private attributes and invariant save setter functions
+# 28. domain invariants with private attributes and invariant safe setter functions
 
 Date: 2026-04-10
 

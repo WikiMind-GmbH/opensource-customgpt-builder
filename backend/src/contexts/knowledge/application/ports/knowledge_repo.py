@@ -1,5 +1,7 @@
 from typing import Protocol
 
+from attr import dataclass
+
 from src.contexts.knowledge.domain.models import (
     TextFileTypeEnum,
     UploadedTextLikeFile,
@@ -18,6 +20,12 @@ class FileTypeNotSupportedError(RuntimeError):
     f"This file type is not supported. Only files ending with {str([value for value in TextFileTypeEnum])} are supported"
 
 
+@dataclass
+class AddChunkEmbeddingsDTO:
+    file_id: str
+    id_and_embedding_pairs_of_chunks: list[tuple[str, list[float]]]
+
+
 class KnowledgeRepo(Protocol):
     def get_file(self, file_id: str) -> UploadedTextLikeFile: ...
     def create_new_file_if_hash_doesnt_exist_yet(
@@ -29,6 +37,11 @@ class KnowledgeRepo(Protocol):
     ) -> str: ...  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
 
     def get_ids_of_all_files_this_cgpt_has_access_to(self, cgpt_id: str): ...
+
+    def add_chunk_embeddings_update_file_and_chunks(
+        self,
+        update_information: AddChunkEmbeddingsDTO,
+    ) -> None: ...
 
     # def delete_file_from_cgpt_return_true_if_file_has_to_be_removed(
     #     self, cgpt_id: str, file_id: str

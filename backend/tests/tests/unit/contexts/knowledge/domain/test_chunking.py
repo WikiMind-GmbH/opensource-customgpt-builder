@@ -8,7 +8,6 @@ def test_createParentAndChildChunksFromTextCharacterSplit():
     text_chunks = createParentAndChildChunksFromTextCharacterSplit(
         full_text=test_text,
         corresponding_TextFile_id="id",
-        accessible_to_cgpts=["a"],
         parent_chunk_size=3,
         child_chunk_size=1,
     )

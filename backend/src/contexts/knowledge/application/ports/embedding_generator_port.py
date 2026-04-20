@@ -1,0 +1,6 @@
+from typing import Protocol
+
+
+class EmbeddingGeneratorPort(Protocol):
+    def create_embedding_for_text(self, text: str) -> list[float]: ...
+    def create_embeddings_for_texts(self, texts: list[str]) -> list[list[float]]: ...
