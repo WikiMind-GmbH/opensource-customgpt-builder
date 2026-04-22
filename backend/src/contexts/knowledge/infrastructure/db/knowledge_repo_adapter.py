@@ -48,8 +48,8 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
 
     def add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
         self, cgpt_ids: list[str], hash_of_file: str
-    ) -> None:  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
-        stmt_get_id_of_file_with_hash = select(uploaded_text_like_file.c.id).where(
+    ) -> str:  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
+        stmt_get_id_of_file_with_hash = select(uploaded_text_like_file.c._id).where(
             uploaded_text_like_file.c._hash_of_raw_file == hash_of_file
         )
         try:
@@ -62,7 +62,7 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
             )
         id_of_file: str = result[0]
         stmt_permissions_of_this_file = select(CgptPermissionsToFile).where(
-            cgpt_permissions_to_files.c._file_id == id_of_file
+            cgpt_permissions_to_files.c.file_id == id_of_file
         )
         result = self.session.execute(stmt_permissions_of_this_file)
         cgpt_ids_with_permissions_already: list[str] = [row[0] for row in result.all()]
@@ -71,7 +71,8 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
             for cgpt_id in cgpt_ids
             if cgpt_id not in cgpt_ids_with_permissions_already
         ]
-        self.session.add(cgpts_missing_permission_to_file)
+        self.session.add_all(cgpts_missing_permission_to_file)
+        return id_of_file
 
     def get_ids_of_all_files_this_cgpt_has_access_to(self, cgpt_id: str): ...
 

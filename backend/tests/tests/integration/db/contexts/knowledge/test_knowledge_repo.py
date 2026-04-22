@@ -1,8 +1,21 @@
+import uuid
+
+import pytest
+from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 
+from src.contexts.knowledge.application.ports.knowledge_repo import (
+    CantCreateFileThatAlreadyExistsError,
+    FileDoesNotExistError,
+    InvalidDatabaseStateError,
+)
 from src.contexts.knowledge.domain.models import TextFileTypeEnum
 from src.contexts.knowledge.infrastructure.db.knowledge_repo_adapter import (
     SQLAlchemyKnowledgeRepository,
+)
+from src.contexts.knowledge.infrastructure.db.orm import (
+    cgpt_permissions_to_files,
+    uploaded_text_like_file,
 )
 from src.contexts.shared.typing_aliases import Factory
 
@@ -24,7 +37,54 @@ from src.contexts.shared.typing_aliases import Factory
 #     ) -> None: ...
 
 
-def test_repository_get_roundtrip(session_factory: Factory[Session]):
+def _create_uploadedfile_entry_commit_return_id(
+    session: Session, hash: str, id_or_none_for_uuid: str | None = None
+) -> str:
+    id = id_or_none_for_uuid if id_or_none_for_uuid is not None else str(uuid.uuid4())
+    session.execute(
+        insert(uploaded_text_like_file).values(
+            _id=id,
+            _name="name",
+            _file_type=TextFileTypeEnum.txt,
+            _raw_file_is_stored=True,
+            _transformed_text=None,
+            _hash_of_raw_file=hash,
+            _chunks_are_embedded=False,
+            _chunks_are_embedded_and_added_to_vectorstore=False,
+        )
+    )
+    session.commit()
+    return id
+
+
+def _create_permission_entry_commit(
+    session: Session, file_id: str, cgpt_id: str
+) -> str:
+    session.execute(
+        insert(cgpt_permissions_to_files).values(
+            _id=str(uuid.uuid4()),
+            file_id=file_id,
+            cgpt_id=cgpt_id,
+        )
+    )
+    session.commit()
+    return id
+
+
+def _return_all_cgpt_id_file_id_tuples_in_permission_table_with_file_id(
+    file_id: str, session: Session
+) -> list[tuple[str, str]]:
+    stmt = select(
+        cgpt_permissions_to_files.c.cgpt_id, cgpt_permissions_to_files.c.file_id
+    ).where(cgpt_permissions_to_files.c.file_id == file_id)
+    result = session.execute(stmt)
+    list_of_tuples = [(row.cgpt_id, row.file_id) for row in result.all()]
+    return list_of_tuples
+
+
+def test_repository_get_roundtrip_after_creating_file(
+    session_factory: Factory[Session],
+):
     with session_factory() as session:
         repository = SQLAlchemyKnowledgeRepository(session)
         created_file = repository.create_new_file_if_hash_doesnt_exist_yet(
@@ -39,186 +99,98 @@ def test_repository_get_roundtrip(session_factory: Factory[Session]):
         assert fetched_conversation.id == file_id
 
 
-# def test_repository_get_raises_when_missing(session_factory: Factory[Session]):
-#     with session_factory() as session:
-#         repository = SQLAlchemyConversartionRepository(session)
-#         with pytest.raises(ConversationNotFoundError):
-#             repository.get("non-existent-id")
+def test_repository_get_file_raises_when_missing(session_factory: Factory[Session]):
+    with session_factory() as verification_session:
+        verification_repository = SQLAlchemyKnowledgeRepository(verification_session)
+
+        with pytest.raises(FileDoesNotExistError):
+            verification_repository.get_file("non-existent-id")
 
 
-# def test_add_text_messages_domain_functions_translate(
-#     session_factory: Factory[Session],
-# ):
-#     assistant_text: str = "assistant_text"
-#     user_text: str = "user_text"
-#     with session_factory() as session:
-#         repository = SQLAlchemyConversartionRepository(session)
-#         conversation = repository.create_conversation()
-#         conv_id: str = conversation.id
-#         conversation.add_user_text_message(user_text)
-#         session.commit()
-#         conversation.add_assistant_text_message(assistant_text)
-#         session.commit()
-#     with session_factory() as session:
-#         repository = SQLAlchemyConversartionRepository(session)
-#         conv: Conversation = repository.get(conv_id=conv_id)
-#         messages: list[Message] = conv.messages_excl_sysPrompt
-#         assert len(messages) == 2
-#         assert messages[0].contentType == ContentType.text
-#         assert messages[1].contentType == ContentType.text
-#         assert messages[0].role == Role.user
-#         assert messages[1].role == Role.assistant
-#         assert messages[0].imageUrlOrText == user_text
-#         assert messages[1].imageUrlOrText == assistant_text
+def test_add_cgpt_permission_via_hash_raises_errors_if_zero_or_more_than_one_files_with_hash_exists(
+    session_factory: Factory[Session],
+):
+    hash = "hash"
+    with session_factory() as no_files_with_this_hash_session:
+        repo = SQLAlchemyKnowledgeRepository(no_files_with_this_hash_session)
+        with pytest.raises(FileDoesNotExistError):
+            repo.add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
+                cgpt_ids=["S"], hash_of_file=hash
+            )
+
+    with session_factory() as session:
+        _create_uploadedfile_entry_commit_return_id(session=session, hash=hash)
+        _create_uploadedfile_entry_commit_return_id(session=session, hash=hash)
+
+    with session_factory() as multiple_files_with_this_hash_session:
+        repo = SQLAlchemyKnowledgeRepository(multiple_files_with_this_hash_session)
+        with pytest.raises(InvalidDatabaseStateError):
+            repo.add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
+                cgpt_ids=["S"], hash_of_file=hash
+            )
 
 
-# def test_delete_conversation_cascades_messages(session_factory: Factory[Session]):
-#     with session_factory() as session:
-#         repository = SQLAlchemyConversartionRepository(session)
-#         conversation = repository.create_conversation()
-#         conversation.title = "X"
-#         conversation.add_user_text_message("hi")
-#         session.commit()
+def test_add_cgpt_permission_via_hash_adds_exactly_missing_pairs(
+    session_factory: Factory[Session],
+):
+    previous_cgpt_ids_added_to_file = ["prev_1", "prev_2"]
+    cgpt_ids_of_request = ["prev_1", "new_1", "new_2"]
+    hash = "hash"
+    with session_factory() as create_file_session:
+        file_id = _create_uploadedfile_entry_commit_return_id(
+            session=create_file_session, hash=hash
+        )
 
-#         repository.delete(conversation)
-#         session.commit()
+    with session_factory() as create_previous_permissions_session:
+        for cgpt_id in previous_cgpt_ids_added_to_file:
+            _create_permission_entry_commit(
+                session=create_previous_permissions_session,
+                file_id=file_id,
+                cgpt_id=cgpt_id,
+            )
+        all_permission_tuples_of_file_id = (
+            _return_all_cgpt_id_file_id_tuples_in_permission_table_with_file_id(
+                file_id=file_id, session=create_previous_permissions_session
+            )
+        )
+        assert all_permission_tuples_of_file_id == [
+            (cgpt_id, file_id) for cgpt_id in previous_cgpt_ids_added_to_file
+        ], (
+            f"cgpts with permissions to file {file_id} should only be {previous_cgpt_ids_added_to_file}"
+        )
 
-#     with session_factory() as verification_session:
-#         remaining_messages_count = verification_session.execute(
-#             select(func.count()).select_from(messages_table)
-#         ).scalar_one()
-#         assert remaining_messages_count == 0
-
-
-# def test_delete_conversations_with_cgpt(session_factory: Factory[Session]):
-#     with session_factory() as session:
-#         repository = SQLAlchemyConversartionRepository(session)
-#         cgpt_id = "id"
-#         cgpt_other_id = "other_id"
-#         convs_with_cgpt: list[Conversation] = []
-#         unrelated_convs: list[Conversation] = []
-#         convs_with_cgpt.append(repository.create_conversation(cgpt_id=cgpt_id))
-#         convs_with_cgpt.append(repository.create_conversation(cgpt_id=cgpt_id))
-#         convs_with_cgpt.append(repository.create_conversation(cgpt_id=cgpt_id))
-
-#         conv_without_cgpt = repository.create_conversation()
-#         conv_with_other_cgpt = repository.create_conversation(cgpt_id=cgpt_other_id)
-#         unrelated_convs.append(conv_without_cgpt)
-#         unrelated_convs.append(conv_with_other_cgpt)
-
-#         all_convs: list[Conversation] = convs_with_cgpt + unrelated_convs
-#         session.commit()
-
-#     # Test: all convs exist
-#     with session_factory() as session:
-#         assert None not in [
-#             SQLAlchemyConversartionRepository(session).get(conv.id)
-#             for conv in all_convs
-#         ]
-
-#     # delete
-#     with session_factory() as session:
-#         SQLAlchemyConversartionRepository(session).delete_conversations_with_cgpt(
-#             cgpt_id=cgpt_id
-#         )
-#         session.commit()
-#     # Test: unrelated converstions still exist
-#     with session_factory() as session:
-#         assert None not in [
-#             SQLAlchemyConversartionRepository(session).get(conv.id)
-#             for conv in unrelated_convs
-#         ]
-
-#     # Test: convs with cgpt_id were deleted
-#     with session_factory() as session:
-#         for conv in convs_with_cgpt:
-#             with pytest.raises(ConversationNotFoundError):
-#                 SQLAlchemyConversartionRepository(session).get(conv.id)
+    with session_factory() as test_session:
+        repo = SQLAlchemyKnowledgeRepository(test_session)
+        repo.add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
+            cgpt_ids=cgpt_ids_of_request, hash_of_file=hash
+        )
+        test_session.commit()
+    with session_factory() as verification_session:
+        all_permission_tuples_of_file_id = (
+            _return_all_cgpt_id_file_id_tuples_in_permission_table_with_file_id(
+                file_id=file_id, session=verification_session
+            )
+        )
+        expected_permission_tuple_list_unordered = [
+            (cgpt_id, file_id)
+            for cgpt_id in set(cgpt_ids_of_request + previous_cgpt_ids_added_to_file)
+        ]
+        assert (
+            all_permission_tuples_of_file_id.sort()
+            == expected_permission_tuple_list_unordered.sort()
+        )
 
 
-# def test_add_user_text_message_roundtrip(session_factory: Factory[Session]):
-#     user_text = "user_text"
-#     with session_factory() as session:
-#         repository = SQLAlchemyConversartionRepository(session)
-#         conversation = repository.create_conversation()
-#         conversation.add_user_text_message(user_text)
+def test_repository_get_raises_when_hash_already_exists(
+    session_factory: Factory[Session],
+):
+    hash = "hash"
+    with session_factory() as session:
+        _create_uploadedfile_entry_commit_return_id(session=session, hash=hash)
+    with session_factory() as verification_session:
+        verification_repository = SQLAlchemyKnowledgeRepository(verification_session)
 
-#         session.commit()
-
-#     with session_factory() as verification_session:
-#         repository_verify = SQLAlchemyConversartionRepository(verification_session)
-#         fetched: Conversation = repository_verify.get(conversation.id)
-#         assert fetched.messages_excl_sysPrompt[0].role == Role.user
-#         assert fetched.messages_excl_sysPrompt[0].contentType == ContentType.text
-#         assert fetched.messages_excl_sysPrompt[0].imageUrlOrText == user_text
-
-
-# def test_add_assistant_text_message_roundtrip(session_factory: Factory[Session]):
-#     assistant_text = "assistant_text"
-#     with session_factory() as session:
-#         repository = SQLAlchemyConversartionRepository(session)
-#         conversation = repository.create_conversation()
-#         conversation.add_assistant_text_message(assistant_text)
-
-#         session.commit()
-
-#     with session_factory() as verification_session:
-#         repository_verify = SQLAlchemyConversartionRepository(verification_session)
-#         fetched: Conversation = repository_verify.get(conversation.id)
-#         assert fetched.messages_excl_sysPrompt[0].role == Role.assistant
-#         assert fetched.messages_excl_sysPrompt[0].contentType == ContentType.text
-#         assert fetched.messages_excl_sysPrompt[0].imageUrlOrText == assistant_text
-
-
-# # -----------------------------------------------------------------------------------
-# # RECREATE TESTS WITH PUBLIC INTERFACE INSTEAD OF PRIVATE ATTRIBUTE ONCE DELETE ADDED
-# # -----------------------------------------------------------------------------------
-# #
-# # def _fetch_last_message_at(session: Session, conversation_id: str):
-# #     return session.execute(
-# #         select(conversations_table.c.last_message_at).where(
-# #             conversations_table.c.id == conversation_id
-# #         )
-# #     ).scalar_one()
-# #
-# # def test_last_message_at_recomputes_on_delete_of_latest_message(
-# #     session_factory: Factory[Session],
-# # ):
-# #     with session_factory() as session:
-# #         repository = SQLAlchemyConversartionRepository(session)
-# #         conversation = repository.create_conversation()
-# #         conversation.title = "LMA"
-
-# #         msg: Message = conversation.add_user_text_message("1")
-# #         session.commit()
-# #         assert msg is not None
-# #         timestamp_after_first = _fetch_last_message_at(session, conversation.id)
-
-# #         conversation.add_user_text_message("2")
-# #         session.commit()
-# #         timestamp_after_second = _fetch_last_message_at(session, conversation.id)
-# #         assert (
-# #             timestamp_after_second and timestamp_after_second >= timestamp_after_first
-# #         )
-
-# #         # Remove the latest message → timestamp should step yback
-# #         conversation._messages_excl_sysPrompt = conversation.messages_excl_sysPrompt[
-# #             :-1
-# #         ]
-# #         session.commit()
-# #         timestamp_after_deletion = _fetch_last_message_at(session, conversation.id)
-# #         assert timestamp_after_deletion == timestamp_after_first
-# #
-# # def test_last_message_at_becomes_null_when_all_messages_deleted(
-# #     session_factory: Factory[Session],
-# # ):
-# #     with session_factory() as session:
-# #         repository = SQLAlchemyConversartionRepository(session)
-# #         conversation = repository.create_conversation()
-# #         conversation.add_user_text_message("x")
-# #         session.commit()
-# #         assert _fetch_last_message_at(session, conversation.id) is not None
-
-# #         conversation._messages_excl_sysPrompt.clear()  # delete-orphan
-# #         session.commit()
-# #         assert _fetch_last_message_at(session, conversation.id) is None
+        with pytest.raises(CantCreateFileThatAlreadyExistsError):
+            verification_repository.create_new_file_if_hash_doesnt_exist_yet(
+                filename="name", hash=hash, file_type=TextFileTypeEnum.txt
+            )

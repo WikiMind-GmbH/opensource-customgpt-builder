@@ -105,7 +105,6 @@ def _upload_document_complete_workflow_after_further_validation(
     with knowledge_uow as uow:
         uploaded_file: UploadedTextLikeFile = (
             uow.knowledge_repo.create_new_file_if_hash_doesnt_exist_yet(
-                file_bytes=file_contents,
                 filename=filename,
                 hash=hash,
                 file_type=file_type,
