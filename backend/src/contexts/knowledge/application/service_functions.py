@@ -189,6 +189,16 @@ def _preprocess_and_chunk_document_then_embedd(
         uploaded_file.set_chunks(chunks_of_document)
         setter_uow.commit()
 
+    _embedd_document_chunks_all_at_once(
+        uploaded_file=uploaded_file,
+        knowledge_uow=knowledge_uow,
+        preProcessAdapter=preProcessAdapter,
+        file_storage_adapter=file_storage_adapter,
+        vector_store_adapter=vector_store_adapter,
+        embedding_generator_adapter=embedding_generator_adapter,
+        chunks_of_document=chunks_of_document,
+    )
+
 
 def _embedd_document_chunks_all_at_once(
     uploaded_file: UploadedTextLikeFile,

@@ -5,6 +5,9 @@ from sqlalchemy.orm import clear_mappers
 
 from src.contexts.chat.infrastructure.db.orm import start_mappers as chat_start
 from src.contexts.customGPTs.infrastructure.db.orm import start_mappers as cgpt_start
+from src.contexts.knowledge.infrastructure.db.orm import (
+    start_mappers as knowledge_start,
+)
 
 
 @pytest.fixture(scope="session")
@@ -16,6 +19,12 @@ def start_cgpt_mappers() -> Generator[None, None, None]:
 @pytest.fixture(scope="session")
 def start_chat_mappers() -> Generator[None, None, None]:
     chat_start()
+    yield
+
+
+@pytest.fixture(scope="session")
+def start_knowledge_mappers() -> Generator[None, None, None]:
+    knowledge_start()
     yield
 
 

@@ -33,7 +33,7 @@ class InvalidInitializationError(RuntimeError):
 
 
 class DocumentIsAlreadyChunkedError(RuntimeError):
-    "Document is already chunked. (All chunks are set at once)"
+    "Document is already chunked. (Chunks must all be set at once and afterwards there should be no reason to change it again."
 
 
 class InvalidTransformedTextError(RuntimeError):
@@ -133,10 +133,10 @@ class UploadedTextLikeFile:
 
     _raw_file_is_stored: bool
     _transformed_text: str | None
-    _corresponding_chunks: list[TextFileChunk] | None
     _hash_of_raw_file: str | None
     _chunks_are_embedded: bool
     _chunks_are_embedded_and_added_to_vectorstore: bool
+    _corresponding_chunks: list[TextFileChunk]
 
     def __init__(
         self,
@@ -152,7 +152,7 @@ class UploadedTextLikeFile:
         self._raw_file_is_stored = was_stored
         self._transformed_text = transformed_text
         self._hash_of_raw_file = hash_of_raw_file
-        self._corresponding_chunks = None
+        self._corresponding_chunks = []
         self._chunks_are_embedded = False
         self._chunks_are_embedded_and_added_to_vectorstore = False
 
@@ -226,7 +226,7 @@ class UploadedTextLikeFile:
     ]:  # I wanted to put this in a domain function instead of in an adapter because this is a core subdomain and the "how do we chunk" is central to the functionality
         if self._transformed_text is None or self.set_transformed_text == "":
             raise InvalidTransformedTextError
-        if self._corresponding_chunks is not None:
+        if not self._corresponding_chunks == []:
             raise DocumentIsAlreadyChunkedError
         chunks = createParentAndChildChunksFromTextCharacterSplit(
             full_text=self._transformed_text,
@@ -237,7 +237,7 @@ class UploadedTextLikeFile:
     def set_chunks(self, all_chunks: list[TextFileChunk]):
         if self._transformed_text is None or self.set_transformed_text == "":
             raise InvalidTransformedTextError
-        if self._corresponding_chunks is not None:
+        if not self._corresponding_chunks == []:
             raise DocumentIsAlreadyChunkedError
         self._corresponding_chunks = all_chunks
 
@@ -259,6 +259,13 @@ class ParentOrChild(StrEnum):
 
 
 class TextFileChunk:
+    _id: str
+    _corresponding_TextFile_id: str
+    _text_content_of_chunk: str
+    _chunking_stragegy: str
+    _hierarchy_of_chunk: ParentOrChild
+    _parent_id_if_child: str | None
+
     def __init__(
         self,
         corresponding_TextFile_id: str,
@@ -275,17 +282,6 @@ class TextFileChunk:
         self._chunking_stragegy = chunking_stragegy
         self._hierarchy_level_of_chunk = hierarchy_level_of_chunk
         self._parent_id_if_child = parent_id_if_child
-        self._embedding_for_duplication_reason = None
-        self._embedding_dimension = None
-
-    _id: str
-    _corresponding_TextFile_id: str
-    _text_content_of_chunk: str
-    _chunking_stragegy: str
-    _hierarchy_of_chunk: ParentOrChild
-    _parent_id_if_child: str | None
-    _embedding_for_duplication_reason: list[float] | None
-    _embedding_dimension: int | None
 
     @property
     def is_parent_or_child(self) -> ParentOrChild:
@@ -302,10 +298,6 @@ class TextFileChunk:
     @property
     def text(self):
         return self._text_content_of_chunk
-
-    def set_embedding(self, embedding: list[float], embedding_dim: int):
-        self._embedding_dimension = embedding_dim
-        self._embedding_for_duplication_reason = embedding
 
     def set_hierarchy(
         self, parent_or_child: ParentOrChild, parent_id: str | None = None

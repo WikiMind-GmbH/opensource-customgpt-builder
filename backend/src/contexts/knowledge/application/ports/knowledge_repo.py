@@ -12,12 +12,16 @@ class FileDoesNotExistError(RuntimeError):
     "No file with this id was found"
 
 
-class CantCreateFileThatAlreadyExists(RuntimeError):
+class CantCreateFileThatAlreadyExistsError(RuntimeError):
     "A file with the same hash already exists in the db, meaning that this file must already be in the db. Please just add the cgpt to the permission of this file instead."
 
 
 class FileTypeNotSupportedError(RuntimeError):
     f"This file type is not supported. Only files ending with {str([value for value in TextFileTypeEnum])} are supported"
+
+
+class InvalidDatabaseStateError(Exception):
+    "An invalid database state was reached. Please check what happend"
 
 
 @dataclass
@@ -29,12 +33,12 @@ class AddChunkEmbeddingsDTO:
 class KnowledgeRepo(Protocol):
     def get_file(self, file_id: str) -> UploadedTextLikeFile: ...
     def create_new_file_if_hash_doesnt_exist_yet(
-        self, file_bytes: bytes, filename: str, hash: str, file_type: TextFileTypeEnum
+        self, filename: str, hash: str, file_type: TextFileTypeEnum
     ) -> UploadedTextLikeFile: ...
 
     def add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
         self, cgpt_ids: list[str], hash_of_file: str
-    ) -> str: ...  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
+    ) -> None: ...  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
 
     def get_ids_of_all_files_this_cgpt_has_access_to(self, cgpt_id: str): ...
 

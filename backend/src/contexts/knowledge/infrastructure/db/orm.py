@@ -14,6 +14,7 @@ from src.contexts.knowledge.domain.models import (
     CgptPermissionsToFile,
     ParentOrChild,
     TextFileChunk,
+    TextFileTypeEnum,
     UploadedTextLikeFile,
 )
 
@@ -34,19 +35,32 @@ mapper_registry = registry(metadata=metadata)
 uploaded_text_like_file = Table(
     "uploaded_text_like_file",
     metadata,
-    Column("id", String, primary_key=True),
-    Column("name", String, nullable=False),
-    Column("raw_file_is_stored", String, nullable=False),
-    Column("file_type", String, nullable=False),
-    Column("transformed_text", String, nullable=True),
-    Column("hash_of_raw_file", String, nullable=True),
+    Column("_id", String, primary_key=True),
+    Column("_name", String, nullable=False),
+    Column(
+        "_file_type",
+        Enum(
+            TextFileTypeEnum,
+            name="TextFileTypeEnum",
+            native_enum=False,
+            validate_strings=True,
+        ),
+        nullable=False,
+    ),
+    Column("_raw_file_is_stored", String, nullable=False),
+    Column("_transformed_text", String, nullable=True),
+    Column("_hash_of_raw_file", String, nullable=True),
+    Column("_chunks_are_embedded", String, nullable=True),
+    Column("_chunks_are_embedded_and_added_to_vectorstore", String, nullable=True),
 )
 
 cgpt_permissions_to_files = Table(
     "cgpt_permissions_to_files",
     metadata,
-    Column("permission_id", String, primary_key=True),
-    Column("file_id", String, ForeignKey("uploaded_text_like_file.id"), nullable=False),
+    Column("_id", String, primary_key=True),
+    Column(
+        "file_id", String, ForeignKey("uploaded_text_like_file._id"), nullable=False
+    ),
     Column("cgpt_id", String, nullable=False),
 )
 
@@ -60,16 +74,17 @@ cgpt_permissions_to_files = Table(
 text_chunks_of_files = Table(
     "text_chunks_of_files",
     metadata,
+    Column("_id", String, nullable=False, primary_key=True),
     Column(
-        "corresponding_TextFile_id",
+        "_corresponding_TextFile_id",
         String,
-        ForeignKey("uploaded_text_like_file.id"),
+        ForeignKey("uploaded_text_like_file._id"),
         nullable=False,
     ),
-    Column("text_content_of_chunk", String, nullable=False),
-    Column("chunking_stragegy", String, nullable=False),
+    Column("_text_content_of_chunk", String, nullable=False),
+    Column("_chunking_stragegy", String, nullable=False),
     Column(
-        "hierarchy_of_chunk",
+        "_hierarchy_of_chunk",
         Enum(
             ParentOrChild,
             name="ParentOrChild",
@@ -78,7 +93,7 @@ text_chunks_of_files = Table(
         ),
         nullable=False,
     ),
-    Column("parent_id_if_child", String, nullable=True),
+    Column("_parent_id_if_child", String, nullable=True),
 )
 
 
@@ -100,8 +115,8 @@ def start_mappers() -> None:
             # one-to-many; SQLAlchemy instruments `Conversation.messages`
             "_corresponding_chunks": relationship(
                 TextFileChunk,
-                primaryjoin=text_chunks_of_files.c.corresponding_TextFile_id
-                == uploaded_text_like_file.c.id,
+                primaryjoin=text_chunks_of_files.c._corresponding_TextFile_id
+                == uploaded_text_like_file.c._id,
                 backref=None,
                 cascade="all, delete-orphan",
                 passive_deletes=True,
