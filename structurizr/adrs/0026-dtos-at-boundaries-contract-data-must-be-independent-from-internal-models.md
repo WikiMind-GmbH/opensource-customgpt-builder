@@ -12,15 +12,12 @@ Supercedes [Utilizing DTOs in cross-context ports](0014-utilizing-dtos-and-mappe
 
 ## Created by
 
-List all contributors who have meaningfully edited this ADR.
-Version history in Git provides the authoritative change log.
+Albert Sandritter
+
 
 ## Decision Maker
 
-The person responsible for approving this ADR and moving it from OPEN/PROPOSED to ACCEPTED.
-
-This should be the person accountable for software architecture decisions.
-Only this person may mark the ADR as ACCEPTED.
+Albert Sandritter
 
 
 
@@ -28,7 +25,7 @@ Only this person may mark the ADR as ACCEPTED.
 
 Applies to **all boundaries** in this repository, including:
 - cross-bounded-context calls inside the modulith
-- calls across layers/modules within a context (e.g., domain ↔ infrastructure, domain ↔ external APIs)
+- calls across layers/modules within a context EXCEPT DOMAIN MODEL ORM REPOSITORY
 - any Port/Adapter integration, regardless of whether it is “consumer→provider” or “provider→consumer”
 
 Does **not** prescribe concrete DTO field schemas. It defines **rules and responsibilities**, not payload shapes.
@@ -82,7 +79,7 @@ We need a stable, explicit boundary contract that protects internal models from 
   - Creates implicit coupling and semantic confusion at the boundary
 - Not chosen because providers must not depend on consumer domain language.
 
-4) **Use contract-owned DTOs + explicit mapping (chosen)**
+4) **Use contract-owned DTOs + explicit mapping except between domain model and orm repo(chosen)**
 - Advantages:
   - Stable contracts with minimal coupling
   - Internal refactors stay local
@@ -93,7 +90,7 @@ We need a stable, explicit boundary contract that protects internal models from 
 
 ## Decision
 
-1) **All boundary data is expressed via contract-owned DTOs**
+1) **All boundary data is expressed via contract-owned DTOs except between domain model and orm repo**
 - Data crossing a boundary must use DTOs that belong to the **contract**, not internal models.
 - DTOs must not be:
   - internal domain entities
@@ -102,7 +99,7 @@ We need a stable, explicit boundary contract that protects internal models from 
 
 2) **Port module contents are contractual**
 Where a boundary is represented as a Port module, that module contains:
-- the Port interface (Protocol) describing operations
+- the Port interface (Protocol) describing operations (including property functions where necessary)
 - the DTOs used by the contract (inputs/outputs)
 - the contract-level error types exposed to callers
 
