@@ -1,5 +1,6 @@
 from fastapi import BackgroundTasks, UploadFile
 
+from src.contexts.knowledge.application.mappers import PreProcessTextLikesPortMapper
 from src.contexts.knowledge.application.ports.cgpt_permissions_port import (
     CgptPermissionCheckerPort,
     UserHasNoPermissionForCgptOrTheyDontExist,
@@ -133,45 +134,19 @@ def _upload_document_complete_workflow_after_further_validation(
     )
 
 
-# def _preprocess_and_chunk_document(
-#     uploaded_file: UploadedTextLikeFile,
-#     knowledge_uow: KnowledgeUOW,
-#     preProcessAdapter: PreProcessTextLikesPort,
-#     file_storage_adapter: RawFileStorePort,
-# ):
-#     file_contents: bytes = file_storage_adapter.get_file(file_id=uploaded_file.id)
-#     file_content_processed_to_string: str = (
-#         preProcessAdapter.process_document_to_string_based_on_file_type(
-#             uploadedTextLikeFile=uploaded_file, raw_file_content=file_contents
-#         )
-#     )
-#     with knowledge_uow as uow:
-#         uploaded_file = uow.knowledge_repo.get_file(uploaded_file.id)
-#         uploaded_file.set_transformed_text(text=file_content_processed_to_string)
-#         uow.commit()
-
-#     chunks_of_document: list[TextFileChunk] = (
-#         uploaded_file.create_chunks_from_raw_text()
-#     )  # outside of uow -> not blocking the db pool; also: no relationships needed -> lazy loading should not be a problem
-
-#     with knowledge_uow as setter_uow:
-#         uploaded_file = setter_uow.knowledge_repo.get_file(uploaded_file.id)
-#         uploaded_file.set_chunks(chunks_of_document)
-#         setter_uow.commit()
-
-
-def _preprocess_and_chunk_document_then_embedd(
+def _preprocess_and_chunk_document(
     uploaded_file: UploadedTextLikeFile,
     knowledge_uow: KnowledgeUOW,
     preProcessAdapter: PreProcessTextLikesPort,
     file_storage_adapter: RawFileStorePort,
-    vector_store_adapter: VectorStorePortTextChunks,
-    embedding_generator_adapter: EmbeddingGeneratorPort,
 ):
     file_contents: bytes = file_storage_adapter.get_file(file_id=uploaded_file.id)
     file_content_processed_to_string: str = (
         preProcessAdapter.process_document_to_string_based_on_file_type(
-            uploadedTextLikeFile=uploaded_file, raw_file_content=file_contents
+            file_type=PreProcessTextLikesPortMapper.domain_to_adapter_file_types(
+                uploaded_file.file_type
+            ),
+            raw_file_content=file_contents,
         )
     )
     with knowledge_uow as uow:
@@ -187,23 +162,12 @@ def _preprocess_and_chunk_document_then_embedd(
         uploaded_file = setter_uow.knowledge_repo.get_file(uploaded_file.id)
         uploaded_file.set_chunks(chunks_of_document)
         setter_uow.commit()
-
-    _embedd_document_chunks_all_at_once(
-        uploaded_file=uploaded_file,
-        knowledge_uow=knowledge_uow,
-        preProcessAdapter=preProcessAdapter,
-        file_storage_adapter=file_storage_adapter,
-        vector_store_adapter=vector_store_adapter,
-        embedding_generator_adapter=embedding_generator_adapter,
-        chunks_of_document=chunks_of_document,
-    )
+    return uploaded_file, chunks_of_document
 
 
 def _embedd_document_chunks_all_at_once(
     uploaded_file: UploadedTextLikeFile,
     knowledge_uow: KnowledgeUOW,
-    preProcessAdapter: PreProcessTextLikesPort,
-    file_storage_adapter: RawFileStorePort,
     vector_store_adapter: VectorStorePortTextChunks,
     embedding_generator_adapter: EmbeddingGeneratorPort,
     chunks_of_document: list[TextFileChunk],
@@ -224,3 +188,27 @@ def _embedd_document_chunks_all_at_once(
             update_information=update_information_dto
         )
     # save in vectorstore,
+
+
+def _preprocess_and_chunk_document_then_embedd(
+    uploaded_file: UploadedTextLikeFile,
+    knowledge_uow: KnowledgeUOW,
+    preProcessAdapter: PreProcessTextLikesPort,
+    file_storage_adapter: RawFileStorePort,
+    vector_store_adapter: VectorStorePortTextChunks,
+    embedding_generator_adapter: EmbeddingGeneratorPort,
+):
+    (uploaded_file, chunks_of_document) = _preprocess_and_chunk_document(
+        uploaded_file=uploaded_file,
+        knowledge_uow=knowledge_uow,
+        preProcessAdapter=preProcessAdapter,
+        file_storage_adapter=file_storage_adapter,
+    )
+
+    _embedd_document_chunks_all_at_once(
+        uploaded_file=uploaded_file,
+        knowledge_uow=knowledge_uow,
+        vector_store_adapter=vector_store_adapter,
+        embedding_generator_adapter=embedding_generator_adapter,
+        chunks_of_document=chunks_of_document,
+    )

@@ -40,10 +40,6 @@ class KnowledgeRepo(Protocol):
         self, cgpt_ids: list[str], hash_of_file: str
     ) -> str: ...  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
 
-    def get_ids_of_all_files_this_cgpt_has_access_to(
-        self, cgpt_id: str
-    ) -> list[str]: ...
-
     def add_chunk_embeddings_update_file_and_chunks(
         self,
         update_information: AddChunkEmbeddingsDTO,

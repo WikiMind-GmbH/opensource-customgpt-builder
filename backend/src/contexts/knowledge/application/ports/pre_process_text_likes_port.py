@@ -1,18 +1,21 @@
+from enum import StrEnum
 from typing import Protocol
-
-from src.contexts.knowledge.domain.models import UploadedTextLikeFile
 
 
 class NotUTF8TxtFileError(RuntimeError):
     "File type is not supported to be transformed to text, only utf-8 txt files are supported"
 
 
+class SupportedFileTypesEnum(StrEnum):
+    txt = "txt"
+
+
 class PreProcessTextLikesPort(Protocol):
-    def return_txt_file_contents_as_string(
-        self, uploadedTextLikeFile: UploadedTextLikeFile, raw_file_content: bytes
+    def _return_txt_file_contents_as_string(
+        self, file_type: SupportedFileTypesEnum, raw_file_content: bytes
     ) -> str: ...
     def process_document_to_string_based_on_file_type(
-        self, uploadedTextLikeFile: UploadedTextLikeFile, raw_file_content: bytes
+        self, file_type: SupportedFileTypesEnum, raw_file_content: bytes
     ) -> str: ...
 
     # more file types supported in the future

@@ -19,23 +19,6 @@ from src.contexts.knowledge.infrastructure.db.orm import (
 )
 from src.contexts.shared.typing_aliases import Factory
 
-# class KnowledgeRepo(Protocol):
-#     def get_file(self, file_id: str) -> UploadedTextLikeFile: ...
-#     def create_new_file_if_hash_doesnt_exist_yet(
-#         self, file_bytes: bytes, filename: str, hash: str, file_type: TextFileTypeEnum
-#     ) -> UploadedTextLikeFile: ...
-
-#     def add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
-#         self, cgpt_ids: list[str], hash_of_file: str
-#     ) -> None: ...  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
-
-#     def get_ids_of_all_files_this_cgpt_has_access_to(self, cgpt_id: str): ...
-
-#     def add_chunk_embeddings_update_file_and_chunks(
-#         self,
-#         update_information: AddChunkEmbeddingsDTO,
-#     ) -> None: ...
-
 
 def _create_uploadedfile_entry_commit_return_id(
     session: Session, hash: str, id_or_none_for_uuid: str | None = None
@@ -82,7 +65,7 @@ def _return_all_cgpt_id_file_id_tuples_in_permission_table_with_file_id(
     return list_of_tuples
 
 
-def test_repository_get_roundtrip_after_creating_file(
+def test_create_new_file_if_hash_doesnt_exist_yet_and_get_file_roundtrip(
     session_factory: Factory[Session],
 ):
     with session_factory() as session:
@@ -99,7 +82,7 @@ def test_repository_get_roundtrip_after_creating_file(
         assert fetched_conversation.id == file_id
 
 
-def test_repository_get_file_raises_when_missing(session_factory: Factory[Session]):
+def test_get_file_raises_when_missing(session_factory: Factory[Session]):
     with session_factory() as verification_session:
         verification_repository = SQLAlchemyKnowledgeRepository(verification_session)
 
@@ -107,7 +90,7 @@ def test_repository_get_file_raises_when_missing(session_factory: Factory[Sessio
             verification_repository.get_file("non-existent-id")
 
 
-def test_add_cgpt_permission_via_hash_raises_errors_if_zero_or_more_than_one_files_with_hash_exists(
+def test_add_cgpt_to_file_permissions_raises_errors_if_zero_or_more_than_one_files_with_hash_exists(
     session_factory: Factory[Session],
 ):
     hash = "hash"
@@ -130,9 +113,19 @@ def test_add_cgpt_permission_via_hash_raises_errors_if_zero_or_more_than_one_fil
             )
 
 
-def test_add_cgpt_permission_via_hash_adds_exactly_missing_pairs(
+def test_add_cgpt_to_file_permissions_adds_exactly_missing_pairs(
     session_factory: Factory[Session],
 ):
+    """
+    Setup:
+    Creates a file and give initial list of cgpts permission to utilize it
+    by adding entries to the permission table
+
+    Test:
+    check if utilizing the `add_cgpt_to_file_permissions_if_not_done_already_return_file_id`
+    Adds the correct rows to the permission table:
+    Add all missing pairs, remove none, no duplication cgpt_id,file_id tuples
+    """
     previous_cgpt_ids_added_to_file = ["prev_1", "prev_2"]
     cgpt_ids_of_request = ["prev_1", "new_1", "new_2"]
     hash = "hash"
@@ -181,7 +174,7 @@ def test_add_cgpt_permission_via_hash_adds_exactly_missing_pairs(
         )
 
 
-def test_repository_get_raises_when_hash_already_exists(
+def test_create_new_file_if_hash_doesnt_exist_yet_raises_when_hash_already_exists(
     session_factory: Factory[Session],
 ):
     hash = "hash"

@@ -74,8 +74,6 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
         self.session.add_all(cgpts_missing_permission_to_file)
         return id_of_file
 
-    def get_ids_of_all_files_this_cgpt_has_access_to(self, cgpt_id: str): ...
-
     def add_chunk_embeddings_update_file_and_chunks(
         self,
         update_information: AddChunkEmbeddingsDTO,
