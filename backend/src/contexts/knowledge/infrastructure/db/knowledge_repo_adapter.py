@@ -3,7 +3,6 @@ from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy.orm import Session
 
 from src.contexts.knowledge.application.ports.knowledge_repo import (
-    AddChunkEmbeddingsDTO,
     CantCreateFileThatAlreadyExistsError,
     FileDoesNotExistError,
     InvalidDatabaseStateError,
@@ -73,8 +72,3 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
         ]
         self.session.add_all(cgpts_missing_permission_to_file)
         return id_of_file
-
-    def add_chunk_embeddings_update_file_and_chunks(
-        self,
-        update_information: AddChunkEmbeddingsDTO,
-    ) -> None: ...

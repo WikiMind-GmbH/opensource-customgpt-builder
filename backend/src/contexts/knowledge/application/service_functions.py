@@ -12,14 +12,12 @@ from src.contexts.knowledge.application.ports.file_storage_port import RawFileSt
 from src.contexts.knowledge.application.ports.knowledge_db_queries import (
     KnowledgeDBQueriesPort,
 )
-from src.contexts.knowledge.application.ports.knowledge_repo import (
-    AddChunkEmbeddingsDTO,
-)
 from src.contexts.knowledge.application.ports.knowledge_uow import KnowledgeUOW
 from src.contexts.knowledge.application.ports.pre_process_text_likes_port import (
     PreProcessTextLikesPort,
 )
 from src.contexts.knowledge.application.ports.vector_store_port import (
+    AddChunkEmbeddingsDTO,
     VectorStorePortTextChunks,
 )
 from src.contexts.knowledge.domain.models import (
@@ -134,6 +132,30 @@ def _upload_document_complete_workflow_after_further_validation(
     )
 
 
+def _preprocess_and_chunk_document_then_embedd(
+    uploaded_file: UploadedTextLikeFile,
+    knowledge_uow: KnowledgeUOW,
+    preProcessAdapter: PreProcessTextLikesPort,
+    file_storage_adapter: RawFileStorePort,
+    vector_store_adapter: VectorStorePortTextChunks,
+    embedding_generator_adapter: EmbeddingGeneratorPort,
+):
+    (uploaded_file, chunks_of_document) = _preprocess_and_chunk_document(
+        uploaded_file=uploaded_file,
+        knowledge_uow=knowledge_uow,
+        preProcessAdapter=preProcessAdapter,
+        file_storage_adapter=file_storage_adapter,
+    )
+
+    _embedd_document_chunks_all_at_once(
+        uploaded_file=uploaded_file,
+        knowledge_uow=knowledge_uow,
+        vector_store_adapter=vector_store_adapter,
+        embedding_generator_adapter=embedding_generator_adapter,
+        chunks_of_document=chunks_of_document,
+    )
+
+
 def _preprocess_and_chunk_document(
     uploaded_file: UploadedTextLikeFile,
     knowledge_uow: KnowledgeUOW,
@@ -183,32 +205,6 @@ def _embedd_document_chunks_all_at_once(
             for i in range(len(chunks_of_document))
         ],
     )
-    with knowledge_uow as setter_uow:
-        setter_uow.knowledge_repo.add_chunk_embeddings_update_file_and_chunks(
-            update_information=update_information_dto
-        )
-    # save in vectorstore,
+    # add to vectorstore
 
-
-def _preprocess_and_chunk_document_then_embedd(
-    uploaded_file: UploadedTextLikeFile,
-    knowledge_uow: KnowledgeUOW,
-    preProcessAdapter: PreProcessTextLikesPort,
-    file_storage_adapter: RawFileStorePort,
-    vector_store_adapter: VectorStorePortTextChunks,
-    embedding_generator_adapter: EmbeddingGeneratorPort,
-):
-    (uploaded_file, chunks_of_document) = _preprocess_and_chunk_document(
-        uploaded_file=uploaded_file,
-        knowledge_uow=knowledge_uow,
-        preProcessAdapter=preProcessAdapter,
-        file_storage_adapter=file_storage_adapter,
-    )
-
-    _embedd_document_chunks_all_at_once(
-        uploaded_file=uploaded_file,
-        knowledge_uow=knowledge_uow,
-        vector_store_adapter=vector_store_adapter,
-        embedding_generator_adapter=embedding_generator_adapter,
-        chunks_of_document=chunks_of_document,
-    )
+    # note change in domain model of file

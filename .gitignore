@@ -1,6 +1,5 @@
 .env
 .structurizr
-NOTES
 edge-user-data
 dev.crt
 dev.key
@@ -14,3 +13,4 @@ prompt.txt
 Notes.md
 learnings
 test_notebooks
+documentation

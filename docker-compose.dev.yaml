@@ -87,6 +87,17 @@ services:
       timeout: 3s
       retries: 10
 
+  qdrant:
+    image: qdrant/qdrant
+    # build:
+    #   context: ./database/qdrant
+    #   dockerfile: Dockerfile.dev
+    container_name: qdrant
+    volumes:
+      - qdrant_data:/qdrant/storage
+    expose:
+      - "6333"
+      - "6334"
 
   nginx:
     build:
@@ -112,6 +123,7 @@ volumes:
   pgdata:
   frontend_node_modules:
   local_file_storage_adapter:
+  qdrant_data:
 
 networks:
   default:
