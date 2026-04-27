@@ -9,7 +9,7 @@ services:
       - ./.env
     volumes:
       - ./backend:/app
-      # - loaded_images:${LOADED_IMAGES_PATH}
+      - local_file_storage_adapter:/app/${FILE_STORAGE_PATH}
       # - prompt_files:${PROMPT_FILES_PATH} 
     # ports:
       # - "127.0.0.1:5678:5678"
@@ -111,6 +111,7 @@ volumes:
   certs:
   pgdata:
   frontend_node_modules:
+  local_file_storage_adapter:
 
 networks:
   default:
