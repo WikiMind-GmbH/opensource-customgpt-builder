@@ -34,7 +34,7 @@ def test_uow_commit_persists(session_factory: Factory[Session]):
         # assert got.name == "alpha"
 
 
-def uow_commit_needs_to_be_done_manually(session_factory: Factory[Session]):
+def test_uow_commit_needs_to_be_done_manually(session_factory: Factory[Session]):
     name: str = "alpha"
     instruction: str = "do x"
     description: str = "desc"

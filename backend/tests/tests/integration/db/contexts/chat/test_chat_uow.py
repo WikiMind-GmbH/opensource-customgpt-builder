@@ -26,7 +26,7 @@ def test_uow_commit_persists(session_factory: Factory[Session]):
         assert len(got.messages_excl_sysPrompt) == 1
 
 
-def uow_commit_needs_to_be_done_manually(session_factory: Factory[Session]):
+def test_uow_commit_needs_to_be_done_manually(session_factory: Factory[Session]):
     with SQLAlchemyConversationUOW(session_factory=session_factory) as uow:
         conv: Conversation = uow.conversation_repo.create_conversation()
         conv_id = conv.id
