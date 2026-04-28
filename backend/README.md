@@ -15,7 +15,7 @@ This backend is Docker-first and designed around:
 ---
 ## Prerequisites for local dev
 - All prerequisites detailed in the root folder README
-- To enable Intellisense usage in vscode, install pip libraries of `requirements.txt` and `requirements-dev.txt` via pip. Creating a [virtual environment](https://code.visualstudio.com/docs/python/python-tutorial#_create-a-virtual-environment) is recommended.
+- To enable Intellisense usage in vscode, install pip libraries of `requirements.txt` and `requirements-dev.txt` via pip. Creating a [virtual environment](https://code.visualstudio.com/docs/python/python-tutorial#_create-a-virtual-environment) is recommended.  Use python version 3.13+.
 
 ## Run
 
