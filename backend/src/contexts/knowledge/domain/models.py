@@ -20,12 +20,16 @@ class TextFileTypeEnum(StrEnum):
 # type FileType = TextFileTypeEnum  # | ImageFileType
 
 
-class gpts_with_access:
+class GptsWithAccess:
     gpt_ids = list[str]
 
 
 class UnsupportedFileTypeError(RuntimeError):
     "File type is not supported, only"
+
+
+class InvalidChunkHierarchyError(Exception):
+    ""
 
 
 class InvalidInitializationError(RuntimeError):
@@ -40,9 +44,9 @@ class InvalidTransformedTextError(RuntimeError):
     "Can't chunk unitialized transformed text or incorrectly transformed text (empty string)"
 
 
-def createParentAndChildChunksFromTextCharacterSplit(
+def create_parent_and_child_chunks_from_text_character_split(
     full_text: str,
-    corresponding_TextFile_id: str,
+    corresponding_text_file_id: str,
     parent_chunk_size: int = 3000,
     child_chunk_size: int = 600,
 ) -> list[TextFileChunk]:
@@ -51,7 +55,7 @@ def createParentAndChildChunksFromTextCharacterSplit(
             "Value passed is zero length string. This should not happen if this function is called- maybe incorrectly preprocessed doc"
         )
 
-    chunking_stragegy = "Character Split Hyde"
+    chunking_strategy = "Character Split Hyde"
 
     def create_parent_chunks(
         full_text: str,
@@ -71,25 +75,26 @@ def createParentAndChildChunksFromTextCharacterSplit(
         parent_chunks: list[TextFileChunk] = []
         for text_chunk in parent_chunks_text_only:
             chunk = TextFileChunk(
-                corresponding_TextFile_id=corresponding_TextFile_id,
+                corresponding_text_file_id=corresponding_text_file_id,
                 text_content_of_chunk=text_chunk,
-                chunking_stragegy=chunking_stragegy,
+                chunking_strategy=chunking_strategy,
                 hierarchy_level_of_chunk=ParentOrChild.parent,
             )
             parent_chunks.append(chunk)
         return parent_chunks
 
     def create_child_chunks(
-        parent_Chunk: TextFileChunk, child_chunk_size: int
+        parent_chunk: TextFileChunk, child_chunk_size: int
     ) -> list[TextFileChunk]:
         child_chunks_text_only: list[str] = []
-        num_child_chunks = len(parent_Chunk.text) // child_chunk_size + +(
-            0 if len(parent_Chunk.text) % child_chunk_size == 0 else 1
+        num_child_chunks = len(parent_chunk.text_content) // child_chunk_size + +(
+            0 if len(parent_chunk.text_content) % child_chunk_size == 0 else 1
         )
         for child_chunk_num in range(num_child_chunks):
-            child_chunk = parent_Chunk.text[
+            child_chunk = parent_chunk.text_content[
                 child_chunk_num * child_chunk_size : min(
-                    (child_chunk_num + 1) * child_chunk_size, len(parent_Chunk.text)
+                    (child_chunk_num + 1) * child_chunk_size,
+                    len(parent_chunk.text_content),
                 )
             ]
             child_chunks_text_only.append(child_chunk)
@@ -97,11 +102,11 @@ def createParentAndChildChunksFromTextCharacterSplit(
         child_chunks: list[TextFileChunk] = []
         for text_chunk in child_chunks_text_only:
             chunk = TextFileChunk(
-                corresponding_TextFile_id=corresponding_TextFile_id,
+                corresponding_text_file_id=corresponding_text_file_id,
                 text_content_of_chunk=text_chunk,
-                chunking_stragegy=chunking_stragegy,
+                chunking_strategy=chunking_strategy,
                 hierarchy_level_of_chunk=ParentOrChild.child,
-                parent_id_if_child=parent_Chunk.id,
+                parent_id_if_child=parent_chunk.id,
             )
             child_chunks.append(chunk)
         return child_chunks
@@ -112,7 +117,7 @@ def createParentAndChildChunksFromTextCharacterSplit(
     child_chunks: list[TextFileChunk] = []
     for parent in parent_chunks:
         child_chunks = child_chunks + create_child_chunks(
-            parent_Chunk=parent, child_chunk_size=child_chunk_size
+            parent_chunk=parent, child_chunk_size=child_chunk_size
         )
     return parent_chunks + child_chunks
 
@@ -120,7 +125,7 @@ def createParentAndChildChunksFromTextCharacterSplit(
 # make it such that we can independently test this function
 
 
-def createParentAndChildChunksFromTextRecursiveSplit(
+def create_parent_and_child_chunks_from_text_recursive_split(
     full_text: str,
 ) -> list[TextFileChunk]:
     raise NotImplementedError
@@ -197,7 +202,7 @@ class UploadedTextLikeFile:
         self._transformed_text = text
 
     @staticmethod
-    def get_TextFileTypeEnum_from_filename_throw_error_if_not_supported(
+    def get_text_file_type_enum_from_filename_throw_error_if_not_supported(
         filename: str | None,
     ) -> tuple[TextFileTypeEnum, str]:
         if filename is None:
@@ -214,8 +219,8 @@ class UploadedTextLikeFile:
     ):
         match txt_like_file_type:
             case TextFileTypeEnum.txt:
-                hash = hashlib.md5(content).hexdigest()
-                return hash
+                file_hash = hashlib.md5(content).hexdigest()
+                return file_hash
             case _:
                 assert_never(txt_like_file_type)
 
@@ -228,9 +233,9 @@ class UploadedTextLikeFile:
             raise InvalidTransformedTextError
         if not self._corresponding_chunks == []:
             raise DocumentIsAlreadyChunkedError
-        chunks = createParentAndChildChunksFromTextCharacterSplit(
+        chunks = create_parent_and_child_chunks_from_text_character_split(
             full_text=self._transformed_text,
-            corresponding_TextFile_id=self._id,
+            corresponding_text_file_id=self._id,
         )
         return chunks
 
@@ -260,26 +265,26 @@ class ParentOrChild(StrEnum):
 
 class TextFileChunk:
     _id: str
-    _corresponding_TextFile_id: str
+    _corresponding_text_file_id: str
     _text_content_of_chunk: str
-    _chunking_stragegy: str
-    _hierarchy_of_chunk: ParentOrChild
+    _chunking_strategy: str
+    _hierarchy_level_of_chunk: ParentOrChild
     _parent_id_if_child: str | None
 
     def __init__(
         self,
-        corresponding_TextFile_id: str,
+        corresponding_text_file_id: str,
         text_content_of_chunk: str,
-        chunking_stragegy: str,
+        chunking_strategy: str,
         hierarchy_level_of_chunk: ParentOrChild,
         parent_id_if_child: str | None = None,
     ) -> None:
         if text_content_of_chunk == "":
             raise InvalidInitializationError
         self.id = str(uuid4())
-        self._corresponding_TextFile_id = corresponding_TextFile_id
+        self._corresponding_text_file_id = corresponding_text_file_id
         self._text_content_of_chunk = text_content_of_chunk
-        self._chunking_stragegy = chunking_stragegy
+        self._chunking_strategy = chunking_strategy
         self._hierarchy_level_of_chunk = hierarchy_level_of_chunk
         self._parent_id_if_child = parent_id_if_child
 
@@ -289,37 +294,43 @@ class TextFileChunk:
 
     @property
     def return_parent_id_if_this_is_child(self):
-        if self._hierarchy_of_chunk == ParentOrChild.parent:
+        if self._hierarchy_level_of_chunk == ParentOrChild.parent:
             raise RuntimeError(
                 "Can't call this function on parent chunks, only child chunks"
             )
         return self._parent_id_if_child
 
     @property
-    def text(self):
+    def corresponding_text_file_id(
+        self,
+    ):
+        return self._corresponding_text_file_id
+
+    @property
+    def text_content(self):
         return self._text_content_of_chunk
 
     def set_hierarchy(
         self, parent_or_child: ParentOrChild, parent_id: str | None = None
     ):
         if parent_or_child == ParentOrChild.parent and parent_id is not None:
-            raise Exception(
+            raise InvalidChunkHierarchyError(
                 "Only child Chunks can have a parent_id - we have only two hierarchy levels"
             )
         if parent_or_child == ParentOrChild.parent and parent_id is None:
-            self._hierarchy_of_chunk = parent_or_child
+            self._hierarchy_level_of_chunk = parent_or_child
             return
 
         if parent_or_child == ParentOrChild.child and parent_id is None:
-            raise Exception("Child chunks need an assosciated parent")
+            raise InvalidChunkHierarchyError("Child chunks need an assosciated parent")
         if parent_or_child == ParentOrChild.child and parent_id is not None:
             self._hierarchy_level_of_chunk = parent_or_child
             self._parent_id_if_child = parent_id
-            raise
+            return
 
     def set_parent_id_if_child(self, parent_id: str):
-        if self._hierarchy_of_chunk == ParentOrChild.parent:
-            raise Exception(
+        if self._hierarchy_level_of_chunk == ParentOrChild.parent:
+            raise InvalidChunkHierarchyError(
                 "Only child Chunks can have a parent_id - we have only two hierarchy levels"
             )
         self._parent_id_if_child = parent_id
