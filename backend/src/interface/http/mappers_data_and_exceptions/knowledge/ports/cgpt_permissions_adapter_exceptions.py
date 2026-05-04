@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
 from src.contexts.knowledge.application.ports.cgpt_permissions_port import (

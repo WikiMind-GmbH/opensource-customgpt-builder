@@ -1,4 +1,3 @@
-# mudita/Dockerfile
 FROM python:3.13-slim
 
 # Curl install is needed for health check

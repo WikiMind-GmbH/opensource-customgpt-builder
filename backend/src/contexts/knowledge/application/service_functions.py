@@ -1,6 +1,9 @@
 from fastapi import BackgroundTasks, UploadFile
 
-from src.contexts.knowledge.application.mappers import PreProcessTextLikesPortMapper
+from src.contexts.knowledge.application.mappers import (
+    MappersVectorStore,
+    PreProcessTextLikesPortMapper,
+)
 from src.contexts.knowledge.application.ports.cgpt_permissions_port import (
     CgptPermissionCheckerPort,
     UserHasNoPermissionForCgptOrTheyDontExist,
@@ -17,7 +20,7 @@ from src.contexts.knowledge.application.ports.pre_process_text_likes_port import
     PreProcessTextLikesPort,
 )
 from src.contexts.knowledge.application.ports.vector_store_port import (
-    AddChunkEmbeddingsDTO,
+    ChunkEmbeddingAndMetadataDTO,
     VectorStorePortTextChunks,
 )
 from src.contexts.knowledge.domain.models import (
@@ -48,7 +51,7 @@ def upload_document_complete_workflow(
         raise e
     try:
         file_type, filename = (
-            UploadedTextLikeFile.get_TextFileTypeEnum_from_filename_throw_error_if_not_supported(
+            UploadedTextLikeFile.get_text_file_type_enum_from_filename_throw_error_if_not_supported(
                 filename=uploadFile.filename
             )
         )
@@ -194,17 +197,24 @@ def _embedd_document_chunks_all_at_once(
     embedding_generator_adapter: EmbeddingGeneratorPort,
     chunks_of_document: list[TextFileChunk],
 ):
-    chunks_texts = [chunk.text for chunk in chunks_of_document]
+    chunks_texts = [chunk.text_content for chunk in chunks_of_document]
     chunks_embeddings = embedding_generator_adapter.create_embeddings_for_texts(
         texts=chunks_texts
     )
-    update_information_dto: AddChunkEmbeddingsDTO = AddChunkEmbeddingsDTO(
-        file_id=uploaded_file.id,
-        id_and_embedding_pairs_of_chunks=[
-            (chunks_of_document[i].id, chunks_embeddings[i])
-            for i in range(len(chunks_of_document))
-        ],
+    chunks_with_corresponding_embeddings: list[tuple[TextFileChunk, list[float]]] = [
+        (chunks_of_document[i], chunks_embeddings[i])
+        for i in range(len(chunks_of_document))
+    ]
+    chunk_embeddings_and_metadata_dtos: list[ChunkEmbeddingAndMetadataDTO] = (
+        MappersVectorStore.application_types_to_chunk_embedding_and_metadata_dtos(
+            chunks_with_corresponding_embeddings=chunks_with_corresponding_embeddings
+        )
     )
+    vector_store_adapter.add_chunks_with_corresponding_embeddings_and_metadata(
+        chunk_embeddings_and_metadata_dtos=chunk_embeddings_and_metadata_dtos
+    )
+    # notify clients directly or indirectly (job queue vs wsm)
+
     # add to vectorstore
 
     # note change in domain model of file

@@ -65,7 +65,7 @@ cgpt_permissions_to_files = Table(
 )
 
 # _id: str
-# _corresponding_TextFile_id: str
+# _corresponding_text_file_id: str
 # _text_content_of_chunk: str
 # _chunking_stragegy: str
 # _hierarchy_of_chunk: ParentOrChild
@@ -76,7 +76,7 @@ text_chunks_of_files = Table(
     metadata,
     Column("_id", String, nullable=False, primary_key=True),
     Column(
-        "_corresponding_TextFile_id",
+        "_corresponding_text_file_id",
         String,
         ForeignKey("uploaded_text_like_file._id"),
         nullable=False,
@@ -115,7 +115,7 @@ def start_mappers() -> None:
             # one-to-many; SQLAlchemy instruments `Conversation.messages`
             "_corresponding_chunks": relationship(
                 TextFileChunk,
-                primaryjoin=text_chunks_of_files.c._corresponding_TextFile_id
+                primaryjoin=text_chunks_of_files.c._corresponding_text_file_id
                 == uploaded_text_like_file.c._id,
                 backref=None,
                 cascade="all, delete-orphan",

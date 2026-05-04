@@ -6,6 +6,10 @@ from typing import Protocol
 #     embedding: list[list[float]]
 
 
+class EmbeddingProviderError(RuntimeError):
+    "The API used to create embeddings keeps returning invalid embeddings"
+
+
 class EmbeddingGeneratorPort(Protocol):
     @property
     def embedding_dimension(self) -> int:
@@ -13,5 +17,7 @@ class EmbeddingGeneratorPort(Protocol):
         ...
 
     def create_embeddings_for_texts(self, texts: list[str]) -> list[list[float]]:
-        """Create one embedding vector per input text."""
+        """Create one embedding vector per input text.
+        raises EmbeddingProviderError if necessary
+        """
         ...

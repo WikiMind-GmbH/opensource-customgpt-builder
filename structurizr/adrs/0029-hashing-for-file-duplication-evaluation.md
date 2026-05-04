@@ -34,6 +34,8 @@ Explicitly state if the decision does **not** apply to certain areas to avoid am
 ## Context
 There are functional requirements - like avoiding false negatives and false positives and non functional requirements - lower computational cost.
 
+See [here](https://jszym.com/blog/short_input_hash/) for slightly anecdotal research on python hashing function speed 
+
 ### Non funcional requirement: Computational cost
 
 We need a hashing algorithm that is not too slow. Because we do not use them for cryptographic reasons, we do not have requirements for security features of hashing algorithms that were designed for cryptography, making our field of canditates wider.

@@ -9,20 +9,24 @@ class NotFoundError(RuntimeError):
     "This object does not exist"
 
 
-class ParentOrChild(StrEnum):
+class InvalidEmbeddingDimension(RuntimeError):
+    "The embedding dimension of passed vectors must match the one of the vevctorstore"
+
+
+class ParentOrChildDTO(StrEnum):
     parent = "parent"
     child = "child"
 
 
 @dataclass
 class MetadataDTO:
-    parent_or_child_chunk: ParentOrChild
+    parent_or_child_chunk: ParentOrChildDTO
     id_of_corresponding_file: str
     text_content: str
 
 
 @dataclass
-class AddChunkEmbeddingsDTO:
+class ChunkEmbeddingAndMetadataDTO:
     embedding_vector: list[float]
     metadata: MetadataDTO
     id_of_chunk: str
@@ -31,16 +35,26 @@ class AddChunkEmbeddingsDTO:
 @dataclass
 class TextChunkReturnDTO:
     id_of_chunk: str
-    text_snippet: str
+    score: float
 
 
 class VectorStorePortTextChunks(Protocol):
+    @property
+    def embedding_dimension(self) -> int:
+        """Dimension expected of the vector store in its collections"""
+        ...
+
     def return_relevant_text_snippets_ids_and_text(
         self,
-        file_ids: list[str],
+        embedding_to_match: list[float],
+        file_ids_to_include_in_filter: list[str],
         max_snippets: int = 5,
+        include_only_parent_or_child_chunks: ParentOrChildDTO | None = None,
     ) -> list[TextChunkReturnDTO]: ...
-    def add_chunk_with_embedding(self, chunk: AddChunkEmbeddingsDTO) -> None: ...
+
+    def add_chunks_with_corresponding_embeddings_and_metadata(
+        self, chunk_embeddings_and_metadata_dtos: list[ChunkEmbeddingAndMetadataDTO]
+    ) -> None: ...
 
     def get_metadata_of_chunk(self, id_of_chunk: str) -> MetadataDTO: ...
     def change_metadata_of_chunk(

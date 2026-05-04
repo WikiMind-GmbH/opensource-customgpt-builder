@@ -42,7 +42,7 @@ def _create_uploadedfile_entry_commit_return_id(
 
 def _create_permission_entry_commit(
     session: Session, file_id: str, cgpt_id: str
-) -> str:
+) -> None:
     session.execute(
         insert(cgpt_permissions_to_files).values(
             _id=str(uuid.uuid4()),
@@ -51,7 +51,7 @@ def _create_permission_entry_commit(
         )
     )
     session.commit()
-    return id
+    return
 
 
 def _return_all_cgpt_id_file_id_tuples_in_permission_table_with_file_id(
