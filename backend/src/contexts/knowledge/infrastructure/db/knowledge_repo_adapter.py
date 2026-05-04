@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 from sqlalchemy.orm import Session
@@ -23,7 +25,7 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_file(self, file_id: str) -> UploadedTextLikeFile:
+    def get_file(self, file_id: UUID) -> UploadedTextLikeFile:
         result = self.session.get(UploadedTextLikeFile, file_id)
         if result is None:
             raise FileDoesNotExistError

@@ -1,6 +1,7 @@
 # adapters/orm.py
 
 from sqlalchemy import (
+    UUID,
     Column,
     Enum,
     ForeignKey,
@@ -8,6 +9,8 @@ from sqlalchemy import (
     String,
     Table,
 )
+
+# from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import registry, relationship
 
 from src.contexts.knowledge.domain.models import (
@@ -35,7 +38,7 @@ mapper_registry = registry(metadata=metadata)
 uploaded_text_like_file = Table(
     "uploaded_text_like_file",
     metadata,
-    Column("_id", String, primary_key=True),
+    Column("_id", UUID, primary_key=True),
     Column("_name", String, nullable=False),
     Column(
         "_file_type",
@@ -58,9 +61,7 @@ cgpt_permissions_to_files = Table(
     "cgpt_permissions_to_files",
     metadata,
     Column("_id", String, primary_key=True),
-    Column(
-        "file_id", String, ForeignKey("uploaded_text_like_file._id"), nullable=False
-    ),
+    Column("file_id", UUID, ForeignKey("uploaded_text_like_file._id"), nullable=False),
     Column("cgpt_id", String, nullable=False),
 )
 
@@ -74,10 +75,10 @@ cgpt_permissions_to_files = Table(
 text_chunks_of_files = Table(
     "text_chunks_of_files",
     metadata,
-    Column("_id", String, nullable=False, primary_key=True),
+    Column("_id", UUID, nullable=False, primary_key=True),
     Column(
         "_corresponding_text_file_id",
-        String,
+        UUID,
         ForeignKey("uploaded_text_like_file._id"),
         nullable=False,
     ),
@@ -93,7 +94,7 @@ text_chunks_of_files = Table(
         ),
         nullable=False,
     ),
-    Column("_parent_id_if_child", String, nullable=True),
+    Column("_parent_id_if_child", UUID, nullable=True),
 )
 
 

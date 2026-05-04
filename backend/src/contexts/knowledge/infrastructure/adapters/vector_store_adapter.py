@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from qdrant_client import QdrantClient, models
 from qdrant_client.models import (
     Distance,
@@ -39,9 +41,9 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
         )
 
     def _metadata_dto_to_payload_dict(self, metadata_dto: MetadataDTO):
-        metadata_dict = {
+        metadata_dict: dict[str, str] = {
             "parent_or_child_chunk": str(metadata_dto.parent_or_child_chunk),
-            "id_of_corresponding_file": metadata_dto.id_of_corresponding_file,
+            "id_of_corresponding_file": str(metadata_dto.id_of_corresponding_file),
             "text_content": metadata_dto.text_content,
         }
         return metadata_dict
@@ -91,17 +93,26 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
     def return_relevant_text_snippets_ids_and_text(
         self,
         embedding_to_match: list[float],
-        file_ids_to_include_in_filter: list[str],
+        file_ids_to_include_in_filter: list[UUID],
         max_snippets: int = 5,
         include_only_parent_or_child_chunks: ParentOrChildDTO | None = None,
     ) -> list[TextChunkReturnDTO]:
         @staticmethod
-        def _qdrant_point_id_to_chunk_id(point_id: ExtendedPointId) -> str:
-            if not isinstance(point_id, str):
-                raise RuntimeError(
-                    f"Expected Qdrant point id to be str, got {type(point_id)}."
-                )
-            return point_id
+        def _qdrant_point_id_to_chunk_id(point_id: ExtendedPointId) -> UUID:
+            if isinstance(point_id, UUID):
+                return point_id
+
+            if isinstance(point_id, str):
+                try:
+                    return UUID(point_id)
+                except ValueError as exc:
+                    raise RuntimeError(
+                        f"qdrant id was string that was not able to be transformed to UUID, namely`{point_id}`"
+                    ) from exc
+
+            raise RuntimeError(
+                f"Expected Qdrant point id to be UUID or UUID-shaped string, got {type(point_id)}."
+            )
 
         if len(embedding_to_match) != self.embedding_dimension:
             raise InvalidEmbeddingDimension(
@@ -115,7 +126,9 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
         filter = []
         filter_for_chunks_with_file_id = models.FieldCondition(
             key="id_of_corresponding_file",
-            match=models.MatchAny(any=file_ids_to_include_in_filter),
+            match=models.MatchAny(
+                any=[str(file_id) for file_id in file_ids_to_include_in_filter]
+            ),
         )
         filter.append(filter_for_chunks_with_file_id)
 

@@ -1,4 +1,5 @@
 from typing import Protocol
+from uuid import UUID
 
 from src.contexts.knowledge.domain.models import (
     TextFileTypeEnum,
@@ -23,7 +24,7 @@ class InvalidDatabaseStateError(Exception):
 
 
 class KnowledgeRepo(Protocol):
-    def get_file(self, file_id: str) -> UploadedTextLikeFile: ...
+    def get_file(self, file_id: UUID) -> UploadedTextLikeFile: ...
     def create_new_file_if_hash_doesnt_exist_yet(
         self, filename: str, hash: str, file_type: TextFileTypeEnum
     ) -> UploadedTextLikeFile: ...

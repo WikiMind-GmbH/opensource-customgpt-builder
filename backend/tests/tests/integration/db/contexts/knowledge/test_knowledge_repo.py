@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID, uuid4
 
 import pytest
 from sqlalchemy import insert, select
@@ -21,9 +21,9 @@ from src.contexts.shared.typing_aliases import Factory
 
 
 def _create_uploadedfile_entry_commit_return_id(
-    session: Session, hash: str, id_or_none_for_uuid: str | None = None
-) -> str:
-    id = id_or_none_for_uuid if id_or_none_for_uuid is not None else str(uuid.uuid4())
+    session: Session, hash: str, id_or_none_for_uuid: UUID | None = None
+) -> UUID:
+    id = id_or_none_for_uuid if id_or_none_for_uuid is not None else uuid4()
     session.execute(
         insert(uploaded_text_like_file).values(
             _id=id,
@@ -41,11 +41,11 @@ def _create_uploadedfile_entry_commit_return_id(
 
 
 def _create_permission_entry_commit(
-    session: Session, file_id: str, cgpt_id: str
+    session: Session, file_id: UUID, cgpt_id: str
 ) -> None:
     session.execute(
         insert(cgpt_permissions_to_files).values(
-            _id=str(uuid.uuid4()),
+            _id=uuid4(),
             file_id=file_id,
             cgpt_id=cgpt_id,
         )
@@ -55,8 +55,8 @@ def _create_permission_entry_commit(
 
 
 def _return_all_cgpt_id_file_id_tuples_in_permission_table_with_file_id(
-    file_id: str, session: Session
-) -> list[tuple[str, str]]:
+    file_id: UUID, session: Session
+) -> list[tuple[str, UUID]]:
     stmt = select(
         cgpt_permissions_to_files.c.cgpt_id, cgpt_permissions_to_files.c.file_id
     ).where(cgpt_permissions_to_files.c.file_id == file_id)
@@ -87,7 +87,7 @@ def test_get_file_raises_when_missing(session_factory: Factory[Session]):
         verification_repository = SQLAlchemyKnowledgeRepository(verification_session)
 
         with pytest.raises(FileDoesNotExistError):
-            verification_repository.get_file("non-existent-id")
+            verification_repository.get_file(uuid4())
 
 
 def test_add_cgpt_to_file_permissions_raises_errors_if_zero_or_more_than_one_files_with_hash_exists(

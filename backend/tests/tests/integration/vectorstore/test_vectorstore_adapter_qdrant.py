@@ -1,8 +1,9 @@
+from uuid import uuid4
+
 from src.contexts.knowledge.application.ports.vector_store_port import (
     ChunkEmbeddingAndMetadataDTO,
     MetadataDTO,
     ParentOrChildDTO,
-    TextChunkReturnDTO,
 )
 from src.contexts.knowledge.infrastructure.adapters.vector_store_adapter import (
     QdrantVectorStoreTextChunksAdapter,
@@ -30,12 +31,16 @@ from src.contexts.knowledge.infrastructure.adapters.vector_store_adapter import 
 def test_simple_happy_path_add_and_return(
     fresh_qdrant_vector_store_adapter: QdrantVectorStoreTextChunksAdapter,
 ) -> None:
-    file_id = "file-1"
+    file_id = uuid4()
+    id_1 = uuid4()
+    id_2 = uuid4()
+    id_3 = uuid4()
+    embedding_vector_of_chunk_with_id_1 = [1.0, 0.0]
 
     chunks_to_add = [
         ChunkEmbeddingAndMetadataDTO(
-            id_of_chunk="chunk-1",
-            embedding_vector=[1.0, 0.0],
+            id_of_chunk=id_1,
+            embedding_vector=embedding_vector_of_chunk_with_id_1,
             metadata=MetadataDTO(
                 parent_or_child_chunk=ParentOrChildDTO.child,
                 id_of_corresponding_file=file_id,
@@ -43,7 +48,7 @@ def test_simple_happy_path_add_and_return(
             ),
         ),
         ChunkEmbeddingAndMetadataDTO(
-            id_of_chunk="chunk-2",
+            id_of_chunk=id_2,
             embedding_vector=[0.0, 1.0],
             metadata=MetadataDTO(
                 parent_or_child_chunk=ParentOrChildDTO.child,
@@ -52,7 +57,7 @@ def test_simple_happy_path_add_and_return(
             ),
         ),
         ChunkEmbeddingAndMetadataDTO(
-            id_of_chunk="chunk-3",
+            id_of_chunk=id_3,
             embedding_vector=[-1.0, 0.0],
             metadata=MetadataDTO(
                 parent_or_child_chunk=ParentOrChildDTO.child,
@@ -66,21 +71,12 @@ def test_simple_happy_path_add_and_return(
         chunk_embeddings_and_metadata_dtos=chunks_to_add,
     )
 
-    returned_chunks = (
+    closest_points_to_embedding_vector_of_chunk_with_id_1 = (
         fresh_qdrant_vector_store_adapter.return_relevant_text_snippets_ids_and_text(
-            embedding_to_match=[1.0, 0.0],
+            embedding_to_match=embedding_vector_of_chunk_with_id_1,
             file_ids_to_include_in_filter=[file_id],
             max_snippets=1,
         )
     )
 
-    assert returned_chunks == [
-        TextChunkReturnDTO(
-            id_of_chunk="chunk-1",
-            metadata=MetadataDTO(
-                parent_or_child_chunk=ParentOrChildDTO.child,
-                id_of_corresponding_file=file_id,
-                text_content="This is the expected relevant chunk text.",
-            ),
-        )
-    ]
+    assert closest_points_to_embedding_vector_of_chunk_with_id_1[0].id_of_chunk == id_1

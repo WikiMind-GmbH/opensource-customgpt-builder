@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 from enum import StrEnum
 from typing import assert_never
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 
 class TextFileTypeEnum(StrEnum):
@@ -47,7 +47,7 @@ class ParentOrChild(StrEnum):
 
 def create_parent_and_child_chunks_from_text_character_split(
     full_text: str,
-    corresponding_text_file_id: str,
+    corresponding_text_file_id: UUID,
     parent_chunk_size: int = 3000,
     child_chunk_size: int = 600,
 ) -> list[TextFileChunk]:
@@ -150,7 +150,7 @@ def create_parent_and_child_chunks_from_text_recursive_split(
 
 
 class UploadedTextLikeFile:
-    _id: str
+    _id: UUID
     _name: str
     _file_type: TextFileTypeEnum
 
@@ -169,7 +169,7 @@ class UploadedTextLikeFile:
         transformed_text: str | None = None,
         hash_of_raw_file: str | None = None,
     ) -> None:
-        self._id = str(uuid4())
+        self._id = uuid4()
         self._name = name
         self._file_type = file_type
         self._raw_file_is_stored = was_stored
@@ -184,7 +184,7 @@ class UploadedTextLikeFile:
         return self._name
 
     @property
-    def id(self) -> str:
+    def id(self) -> UUID:
         return self._id
 
     @property
@@ -282,29 +282,29 @@ class UploadedTextLikeFile:
 class CgptPermissionsToFile:
     _id: str
     cgpt_id: str
-    file_id: str
+    file_id: UUID
 
-    def __init__(self, cgpt_id: str, file_id: str) -> None:
+    def __init__(self, cgpt_id: str, file_id: UUID) -> None:
         self.cgpt_id = cgpt_id
         self.file_id = file_id
-        self._id = file_id + "|" + cgpt_id
+        self._id = str(file_id) + "|" + cgpt_id
 
 
 class TextFileChunk:
-    _id: str
-    _corresponding_text_file_id: str
+    _id: UUID
+    _corresponding_text_file_id: UUID
     _text_content_of_chunk: str
     _chunking_strategy: str
     _hierarchy_level_of_chunk: ParentOrChild
-    _parent_id_if_child: str | None
+    _parent_id_if_child: UUID | None
 
     def __init__(
         self,
-        corresponding_text_file_id: str,
+        corresponding_text_file_id: UUID,
         text_content_of_chunk: str,
         chunking_strategy: str,
         hierarchy_level_of_chunk: ParentOrChild,
-        parent_id_if_child: str | None = None,
+        parent_id_if_child: UUID | None = None,
     ) -> None:
         if text_content_of_chunk == "":
             raise InvalidInitializationError
@@ -314,7 +314,7 @@ class TextFileChunk:
             parent_id=parent_id_if_child,
         )
 
-        self._id = str(uuid4())
+        self._id = uuid4()
         self._corresponding_text_file_id = corresponding_text_file_id
         self._text_content_of_chunk = text_content_of_chunk
         self._chunking_strategy = chunking_strategy
@@ -325,7 +325,7 @@ class TextFileChunk:
     def _validate_chunk_hierarchy(
         *,
         parent_or_child: ParentOrChild,
-        parent_id: str | None,
+        parent_id: UUID | None,
     ) -> None:
         if parent_or_child == ParentOrChild.parent and parent_id is not None:
             raise InvalidChunkHierarchyError("Parent chunks cannot have a parent_id.")
@@ -334,7 +334,7 @@ class TextFileChunk:
             raise InvalidChunkHierarchyError("Child chunks need an associated parent.")
 
     @property
-    def id(self) -> str:
+    def id(self) -> UUID:
         return self._id
 
     @property
@@ -342,7 +342,7 @@ class TextFileChunk:
         return self._hierarchy_level_of_chunk
 
     @property
-    def parent_id_if_child(self) -> str | None:
+    def parent_id_if_child(self) -> UUID | None:
         if self._hierarchy_level_of_chunk == ParentOrChild.parent:
             raise InvalidChunkHierarchyError(
                 "Can't call this property on parent chunks, only child chunks."
@@ -351,7 +351,7 @@ class TextFileChunk:
         return self._parent_id_if_child
 
     @property
-    def corresponding_text_file_id(self) -> str:
+    def corresponding_text_file_id(self) -> UUID:
         return self._corresponding_text_file_id
 
     @property
@@ -361,7 +361,7 @@ class TextFileChunk:
     def set_hierarchy(
         self,
         parent_or_child: ParentOrChild,
-        parent_id: str | None = None,
+        parent_id: UUID | None = None,
     ) -> None:
         self._validate_chunk_hierarchy(
             parent_or_child=parent_or_child,
@@ -371,7 +371,7 @@ class TextFileChunk:
         self._hierarchy_level_of_chunk = parent_or_child
         self._parent_id_if_child = parent_id
 
-    def set_parent_id_if_child(self, parent_id: str) -> None:
+    def set_parent_id_if_child(self, parent_id: UUID) -> None:
         if self._hierarchy_level_of_chunk == ParentOrChild.parent:
             raise InvalidChunkHierarchyError(
                 "Only child chunks can have a parent_id. "
