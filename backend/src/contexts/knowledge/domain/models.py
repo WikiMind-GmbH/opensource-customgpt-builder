@@ -40,6 +40,14 @@ class InvalidTransformedTextError(RuntimeError):
     "Can't chunk uninitialized transformed text or incorrectly transformed text."
 
 
+class DocumentIsNotInProcessingPhaseError(RuntimeError):
+    "The document is not in the processing phase. The processing phase ranges from after the document has been stored and finishes after its embeddings have been stored in the vectordb"
+
+
+class InvalidStateTransitionError(RuntimeError):
+    "Invalid state transition"
+
+
 class ParentOrChild(StrEnum):
     parent = "parent"
     child = "child"
@@ -149,35 +157,62 @@ def create_parent_and_child_chunks_from_text_recursive_split(
     raise NotImplementedError
 
 
+class UploadedTextLikeFileProcessingStatus(StrEnum):
+    created = "created"
+    raw_file_stored = "raw_file_stored"
+    stored_original_preprocessed_to_text = "stored_original_preprocessed_to_text"
+    stored_original_and_preprocessed_and_chunked = (
+        "stored_original_and_preprocessed_and_chunked"
+    )
+    stored_preprocessed_chunked_and_embeddings_stored_in_vectorstore = (
+        "stored_preprocessed_chunked_and_embeddings_stored_in_vectorstore"
+    )
+
+
+# _PROCESSING_STATUS_ORDER: tuple[UploadedTextLikeFileProcessingStatus, ...] = (
+#     UploadedTextLikeFileProcessingStatus.created,
+#     UploadedTextLikeFileProcessingStatus.raw_file_stored,
+#     UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text,
+#     UploadedTextLikeFileProcessingStatus.stored_original_and_preprocessed_and_chunked,
+#     UploadedTextLikeFileProcessingStatus.stored_preprocessed_chunked_and_embeddings_stored_in_vectorstore,
+# )
+
+
+# def _processing_status_index(
+#     status: UploadedTextLikeFileProcessingStatus,
+# ) -> int:
+#     return _PROCESSING_STATUS_ORDER.index(status)
+
+
+class NextNecessaryProcessingStep(StrEnum):
+    extract_text = "extract_text"
+    chunking = "chunking"
+    create_and_store_embeddings = "create_and_store_embeddings"
+
+
 class UploadedTextLikeFile:
     _id: UUID
     _name: str
     _file_type: TextFileTypeEnum
+    _status: UploadedTextLikeFileProcessingStatus
 
-    _raw_file_is_stored: bool
     _transformed_text: str | None
-    _hash_of_raw_file: str | None
+    _hash_of_raw_file: str
     _corresponding_chunks: list[TextFileChunk]
-    _chunks_are_embedded: bool
-    _chunks_are_embedded_and_added_to_vectorstore: bool
 
     def __init__(
         self,
         name: str,
         file_type: TextFileTypeEnum,
-        was_stored: bool = False,
-        transformed_text: str | None = None,
-        hash_of_raw_file: str | None = None,
+        hash_of_raw_file: str,
     ) -> None:
         self._id = uuid4()
         self._name = name
         self._file_type = file_type
-        self._raw_file_is_stored = was_stored
-        self._transformed_text = transformed_text
         self._hash_of_raw_file = hash_of_raw_file
+        self._transformed_text = None
         self._corresponding_chunks = []
-        self._chunks_are_embedded = False
-        self._chunks_are_embedded_and_added_to_vectorstore = False
+        self._status = UploadedTextLikeFileProcessingStatus.created
 
     @property
     def name(self) -> str:
@@ -188,7 +223,7 @@ class UploadedTextLikeFile:
         return self._id
 
     @property
-    def hash_of_raw_file(self) -> str | None:
+    def hash_of_raw_file(self) -> str:
         return self._hash_of_raw_file
 
     @property
@@ -196,23 +231,25 @@ class UploadedTextLikeFile:
         return self._file_type
 
     @property
-    def chunks_are_embedded(self) -> bool:
-        return self._chunks_are_embedded
+    def status(self) -> UploadedTextLikeFileProcessingStatus:
+        return self._status
 
-    def set_chunks_are_embedded(self) -> None:
-        self._chunks_are_embedded = True
-
-    @property
-    def chunks_are_embedded_and_added_to_vectorstore(self) -> bool:
-        return self._chunks_are_embedded_and_added_to_vectorstore
-
-    def set_chunks_are_embedded_and_added_to_vectorstore(self) -> None:
-        self._chunks_are_embedded_and_added_to_vectorstore = True
-
-    def set_raw_file_was_stored(self) -> None:
-        self._raw_file_is_stored = True
+    # ---------------------------------------------------------------------------------------------------
+    # Possible state transitions: either by explicit setting or as a side effect of another function
+    def mark_raw_file_was_stored(self) -> None:
+        """
+        In contrast to other status transitions (raw_file_stored -> text_extracted) and (text_extracted -> chunked),
+        the correctness of this transition depends on external systems (adapters with dbs).
+        Instead of only on the domain model object and its properties.
+        Thus the correctness is not guaranteed.
+        """
+        if self._status != UploadedTextLikeFileProcessingStatus.created:
+            raise InvalidStateTransitionError
+        self._status = UploadedTextLikeFileProcessingStatus.raw_file_stored
 
     def set_transformed_text(self, text: str) -> None:
+        if self._status != UploadedTextLikeFileProcessingStatus.raw_file_stored:
+            raise InvalidStateTransitionError
         if text == "":
             raise InvalidInitializationError(
                 "Zero length string can't be content of doc. Something must have "
@@ -220,7 +257,117 @@ class UploadedTextLikeFile:
             )
 
         self._transformed_text = text
+        self._status = (
+            UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text
+        )
 
+    def create_chunks_without_assigning_them_to_document(self) -> list[TextFileChunk]:
+        # due to not wanting to block the db connection pool, we must run this on
+        # a snapshot and update the object itself in a new uow.
+        # I wanted to put this in a domain function instead of in an adapter because
+        # this is a core subdomain and the "how do we chunk" is central to the
+        # functionality.
+        if self._transformed_text is None or self._transformed_text == "":
+            raise InvalidTransformedTextError
+
+        if self._corresponding_chunks != []:
+            raise DocumentIsAlreadyChunkedError
+
+        if (
+            self._status
+            != UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text
+        ):
+            raise InvalidStateTransitionError
+
+        chunks = create_parent_and_child_chunks_from_text_character_split(
+            full_text=self._transformed_text,
+            corresponding_text_file_id=self._id,
+        )
+        return chunks
+
+    def assign_chunkss_created_with_domain_method_to_document(
+        self,
+        chunks_created_by_domain_model_function: list[TextFileChunk],
+    ) -> None:
+        # due to not wanting to block the db connection pool, we must run this on
+        # a snapshot and update the object itself in a new uow.
+        # I wanted to put this in a domain function instead of in an adapter because
+        # this is a core subdomain and the "how do we chunk" is central to the
+        # functionality.
+        if self._corresponding_chunks != []:
+            raise DocumentIsAlreadyChunkedError
+
+        if self._transformed_text is None or self._transformed_text == "":
+            raise InvalidTransformedTextError
+
+        if chunks_created_by_domain_model_function == []:
+            raise InvalidInitializationError("Cannot add an empty chunk list.")
+
+        if (
+            self._status
+            != UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text
+        ):
+            raise InvalidStateTransitionError
+
+        self._corresponding_chunks = chunks_created_by_domain_model_function
+        self._status = UploadedTextLikeFileProcessingStatus.stored_original_and_preprocessed_and_chunked
+
+    def mark_chunks_are_embedded_and_added_to_vectorstore(self) -> None:
+        """
+        In contrast to other status transitions (raw_file_stored -> text_extracted) and (text_extracted -> chunked),
+        the correctness of this transition depends on external systems (adapters with dbs).
+        Instead of only on the domain model object and its properties.
+        Thus the correctness is not guaranteed.
+        """
+        if (
+            self._status
+            != UploadedTextLikeFileProcessingStatus.stored_original_and_preprocessed_and_chunked
+        ):
+            raise InvalidStateTransitionError
+
+        self._status = UploadedTextLikeFileProcessingStatus.stored_preprocessed_chunked_and_embeddings_stored_in_vectorstore
+
+    # ---------------------------------------------------------------------------------------------------
+    # Methods to check availability to process
+
+    def next_necessary_processing_step(self) -> NextNecessaryProcessingStep:
+        if self.status == UploadedTextLikeFileProcessingStatus.raw_file_stored:
+            return NextNecessaryProcessingStep.extract_text
+        if (
+            self.status
+            == UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text
+        ):
+            return NextNecessaryProcessingStep.chunking
+        if (
+            self.status
+            == UploadedTextLikeFileProcessingStatus.stored_original_and_preprocessed_and_chunked
+        ):
+            return NextNecessaryProcessingStep.create_and_store_embeddings
+        raise DocumentIsNotInProcessingPhaseError(
+            f"document is in incompatible phase {self.status}"
+        )
+
+    def assert_document_is_in_processing_phase(self) -> None:
+        document_is_in_processing_phase = self.status in {
+            UploadedTextLikeFileProcessingStatus.raw_file_stored,
+            UploadedTextLikeFileProcessingStatus.stored_original_and_preprocessed_and_chunked,
+            UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text,
+        }
+        if not document_is_in_processing_phase:
+            raise DocumentIsNotInProcessingPhaseError(
+                f"document is in incompatible phase {self.status}"
+            )
+
+    @property
+    def document_is_completely_processed_and_marked_as_available_in_vector_db(
+        self,
+    ) -> bool:
+        return (
+            self.status
+            == UploadedTextLikeFileProcessingStatus.stored_preprocessed_chunked_and_embeddings_stored_in_vectorstore
+        )
+
+    # ---------------------------------------------------------------------------------------------------
     @staticmethod
     def get_text_file_type_enum_from_filename_throw_error_if_not_supported(
         filename: str | None,
@@ -246,37 +393,6 @@ class UploadedTextLikeFile:
                 return content_hash
             case _:
                 assert_never(txt_like_file_type)
-
-    def create_chunks_from_raw_text(
-        self,
-    ) -> list[TextFileChunk]:
-        # due to not wanting to block the db connection pool, we must run this on
-        # a snapshot and update the object itself in a new uow.
-        #
-        # I wanted to put this in a domain function instead of in an adapter because
-        # this is a core subdomain and the "how do we chunk" is central to the
-        # functionality.
-        if self._transformed_text is None or self._transformed_text == "":
-            raise InvalidTransformedTextError
-
-        if self._corresponding_chunks != []:
-            raise DocumentIsAlreadyChunkedError
-
-        chunks = create_parent_and_child_chunks_from_text_character_split(
-            full_text=self._transformed_text,
-            corresponding_text_file_id=self._id,
-        )
-
-        return chunks
-
-    def set_chunks(self, all_chunks: list[TextFileChunk]) -> None:
-        if self._transformed_text is None or self._transformed_text == "":
-            raise InvalidTransformedTextError
-
-        if self._corresponding_chunks != []:
-            raise DocumentIsAlreadyChunkedError
-
-        self._corresponding_chunks = all_chunks
 
 
 class CgptPermissionsToFile:

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
-from src.contexts.knowledge.application.ports.pre_process_text_likes_port import (
+from src.contexts.knowledge.application.ports.extract_text_from_document_port import (
     NotUTF8TxtFileError,
 )
 

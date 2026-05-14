@@ -10,7 +10,7 @@ class SupportedFileTypesEnum(StrEnum):
     txt = "txt"
 
 
-class PreProcessTextLikesPort(Protocol):
+class ExtractTextFromDocumentPort(Protocol):
     def _return_txt_file_contents_as_string(
         self, file_type: SupportedFileTypesEnum, raw_file_content: bytes
     ) -> str: ...

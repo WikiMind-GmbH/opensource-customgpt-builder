@@ -2,6 +2,7 @@ from typing import Protocol
 from uuid import UUID
 
 from src.contexts.knowledge.domain.models import (
+    TextFileChunk,
     TextFileTypeEnum,
     UploadedTextLikeFile,
 )
@@ -23,15 +24,20 @@ class InvalidDatabaseStateError(Exception):
     "An invalid database state was reached. Please check what happend"
 
 
+class NoChunksExistForThisFileIDErrror(RuntimeError):
+    "No chunks exist for this file id. maybe even file with this id does not exist -this is not checked necessarily"
+
+
 class KnowledgeRepo(Protocol):
     def get_file(self, file_id: UUID) -> UploadedTextLikeFile: ...
+    def get_chunks_of_document(self, file_id: UUID) -> list[TextFileChunk]: ...
     def create_new_file_if_hash_doesnt_exist_yet(
         self, filename: str, hash: str, file_type: TextFileTypeEnum
     ) -> UploadedTextLikeFile: ...
 
     def add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
         self, cgpt_ids: list[str], hash_of_file: str
-    ) -> str: ...  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
+    ) -> UUID: ...  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
 
     # def delete_file_from_cgpt_return_true_if_file_has_to_be_removed(
     #     self, cgpt_id: str, file_id: str

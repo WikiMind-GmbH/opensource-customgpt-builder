@@ -9,7 +9,10 @@ from src.contexts.knowledge.application.ports.knowledge_repo import (
     FileDoesNotExistError,
     InvalidDatabaseStateError,
 )
-from src.contexts.knowledge.domain.models import TextFileTypeEnum
+from src.contexts.knowledge.domain.models import (
+    TextFileTypeEnum,
+    UploadedTextLikeFileProcessingStatus,
+)
 from src.contexts.knowledge.infrastructure.db.knowledge_repo_adapter import (
     SQLAlchemyKnowledgeRepository,
 )
@@ -21,22 +24,27 @@ from src.contexts.shared.typing_aliases import Factory
 
 
 def _create_uploadedfile_entry_commit_return_id(
-    session: Session, hash: str, id_or_none_for_uuid: UUID | None = None
+    session: Session,
+    hash: str,
+    id_or_none_for_uuid: UUID | None = None,
+    status: UploadedTextLikeFileProcessingStatus = (
+        UploadedTextLikeFileProcessingStatus.raw_file_stored
+    ),
 ) -> UUID:
     id = id_or_none_for_uuid if id_or_none_for_uuid is not None else uuid4()
+
     session.execute(
         insert(uploaded_text_like_file).values(
             _id=id,
             _name="name",
             _file_type=TextFileTypeEnum.txt,
-            _raw_file_is_stored=True,
+            _status=status,
             _transformed_text=None,
             _hash_of_raw_file=hash,
-            _chunks_are_embedded=False,
-            _chunks_are_embedded_and_added_to_vectorstore=False,
         )
     )
     session.commit()
+
     return id
 
 

@@ -19,6 +19,7 @@ from src.contexts.knowledge.domain.models import (
     TextFileChunk,
     TextFileTypeEnum,
     UploadedTextLikeFile,
+    UploadedTextLikeFileProcessingStatus,
 )
 
 # _id: str
@@ -50,11 +51,18 @@ uploaded_text_like_file = Table(
         ),
         nullable=False,
     ),
-    Column("_raw_file_is_stored", String, nullable=False),
     Column("_transformed_text", String, nullable=True),
-    Column("_hash_of_raw_file", String, nullable=True),
-    Column("_chunks_are_embedded", String, nullable=True),
-    Column("_chunks_are_embedded_and_added_to_vectorstore", String, nullable=True),
+    Column("_hash_of_raw_file", String, nullable=False),
+    Column(
+        "_status",
+        Enum(
+            UploadedTextLikeFileProcessingStatus,
+            name="UploadedTextLikeFileProcessingStatus",
+            native_enum=False,
+            validate_strings=True,
+        ),
+        nullable=False,
+    ),
 )
 
 cgpt_permissions_to_files = Table(

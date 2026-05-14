@@ -1,4 +1,5 @@
 from pathlib import Path
+from uuid import UUID
 
 from backend_spanning_helpers import require_env
 from src.contexts.knowledge.application.ports.file_storage_port import (
@@ -12,16 +13,16 @@ class RawFileStoreLocalFsAdapter(RawFileStorePort):
     ):
         self._file_storage_folder = file_storage_folder
 
-    def add_file(self, file_contents: bytes, file_id: str) -> None:
-        file_path: Path = self._file_storage_folder.joinpath(file_id)
+    def add_file(self, file_contents: bytes, file_id: UUID) -> None:
+        file_path: Path = self._file_storage_folder.joinpath(str(file_id))
         with open(file_path, "wb") as file:
             file.write(file_contents)
 
-    def get_file(self, file_id: str) -> bytes:
-        file_path: Path = self._file_storage_folder.joinpath(file_id)
+    def get_file(self, file_id: UUID) -> bytes:
+        file_path: Path = self._file_storage_folder.joinpath(str(file_id))
         with open(file_path, "rb") as file:
             return file.read()
 
-    def delete_file(self, file_id: str) -> None:
-        file_path: Path = self._file_storage_folder.joinpath(file_id)
+    def delete_file(self, file_id: UUID) -> None:
+        file_path: Path = self._file_storage_folder.joinpath(str(file_id))
         Path.unlink(file_path)

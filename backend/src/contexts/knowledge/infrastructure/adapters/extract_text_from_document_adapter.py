@@ -1,13 +1,13 @@
 from typing import assert_never
 
-from src.contexts.knowledge.application.ports.pre_process_text_likes_port import (
+from src.contexts.knowledge.application.ports.extract_text_from_document_port import (
+    ExtractTextFromDocumentPort,
     NotUTF8TxtFileError,
-    PreProcessTextLikesPort,
     SupportedFileTypesEnum,
 )
 
 
-class PreProcessTextLikeFilesAdapter(PreProcessTextLikesPort):
+class ExtractTextFromDocumentsAdapter(ExtractTextFromDocumentPort):
     def _return_txt_file_contents_as_string(
         self, file_type: SupportedFileTypesEnum, raw_file_content: bytes
     ) -> str:

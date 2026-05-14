@@ -2,11 +2,11 @@ from pathlib import Path
 
 import pytest
 
-from src.contexts.knowledge.application.ports.pre_process_text_likes_port import (
-    PreProcessTextLikesPort,
+from src.contexts.knowledge.application.ports.extract_text_from_document_port import (
+    ExtractTextFromDocumentPort,
 )
-from src.contexts.knowledge.infrastructure.adapters.pre_process_text_like_files_adapter import (
-    PreProcessTextLikeFilesAdapter,
+from src.contexts.knowledge.infrastructure.adapters.extract_text_from_document_adapter import (
+    ExtractTextFromDocumentsAdapter,
 )
 
 
@@ -26,6 +26,6 @@ def return_byte_content_text_and_of_tmp_txt_file():
 
 
 @pytest.fixture()
-def preprocess_port() -> PreProcessTextLikesPort:
-    files_adapter = PreProcessTextLikeFilesAdapter()
+def preprocess_port() -> ExtractTextFromDocumentPort:
+    files_adapter = ExtractTextFromDocumentsAdapter()
     return files_adapter

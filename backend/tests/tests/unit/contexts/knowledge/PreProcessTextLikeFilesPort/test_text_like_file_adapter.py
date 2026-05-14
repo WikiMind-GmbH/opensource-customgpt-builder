@@ -1,12 +1,12 @@
-from src.contexts.knowledge.application.ports.pre_process_text_likes_port import (
-    PreProcessTextLikesPort,
+from src.contexts.knowledge.application.ports.extract_text_from_document_port import (
+    ExtractTextFromDocumentPort,
     SupportedFileTypesEnum,
 )
 
 
 def test_correctly_reads_text(
     return_byte_content_text_and_of_tmp_txt_file: tuple[bytes, str],
-    preprocess_port: PreProcessTextLikesPort,
+    preprocess_port: ExtractTextFromDocumentPort,
 ):
     bytes_content, text = return_byte_content_text_and_of_tmp_txt_file
     text_read_by_adapter = (

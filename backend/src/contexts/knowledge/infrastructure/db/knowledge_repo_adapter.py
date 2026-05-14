@@ -9,14 +9,17 @@ from src.contexts.knowledge.application.ports.knowledge_repo import (
     FileDoesNotExistError,
     InvalidDatabaseStateError,
     KnowledgeRepo,
+    NoChunksExistForThisFileIDErrror,
 )
 from src.contexts.knowledge.domain.models import (
     CgptPermissionsToFile,
+    TextFileChunk,
     TextFileTypeEnum,
     UploadedTextLikeFile,
 )
 from src.contexts.knowledge.infrastructure.db.orm import (
     cgpt_permissions_to_files,
+    text_chunks_of_files,
     uploaded_text_like_file,
 )
 
@@ -31,6 +34,17 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
             raise FileDoesNotExistError
         return result
 
+    def get_chunks_of_document(self, file_id: UUID) -> list[TextFileChunk]:
+        stmt = select(TextFileChunk).where(
+            text_chunks_of_files.c._corresponding_text_file_id == file_id
+        )
+        chunks = self.session.scalars(
+            stmt
+        ).all()  # scalars() unwraps the first selected value from each SQLAlchemy Row.
+        if len(chunks) == 0:
+            raise NoChunksExistForThisFileIDErrror
+        return list(chunks)
+
     def create_new_file_if_hash_doesnt_exist_yet(
         self, filename: str, hash: str, file_type: TextFileTypeEnum
     ) -> UploadedTextLikeFile:
@@ -42,14 +56,14 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
             raise CantCreateFileThatAlreadyExistsError
 
         new_uploaded_text_like_file = UploadedTextLikeFile(
-            name=filename, file_type=file_type
+            name=filename, file_type=file_type, hash_of_raw_file=hash
         )
         self.session.add(new_uploaded_text_like_file)
         return new_uploaded_text_like_file
 
     def add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
         self, cgpt_ids: list[str], hash_of_file: str
-    ) -> str:  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
+    ) -> UUID:  # we use `hash_of_file` instead of `id` due to wanting to reinforce the idea that we only want to add permissions to a file based on identifying it with the hash
         stmt_get_id_of_file_with_hash = select(uploaded_text_like_file.c._id).where(
             uploaded_text_like_file.c._hash_of_raw_file == hash_of_file
         )
@@ -61,7 +75,7 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
             raise InvalidDatabaseStateError(
                 "More than one file with the same hash exists"
             )
-        id_of_file: str = result[0]
+        id_of_file: UUID = result[0]
         stmt_permissions_of_this_file = select(CgptPermissionsToFile).where(
             cgpt_permissions_to_files.c.file_id == id_of_file
         )
