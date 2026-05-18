@@ -21,7 +21,7 @@ from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
     SQLAlchemyCgptUOW,
 )
 from src.contexts.shared.typing_aliases import Factory
-from tests.tests.unit.contexts.chat.application.FakeAdapters import FakeLLMAdapter
+from tests.fake_adapters.context_chat.fake_llm_adapter import FakeLLMAdapter
 
 # --------------  ConversationUOW  -----------------
 

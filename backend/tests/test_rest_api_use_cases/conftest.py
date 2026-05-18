@@ -30,9 +30,9 @@ from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
     SQLAlchemyCgptUOW,
 )
 from src.contexts.shared.typing_aliases import Factory
+from tests.fake_adapters.context_chat.fake_llm_adapter import FakeLLMAdapter
 
 # from __future__ import annotations
-from test_rest_api_use_cases.FakeAdapters import FakeLLMAdapter
 
 # # --------------  ConversationUOW  -----------------
 
