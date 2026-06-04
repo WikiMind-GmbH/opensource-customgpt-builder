@@ -18,6 +18,8 @@ Testing the functionality of an adapter in detail at the outer layer of our app.
 Due to this we know how it works in detail.   
 As such, we can go one layer inward, fake it and test the functionality in this layer with abstractions/fake adapters.
 
+A better test folder structure must als be used! See Alberts notes for stlye considerations and practical constraints (e2e <>> other tests: conftest vs bootstrap)
+
 ## Decision
 
 We require tests: 

@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import pytest
 from sqlalchemy.orm import Session
 
@@ -55,7 +57,7 @@ def test_uow_commit_needs_to_be_done_manually(
 
 
 def test_uow_rollback_on_exception(session_factory: Factory[Session]) -> None:
-    file_id: str | None = None
+    file_id: UUID | None = None
     file_hash = "hash"
 
     with pytest.raises(RuntimeError):

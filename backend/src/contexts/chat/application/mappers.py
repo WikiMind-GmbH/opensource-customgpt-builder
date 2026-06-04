@@ -1,3 +1,5 @@
+from typing import assert_never
+
 from src.contexts.chat.application.ports.llm_port import MessageDTOllm, RoleDTOllm
 from src.contexts.chat.domain.models import Message, Role
 
@@ -14,6 +16,8 @@ def message_domain_to_message_llm_port_dto(msg: Message) -> MessageDTOllm:
                 return RoleDTOllm.system
             case Role.user:
                 return RoleDTOllm.user
+            case _:
+                assert_never
 
     role: RoleDTOllm = role_translation(msg.role)
     return MessageDTOllm(role=role, imageUrlOrText=msg.imageUrlOrText)

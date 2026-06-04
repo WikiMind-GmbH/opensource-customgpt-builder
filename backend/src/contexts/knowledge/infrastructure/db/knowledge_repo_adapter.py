@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 
 from src.contexts.knowledge.application.ports.knowledge_repo import (
     CantCreateFileThatAlreadyExistsError,
+    ChunkIdsAreNotUniqueError,
+    ChunkNotFoundError,
     FileDoesNotExistError,
     InvalidDatabaseStateError,
     KnowledgeRepo,
@@ -33,6 +35,41 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
         if result is None:
             raise FileDoesNotExistError
         return result
+
+    def get_file_ids_of_cgpt(self, cgpt_id: str) -> list[UUID]:
+        # stmt = select(CgptPermissionsToFile.file_id
+        # # stmt = select(cgpt_permissions_to_files.c.file_id,
+        # ).where(cgpt_permissions_to_files.c.cgpt_id ==cgpt_id)
+        # file_ids = self.session.scalars(
+        #     stmt
+        # ).all()
+        # return file_ids
+        stmt = select(cgpt_permissions_to_files.c.file_id).where(
+            cgpt_permissions_to_files.c.cgpt_id == cgpt_id
+        )
+        return list(self.session.scalars(stmt).all())
+
+    def get_chunks_assert_all_unique_and_exist(
+        self, ids: list[UUID]
+    ) -> set[TextFileChunk]:
+        if len(set(ids)) != len(ids):
+            raise ChunkIdsAreNotUniqueError
+
+        stmt = select(TextFileChunk).where(text_chunks_of_files.c._id.in_(ids))
+        chunks = set(self.session.scalars(stmt).all())
+        if len(chunks) != len(ids):
+            raise ChunkNotFoundError
+
+        return chunks
+
+    def check_if_hash_already_exists(self, hash: str) -> bool:
+        stmt = select(
+            uploaded_text_like_file.c._id,
+        ).where(uploaded_text_like_file.c._hash_of_raw_file == hash)
+        rows = self.session.execute(stmt).all()
+        if len(rows) > 0:
+            return True
+        return False
 
     def get_chunks_of_document(self, file_id: UUID) -> list[TextFileChunk]:
         stmt = select(TextFileChunk).where(

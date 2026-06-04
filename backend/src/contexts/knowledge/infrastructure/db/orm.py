@@ -15,6 +15,7 @@ from sqlalchemy.orm import registry, relationship
 
 from src.contexts.knowledge.domain.models import (
     CgptPermissionsToFile,
+    ChunkingStrategy,
     ParentOrChild,
     TextFileChunk,
     TextFileTypeEnum,
@@ -91,9 +92,18 @@ text_chunks_of_files = Table(
         nullable=False,
     ),
     Column("_text_content_of_chunk", String, nullable=False),
-    Column("_chunking_stragegy", String, nullable=False),
     Column(
-        "_hierarchy_of_chunk",
+        "_chunking_strategy",
+        Enum(
+            ChunkingStrategy,
+            name="ChunkingStrategy",
+            native_enum=False,
+            validate_strings=True,
+        ),
+        nullable=False,
+    ),
+    Column(
+        "_hierarchy_level_of_chunk",
         Enum(
             ParentOrChild,
             name="ParentOrChild",

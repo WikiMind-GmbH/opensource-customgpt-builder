@@ -51,5 +51,6 @@
         "source.fixAll": "explicit", // fixes lint violations on save
         // "source.organizeImports": "explicit", <- not needed when having "I" linting rule:
     }  
-}
+},
+"explorer.autoReveal": "focusNoScroll"
 }

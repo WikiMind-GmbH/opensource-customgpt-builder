@@ -13,17 +13,17 @@ class CgptPermissionCheckerAdapter(CgptPermissionCheckerPort):
     def __init__(self, cgpt_session_factory: Factory[Session]):
         self._session_factory: Factory[Session] = cgpt_session_factory
 
-    def assure_user_has_access_to_cgpts(self, cgpt_ids_to_check: list[str]) -> bool:
+    def assure_user_has_access_to_cgpts(self, cgpt_ids_to_check: list[str]) -> None:
         with self._session_factory() as session:
             stmt = select(custom_gpts.c.id)
             rows = session.execute(stmt).all()
             # eturn [CustomGPTOverviewDTO(id=id, name=name) for id, name in rows]
-        cgpts_of_user = [id for id in rows]
-        cgpt_ids_not_in_user_cgpts = [
-            id for id in cgpt_ids_to_check if id not in cgpts_of_user
+        cgpts_user_has_access_to = [id for id in rows]
+        cgpt_ids_to_check_where_user_has_no_access = [
+            id for id in cgpt_ids_to_check if id not in cgpts_user_has_access_to
         ]
-        if cgpt_ids_not_in_user_cgpts == []:
-            return True
+        if cgpt_ids_to_check_where_user_has_no_access == []:
+            return
         raise UserHasNoPermissionForCgptOrTheyDontExist(
-            unaccessible_cgpt_ids=cgpt_ids_not_in_user_cgpts
+            unaccessible_cgpt_ids=cgpt_ids_to_check_where_user_has_no_access
         )

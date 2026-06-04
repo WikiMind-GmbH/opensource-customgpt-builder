@@ -24,8 +24,8 @@ FRONTEND_VOLUME = $(PROJECT_NAME)_frontend_node_modules
 
 COMPOSE_DEV = docker compose -p $(PROJECT_NAME) -f docker-compose.dev.yaml
 COMPOSE_PROD = docker compose -p $(PROJECT_NAME) -f docker-compose.prod.yaml
-COMPOSE_LOCUST_LOCAL := docker compose -f backend/tests/tests_perf_locust/docker-compose.locust-perf-local.yaml
-COMPOSE_LOCUST_STAGING := docker compose -f backend/tests/tests_perf_locust/docker-compose.locust-perf-staging.yaml
+COMPOSE_LOCUST_LOCAL := docker compose -f backend/tests/tests_non_http_perf_locust/docker-compose.locust-perf-local.yaml
+COMPOSE_LOCUST_STAGING := docker compose -f backend/tests/tests_non_http_perf_locust/docker-compose.locust-perf-staging.yaml
 PYTEST_FLAGS := -q -s --maxfail=1 -m 'not performance'
 PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
@@ -119,27 +119,27 @@ test-use-cases: ## run the light e2e tests (directly using the Fastapi TestApp)
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) -s tests/test_rest_api_use_cases"
 
 tests: ## run all the remaining functional tests not covered by test-use-cases or test-external-api-adapters
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests_non_http"
 
 test-show-setup: ## same as tests target, but with additional infos printed
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) --setup-show -s tests/tests"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) --setup-show -s tests/tests_non_http"
 ## ----------------------PYTEST FUNCTIONAL subset of `tests`-----
 test-unit: ## Run only unit tests
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests/unit"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests_non_http/unit"
 test-contracts: ## Run only contract tests
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests/contracts"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests_non_http/contracts"
 test-integration: ## Run only integration tests
 	$(COMPOSE_DEV) up -d postgres
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests/integration"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS) tests/tests_non_http/integration"
 
 
 
 # ## (Optional) Run tests in an already-running backend container
 # test-unit-exec:
-# 	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/tests/unit
+# 	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/tests_non_http/unit
 
 # test-integration-exec:
-# 	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/tests/integration
+# 	$(COMPOSE_DEV) exec backend pytest $(PYTEST_FLAGS) tests/tests_non_http/integration
 
 
 test-clean: ## Clean up any stopped test containers
@@ -153,10 +153,10 @@ test-use-cases-perf: ## run all pytest-performance tests in the test_rest_api_us
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s tests/test_rest_api_use_cases"
 
 test-integration-perf: ## run all pytest-performance tests in the integratioin folder
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/tests/integration"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/tests_non_http/integration"
 
 test-perf: # combines the targets `test-use-cases-perf` `test-integration-perf`
-	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/tests"
+	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) tests/tests_non_http"
 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE) -s tests/test_rest_api_use_cases"
 # 	$(COMPOSE_DEV) run --rm backend sh -c "pytest $(PYTEST_FLAGS_PERFORMANCE)" tests
 # #replace the automatically generated base/url of the backend api 

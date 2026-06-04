@@ -8,4 +8,8 @@ class UserHasNoPermissionForCgptOrTheyDontExist(RuntimeError):
 
 
 class CgptPermissionCheckerPort(Protocol):
-    def assure_user_has_access_to_cgpts(self, cgpt_ids_to_check: list[str]) -> bool: ...
+    def assure_user_has_access_to_cgpts(self, cgpt_ids_to_check: list[str]) -> None: ...
+
+    """
+    Raises `UserHasNoPermissionForCgptOrTheyDontExist` if there is at least one cgpt in `cgpt_ids_to_check` which the user has no authorization to access.
+    """

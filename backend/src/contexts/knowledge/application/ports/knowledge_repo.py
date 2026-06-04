@@ -28,8 +28,21 @@ class NoChunksExistForThisFileIDErrror(RuntimeError):
     "No chunks exist for this file id. maybe even file with this id does not exist -this is not checked necessarily"
 
 
+class ChunkIdsAreNotUniqueError(RuntimeError):
+    "All passed ids should be unique"
+
+
+class ChunkNotFoundError(RuntimeError):
+    "For at least one ID, there is no corresponding chunk found in the database"
+
+
 class KnowledgeRepo(Protocol):
     def get_file(self, file_id: UUID) -> UploadedTextLikeFile: ...
+    def get_file_ids_of_cgpt(self, cgpt_id: str) -> list[UUID]: ...
+    def get_chunks_assert_all_unique_and_exist(
+        self, ids: list[UUID]
+    ) -> set[TextFileChunk]: ...
+    def check_if_hash_already_exists(self, hash: str) -> bool: ...
     def get_chunks_of_document(self, file_id: UUID) -> list[TextFileChunk]: ...
     def create_new_file_if_hash_doesnt_exist_yet(
         self, filename: str, hash: str, file_type: TextFileTypeEnum

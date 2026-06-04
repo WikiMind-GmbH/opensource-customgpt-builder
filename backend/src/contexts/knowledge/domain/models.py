@@ -53,108 +53,235 @@ class ParentOrChild(StrEnum):
     child = "child"
 
 
-def create_parent_and_child_chunks_from_text_character_split(
-    full_text: str,
-    corresponding_text_file_id: UUID,
-    parent_chunk_size: int = 3000,
-    child_chunk_size: int = 600,
-) -> list[TextFileChunk]:
-    if len(full_text) == 0:
-        raise InvalidTransformedTextError(
-            "Value passed is zero length string. This should not happen if this "
-            "function is called. The document may have been incorrectly preprocessed."
-        )
+class ChunkingStrategy(StrEnum):
+    auto_merging = "Parent with children auto merging"
 
-    if not child_chunk_size < parent_chunk_size and parent_chunk_size < len(full_text):
-        raise RuntimeError(
-            "Invalid parameters passed, it must be the case that child_chunk_size < parent_chunk_size and parent_chunk_size < len(full_text)"
-        )
 
-    chunking_strategy = "Character Split Hyde"
+class _AutoMergingChunkingStrategy:
+    CHILD_CHUNK_SIZE: int = 500
+    PARENT_CHUNK_SIZE: int = 3000
+    MIN_CHILDREN_TO_INCLUDE_PARENT: int = 2
+    NUM_EXPECTED_CHUNKS_FOR_POST_PROCESSING: int = 10
+    NUM_MAX_CHUNKS_TO_RETURN: int = 5
 
-    def create_parent_chunks(
+    @classmethod
+    def create_parent_and_child_chunks_from_text_character_split(
+        cls,
         full_text: str,
-        parent_chunk_size: int,
+        corresponding_text_file_id: UUID,
+        overwrite_parent_chunk_size_for_tests: int | None = None,
+        overwrite_child_chunk_size_for_tests: int | None = None,
     ) -> list[TextFileChunk]:
-        parent_chunks_text_only: list[str] = []
-        num_parent_chunks = len(full_text) // parent_chunk_size + +(
-            0 if len(full_text) % parent_chunk_size == 0 else 1
+        child_chunk_size = (
+            cls.CHILD_CHUNK_SIZE
+            if overwrite_child_chunk_size_for_tests is None
+            else overwrite_child_chunk_size_for_tests
         )
+        parent_chunk_size = (
+            cls.PARENT_CHUNK_SIZE
+            if overwrite_parent_chunk_size_for_tests is None
+            else overwrite_parent_chunk_size_for_tests
+        )
+        if overwrite_parent_chunk_size_for_tests is not None:
+            parent_chunk_size = overwrite_parent_chunk_size_for_tests
 
-        for parent_chunk_num in range(num_parent_chunks):
-            parent_chunk = full_text[
-                parent_chunk_size * parent_chunk_num : min(
-                    parent_chunk_size * (parent_chunk_num + 1),
-                    len(full_text),
-                )
-            ]
-            parent_chunks_text_only.append(parent_chunk)
+        chunking_strategy = ChunkingStrategy.auto_merging
 
-        parent_chunks: list[TextFileChunk] = []
-        for text_chunk in parent_chunks_text_only:
-            chunk = TextFileChunk(
-                corresponding_text_file_id=corresponding_text_file_id,
-                text_content_of_chunk=text_chunk,
-                chunking_strategy=chunking_strategy,
-                hierarchy_level_of_chunk=ParentOrChild.parent,
+        if len(full_text) == 0:
+            raise InvalidTransformedTextError(
+                "Value passed is zero length string. This should not happen if this "
+                "function is called. The document may have been incorrectly preprocessed."
             )
-            parent_chunks.append(chunk)
 
-        return parent_chunks
+        if not child_chunk_size < parent_chunk_size:
+            raise RuntimeError(
+                "Invalid parameters passed, it must be the case that child_chunk_size < parent_chunk_size "
+            )
 
-    def create_child_chunks(
-        parent_chunk: TextFileChunk,
-        child_chunk_size: int,
-    ) -> list[TextFileChunk]:
-        child_chunks_text_only: list[str] = []
-        num_child_chunks = len(parent_chunk.text_content) // child_chunk_size + +(
-            0 if len(parent_chunk.text_content) % child_chunk_size == 0 else 1
-        )
+        def create_parent_chunks(
+            full_text: str,
+        ) -> list[TextFileChunk]:
+            parent_chunks_text_only: list[str] = []
+            num_parent_chunks = len(full_text) // parent_chunk_size + +(
+                0 if len(full_text) % parent_chunk_size == 0 else 1
+            )
 
-        for child_chunk_num in range(num_child_chunks):
-            child_chunk = parent_chunk.text_content[
-                child_chunk_num * child_chunk_size : min(
-                    (child_chunk_num + 1) * child_chunk_size,
-                    len(parent_chunk.text_content),
+            for parent_chunk_num in range(num_parent_chunks):
+                parent_chunk = full_text[
+                    parent_chunk_size * parent_chunk_num : min(
+                        parent_chunk_size * (parent_chunk_num + 1),
+                        len(full_text),
+                    )
+                ]
+                parent_chunks_text_only.append(parent_chunk)
+
+            parent_chunks: list[TextFileChunk] = []
+            for text_chunk in parent_chunks_text_only:
+                chunk = TextFileChunk(
+                    corresponding_text_file_id=corresponding_text_file_id,
+                    text_content_of_chunk=text_chunk,
+                    chunking_strategy=chunking_strategy,
+                    hierarchy_level_of_chunk=ParentOrChild.parent,
                 )
-            ]
-            child_chunks_text_only.append(child_chunk)
+                parent_chunks.append(chunk)
+
+            return parent_chunks
+
+        def create_child_chunks(
+            parent_chunk: TextFileChunk,
+            child_chunk_size: int,
+        ) -> list[TextFileChunk]:
+            child_chunks_text_only: list[str] = []
+            num_child_chunks = len(parent_chunk.text_content) // child_chunk_size + +(
+                0 if len(parent_chunk.text_content) % child_chunk_size == 0 else 1
+            )
+
+            for child_chunk_num in range(num_child_chunks):
+                child_chunk = parent_chunk.text_content[
+                    child_chunk_num * child_chunk_size : min(
+                        (child_chunk_num + 1) * child_chunk_size,
+                        len(parent_chunk.text_content),
+                    )
+                ]
+                child_chunks_text_only.append(child_chunk)
+
+            child_chunks: list[TextFileChunk] = []
+            for text_chunk in child_chunks_text_only:
+                chunk = TextFileChunk(
+                    corresponding_text_file_id=corresponding_text_file_id,
+                    text_content_of_chunk=text_chunk,
+                    chunking_strategy=chunking_strategy,
+                    hierarchy_level_of_chunk=ParentOrChild.child,
+                    parent_id_if_child=parent_chunk.id,
+                )
+                child_chunks.append(chunk)
+
+            return child_chunks
+
+        parent_chunks = create_parent_chunks(full_text=full_text)
 
         child_chunks: list[TextFileChunk] = []
-        for text_chunk in child_chunks_text_only:
-            chunk = TextFileChunk(
-                corresponding_text_file_id=corresponding_text_file_id,
-                text_content_of_chunk=text_chunk,
-                chunking_strategy=chunking_strategy,
-                hierarchy_level_of_chunk=ParentOrChild.child,
-                parent_id_if_child=parent_chunk.id,
+        for parent in parent_chunks:
+            child_chunks = child_chunks + create_child_chunks(
+                parent_chunk=parent,
+                child_chunk_size=child_chunk_size,
             )
-            child_chunks.append(chunk)
 
-        return child_chunks
+        return parent_chunks + child_chunks
 
-    parent_chunks = create_parent_chunks(
-        full_text=full_text,
-        parent_chunk_size=parent_chunk_size,
-    )
+    @staticmethod
+    def _get_directly_matched_parent_scores_by_id(
+        retrieved_chunks_with_score_from_vector_store: list[
+            tuple[TextFileChunk, float]
+        ],
+    ) -> dict[UUID, float]:
+        return {
+            chunk.id: score
+            for chunk, score in retrieved_chunks_with_score_from_vector_store
+            if chunk.is_parent_or_child is ParentOrChild.parent
+        }
 
-    child_chunks: list[TextFileChunk] = []
-    for parent in parent_chunks:
-        child_chunks = child_chunks + create_child_chunks(
-            parent_chunk=parent,
-            child_chunk_size=child_chunk_size,
+    @staticmethod
+    def _group_child_hits_by_parent_id(
+        retrieved_chunks_with_score_from_vector_store: list[
+            tuple[TextFileChunk, float]
+        ],
+    ) -> dict[UUID, list[tuple[TextFileChunk, float]]]:
+        child_hits_by_parent_id: dict[UUID, list[tuple[TextFileChunk, float]]] = {}
+
+        for chunk, score in retrieved_chunks_with_score_from_vector_store:
+            if chunk.is_parent_or_child is not ParentOrChild.child:
+                continue
+
+            parent_id = chunk.parent_id_if_child
+            if parent_id is None:
+                raise InvalidChunkHierarchyError("Child chunk missing parent id")
+
+            child_hits_by_parent_id.setdefault(parent_id, []).append((chunk, score))
+
+        return child_hits_by_parent_id
+
+    @staticmethod
+    def _select_chunk_scores_by_id_with_auto_merge(
+        directly_matched_parent_scores_by_id: dict[UUID, float],
+        child_hits_by_parent_id: dict[UUID, list[tuple[TextFileChunk, float]]],
+        min_children_to_include_parent: int,
+    ) -> dict[UUID, float]:
+        selected_chunk_scores_by_id = directly_matched_parent_scores_by_id.copy()
+
+        for parent_id, corresponding_child_hits in child_hits_by_parent_id.items():
+            children_merge_to_parent = (
+                len(corresponding_child_hits) >= min_children_to_include_parent
+            )
+
+            if children_merge_to_parent:
+                scores_to_consider_for_merged_parent: list[float] = []
+                child_scores = [score for _, score in corresponding_child_hits]
+                scores_to_consider_for_merged_parent = (
+                    scores_to_consider_for_merged_parent + child_scores
+                )
+                if parent_id in directly_matched_parent_scores_by_id.keys():
+                    scores_to_consider_for_merged_parent.append(
+                        directly_matched_parent_scores_by_id[parent_id]
+                    )
+                selected_chunk_scores_by_id[parent_id] = max(
+                    scores_to_consider_for_merged_parent
+                )
+                continue
+
+            for child_chunk, score in corresponding_child_hits:
+                selected_chunk_scores_by_id[child_chunk.id] = score
+
+        return selected_chunk_scores_by_id
+        # make it such that we can independently test this function
+
+    @classmethod
+    def auto_merge_chunks(
+        cls,
+        retrieved_chunks_with_score_from_vector_store: list[
+            tuple[TextFileChunk, float]
+        ],
+    ) -> list[UUID]:
+        if (
+            len(retrieved_chunks_with_score_from_vector_store)
+            > cls.NUM_EXPECTED_CHUNKS_FOR_POST_PROCESSING
+        ):
+            raise RuntimeError(
+                "Auto-merge post-processing expects the vector store to already limit "
+                f"results to at most {cls.NUM_EXPECTED_CHUNKS_FOR_POST_PROCESSING} chunks, but got "
+                f"{len(retrieved_chunks_with_score_from_vector_store)}."
+            )
+
+        directly_matched_parent_scores_by_id = (
+            cls._get_directly_matched_parent_scores_by_id(
+                retrieved_chunks_with_score_from_vector_store
+            )
         )
 
-    return parent_chunks + child_chunks
+        child_hits_by_parent_id = cls._group_child_hits_by_parent_id(
+            retrieved_chunks_with_score_from_vector_store
+        )
+
+        selected_chunk_scores_by_id = cls._select_chunk_scores_by_id_with_auto_merge(
+            directly_matched_parent_scores_by_id=directly_matched_parent_scores_by_id,
+            child_hits_by_parent_id=child_hits_by_parent_id,
+            min_children_to_include_parent=cls.MIN_CHILDREN_TO_INCLUDE_PARENT,
+        )
+
+        return [
+            chunk_id
+            for chunk_id, _score in sorted(
+                selected_chunk_scores_by_id.items(),
+                key=lambda item: item[1],
+                reverse=True,
+            )[: cls.NUM_MAX_CHUNKS_TO_RETURN]
+        ]
 
 
-# make it such that we can independently test this function
-
-
-def create_parent_and_child_chunks_from_text_recursive_split(
-    full_text: str,
-) -> list[TextFileChunk]:
-    raise NotImplementedError
+# def create_parent_and_child_chunks_from_text_recursive_split(
+#     full_text: str,
+# ) -> list[TextFileChunk]:
+#     raise NotImplementedError
 
 
 class UploadedTextLikeFileProcessingStatus(StrEnum):
@@ -191,6 +318,9 @@ class NextNecessaryProcessingStep(StrEnum):
 
 
 class UploadedTextLikeFile:
+    NUM_EXPECTED_CHUNKS_FOR_POST_PROCESSING = (
+        _AutoMergingChunkingStrategy.NUM_EXPECTED_CHUNKS_FOR_POST_PROCESSING
+    )
     _id: UUID
     _name: str
     _file_type: TextFileTypeEnum
@@ -199,6 +329,7 @@ class UploadedTextLikeFile:
     _transformed_text: str | None
     _hash_of_raw_file: str
     _corresponding_chunks: list[TextFileChunk]
+    chunking_strategy: ChunkingStrategy = ChunkingStrategy.auto_merging
 
     def __init__(
         self,
@@ -234,6 +365,14 @@ class UploadedTextLikeFile:
     def status(self) -> UploadedTextLikeFileProcessingStatus:
         return self._status
 
+    @property
+    def corresponding_chunks(self) -> list[TextFileChunk]:
+        return self._corresponding_chunks
+
+    # @property
+    # def corresponding_child_chunks
+    # def corresponding_parent_chunks
+
     # ---------------------------------------------------------------------------------------------------
     # Possible state transitions: either by explicit setting or as a side effect of another function
     def mark_raw_file_was_stored(self) -> None:
@@ -261,7 +400,9 @@ class UploadedTextLikeFile:
             UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text
         )
 
-    def create_chunks_without_assigning_them_to_document(self) -> list[TextFileChunk]:
+    def create_chunks_without_assigning_them_to_document_include_chunking_strategy(
+        self,
+    ) -> list[TextFileChunk]:
         # due to not wanting to block the db connection pool, we must run this on
         # a snapshot and update the object itself in a new uow.
         # I wanted to put this in a domain function instead of in an adapter because
@@ -270,22 +411,20 @@ class UploadedTextLikeFile:
         if self._transformed_text is None or self._transformed_text == "":
             raise InvalidTransformedTextError
 
-        if self._corresponding_chunks != []:
-            raise DocumentIsAlreadyChunkedError
-
         if (
             self._status
             != UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text
         ):
             raise InvalidStateTransitionError
 
-        chunks = create_parent_and_child_chunks_from_text_character_split(
+        chunks = _AutoMergingChunkingStrategy.create_parent_and_child_chunks_from_text_character_split(
             full_text=self._transformed_text,
             corresponding_text_file_id=self._id,
         )
+
         return chunks
 
-    def assign_chunkss_created_with_domain_method_to_document(
+    def assign_chunks_created_with_domain_method_to_document(
         self,
         chunks_created_by_domain_model_function: list[TextFileChunk],
     ) -> None:
@@ -308,9 +447,18 @@ class UploadedTextLikeFile:
             != UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text
         ):
             raise InvalidStateTransitionError
-
         self._corresponding_chunks = chunks_created_by_domain_model_function
         self._status = UploadedTextLikeFileProcessingStatus.stored_original_and_preprocessed_and_chunked
+
+    @staticmethod
+    def post_process_retrieved_chunks_return_selected_chunk_ids(
+        retrieved_chunks_with_score_from_vector_store: list[
+            tuple[TextFileChunk, float]
+        ],
+    ) -> list[UUID]:
+        return _AutoMergingChunkingStrategy.auto_merge_chunks(
+            retrieved_chunks_with_score_from_vector_store=retrieved_chunks_with_score_from_vector_store
+        )
 
     def mark_chunks_are_embedded_and_added_to_vectorstore(self) -> None:
         """
@@ -330,7 +478,9 @@ class UploadedTextLikeFile:
     # ---------------------------------------------------------------------------------------------------
     # Methods to check availability to process
 
-    def next_necessary_processing_step(self) -> NextNecessaryProcessingStep:
+    def next_necessary_processing_step_if_in_processing_phase(
+        self,
+    ) -> NextNecessaryProcessingStep:
         if self.status == UploadedTextLikeFileProcessingStatus.raw_file_stored:
             return NextNecessaryProcessingStep.extract_text
         if (
@@ -410,7 +560,7 @@ class TextFileChunk:
     _id: UUID
     _corresponding_text_file_id: UUID
     _text_content_of_chunk: str
-    _chunking_strategy: str
+    _chunking_strategy: ChunkingStrategy
     _hierarchy_level_of_chunk: ParentOrChild
     _parent_id_if_child: UUID | None
 
@@ -418,7 +568,7 @@ class TextFileChunk:
         self,
         corresponding_text_file_id: UUID,
         text_content_of_chunk: str,
-        chunking_strategy: str,
+        chunking_strategy: ChunkingStrategy,
         hierarchy_level_of_chunk: ParentOrChild,
         parent_id_if_child: UUID | None = None,
     ) -> None:

@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from fastapi import BackgroundTasks
-
 from src.contexts.knowledge.application.mappers import (
     MappersVectorStore,
     PreProcessTextLikesPortMapper,
@@ -16,10 +14,10 @@ from src.contexts.knowledge.application.ports.extract_text_from_document_port im
     ExtractTextFromDocumentPort,
 )
 from src.contexts.knowledge.application.ports.file_storage_port import RawFileStorePort
-from src.contexts.knowledge.application.ports.knowledge_db_queries import (
-    KnowledgeDBQueriesPort,
-)
 from src.contexts.knowledge.application.ports.knowledge_uow import KnowledgeUOW
+from src.contexts.knowledge.application.ports.task_scheduler_port import (
+    TaskSchedulerPort,
+)
 from src.contexts.knowledge.application.ports.vector_store_port import (
     ChunkEmbeddingAndMetadataDTO,
     VectorStorePortTextChunks,
@@ -39,9 +37,8 @@ def upload_document_complete_workflow_return_file_id(
     knowledge_uow_factory: Factory[KnowledgeUOW],
     accessible_to_cgpts: list[str],
     cgpt_permissions_adapter: CgptPermissionCheckerPort,
-    knowledge_db_queries_adapter: KnowledgeDBQueriesPort,
     file_storage_adapter: RawFileStorePort,
-    background_tasks: BackgroundTasks,
+    task_scheduler: TaskSchedulerPort,
     vector_store_adapter: VectorStorePortTextChunks,
     embedding_generator_adapter: EmbeddingGeneratorPort,
 ) -> UUID:
@@ -54,15 +51,16 @@ def upload_document_complete_workflow_return_file_id(
     hash: str = UploadedTextLikeFile.calculate_hash_based_on_text_like_file_type(
         txt_like_file_type=file_type, content=file_bytes_content
     )
-    file_already_exists: bool = (
-        knowledge_db_queries_adapter.check_if_hash_already_exists(hash=hash)
-    )
+    with knowledge_uow_factory() as uow:
+        file_already_exists: bool = uow.knowledge_repo.check_if_hash_already_exists(
+            hash=hash
+        )
     if file_already_exists:
         with knowledge_uow_factory() as uow:
             file_id = uow.knowledge_repo.add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
                 cgpt_ids=accessible_to_cgpts, hash_of_file=hash
             )
-        return file_id
+            return file_id
 
     with knowledge_uow_factory() as uow:
         uploaded_file: UploadedTextLikeFile = (
@@ -72,6 +70,7 @@ def upload_document_complete_workflow_return_file_id(
                 file_type=file_type,
             )
         )
+        uow.commit()
         uow.knowledge_repo.add_cgpt_to_file_permissions_if_not_done_already_return_file_id(
             cgpt_ids=accessible_to_cgpts, hash_of_file=hash
         )
@@ -81,7 +80,7 @@ def upload_document_complete_workflow_return_file_id(
         uploaded_file.mark_raw_file_was_stored()
         uow.commit()
 
-    background_tasks.add_task(
+    task_scheduler.add_task(
         preprocess_and_chunk_document_then_embedd,
         uploaded_file.id,
         knowledge_uow_factory,
@@ -106,7 +105,9 @@ def preprocess_and_chunk_document_then_embedd(
         if uploaded_file.document_is_completely_processed_and_marked_as_available_in_vector_db:
             return
         uploaded_file.assert_document_is_in_processing_phase()
-        next_necessary_processing_step = uploaded_file.next_necessary_processing_step()
+        next_necessary_processing_step = (
+            uploaded_file.next_necessary_processing_step_if_in_processing_phase()
+        )
     if next_necessary_processing_step == NextNecessaryProcessingStep.extract_text:
         extract_text_from_document(
             uploaded_file_id=uploaded_file_id,
@@ -179,7 +180,7 @@ def chunk_uploaded_file(
         uploaded_file = uow.knowledge_repo.get_file(uploaded_file_id)
 
     chunks_of_document: list[TextFileChunk] = (
-        uploaded_file.create_chunks_without_assigning_them_to_document()
+        uploaded_file.create_chunks_without_assigning_them_to_document_include_chunking_strategy()
     )  # outside of uow -> not blocking the db pool; also: no relationships needed -> lazy loading should not be a problem
 
     with knowledge_uow_factory() as setter_uow:
@@ -216,4 +217,6 @@ def embedd_document_chunks_all_at_once(
         chunk_embeddings_and_metadata_dtos=chunk_embeddings_and_metadata_dtos
     )
     with knowledge_uow_factory() as uow:
-        uow.knowledge_repo.get_file(uploaded_file_id)
+        uploaded_file = uow.knowledge_repo.get_file(uploaded_file_id)
+        uploaded_file.mark_chunks_are_embedded_and_added_to_vectorstore()
+        uow.commit()

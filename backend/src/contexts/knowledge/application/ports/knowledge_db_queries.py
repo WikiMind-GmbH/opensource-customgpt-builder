@@ -11,7 +11,6 @@ class DocumentStatus(StrEnum):
 
 
 class KnowledgeDBQueriesPort(Protocol):
-    def check_if_hash_already_exists(self, hash: str) -> bool: ...
     def check_status_of_document(
         self, doc_id: str, cgpt_id_for_permission_check: str
     ) -> DocumentStatus: ...

@@ -11,7 +11,7 @@ from src.contexts.knowledge.infrastructure.adapters.extract_text_from_document_a
 
 
 @pytest.fixture()
-def return_byte_content_text_and_of_tmp_txt_file():
+def return_byte_and_text_content_of_tmp_txt_file():
     text = "This is just some text for the file"
     path = Path("tmp.txt")
 
