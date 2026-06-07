@@ -56,7 +56,9 @@ from src.contexts.shared.typing_aliases import Factory  # alias for Callable[[],
 @dataclass(frozen=True)
 class DependenciesContainer:
     # Return **port types** (or ports’ concrete implementations if ports are Protocols)
-    conversation_uow_factory: Factory[ConversationUOW]
+    conversation_uow_factory_factory: Factory[
+        Factory[ConversationUOW]
+    ]  # we need Fastapi Depends to return a Factory, so the dependency needs to be a factory of that factory .. :/ ugly
     cgpt_uow_factory: Factory[CgptUOW]
     cgpt_retreiver_adapter_factory: Factory[CustomGPTInstructionsRetreiver]
     llm_adapter_factory: Factory[LlmPort]  # ToDo: make it a singleton
@@ -100,6 +102,9 @@ def bootstrap(
     def conversation_uow_factory() -> ConversationUOW:
         return SQLAlchemyConversationUOW(sessionFactory_Chat)
 
+    def conversation_uow_factory_factory() -> Factory[ConversationUOW]:
+        return conversation_uow_factory
+
     # Stateless LLM adapter can be a singleton or a factory; both fine.
     _llm_adapter = OpenaiAdapter(model_name=model_name)
 
@@ -132,7 +137,7 @@ def bootstrap(
         return ConversationAdapter(conv_uow_factory=conversation_uow_factory)
 
     return DependenciesContainer(
-        conversation_uow_factory=conversation_uow_factory,
+        conversation_uow_factory_factory=conversation_uow_factory_factory,
         cgpt_uow_factory=cgpt_uow_factory,
         cgpt_retreiver_adapter_factory=cgpt_instructions_adapter_factory,
         llm_adapter_factory=llm_adapter_factory,

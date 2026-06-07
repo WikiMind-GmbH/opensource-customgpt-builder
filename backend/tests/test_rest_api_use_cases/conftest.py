@@ -30,7 +30,7 @@ from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
     SQLAlchemyCgptUOW,
 )
 from src.contexts.shared.typing_aliases import Factory
-from tests.fake_adapters.context_chat.fake_llm_adapter import FakeLLMAdapter
+from tests.fake_adapters.context_chat_port.fake_llm_adapter import FakeLLMAdapter
 
 # from __future__ import annotations
 
@@ -135,8 +135,10 @@ def cgpt_session_factory(
 
 
 @pytest.fixture()
-def cgpt_uow_factory(cgpt_session_factory: sessionmaker[Session]) -> Factory[CgptUOW]:
-    return lambda: SQLAlchemyCgptUOW(session_factory=cgpt_session_factory)
+def cgpt_uow_factory_factory(
+    cgpt_session_factory: sessionmaker[Session],
+) -> Factory[Factory[CgptUOW]]:
+    return lambda: lambda: SQLAlchemyCgptUOW(session_factory=cgpt_session_factory)
 
 
 @pytest.fixture()
@@ -165,7 +167,7 @@ def fake_llm_adapter_factory() -> Factory[FakeLLMAdapter]:
 
 @pytest.fixture()
 def test_deps(
-    conv_uow_factory: Factory[ConversationUOW],
+    conv_uow_factory_factory: Factory[Factory[ConversationUOW]],
     cgpt_uow_factory: Factory[CgptUOW],
     cgpt_retreiver_factory: Factory[CustomGPTInstructionsRetreiverAdapter],
     fake_llm_adapter_factory: Factory[FakeLLMAdapter],
@@ -174,7 +176,7 @@ def test_deps(
     conversation_adapter_factory: Factory[ConversationPort],
 ) -> DependenciesContainer:
     test_deps_container: DependenciesContainer = DependenciesContainer(
-        conversation_uow_factory=conv_uow_factory,
+        conversation_uow_factory_factory=conv_uow_factory_factory,
         cgpt_uow_factory=cgpt_uow_factory,
         cgpt_retreiver_adapter_factory=cgpt_retreiver_factory,
         llm_adapter_factory=fake_llm_adapter_factory,
@@ -190,9 +192,9 @@ def test_client(test_deps: DependenciesContainer):
     from src.interface.http.app import app
     from src.interface.http.composition import dependencies_container
 
-    app.dependency_overrides[dependencies_container.conversation_uow_factory] = (
-        test_deps.conversation_uow_factory
-    )
+    app.dependency_overrides[
+        dependencies_container.conversation_uow_factory_factory
+    ] = test_deps.conversation_uow_factory_factory
     app.dependency_overrides[dependencies_container.cgpt_uow_factory] = (
         test_deps.cgpt_uow_factory
     )

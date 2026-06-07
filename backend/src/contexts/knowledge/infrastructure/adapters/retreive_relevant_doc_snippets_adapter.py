@@ -17,7 +17,7 @@ from src.contexts.knowledge.application.ports.vector_store_port import (
 from src.contexts.shared.typing_aliases import Factory
 
 
-class RetrieveRelevantDocSnippetsAdapter(RelevantDocSnippetRetreiverPort):
+class RelevantDocSnippetRetreiverAdapter(RelevantDocSnippetRetreiverPort):
     def __init__(
         self,
         vector_store: VectorStorePortTextChunks,

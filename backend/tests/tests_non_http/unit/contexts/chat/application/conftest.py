@@ -7,6 +7,9 @@ from sqlalchemy import Connection, Engine, NullPool, RootTransaction, create_eng
 from sqlalchemy.orm import Session, sessionmaker
 
 from backend_spanning_helpers import require_env
+from src.contexts.chat.application.ports.retrieve_relevant_doc_snippets_port import (
+    RelevantDocSnippetRetreiverPort,
+)
 from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
 from src.contexts.chat.infrastructure.db.orm import metadata as chat_metadata
 from src.contexts.chat.infrastructure.db.uow_implementations import (
@@ -21,7 +24,10 @@ from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
     SQLAlchemyCgptUOW,
 )
 from src.contexts.shared.typing_aliases import Factory
-from tests.fake_adapters.context_chat.fake_llm_adapter import FakeLLMAdapter
+from tests.fake_adapters.context_chat_port.fake_doc_snippet_retriever import (
+    FakeRelevantDocSnippetRetreiverAdapter,
+)
+from tests.fake_adapters.context_chat_port.fake_llm_adapter import FakeLLMAdapter
 
 # --------------  ConversationUOW  -----------------
 
@@ -124,3 +130,11 @@ def cgpt_retreiver_factory(
 @pytest.fixture()
 def fake_llm_adapter_factory() -> Factory[FakeLLMAdapter]:
     return lambda: FakeLLMAdapter()
+
+
+# --------------  Retriever Adapter  -----------------
+
+
+@pytest.fixture()
+def retrieve_doc_snippets() -> RelevantDocSnippetRetreiverPort:
+    return FakeRelevantDocSnippetRetreiverAdapter()

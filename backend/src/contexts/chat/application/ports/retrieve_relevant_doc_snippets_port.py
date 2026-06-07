@@ -1,7 +1,7 @@
 from typing import Protocol
 
 
-class UserHasNoAccessToCgptError(RuntimeError):
+class UserHasNoPermissionForCgptOrTheyDontExist(RuntimeError):
     "User has no access to cgpt"
 
 

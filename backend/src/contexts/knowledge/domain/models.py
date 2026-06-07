@@ -57,6 +57,54 @@ class ChunkingStrategy(StrEnum):
     auto_merging = "Parent with children auto merging"
 
 
+class AbsoluteMatchStrengthOfRetrievedSnippet(StrEnum):
+    """How close is this snippet to the query in absolute terms?
+
+    VERY_STRONG:
+    The absolute similarity score is very high for this embedding model and corpus.
+
+    STRONG:
+        The score is high enough to plausibly represent semantic relevance.
+
+    WEAK:
+        The score is low or borderline.
+
+    VERY_WEAK:
+    The score is so low that the snippet is probably not useful.
+    """
+
+    VERY_STRONG = "very_strong"
+    STRONG = "strong"
+    WEAK = "weak"
+    VERY_WEAK = "very_weak"
+
+
+class ResultDistinctivenessOfRetrievedSnippet(StrEnum):
+    """
+
+    How special is this snippet compared to the corpus/background and the retrieved candidate set?
+    a) contrast against random sampling distribution
+    b) contrast against top-k distribution
+
+    CLEAR_OUTLIER:
+    The snippet is far above the random background distribution and clearly separated from nearby top-k candidates.
+
+    DISTINCT:
+        The snippet is meaningfully above background and has some separation from comparable candidates.
+
+    COMPETITIVE:
+        The snippet is above background, but many top-k candidates are similarly close.
+
+    INDISTINCT:
+    The snippet is not meaningfully separated from the background or from other top-k candidates.
+    """
+
+    CLEAR_OUTLIER = "clear_outlier"
+    DISTINCT = "distinct"
+    COMPETITIVE = "competitive"
+    INDISTINCT = "indistinct"
+
+
 class _AutoMergingChunkingStrategy:
     CHILD_CHUNK_SIZE: int = 500
     PARENT_CHUNK_SIZE: int = 3000

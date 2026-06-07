@@ -34,14 +34,16 @@ from src.contexts.knowledge.infrastructure.db.knowledge_uow_adapter import (
     SQLAlchemyKnowledgeUOW,
 )
 from src.contexts.knowledge.infrastructure.db.orm import metadata as knowledge_metadata
-from tests.fake_adapters.context_knowledge.fake_cgpt_permission_checker import (
+from tests.fake_adapters.context_knowledge_port.fake_cgpt_permission_checker import (
     FakeCgptPermissionChecker,
 )
-from tests.fake_adapters.context_knowledge.fake_embedding_generator import (
+from tests.fake_adapters.context_knowledge_port.fake_embedding_generator import (
     DeterministicEmbeddingGeneratorAdapter,
 )
-from tests.fake_adapters.context_knowledge.fake_task_scheduler import FakeTaskScheduler
-from tests.fake_adapters.context_knowledge.fake_vector_store import (
+from tests.fake_adapters.context_knowledge_port.fake_task_scheduler import (
+    FakeTaskScheduler,
+)
+from tests.fake_adapters.context_knowledge_port.fake_vector_store import (
     FakeVectorStoreTextChunksAdapter,
 )
 

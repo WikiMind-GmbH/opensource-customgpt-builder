@@ -27,7 +27,9 @@ from src.contexts.knowledge.domain.models import (
     UploadedTextLikeFileProcessingStatus,
 )
 from src.contexts.shared.typing_aliases import Factory
-from tests.fake_adapters.context_knowledge.fake_task_scheduler import FakeTaskScheduler
+from tests.fake_adapters.context_knowledge_port.fake_task_scheduler import (
+    FakeTaskScheduler,
+)
 
 # def upload_document_complete_workflow_return_file_id(
 #     file_bytes_content: bytes,
