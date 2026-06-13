@@ -68,12 +68,14 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
       CHAT_APP_PASSWORD: ${CHAT_APP_PASSWORD}
       CGPT_APP_PASSWORD: ${CGPT_APP_PASSWORD}
+      KNOWLEDGE_APP_PASSWORD: ${KNOWLEDGE_APP_PASSWORD}
       CHAT_TEST_APP_PASSWORD: ${CHAT_TEST_APP_PASSWORD}
       CGPT_TEST_APP_PASSWORD: ${CGPT_TEST_APP_PASSWORD}
+      KNOWLEDGE_TEST_APP_PASSWORD: ${KNOWLEDGE_TEST_APP_PASSWORD}
 
     volumes:
       - pgdata:/var/lib/postgresql
-# bind mount lead to permission problems; just copying init now works 
+# bind mount lead to permission problems; just copying init now works
     # Dev only: expose to host
     ports:
       - "127.0.0.1:5432:5432"

@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Callable
 
+from fastapi import BackgroundTasks
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -13,6 +15,9 @@ from src.contexts.chat.application.ports.customgpt_instructions_retreiver import
     CustomGPTInstructionsRetreiver,
 )
 from src.contexts.chat.application.ports.llm_port import LlmPort
+from src.contexts.chat.application.ports.retrieve_relevant_doc_snippets_port import (
+    RelevantDocSnippetRetreiverPort,
+)
 from src.contexts.chat.application.ports.uow import ConversationUOW
 from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
     ChatQueriesAdapter,
@@ -84,6 +89,9 @@ from src.contexts.knowledge.infrastructure.adapters.local_file_system_storage_ad
 from src.contexts.knowledge.infrastructure.adapters.qdrant_vector_store_adapter import (
     QdrantVectorStoreTextChunksAdapter,
 )
+from src.contexts.knowledge.infrastructure.adapters.retreive_relevant_doc_snippets_adapter import (
+    RelevantDocSnippetRetreiverAdapter,
+)
 from src.contexts.knowledge.infrastructure.db.knowledge_uow_adapter import (
     SQLAlchemyKnowledgeUOW,
 )
@@ -102,22 +110,45 @@ class DependenciesContainer:
     conversation_uow_factory_factory: Factory[
         Factory[ConversationUOW]
     ]  # we need Fastapi Depends to return a Factory, so the dependency needs to be a factory of that factory .. :/ ugly
+
     cgpt_uow_factory_factory: Factory[Factory[CgptUOW]]
     cgpt_retreiver_adapter_factory: Factory[CustomGPTInstructionsRetreiver]
     llm_adapter_factory: Factory[LlmPort]  # ToDo: make it a singleton
     cgpt_queries_adapter_factory: Factory[CgptQueries]
     chat_queries_adapter_factory: Factory[ChatQueries]
+    retrieve_doc_snippets_adapter_factory: Factory[RelevantDocSnippetRetreiverPort]
     conversation_adapter_factory: Factory[ConversationPort]
+
     # knowledge
     knowledge_uow_factory_factory: Factory[Factory[KnowledgeUOW]]
-    extract_text_from_document_adapter: ExtractTextFromDocumentPort
-    cgpt_permissions_adapter_factory_factory: Factory[
-        Factory[CgptPermissionCheckerPort]
-    ]
-    file_storage_adapter: RawFileStorePort
-    task_scheduler: TaskSchedulerPort
-    vector_store_adapter: VectorStorePortTextChunks
-    embedding_generator_adapter: EmbeddingGeneratorPort
+    extract_text_from_document_adapter_factory: Factory[ExtractTextFromDocumentPort]
+    cgpt_permissions_adapter_factory: Factory[CgptPermissionCheckerPort]
+    file_storage_adapter_factory: Factory[RawFileStorePort]
+    task_scheduler_factory: Callable[..., TaskSchedulerPort]
+    vector_store_adapter_factory: Factory[VectorStorePortTextChunks]
+    embedding_generator_adapter_factory: Factory[EmbeddingGeneratorPort]
+
+
+class SQLDBResource:
+    def __init__(
+        self,
+        engine: Engine,
+        session_factory: sessionmaker[Session],
+    ) -> None:
+        self.engine = engine
+        self.session_factory = session_factory
+
+
+class SQLDBResourceOfContexts:
+    def __init__(
+        self,
+        chat_resources: SQLDBResource,
+        cgpt_resources: SQLDBResource,
+        knowledge_resources: SQLDBResource,
+    ) -> None:
+        self.chat_resources = chat_resources
+        self.cgpt_resources = cgpt_resources
+        self.knowledge_resources = knowledge_resources
 
 
 def _make_engine(
@@ -137,45 +168,80 @@ def _make_sessionmaker(engine: Engine) -> sessionmaker[Session]:
     return sessionmaker(engine, expire_on_commit=False)
 
 
-def bootstrap(
-    *,
+def start_all_mappers():
+    chat_start_mappers()
+    cgpt_start_mappers()
+    knowledge_start_mappers()
+
+
+def build_db_resources_and_register_events(
     db_url_chat: str,
     db_url_cgpt: str,
     db_url_knowledge: str,
-    model_name: str,
-    create_schema: bool = False,
-) -> DependenciesContainer:
-    # ----- CHAT -----
-    chat_start_mappers()
+) -> SQLDBResourceOfContexts:
     engine_chat = _make_engine(db_url_chat)
-    session_factory_Chat: sessionmaker[Session] = _make_sessionmaker(engine_chat)
-    if create_schema:
-        chat_metadata.create_all(engine_chat)
-    register_last_message_at_events(session_factory_Chat)
+    session_factory_chat: sessionmaker[Session] = _make_sessionmaker(engine_chat)
+    chat_resources = SQLDBResource(
+        engine=engine_chat,
+        session_factory=session_factory_chat,
+    )
+    register_last_message_at_events(session_factory_chat)
 
+    engine_cgpt = _make_engine(db_url_cgpt)
+    session_factory_cgpt: sessionmaker[Session] = _make_sessionmaker(engine_cgpt)
+    cgpt_resources = SQLDBResource(
+        engine=engine_cgpt,
+        session_factory=session_factory_cgpt,
+    )
+
+    engine_knowledge = _make_engine(db_url_knowledge)
+    session_factory_knowledge: sessionmaker[Session] = _make_sessionmaker(
+        engine_knowledge,
+    )
+    knowledge_resources = SQLDBResource(
+        engine=engine_knowledge,
+        session_factory=session_factory_knowledge,
+    )
+
+    return SQLDBResourceOfContexts(
+        chat_resources=chat_resources,
+        cgpt_resources=cgpt_resources,
+        knowledge_resources=knowledge_resources,
+    )
+
+
+def create_sql_tables(sql_db_resources_of_contexts: SQLDBResourceOfContexts):
+    chat_metadata.create_all(sql_db_resources_of_contexts.chat_resources.engine)
+    cgpt_metadata.create_all(sql_db_resources_of_contexts.cgpt_resources.engine)
+    knowledge_metadata.create_all(
+        sql_db_resources_of_contexts.knowledge_resources.engine
+    )
+
+
+def create_dependencies(
+    sql_db_resources_of_contexts: SQLDBResourceOfContexts,
+    model_name: str,
+    vector_store_is_for_testing: bool,
+    embedding_model: str = "text-embedding-3-small",
+    embedding_dimension: int = 1536,
+    db_url_vectorstore: str = require_env("QDRANT_URL"),
+) -> DependenciesContainer:
     def conversation_uow_factory() -> ConversationUOW:
-        return SQLAlchemyConversationUOW(session_factory_Chat)
+        return SQLAlchemyConversationUOW(
+            sql_db_resources_of_contexts.chat_resources.session_factory
+        )
 
     def conversation_uow_factory_factory() -> Factory[ConversationUOW]:
         return conversation_uow_factory
 
     # Stateless LLM adapter can be a singleton or a factory; both fine.
-    _llm_adapter = OpenaiAdapter(model_name=model_name)
-
     def llm_adapter_factory() -> LlmPort:
-        return _llm_adapter
-
-    # ----- CGPT -----
-    cgpt_start_mappers()
-    engine_cgpt = _make_engine(db_url_cgpt)
-    session_factory_CGPT: sessionmaker[Session] = _make_sessionmaker(engine_cgpt)
-    if create_schema:
-        cgpt_metadata.create_all(engine_cgpt)
-    # If CGPT has its own events, register them here (do NOT reuse chat’s)
-    # register_cgpt_events(SessionMaker_CGPT)
+        return OpenaiAdapter(model_name=model_name)
 
     def cgpt_uow_factory() -> CgptUOW:
-        return SQLAlchemyCgptUOW(session_factory_CGPT)
+        return SQLAlchemyCgptUOW(
+            sql_db_resources_of_contexts.cgpt_resources.session_factory
+        )
 
     def cgpt_uow_factory_factory() -> Factory[CgptUOW]:
         return cgpt_uow_factory
@@ -185,52 +251,57 @@ def bootstrap(
         return CustomGPTInstructionsRetreiverAdapter(cgpt_uow_factory)
 
     def cgpt_queries_adapter_factory() -> CgptQueries:
-        return CgptQueriesImplementation(cgpt_session_factory=session_factory_CGPT)
+        return CgptQueriesImplementation(
+            cgpt_session_factory=sql_db_resources_of_contexts.cgpt_resources.session_factory
+        )
 
     def chat_queries_adapter_factory() -> ChatQueries:
-        return ChatQueriesAdapter(chat_session_factory=session_factory_Chat)
+        return ChatQueriesAdapter(
+            chat_session_factory=sql_db_resources_of_contexts.chat_resources.session_factory
+        )
 
     def conversation_adapter_factory() -> ConversationPort:
         return ConversationAdapter(conv_uow_factory=conversation_uow_factory)
 
-    # ----- KNOWLEDGE CONTEXT -----
-
-    knowledge_start_mappers()
-    engine_knowledge = _make_engine(db_url=db_url_knowledge)
-    session_factory_knowledge: sessionmaker[Session] = _make_sessionmaker(
-        engine_knowledge
-    )
-    if create_schema:
-        knowledge_metadata.create_all(engine_knowledge)
-
     def knowledge_uow_factory_factory() -> Factory[KnowledgeUOW]:
-        return lambda: SQLAlchemyKnowledgeUOW(session_factory=session_factory_knowledge)
-
-    embedding_generator_adapter: EmbeddingGeneratorPort = (
-        EmbeddingGeneratorOpenAIAdapter()
-    )
-
-    embedding_dimension_generator = embedding_generator_adapter.embedding_dimension
-
-    vector_store_adapter: VectorStorePortTextChunks = (
-        QdrantVectorStoreTextChunksAdapter(
-            db_url=require_env("QDRANT_URL"),
-            embedding_dimension=embedding_dimension_generator,
-        )
-    )
-
-    extract_text_from_document_adapter = ExtractTextFromDocumentsAdapter()
-
-    def cgpt_permissions_adapter_factory_factory() -> Factory[
-        CgptPermissionCheckerPort
-    ]:
-        return lambda: CgptPermissionCheckerAdapter(
-            cgpt_session_factory=session_factory_CGPT
+        return lambda: SQLAlchemyKnowledgeUOW(
+            session_factory=sql_db_resources_of_contexts.knowledge_resources.session_factory
         )
 
-    file_storage_adapter: RawFileStorePort = RawFileStoreLocalFsAdapter()
+    def embedding_generator_adapter_factory() -> EmbeddingGeneratorPort:
+        return EmbeddingGeneratorOpenAIAdapter(
+            embedding_dimension=embedding_dimension,
+            embedding_model=embedding_model,
+        )
 
-    task_scheduler_fastapi_backgroundtasks = FastAPITaskSchedulerAdapter()
+    def vector_store_adapter_factory() -> VectorStorePortTextChunks:
+        return QdrantVectorStoreTextChunksAdapter(
+            db_url=db_url_vectorstore,
+            embedding_dimension=embedding_dimension,
+            create_adapter_for_testing_with_test_collection=vector_store_is_for_testing,
+        )
+
+    def extract_text_from_document_adapter_factory() -> ExtractTextFromDocumentPort:
+        return ExtractTextFromDocumentsAdapter()
+
+    def cgpt_permissions_adapter_factory() -> CgptPermissionCheckerPort:
+        return CgptPermissionCheckerAdapter(
+            cgpt_session_factory=sql_db_resources_of_contexts.cgpt_resources.session_factory
+        )
+
+    def retrieve_doc_snippets_adapter_factory() -> RelevantDocSnippetRetreiverPort:
+        return RelevantDocSnippetRetreiverAdapter(
+            vector_store=vector_store_adapter_factory(),
+            cgpt_permission_checker=cgpt_permissions_adapter_factory(),
+            embedding_generator=embedding_generator_adapter_factory(),
+            knowledge_uow_factory=knowledge_uow_factory_factory(),
+        )
+
+    def file_storage_adapter_factory() -> RawFileStorePort:
+        return RawFileStoreLocalFsAdapter()
+
+    def task_scheduler_factory(background_tasks: BackgroundTasks) -> TaskSchedulerPort:
+        return FastAPITaskSchedulerAdapter(background_tasks=background_tasks)
 
     return DependenciesContainer(
         conversation_uow_factory_factory=conversation_uow_factory_factory,
@@ -239,12 +310,44 @@ def bootstrap(
         llm_adapter_factory=llm_adapter_factory,
         cgpt_queries_adapter_factory=cgpt_queries_adapter_factory,
         chat_queries_adapter_factory=chat_queries_adapter_factory,
+        retrieve_doc_snippets_adapter_factory=retrieve_doc_snippets_adapter_factory,
         conversation_adapter_factory=conversation_adapter_factory,
         knowledge_uow_factory_factory=knowledge_uow_factory_factory,
-        extract_text_from_document_adapter=extract_text_from_document_adapter,
-        cgpt_permissions_adapter_factory_factory=cgpt_permissions_adapter_factory_factory,
-        file_storage_adapter=file_storage_adapter,
-        task_scheduler=task_scheduler_fastapi_backgroundtasks,
-        vector_store_adapter=vector_store_adapter,
-        embedding_generator_adapter=embedding_generator_adapter,
+        extract_text_from_document_adapter_factory=extract_text_from_document_adapter_factory,
+        cgpt_permissions_adapter_factory=cgpt_permissions_adapter_factory,
+        file_storage_adapter_factory=file_storage_adapter_factory,
+        task_scheduler_factory=task_scheduler_factory,
+        vector_store_adapter_factory=vector_store_adapter_factory,
+        embedding_generator_adapter_factory=embedding_generator_adapter_factory,
+    )
+
+
+def bootstrap(
+    model_name: str,
+    db_url_chat: str,
+    db_url_cgpt: str,
+    db_url_knowledge: str,
+    create_schema: bool,
+    embedding_model: str,
+    embedding_dimension: int,
+    db_url_vectorstore: str,
+) -> DependenciesContainer:
+    start_all_mappers()
+
+    sql_db_resources_of_contexts = build_db_resources_and_register_events(
+        db_url_chat=db_url_chat,
+        db_url_cgpt=db_url_cgpt,
+        db_url_knowledge=db_url_knowledge,
+    )
+
+    if create_schema:
+        create_sql_tables(sql_db_resources_of_contexts)
+
+    return create_dependencies(
+        sql_db_resources_of_contexts=sql_db_resources_of_contexts,
+        model_name=model_name,
+        embedding_dimension=embedding_dimension,
+        embedding_model=embedding_model,
+        db_url_vectorstore=db_url_vectorstore,
+        vector_store_is_for_testing=False,
     )

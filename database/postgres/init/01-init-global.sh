@@ -5,18 +5,22 @@ set -eu
 # It can access env vars like POSTGRES_PASSWORD, etc.
 : "${CHAT_APP_PASSWORD:?CHAT_APP_PASSWORD is required}"
 : "${CGPT_APP_PASSWORD:?CGPT_APP_PASSWORD is required}"
+: "${KNOWLEDGE_APP_PASSWORD:?KNOWLEDGE_APP_PASSWORD is required}"
 
 # Create users and databases
 psql -v ON_ERROR_STOP=1 \
   --username "$POSTGRES_USER" \
   --dbname "chat_context_db" \
   -v chat_pw="$CHAT_APP_PASSWORD" \
-  -v cgpt_pw="$CGPT_APP_PASSWORD" <<'SQL'
+  -v cgpt_pw="$CGPT_APP_PASSWORD" \
+  -v knowledge_pw="$KNOWLEDGE_APP_PASSWORD" <<'SQL'
 
   CREATE ROLE chat_context_app LOGIN PASSWORD :'chat_pw';
   CREATE ROLE cgpt_context_app LOGIN PASSWORD :'cgpt_pw';
+  CREATE ROLE knowledge_context_app LOGIN PASSWORD :'knowledge_pw';
 
   CREATE DATABASE cgpt_context_db;
+  CREATE DATABASE knowledge_context_db;
 SQL
 # -v and <<'SQL' to prevent leakage - no problems with special characters like this
 
@@ -33,6 +37,17 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "chat_context_db" <
 
 SQL
 # pg_catalog must be added to guarantee functionality
+
+# Set up database knowledge_context_db
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "knowledge_context_db" <<'SQL'
+  REVOKE CONNECT ON DATABASE knowledge_context_db FROM PUBLIC;
+  REVOKE ALL ON SCHEMA public FROM PUBLIC;  
+  GRANT CONNECT ON DATABASE knowledge_context_db TO knowledge_context_app;
+  
+  CREATE SCHEMA knowledge_schema;
+  ALTER ROLE knowledge_context_app SET search_path = knowledge_schema, pg_catalog;
+  GRANT USAGE, CREATE ON SCHEMA knowledge_schema TO knowledge_context_app;
+SQL
 
 # Set up database cgpt_context_db
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "cgpt_context_db" <<'SQL'
