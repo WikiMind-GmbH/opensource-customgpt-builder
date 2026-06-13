@@ -10,6 +10,7 @@ from src.contexts.customGPTs.application.service_functions import (
     delete_custom_gpt_service,
     edit_custom_gpt_service,
 )
+from src.contexts.shared.typing_aliases import Factory
 from src.interface.http.composition import dependencies_container
 from src.interface.http.schemas.common_command import CommandResult
 from src.interface.http.schemas.customGPTs.customGPT_commands import (
@@ -20,7 +21,8 @@ from src.interface.http.schemas.customGPTs.customGPT_commands import (
 dependencies_container: DependenciesContainer = dependencies_container
 
 customgpt_commands_router = APIRouter(
-    prefix="/customgpts", tags=["customGPTs: Commands"]
+    prefix="/customgpts",
+    tags=["customGPTs: Commands"],
 )
 
 
@@ -30,29 +32,39 @@ customgpt_commands_router = APIRouter(
 )
 def delete_custom_gpt_endpoint(
     gpt_id: str,
-    uow: Annotated[CgptUOW, Depends(dependencies_container.cgpt_uow_factory)],
+    uow_factory: Annotated[
+        Factory[CgptUOW],
+        Depends(dependencies_container.cgpt_uow_factory_factory),
+    ],
     conv_adapter: Annotated[
-        ConversationPort, Depends(dependencies_container.conversation_adapter_factory)
+        ConversationPort,
+        Depends(dependencies_container.conversation_adapter_factory),
     ],
 ) -> CommandResult:
-    delete_custom_gpt_service(uow, gpt_id, conv_adapter)
+    delete_custom_gpt_service(
+        uow_factory=uow_factory,
+        cgpt_id=gpt_id,
+        conv_adapter=conv_adapter,
+    )
     return CommandResult(resource_id=gpt_id, message="Succesfully deleted")
 
 
-# WIP
 @customgpt_commands_router.post(
     "/create-custom-gpt",
     operation_id="createCustomGpt",
 )
 def create_custom_gpt(
     custom_gpt_infos: CustomGptToCreate,
-    uow: Annotated[CgptUOW, Depends(dependencies_container.cgpt_uow_factory)],
+    uow_factory: Annotated[
+        Factory[CgptUOW],
+        Depends(dependencies_container.cgpt_uow_factory_factory),
+    ],
 ) -> CommandResult:
     cgpt_id: str = create_custom_gpt_service(
         name=custom_gpt_infos.custom_gpt_name,
         instructions=custom_gpt_infos.custom_gpt_instructions,
         description=custom_gpt_infos.custom_gpt_description,
-        uow=uow,
+        uow_factory=uow_factory,
     )
     return CommandResult(
         resource_id=cgpt_id,
@@ -66,14 +78,17 @@ def create_custom_gpt(
 )
 def edit_custom_gpt(
     custom_gpt_infos: CustomGptToEdit,
-    uow: Annotated[CgptUOW, Depends(dependencies_container.cgpt_uow_factory)],
+    uow_factory: Annotated[
+        Factory[CgptUOW],
+        Depends(dependencies_container.cgpt_uow_factory_factory),
+    ],
 ) -> CommandResult:
     edit_custom_gpt_service(
         id=custom_gpt_infos.custom_gpt_id,
         name=custom_gpt_infos.custom_gpt_name,
         instructions=custom_gpt_infos.custom_gpt_instructions,
         description=custom_gpt_infos.custom_gpt_description,
-        uow=uow,
+        uow_factory=uow_factory,
     )
     return CommandResult(
         resource_id=custom_gpt_infos.custom_gpt_id,

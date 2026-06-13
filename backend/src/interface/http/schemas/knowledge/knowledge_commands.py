@@ -25,6 +25,12 @@ class UploadFileForKnowledgeContext(BaseModel):
             )
         return value
 
+    @property
+    def filename(self) -> str:
+        if self.uploadFile.filename is None:
+            raise ValueError("Filename must not be empty")
+        return self.uploadFile.filename
+
     # @field_validator("uploadFile", mode="after")
     # @classmethod
     # def file_size_ok(cls, value: UploadFile) -> UploadFile:

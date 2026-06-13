@@ -20,6 +20,10 @@ class FakeVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
         self._chunks: dict[UUID, ChunkEmbeddingAndMetadataDTO] = {}
 
     @property
+    def collection_name(self) -> str:
+        return "fake_collection"
+
+    @property
     def embedding_dimension(self) -> int:
         return self._embedding_dimension
 

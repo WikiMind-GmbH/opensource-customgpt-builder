@@ -45,6 +45,9 @@ class VectorStorePortTextChunks(Protocol):
         """Dimension expected of the vector store in its collections"""
         ...
 
+    @property
+    def collection_name(self) -> str: ...
+
     def return_relevant_text_snippets_ids_and_text(
         self,
         embedding_to_match: list[float],

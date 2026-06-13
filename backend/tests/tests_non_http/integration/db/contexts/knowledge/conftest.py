@@ -18,7 +18,7 @@ from src.contexts.knowledge.application.ports.embedding_generator_port import (
 from src.contexts.knowledge.infrastructure.adapters.embedding_generator_openai_adapter import (
     EmbeddingGeneratorOpenAIAdapter,
 )
-from src.contexts.knowledge.infrastructure.adapters.vector_store_adapter import (
+from src.contexts.knowledge.infrastructure.adapters.qdrant_vector_store_adapter import (
     QdrantVectorStoreTextChunksAdapter,
 )
 from src.contexts.knowledge.infrastructure.db.orm import metadata as knowledge_metadata

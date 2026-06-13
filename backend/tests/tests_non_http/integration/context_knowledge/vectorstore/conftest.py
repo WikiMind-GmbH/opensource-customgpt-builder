@@ -4,7 +4,7 @@ import pytest
 from qdrant_client import QdrantClient
 
 from backend_spanning_helpers import require_env
-from src.contexts.knowledge.infrastructure.adapters.vector_store_adapter import (
+from src.contexts.knowledge.infrastructure.adapters.qdrant_vector_store_adapter import (
     QdrantVectorStoreTextChunksAdapter,
 )
 

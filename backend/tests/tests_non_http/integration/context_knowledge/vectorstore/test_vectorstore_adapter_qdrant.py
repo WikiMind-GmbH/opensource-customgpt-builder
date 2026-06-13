@@ -5,7 +5,7 @@ from src.contexts.knowledge.application.ports.vector_store_port import (
     MetadataDTO,
     ParentOrChildDTO,
 )
-from src.contexts.knowledge.infrastructure.adapters.vector_store_adapter import (
+from src.contexts.knowledge.infrastructure.adapters.qdrant_vector_store_adapter import (
     QdrantVectorStoreTextChunksAdapter,
 )
 

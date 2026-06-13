@@ -1,238 +1,173 @@
 from collections.abc import Generator
+from dataclasses import replace
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import Connection, Engine, NullPool, RootTransaction, create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from qdrant_client import QdrantClient
+from sqlalchemy import Connection, NullPool, RootTransaction, create_engine
+from sqlalchemy.orm import sessionmaker
 
 from backend_spanning_helpers import require_env
-from src.bootstrap import DependenciesContainer
-from src.contexts.chat.application.ports.uow import ConversationUOW
-from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
-    ChatQueriesAdapter,
+from src.bootstrap import (
+    DependenciesContainer,
+    SQLDBResource,
+    SQLDBResourceOfContexts,
+    create_dependencies,
 )
-from src.contexts.chat.infrastructure.adapters.conv_adapter import ConversationAdapter
 from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
 from src.contexts.chat.infrastructure.db.orm import metadata as chat_metadata
-from src.contexts.chat.infrastructure.db.uow_implementations import (
-    SQLAlchemyConversationUOW,
-)
-from src.contexts.customGPTs.application.ports.conversation_port import ConversationPort
-from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
-from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
-    CgptQueriesImplementation,
-)
-from src.contexts.customGPTs.infrastructure.adapters.retreive_instructions import (
-    CustomGPTInstructionsRetreiverAdapter,
-)
 from src.contexts.customGPTs.infrastructure.db.orm import metadata as cgpt_metadata
-from src.contexts.customGPTs.infrastructure.db.uow_implementations import (
-    SQLAlchemyCgptUOW,
-)
-from src.contexts.shared.typing_aliases import Factory
+from src.contexts.knowledge.infrastructure.db.orm import metadata as knowledge_metadata
 from tests.fake_adapters.context_chat_port.fake_llm_adapter import FakeLLMAdapter
 
-# from __future__ import annotations
-
-# # --------------  ConversationUOW  -----------------
-
 
 @pytest.fixture()
-def conv_engine() -> (
-    Generator[Engine, None, None]
-):  # importing app <- importst deps <- runs bootstrap <- runs mappers : No mapping possible/needed
-    eng = create_engine(
-        require_env("DB_URL_CHAT_TEST"), poolclass=NullPool
-    )  # No connection pooling
-    chat_metadata.create_all(eng)
-    yield eng
-    eng.dispose()
+def sql_db_resources_of_contexts() -> Generator[SQLDBResourceOfContexts, None, None]:
+    chat_engine = create_engine(require_env("DB_URL_CHAT_TEST"), poolclass=NullPool)
+    cgpt_engine = create_engine(require_env("DB_URL_CGPT_TEST"), poolclass=NullPool)
+    knowledge_engine = create_engine(
+        require_env("DB_URL_KNOWLEDGE_TEST"),
+        poolclass=NullPool,
+    )
 
+    chat_metadata.create_all(chat_engine)
+    cgpt_metadata.create_all(cgpt_engine)
+    knowledge_metadata.create_all(knowledge_engine)
 
-@pytest.fixture()
-def conv_session_factory(
-    conv_engine: Engine,
-) -> Generator[sessionmaker[Session], None, None]:
-    """
-    Provides a sessionmaker that creates NEW sessions, all bound to the same
-    connection+outer transaction for this test.
-    """
-    connection: Connection = conv_engine.connect()
-    outer_tx: RootTransaction = connection.begin()
+    chat_connection: Connection = chat_engine.connect()
+    cgpt_connection: Connection = cgpt_engine.connect()
+    knowledge_connection: Connection = knowledge_engine.connect()
 
-    SessionFactory = sessionmaker(
-        bind=connection,
+    chat_outer_tx: RootTransaction = chat_connection.begin()
+    cgpt_outer_tx: RootTransaction = cgpt_connection.begin()
+    knowledge_outer_tx: RootTransaction = knowledge_connection.begin()
+
+    chat_session_factory = sessionmaker(
+        bind=chat_connection,
         expire_on_commit=False,
         join_transaction_mode="create_savepoint",
     )
-    register_last_message_at_events(SessionFactory)
-
-    try:
-        yield SessionFactory
-    finally:
-        outer_tx.rollback()
-        connection.close()
-
-
-@pytest.fixture()
-def conv_uow_factory(
-    conv_session_factory: sessionmaker[Session],
-) -> Factory[SQLAlchemyConversationUOW]:
-    return lambda: SQLAlchemyConversationUOW(session_factory=conv_session_factory)
-
-
-@pytest.fixture()
-def chat_query_factory(
-    conv_session_factory: sessionmaker[Session],
-) -> Factory[ChatQueriesAdapter]:
-    return lambda: ChatQueriesAdapter(chat_session_factory=conv_session_factory)
-
-
-@pytest.fixture()
-def conversation_adapter_factory(
-    conv_uow_factory: Factory[ConversationUOW],
-) -> Factory[ConversationPort]:
-    return lambda: ConversationAdapter(conv_uow_factory=conv_uow_factory)
-
-
-# # --------------  CustomGPTInstructionsRetreiver  -----------------
-
-
-@pytest.fixture()
-def cgpt_engine() -> (
-    Generator[Engine, None, None]
-):  # importing app <- importst deps <- runs bootstrap <- runs mappers : No mapping possible/needed
-    eng = create_engine(
-        require_env("DB_URL_CGPT_TEST"), poolclass=NullPool
-    )  # No connection pooling
-    cgpt_metadata.create_all(eng)
-    yield eng
-    eng.dispose()
-
-
-@pytest.fixture()
-def cgpt_session_factory(
-    cgpt_engine: Engine,
-) -> Generator[sessionmaker[Session], None, None]:
-    """
-    Provides a sessionmaker that creates NEW sessions, all bound to the same
-    connection+outer transaction for this test.
-    """
-    connection: Connection = cgpt_engine.connect()
-    outer_tx: RootTransaction = connection.begin()
-
-    SessionFactory = sessionmaker(
-        bind=connection,
+    cgpt_session_factory = sessionmaker(
+        bind=cgpt_connection,
+        expire_on_commit=False,
+        join_transaction_mode="create_savepoint",
+    )
+    knowledge_session_factory = sessionmaker(
+        bind=knowledge_connection,
         expire_on_commit=False,
         join_transaction_mode="create_savepoint",
     )
 
+    register_last_message_at_events(chat_session_factory)
+
+    sql_db_resources = SQLDBResourceOfContexts(
+        chat_resources=SQLDBResource(
+            engine=chat_engine,
+            session_factory=chat_session_factory,
+        ),
+        cgpt_resources=SQLDBResource(
+            engine=cgpt_engine,
+            session_factory=cgpt_session_factory,
+        ),
+        knowledge_resources=SQLDBResource(
+            engine=knowledge_engine,
+            session_factory=knowledge_session_factory,
+        ),
+    )
+
     try:
-        yield SessionFactory
+        yield sql_db_resources
     finally:
-        outer_tx.rollback()
-        connection.close()
+        knowledge_outer_tx.rollback()
+        cgpt_outer_tx.rollback()
+        chat_outer_tx.rollback()
+
+        knowledge_connection.close()
+        cgpt_connection.close()
+        chat_connection.close()
+
+        knowledge_engine.dispose()
+        cgpt_engine.dispose()
+        chat_engine.dispose()
 
 
 @pytest.fixture()
-def cgpt_uow_factory_factory(
-    cgpt_session_factory: sessionmaker[Session],
-) -> Factory[Factory[CgptUOW]]:
-    return lambda: lambda: SQLAlchemyCgptUOW(session_factory=cgpt_session_factory)
+def test_dependencies_container(
+    sql_db_resources_of_contexts: SQLDBResourceOfContexts,
+) -> Generator[DependenciesContainer, None, None]:
+    db_url_vectorstore = require_env("QDRANT_URL")
 
-
-@pytest.fixture()
-def cgpt_retreiver_factory(
-    cgpt_uow_factory: Factory[CgptUOW],
-) -> Factory[CustomGPTInstructionsRetreiverAdapter]:
-    return lambda: CustomGPTInstructionsRetreiverAdapter(
-        cgpt_uow_factory=cgpt_uow_factory
+    dependencies = create_dependencies(
+        sql_db_resources_of_contexts=sql_db_resources_of_contexts,
+        model_name="fake-model",
+        vector_store_is_for_testing=True,
+        db_url_vectorstore=db_url_vectorstore,
     )
 
+    collection_name = dependencies.vector_store_adapter_factory().collection_name
 
-@pytest.fixture()
-def cgpt_query_factory(
-    cgpt_session_factory: Factory[Session],
-) -> Factory[CgptQueriesImplementation]:
-    return lambda: CgptQueriesImplementation(cgpt_session_factory=cgpt_session_factory)
-
-
-# --------------  LLM Adapter  -----------------
-
-
-@pytest.fixture()
-def fake_llm_adapter_factory() -> Factory[FakeLLMAdapter]:
-    return lambda: FakeLLMAdapter()
-
-
-@pytest.fixture()
-def test_deps(
-    conv_uow_factory_factory: Factory[Factory[ConversationUOW]],
-    cgpt_uow_factory: Factory[CgptUOW],
-    cgpt_retreiver_factory: Factory[CustomGPTInstructionsRetreiverAdapter],
-    fake_llm_adapter_factory: Factory[FakeLLMAdapter],
-    cgpt_query_factory: Factory[CgptQueriesImplementation],
-    chat_query_factory: Factory[ChatQueriesAdapter],
-    conversation_adapter_factory: Factory[ConversationPort],
-) -> DependenciesContainer:
-    test_deps_container: DependenciesContainer = DependenciesContainer(
-        conversation_uow_factory_factory=conv_uow_factory_factory,
-        cgpt_uow_factory=cgpt_uow_factory,
-        cgpt_retreiver_adapter_factory=cgpt_retreiver_factory,
-        llm_adapter_factory=fake_llm_adapter_factory,
-        cgpt_queries_adapter_factory=cgpt_query_factory,
-        chat_queries_adapter_factory=chat_query_factory,
-        conversation_adapter_factory=conversation_adapter_factory,
+    test_dependencies = replace(
+        dependencies,
+        llm_adapter_factory=lambda: FakeLLMAdapter(),
     )
-    return test_deps_container
+
+    try:
+        yield test_dependencies
+    finally:
+        clean_up_client = QdrantClient(url=db_url_vectorstore)
+        try:
+            if clean_up_client.collection_exists(collection_name):
+                clean_up_client.delete_collection(collection_name=collection_name)
+        finally:
+            clean_up_client.close()
 
 
 @pytest.fixture()
-def test_client(test_deps: DependenciesContainer):
+def test_client_fake_adapters(
+    test_dependencies_container: DependenciesContainer,
+) -> Generator[TestClient, None, None]:
     from src.interface.http.app import app
     from src.interface.http.composition import dependencies_container
 
+    original_overrides = app.dependency_overrides.copy()
+
     app.dependency_overrides[
         dependencies_container.conversation_uow_factory_factory
-    ] = test_deps.conversation_uow_factory_factory
-    app.dependency_overrides[dependencies_container.cgpt_uow_factory] = (
-        test_deps.cgpt_uow_factory
+    ] = test_dependencies_container.conversation_uow_factory_factory
+
+    app.dependency_overrides[dependencies_container.cgpt_uow_factory_factory] = (
+        test_dependencies_container.cgpt_uow_factory_factory
     )
+
     app.dependency_overrides[dependencies_container.cgpt_retreiver_adapter_factory] = (
-        test_deps.cgpt_retreiver_adapter_factory
+        test_dependencies_container.cgpt_retreiver_adapter_factory
     )
+
     app.dependency_overrides[dependencies_container.llm_adapter_factory] = (
-        test_deps.llm_adapter_factory
+        test_dependencies_container.llm_adapter_factory
     )
+
     app.dependency_overrides[dependencies_container.cgpt_queries_adapter_factory] = (
-        test_deps.cgpt_queries_adapter_factory
+        test_dependencies_container.cgpt_queries_adapter_factory
     )
+
     app.dependency_overrides[dependencies_container.chat_queries_adapter_factory] = (
-        test_deps.chat_queries_adapter_factory
+        test_dependencies_container.chat_queries_adapter_factory
     )
+
     app.dependency_overrides[dependencies_container.conversation_adapter_factory] = (
-        test_deps.conversation_adapter_factory
+        test_dependencies_container.conversation_adapter_factory
     )
-    test_app: TestClient = TestClient(app)
-    return test_app
 
+    app.dependency_overrides[dependencies_container.knowledge_uow_factory_factory] = (
+        test_dependencies_container.knowledge_uow_factory_factory
+    )
 
-# @pytest.fixture()
-# def test_client(
-#     conv_uow_factory,
-#     cgpt_uow_factory,
-#     cgpt_retreiver_factory,
-#     fake_llm_adapter_factory,
-#     cgpt_query_factory,
-#     chat_query_factory,
-# )->TestClient:
-#     from src.interface.http.deps import deps
-#     from src.interface.http.app import app
-#     app.dependency_overrides[deps.conversation_uow_factory] = conv_uow_factory
-#     app.dependency_overrides[deps.cgpt_uow_factory] = cgpt_uow_factory
-#     app.dependency_overrides[deps.cgpt_retreiver_adapter_factory] = cgpt_retreiver_factory
-#     app.dependency_overrides[deps.llm_adapter_factory] = fake_llm_adapter_factory
-#     app.dependency_overrides[deps.cgpt_queries_adapter_factory] = cgpt_query_factory
-#     app.dependency_overrides[deps.chat_queries_adapter_factory] = chat_query_factory
-#     test_app: TestClient = TestClient(app)
-#     return test_app
+    app.dependency_overrides[
+        dependencies_container.cgpt_permissions_adapter_factory
+    ] = test_dependencies_container.cgpt_permissions_adapter_factory
+
+    with TestClient(app) as test_client:
+        yield test_client
+
+    app.dependency_overrides = original_overrides

@@ -1,7 +1,9 @@
 from fastapi import APIRouter
 
 from src.bootstrap import DependenciesContainer
-from src.contexts.knowledge.application.ports.cgpt_permissions_port import CgptPermissionCheckerPort
+from src.contexts.knowledge.application.ports.cgpt_permissions_port import (
+    CgptPermissionCheckerPort,
+)
 from src.contexts.knowledge.application.ports.knowledge_db_queries import DocumentStatus
 from src.interface.http.composition import dependencies_container
 
@@ -11,17 +13,17 @@ knowledge_queries_router = APIRouter(prefix="/knowledge", tags=["knowledge: Quer
 
 dependencies_container: DependenciesContainer = dependencies_container
 
+
 @knowledge_queries_router.get(
     "/check_status_of_document",
-    opertation_id = "checkStatusOfDocument",
+    operation_id="checkStatusOfDocument",
 )
 def check_status_of_document(
     cgpt_permission_adapter: CgptPermissionCheckerPort,
     cgpt_id: str,
-)-> DocumentStatus:
-    # check permissions
-    
-    
+) -> DocumentStatus:
+    raise NotImplementedError
+
 
 # @customgpt_queries_router.get(
 #     "/retreive-all-custom-gpts",

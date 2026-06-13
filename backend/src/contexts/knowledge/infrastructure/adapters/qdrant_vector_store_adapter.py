@@ -33,10 +33,19 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
             else "TestTextChunksCollection"
         )
         self._client = QdrantClient(url=db_url)
+        self._ensure_collection_exists()
+
+    def _ensure_collection_exists(self) -> None:
+        if self._client.collection_exists(
+            collection_name=self._collection_name,
+        ):
+            return
+
         self._client.create_collection(
             collection_name=self._collection_name,
             vectors_config=VectorParams(
-                size=self._embedding_dimension, distance=Distance.COSINE
+                size=self._embedding_dimension,
+                distance=Distance.COSINE,
             ),
         )
 
@@ -205,7 +214,7 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
         return text_chunk_return_dtos
 
     def get_metadata_of_chunk(self, id_of_chunk: str) -> MetadataDTO:
-        return None
+        raise NotImplementedError
 
     def change_metadata_of_chunk(
         self, id_of_chunk: str, new_metadata: MetadataDTO

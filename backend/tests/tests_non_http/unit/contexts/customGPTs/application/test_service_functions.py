@@ -31,7 +31,9 @@ def test_delete_custom_gpt_service_deltes_only_existing_customgpt_otherwise_thro
         cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)
         assert cgpt.id == cgpt_id
     delete_custom_gpt_service(
-        uow=uow, cgpt_id=cgpt_id, conv_adapter=conversation_adapter_factory()
+        uow_factory=cgpt_uow_factory,
+        cgpt_id=cgpt_id,
+        conv_adapter=conversation_adapter_factory(),
     )
     # test: if delete worked
     with pytest.raises(CgptNotFound):
@@ -40,7 +42,9 @@ def test_delete_custom_gpt_service_deltes_only_existing_customgpt_otherwise_thro
     # test: can't delete non existing gpt
     with pytest.raises(CgptNotFound):
         delete_custom_gpt_service(
-            uow=uow, cgpt_id=cgpt_id, conv_adapter=conversation_adapter_factory()
+            uow_factory=cgpt_uow_factory,
+            cgpt_id=cgpt_id,
+            conv_adapter=conversation_adapter_factory(),
         )
 
 
@@ -85,7 +89,7 @@ def test_delete_custom_gpt_service_deletes_corresponding_conversation(
 
     # delete
     delete_custom_gpt_service(
-        uow=cgpt_uow_factory(),
+        uow_factory=cgpt_uow_factory,
         cgpt_id=cgpt_id,
         conv_adapter=conversation_adapter_factory(),
     )
@@ -111,7 +115,7 @@ def test_create_custom_gpt_service(cgpt_uow_factory: Factory[CgptUOW]):
         name=name,
         description=description,
         instructions=instructions,
-        uow=cgpt_uow_factory(),
+        uow_factory=cgpt_uow_factory,
     )
     with cgpt_uow_factory() as uow:
         cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)
@@ -123,7 +127,7 @@ def test_create_custom_gpt_service(cgpt_uow_factory: Factory[CgptUOW]):
         name=name,
         description=None,
         instructions=instructions,
-        uow=cgpt_uow_factory(),
+        uow_factory=cgpt_uow_factory,
     )
     with cgpt_uow_factory() as uow:
         cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id_2)
@@ -144,7 +148,7 @@ def test_edit_custom_gpt_service_overwrites_old_values(
         name="A",
         instructions="A",
         description="A",
-        uow=cgpt_uow_factory(),
+        uow_factory=cgpt_uow_factory,
     )
     with cgpt_uow_factory() as uow:
         cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)

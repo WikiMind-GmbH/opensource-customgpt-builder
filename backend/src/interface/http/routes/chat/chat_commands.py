@@ -49,7 +49,7 @@ def send_user_message(
     ],
     retrieve_doc_snippets: Annotated[
         RelevantDocSnippetRetreiverPort,
-        Depends(dependencies_container.retrieve_doc_snippets),
+        Depends(dependencies_container.retrieve_doc_snippets_adapter_factory),
     ],
 ) -> AssistantMessage:
     if isinstance(request, NewChatRequest):
