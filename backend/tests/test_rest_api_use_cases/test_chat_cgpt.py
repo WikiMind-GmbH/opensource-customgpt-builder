@@ -21,10 +21,10 @@ from src.interface.http.schemas.customGPTs.customGPT_queries import (
 
 
 def test_create_cgpt_start_conv_chat_then_delete_cgpt(
-    test_client_fake_adapters: TestClient,
+    test_client_fake_llm_adapter: TestClient,
 ):
     # Currently no conversations
-    res: httpx.Response = test_client_fake_adapters.get("/chat/get-chat-summaries")
+    res: httpx.Response = test_client_fake_llm_adapter.get("/chat/get-chat-summaries")
     assert res.status_code == 200, res.text
     summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(
         res.json()
@@ -41,7 +41,7 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
         custom_gpt_description=desc,
         custom_gpt_instructions=instructions,
     )
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/customgpts/create-custom-gpt", json=jsonable_encoder(cgpt_to_create)
     )
     assert res.status_code == 200, res.text
@@ -55,7 +55,7 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
     new_chat_req: NewChatRequest = NewChatRequest(
         request_message=request_message_1, custom_gpt_id=cgpt_id, use_rag=False
     )
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/chat/send-user-message", json=jsonable_encoder(new_chat_req)
     )
     assert res.status_code == 200, res.text
@@ -69,7 +69,7 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
     continue_chat_req: ContinueChatRequest = ContinueChatRequest(
         request_message=request_message_2, conversation_id=conv_id, use_rag=False
     )
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/chat/send-user-message", json=jsonable_encoder(continue_chat_req)
     )
     assert res.status_code == 200, res.text
@@ -81,7 +81,7 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
     )  # New adapter from factory per endpoint -> same message
 
     # Check conversation: Msgs, cgpt_id correct
-    res: httpx.Response = test_client_fake_adapters.get(
+    res: httpx.Response = test_client_fake_llm_adapter.get(
         "/chat/chat-history-by-id", params={"chat_id": conv_id}
     )
     assert res.status_code == 200, res.text
@@ -96,7 +96,7 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
     ]
 
     # ----------CONVERSATION WITH OTHER CGPT----------------------------------------------
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/customgpts/create-custom-gpt", json=jsonable_encoder(cgpt_to_create)
     )
     assert res.status_code == 200, res.text
@@ -107,7 +107,7 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
     new_chat_req: NewChatRequest = NewChatRequest(
         request_message=request_message_1, custom_gpt_id=cgpt_id_2, use_rag=False
     )
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/chat/send-user-message", json=jsonable_encoder(new_chat_req)
     )
     assert res.status_code == 200, res.text
@@ -120,7 +120,7 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
     new_chat_req: NewChatRequest = NewChatRequest(
         request_message=request_message_1, custom_gpt_id=None, use_rag=False
     )
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/chat/send-user-message", json=jsonable_encoder(new_chat_req)
     )
     assert res.status_code == 200, res.text
@@ -129,7 +129,7 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
     conv_id_no_cgpt: str = assistant_message.conversation_id
 
     # ----------CONFIRM: ALL CONV ARE LISTED IN ORDER OF LAST MSG-----------------
-    res: httpx.Response = test_client_fake_adapters.get("/chat/get-chat-summaries")
+    res: httpx.Response = test_client_fake_llm_adapter.get("/chat/get-chat-summaries")
     assert res.status_code == 200, res.text
     summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(
         res.json()
@@ -141,13 +141,13 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
     # ----------CONFIRM: DELETING CGPT (ONLY) DELETES CONV WITH THAT CGPT-----------------
 
     # Delete cgpt 1 via cgpt endpoint
-    res: httpx.Response = test_client_fake_adapters.delete(
+    res: httpx.Response = test_client_fake_llm_adapter.delete(
         "/customgpts/delete-custom-gpt", params={"gpt_id": cgpt_id}
     )
     assert res.status_code == 200, res.text
 
     # Deleting cgpt should delete the conv
-    res: httpx.Response = test_client_fake_adapters.get("/chat/get-chat-summaries")
+    res: httpx.Response = test_client_fake_llm_adapter.get("/chat/get-chat-summaries")
     assert res.status_code == 200, res.text
     summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(
         res.json()
@@ -159,11 +159,11 @@ def test_create_cgpt_start_conv_chat_then_delete_cgpt(
 
 
 def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(
-    test_client_fake_adapters: TestClient,
+    test_client_fake_llm_adapter: TestClient,
 ):
     # --- Create initial conversation with two messages ---
     # 1) first message -> creates conversation
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/chat/send-user-message",
         json=jsonable_encoder(
             NewChatRequest(request_message="u1", custom_gpt_id=None, use_rag=False)
@@ -175,7 +175,7 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(
     a1 = am1.response_message.message
 
     # 2) second message -> continue same conversation
-    res = test_client_fake_adapters.post(
+    res = test_client_fake_llm_adapter.post(
         "/chat/send-user-message",
         json=jsonable_encoder(
             ContinueChatRequest(
@@ -188,7 +188,7 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(
     a2 = am2.response_message.message
 
     # --- Check: chat history is ordered NEWEST → OLDEST ---
-    res = test_client_fake_adapters.get(
+    res = test_client_fake_llm_adapter.get(
         "/chat/chat-history-by-id", params={"chat_id": conv_id_initial}
     )
     assert res.status_code == 200, res.text
@@ -197,7 +197,7 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(
     assert [m.message for m in history_initial.messages] == ["u1", a1, "u2", a2]
 
     # --- Create second conversation with a single (newer) message ---
-    res = test_client_fake_adapters.post(
+    res = test_client_fake_llm_adapter.post(
         "/chat/send-user-message",
         json=jsonable_encoder(
             NewChatRequest(request_message="uX", custom_gpt_id=None, use_rag=False)
@@ -207,7 +207,7 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(
     conv_id_other = AssistantMessage.model_validate(res.json()).conversation_id
 
     # --- Summaries ordered by last_message_at ---
-    res = test_client_fake_adapters.get("/chat/get-chat-summaries")
+    res = test_client_fake_llm_adapter.get("/chat/get-chat-summaries")
     assert res.status_code == 200, res.text
     summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(
         res.json()
@@ -215,7 +215,7 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(
     assert [s.chat_id for s in summaries] == [conv_id_other, conv_id_initial], summaries
 
     # --- Add a new message to the initial conversation to make it the newest ---
-    res = test_client_fake_adapters.post(
+    res = test_client_fake_llm_adapter.post(
         "/chat/send-user-message",
         json=jsonable_encoder(
             ContinueChatRequest(
@@ -227,7 +227,7 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(
     # a3 = AssistantMessage.model_validate(res.json()).response_message.message
 
     # --- Summaries should now flip: [initial (newest), other] ---
-    res = test_client_fake_adapters.get("/chat/get-chat-summaries")
+    res = test_client_fake_llm_adapter.get("/chat/get-chat-summaries")
     assert res.status_code == 200, res.text
     summaries: list[ChatSummary] = TypeAdapter(list[ChatSummary]).validate_python(
         res.json()
@@ -236,7 +236,7 @@ def test_conv_messages_ordered_by_creation_chat_summaries_by_last_message(
 
 
 def test_cgpt_creation_editing_querying_functionality(
-    test_client_fake_adapters: TestClient,
+    test_client_fake_llm_adapter: TestClient,
 ):
     # Create three cgpts -every one except the second one with the same parameters
     # list them with retreive_all_custom_gpts -order should be third, second first
@@ -252,7 +252,7 @@ def test_cgpt_creation_editing_querying_functionality(
         custom_gpt_description="desc",
         custom_gpt_instructions="inst",
     )
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/customgpts/create-custom-gpt", json=jsonable_encoder(create_A)
     )
     assert res.status_code == 200, res.text
@@ -264,7 +264,7 @@ def test_cgpt_creation_editing_querying_functionality(
         custom_gpt_description="desc_B",
         custom_gpt_instructions="inst_B",
     )
-    res = test_client_fake_adapters.post(
+    res = test_client_fake_llm_adapter.post(
         "/customgpts/create-custom-gpt", json=jsonable_encoder(create_B)
     )
     assert res.status_code == 200, res.text
@@ -277,7 +277,7 @@ def test_cgpt_creation_editing_querying_functionality(
         custom_gpt_description="desc",
         custom_gpt_instructions="inst",
     )
-    res = test_client_fake_adapters.post(
+    res = test_client_fake_llm_adapter.post(
         "/customgpts/create-custom-gpt", json=jsonable_encoder(create_C)
     )
     assert res.status_code == 200, res.text
@@ -285,7 +285,7 @@ def test_cgpt_creation_editing_querying_functionality(
 
     # ---------- List: expect created_at DESC -> [C, B, A] ----------
     assert None not in [A_id, B_id, C_id]
-    res = test_client_fake_adapters.get("/customgpts/retreive-all-custom-gpts")
+    res = test_client_fake_llm_adapter.get("/customgpts/retreive-all-custom-gpts")
     assert res.status_code == 200, res.text
     overviews: list[CustomGPTOverviewSchema] = TypeAdapter(
         list[CustomGPTOverviewSchema]
@@ -294,7 +294,7 @@ def test_cgpt_creation_editing_querying_functionality(
     assert ids[:3] == [C_id, B_id, A_id], ids
 
     # ---------- Get B by id; verify distinct values ----------
-    res = test_client_fake_adapters.get(
+    res = test_client_fake_llm_adapter.get(
         "/customgpts/get-custom-gpt-infos", params={"custom_gpt_id": B_id}
     )
     assert res.status_code == 200, res.text
@@ -311,20 +311,20 @@ def test_cgpt_creation_editing_querying_functionality(
         custom_gpt_description="desc",
         custom_gpt_instructions="inst",
     )
-    res = test_client_fake_adapters.post(
+    res = test_client_fake_llm_adapter.post(
         "/customgpts/edit-custom-gpt", json=jsonable_encoder(edit_B)
     )
     assert res.status_code == 200, res.text
     assert CommandResult.model_validate(res.json()).resource_id == B_id
 
     # ---------- Delete C ----------
-    res = test_client_fake_adapters.delete(
+    res = test_client_fake_llm_adapter.delete(
         "/customgpts/delete-custom-gpt", params={"gpt_id": C_id}
     )
     assert res.status_code == 200, res.text
 
     # ---------- List again: only A and B remain (still ordered by created_at DESC) ----------
-    res = test_client_fake_adapters.get("/customgpts/retreive-all-custom-gpts")
+    res = test_client_fake_llm_adapter.get("/customgpts/retreive-all-custom-gpts")
     assert res.status_code == 200, res.text
     overviews = TypeAdapter(list[CustomGPTOverviewSchema]).validate_python(res.json())
     remaining_ids = [o.custom_gpt_id for o in overviews]
@@ -332,13 +332,13 @@ def test_cgpt_creation_editing_querying_functionality(
     assert A_id in remaining_ids and B_id in remaining_ids
 
     # ---------- Get A and B by id; both now share the same values ----------
-    res = test_client_fake_adapters.get(
+    res = test_client_fake_llm_adapter.get(
         "/customgpts/get-custom-gpt-infos", params={"custom_gpt_id": A_id}
     )
     assert res.status_code == 200, res.text
     A_info = CustomGPTInfosSchema.model_validate(res.json())
 
-    res = test_client_fake_adapters.get(
+    res = test_client_fake_llm_adapter.get(
         "/customgpts/get-custom-gpt-infos", params={"custom_gpt_id": B_id}
     )
     assert res.status_code == 200, res.text
@@ -365,12 +365,12 @@ def test_cgpt_creation_editing_querying_functionality(
 
 
 def test_cant_chat_with_non_existent_conv_or_cgpt(
-    test_client_fake_adapters: TestClient,
+    test_client_fake_llm_adapter: TestClient,
 ):
     continue_chat_req: ContinueChatRequest = ContinueChatRequest(
         request_message="request_message", conversation_id="IdontExist", use_rag=False
     )
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/chat/send-user-message", json=jsonable_encoder(continue_chat_req)
     )
     assert res.status_code == 404
@@ -379,7 +379,7 @@ def test_cant_chat_with_non_existent_conv_or_cgpt(
     new_chat_req: NewChatRequest = NewChatRequest(
         request_message=request_message_1, custom_gpt_id="IdontExist", use_rag=False
     )
-    res: httpx.Response = test_client_fake_adapters.post(
+    res: httpx.Response = test_client_fake_llm_adapter.post(
         "/chat/send-user-message", json=jsonable_encoder(new_chat_req)
     )
     assert res.status_code == 404

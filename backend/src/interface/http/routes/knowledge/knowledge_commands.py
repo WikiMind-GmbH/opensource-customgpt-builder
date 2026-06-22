@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from src.bootstrap import DependenciesContainer
 from src.contexts.knowledge.application.orchestration_use_cases.upload_document_use_case import (
@@ -49,13 +49,25 @@ def delete_files_endpoint(
     # return
 
 
-# WIP
+async def upload_file_for_knowledge_context_from_form(
+    upload_file: Annotated[UploadFile, File(alias="uploadFile")],
+    gpt_ids: Annotated[list[str], Form(alias="gpt_ids")],
+) -> UploadFileForKnowledgeContext:
+    return UploadFileForKnowledgeContext(
+        upload_file=upload_file,
+        gpt_ids=gpt_ids,
+    )
+
+
 @knowledge_commands_router.post(
     "/upload-files",
     operation_id="uploadFiles",
 )
 async def upload_file(
-    file: UploadFileForKnowledgeContext,
+    file: Annotated[
+        UploadFileForKnowledgeContext,
+        Depends(upload_file_for_knowledge_context_from_form),
+    ],
     extract_text_from_document_adapter: Annotated[
         ExtractTextFromDocumentPort,
         Depends(dependencies_container.extract_text_from_document_adapter_factory),
@@ -85,7 +97,7 @@ async def upload_file(
         Depends(dependencies_container.embedding_generator_adapter_factory),
     ],
 ) -> CommandResult:
-    file_bytes_content = await file.uploadFile.read()
+    file_bytes_content = await file.upload_file.read()
 
     uuid_of_file = upload_document_complete_workflow_return_file_id(
         file_bytes_content=file_bytes_content,

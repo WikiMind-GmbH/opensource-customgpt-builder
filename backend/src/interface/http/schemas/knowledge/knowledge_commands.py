@@ -9,10 +9,10 @@ from backend_spanning_helpers import require_env
 class UploadFileForKnowledgeContext(BaseModel):
     """Contains an UploadFile whose .filename is validated to be of the expected formats."""
 
-    uploadFile: UploadFile
+    upload_file: UploadFile
     gpt_ids: list[str]
 
-    @field_validator("uploadFile", mode="after")
+    @field_validator("upload_file", mode="after")
     @classmethod
     def file_suffix_is_supported(cls, value: UploadFile) -> UploadFile:
         if value.filename is None:
@@ -27,9 +27,9 @@ class UploadFileForKnowledgeContext(BaseModel):
 
     @property
     def filename(self) -> str:
-        if self.uploadFile.filename is None:
+        if self.upload_file.filename is None:
             raise ValueError("Filename must not be empty")
-        return self.uploadFile.filename
+        return self.upload_file.filename
 
     # @field_validator("uploadFile", mode="after")
     # @classmethod

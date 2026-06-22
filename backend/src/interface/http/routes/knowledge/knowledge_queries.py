@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
 
 from src.bootstrap import DependenciesContainer
 from src.contexts.knowledge.application.ports.cgpt_permissions_port import (
@@ -19,7 +21,10 @@ dependencies_container: DependenciesContainer = dependencies_container
     operation_id="checkStatusOfDocument",
 )
 def check_status_of_document(
-    cgpt_permission_adapter: CgptPermissionCheckerPort,
+    cgpt_permissions_adapter: Annotated[
+        CgptPermissionCheckerPort,
+        Depends(dependencies_container.cgpt_permissions_adapter_factory),
+    ],
     cgpt_id: str,
 ) -> DocumentStatus:
     raise NotImplementedError

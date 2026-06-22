@@ -1,0 +1,86 @@
+# Northstar Linen Logistics
+
+## Document Purpose
+
+This document contains fictional operational data for testing retrieval-augmented generation systems. All names, dates, locations, policies, and metrics are synthetic.
+
+## Company Overview
+
+Northstar Linen Logistics is a fictional regional laundry and textile delivery company operating in three cities: Hamburg, Bremen, and Lübeck. The company provides linen rental, cleaning, and delivery services to hotels, clinics, restaurants, and wellness centers.
+
+As of Q2 2026, Northstar Linen Logistics employs 84 people across warehouse operations, delivery, customer service, and administration.
+
+## Facility Information
+
+The main processing facility is located in Hamburg and handles all washing, drying, folding, and packing operations. Bremen and Lübeck operate only as distribution depots and do not process laundry on-site.
+
+The Hamburg facility runs two production shifts from Monday to Saturday. No laundry processing occurs on Sundays, although emergency deliveries may still be dispatched from the Bremen depot.
+
+## Fleet Data
+
+Northstar operates 18 delivery vehicles:
+
+* 11 diesel vans
+* 5 electric vans
+* 2 refrigerated trucks
+
+The electric vans are used only for routes within Hamburg city limits because their current battery range is not sufficient for intercity deliveries.
+
+The refrigerated trucks are used exclusively for medical textile deliveries to clinics.
+
+## Customer Segments
+
+Northstar serves 126 active customers:
+
+* 54 hotels
+* 31 restaurants
+* 22 clinics
+* 19 wellness centers
+
+Clinics represent the smallest customer group by count after wellness centers, but they account for the highest average revenue per customer.
+
+## Service-Level Agreements
+
+Hotel customers are promised delivery within 24 hours after processing is complete.
+
+Restaurant customers are promised delivery within 48 hours after pickup.
+
+Clinic customers are promised same-day delivery for sterilized medical textiles if the order is placed before 10:00 AM.
+
+Wellness centers receive deliveries only on Tuesdays and Fridays.
+
+## Quality Control
+
+Every linen batch receives a barcode before washing. After folding, 8% of all batches are randomly selected for manual quality inspection.
+
+If a batch fails inspection, it is sent back for rewashing and marked as delayed in the tracking system.
+
+In May 2026, the Hamburg facility processed 14,800 batches. Of these, 1,184 were manually inspected, and 96 failed inspection.
+
+## Sustainability Program
+
+Northstar began a sustainability program in January 2026. The program includes three goals:
+
+1. Increase electric vehicle usage in Hamburg.
+2. Reduce water consumption per laundry batch by 12% by December 2026.
+3. Replace plastic garment bags with reusable textile bags for hotel customers.
+
+By the end of May 2026, Northstar had reduced water consumption per batch by 7%.
+
+Reusable textile bags had been introduced for 38 of the 54 hotel customers.
+
+## Incident Log
+
+On May 9, 2026, a diesel van assigned to a Bremen restaurant route experienced a mechanical failure. The route was completed using a backup diesel van, and no customer deliveries were missed.
+
+On May 18, 2026, a clinic delivery in Hamburg was delayed because a batch failed quality inspection and required rewashing. The affected clinic was notified before the expected delivery time.
+
+On May 26, 2026, one electric van was temporarily removed from service due to a charging system fault. The vehicle returned to service on May 29, 2026.
+
+## Internal Policy Notes
+
+Electric vans may not be assigned to clinic deliveries unless the delivery address is inside Hamburg and the route does not require refrigeration.
+
+Refrigerated trucks must be inspected before every clinic route.
+
+Sunday emergency deliveries may be dispatched only from the Bremen depot and only for clinic customers.

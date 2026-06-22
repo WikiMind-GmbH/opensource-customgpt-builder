@@ -16,9 +16,8 @@ class CgptPermissionCheckerAdapter(CgptPermissionCheckerPort):
     def assure_user_has_access_to_cgpts(self, cgpt_ids_to_check: list[str]) -> None:
         with self._session_factory() as session:
             stmt = select(custom_gpts.c.id)
-            rows = session.execute(stmt).all()
-            # eturn [CustomGPTOverviewDTO(id=id, name=name) for id, name in rows]
-        cgpts_user_has_access_to = [id for id in rows]
+            cgpts_user_has_access_to = list(session.scalars(stmt).all())
+            # eturn [CustomGPTOverviewDTO(id=id, name=name) for id, name in row
         cgpt_ids_to_check_where_user_has_no_access = [
             id for id in cgpt_ids_to_check if id not in cgpts_user_has_access_to
         ]

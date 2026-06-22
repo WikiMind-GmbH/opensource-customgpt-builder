@@ -23,6 +23,16 @@ from tests.fake_adapters.context_chat_port.fake_llm_adapter import FakeLLMAdapte
 
 @pytest.fixture()
 def sql_db_resources_of_contexts() -> Generator[SQLDBResourceOfContexts, None, None]:
+    """
+    Do not use the production DB bootstrap here.
+
+    Tests need connection-bound session factories and outer transactions so app
+    code can call commit() normally while the fixture rolls everything back
+    afterwards.
+
+    The production bootstrap creates engine-bound session factories and does not
+    expose the connection/transaction lifecycle needed for test isolation.
+    """
     chat_engine = create_engine(require_env("DB_URL_CHAT_TEST"), poolclass=NullPool)
     cgpt_engine = create_engine(require_env("DB_URL_CGPT_TEST"), poolclass=NullPool)
     knowledge_engine = create_engine(
@@ -123,7 +133,7 @@ def test_dependencies_container(
 
 
 @pytest.fixture()
-def test_client_fake_adapters(
+def test_client_fake_llm_adapter(
     test_dependencies_container: DependenciesContainer,
 ) -> Generator[TestClient, None, None]:
     from src.interface.http.app import app
@@ -162,6 +172,60 @@ def test_client_fake_adapters(
     app.dependency_overrides[dependencies_container.knowledge_uow_factory_factory] = (
         test_dependencies_container.knowledge_uow_factory_factory
     )
+
+    app.dependency_overrides[
+        dependencies_container.cgpt_permissions_adapter_factory
+    ] = test_dependencies_container.cgpt_permissions_adapter_factory
+
+    app.dependency_overrides[
+        dependencies_container.retrieve_doc_snippets_adapter_factory
+    ] = test_dependencies_container.retrieve_doc_snippets_adapter_factory
+
+    with TestClient(app) as test_client:
+        yield test_client
+
+    app.dependency_overrides = original_overrides
+
+
+@pytest.fixture()
+def test_client_real_adapters(
+    test_dependencies_container: DependenciesContainer,
+) -> Generator[TestClient, None, None]:
+    from src.interface.http.app import app
+    from src.interface.http.composition import dependencies_container
+
+    original_overrides = app.dependency_overrides.copy()
+
+    app.dependency_overrides[
+        dependencies_container.conversation_uow_factory_factory
+    ] = test_dependencies_container.conversation_uow_factory_factory
+
+    app.dependency_overrides[dependencies_container.cgpt_uow_factory_factory] = (
+        test_dependencies_container.cgpt_uow_factory_factory
+    )
+
+    app.dependency_overrides[dependencies_container.cgpt_retreiver_adapter_factory] = (
+        test_dependencies_container.cgpt_retreiver_adapter_factory
+    )
+
+    app.dependency_overrides[dependencies_container.cgpt_queries_adapter_factory] = (
+        test_dependencies_container.cgpt_queries_adapter_factory
+    )
+
+    app.dependency_overrides[dependencies_container.chat_queries_adapter_factory] = (
+        test_dependencies_container.chat_queries_adapter_factory
+    )
+
+    app.dependency_overrides[dependencies_container.conversation_adapter_factory] = (
+        test_dependencies_container.conversation_adapter_factory
+    )
+
+    app.dependency_overrides[dependencies_container.knowledge_uow_factory_factory] = (
+        test_dependencies_container.knowledge_uow_factory_factory
+    )
+    app.dependency_overrides[
+        dependencies_container.retrieve_doc_snippets_adapter_factory
+    ] = test_dependencies_container.retrieve_doc_snippets_adapter_factory
 
     app.dependency_overrides[
         dependencies_container.cgpt_permissions_adapter_factory

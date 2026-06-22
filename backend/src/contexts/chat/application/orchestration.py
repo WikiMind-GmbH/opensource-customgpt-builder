@@ -54,13 +54,13 @@ def continue_conversation(
             cgpt_name = cgpt_infos.name
             cgpt_instructions = cgpt_infos.instructions
 
-            if use_rag:
-                (
-                    small_context_to_query_retriever_with,
-                    big_context_to_query_retriever_with,
-                ) = conv.create_small_and_bigger_context_text_to_query_retriever_with(
-                    cgpt_instructions=cgpt_instructions
-                )
+        if conv.customGPT_id is not None and use_rag:
+            (
+                small_context_to_query_retriever_with,
+                big_context_to_query_retriever_with,
+            ) = conv.create_small_and_bigger_context_text_to_query_retriever_with(
+                cgpt_instructions=cgpt_instructions
+            )
     # we need to keep this io heavy task out of an open session connection
     if conv.customGPT_id is not None and use_rag:
         if (

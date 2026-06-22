@@ -34,6 +34,7 @@ from src.contexts.knowledge.infrastructure.db.knowledge_uow_adapter import (
     SQLAlchemyKnowledgeUOW,
 )
 from src.contexts.knowledge.infrastructure.db.orm import metadata as knowledge_metadata
+from tests.documents_for_tests.test_documents import AvailableFiles, TestDocuments
 from tests.fake_adapters.context_knowledge_port.fake_cgpt_permission_checker import (
     FakeCgptPermissionChecker,
 )
@@ -135,6 +136,6 @@ def cgpt_permission_checker_false_return() -> CgptPermissionCheckerPort:
 
 @pytest.fixture()
 def fabricated_text_document_bytes() -> bytes:
-    path = "tests/documents_for_tests/sample_txt.txt"
+    path = TestDocuments.get_paths_for_test_files(file=AvailableFiles.aurelian)
     with open(path, "rb") as contents:
         return contents.read()

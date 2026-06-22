@@ -15,6 +15,12 @@ from src.interface.http.routes.customGPTs.customGPT_commands import (
 from src.interface.http.routes.customGPTs.customGPT_queries import (
     customgpt_queries_router,
 )
+from src.interface.http.routes.knowledge.knowledge_commands import (
+    knowledge_commands_router,
+)
+from src.interface.http.routes.knowledge.knowledge_queries import (
+    knowledge_queries_router,
+)
 
 DEBUG_MODE: bool = require_env("DEBUG_MODE").lower() == "true"
 if DEBUG_MODE:
@@ -34,6 +40,9 @@ app.include_router(chat_commands_router)
 app.include_router(chat_queries_router)
 app.include_router(customgpt_commands_router)
 app.include_router(customgpt_queries_router)
+app.include_router(knowledge_commands_router)
+app.include_router(knowledge_queries_router)
+
 # include knowledge routers
 
 register_all_handlers(app)
