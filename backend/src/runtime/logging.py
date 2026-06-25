@@ -19,7 +19,7 @@ def get_logger(
 
 
 def configure_logging() -> None:
-    root_log_level = "INFO"
+    root_log_level = "WARNING"
     knowledge_log_level = "DEBUG"
     chat_log_level = "DEBUG"
     customgpts_log_level = "DEBUG"

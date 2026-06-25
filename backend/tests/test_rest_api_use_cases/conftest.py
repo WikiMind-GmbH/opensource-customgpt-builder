@@ -145,6 +145,10 @@ def test_client_fake_llm_adapter(
         dependencies_container.conversation_uow_factory_factory
     ] = test_dependencies_container.conversation_uow_factory_factory
 
+    app.dependency_overrides[dependencies_container.vector_store_adapter_factory] = (
+        test_dependencies_container.vector_store_adapter_factory
+    )
+
     app.dependency_overrides[dependencies_container.cgpt_uow_factory_factory] = (
         test_dependencies_container.cgpt_uow_factory_factory
     )
@@ -195,6 +199,10 @@ def test_client_real_adapters(
     from src.interface.http.composition import dependencies_container
 
     original_overrides = app.dependency_overrides.copy()
+
+    app.dependency_overrides[dependencies_container.vector_store_adapter_factory] = (
+        test_dependencies_container.vector_store_adapter_factory
+    )
 
     app.dependency_overrides[
         dependencies_container.conversation_uow_factory_factory

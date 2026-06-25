@@ -170,7 +170,13 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
                 for chunk_embedding_and_metadata_dto in chunk_embeddings_and_metadata_dtos
             ],
         )
-        logger.info(f"Chunk added to vectorstore: {update_result}")
+        file_ids_of_chunks = [
+            dto.metadata.id_of_corresponding_file
+            for dto in chunk_embeddings_and_metadata_dtos
+        ]
+        logger.info(
+            f"{len(chunk_embeddings_and_metadata_dtos)} Chunks of files {set(file_ids_of_chunks)} added to vectorstore: {update_result}"
+        )
 
     def return_relevant_text_snippets_ids_and_text(
         self,
