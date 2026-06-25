@@ -1,5 +1,4 @@
 import logging.config
-import os
 from enum import StrEnum
 
 
@@ -20,10 +19,10 @@ def get_logger(
 
 
 def configure_logging() -> None:
-    root_log_level = os.getenv("LOG_LEVEL", "INFO").upper()
-    knowledge_log_level = os.getenv("LOG_LEVEL_KNOWLEDGE", "DEBUG").upper()
-    chat_log_level = os.getenv("LOG_LEVEL_CHAT", "DEBUG").upper()
-    customgpts_log_level = os.getenv("LOG_LEVEL_CUSTOMGPTS", "DEBUG").upper()
+    root_log_level = "INFO"
+    knowledge_log_level = "DEBUG"
+    chat_log_level = "DEBUG"
+    customgpts_log_level = "DEBUG"
 
     logging.config.dictConfig(
         {
@@ -46,15 +45,15 @@ def configure_logging() -> None:
                 "level": root_log_level,
             },
             "loggers": {
-                LoggerContext.KNOWLEDGE: {
+                LoggerContext.KNOWLEDGE.value: {
                     "level": knowledge_log_level,
                     "propagate": True,
                 },
-                LoggerContext.CHAT: {
+                LoggerContext.CHAT.value: {
                     "level": chat_log_level,
                     "propagate": True,
                 },
-                LoggerContext.CUSTOMGPTS: {
+                LoggerContext.CUSTOMGPTS.value: {
                     "level": customgpts_log_level,
                     "propagate": True,
                 },

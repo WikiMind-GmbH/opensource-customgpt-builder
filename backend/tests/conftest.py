@@ -3,7 +3,7 @@ import pytest
 from src.runtime.logging import configure_logging
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def configure_test_logging():
     configure_logging()
 
