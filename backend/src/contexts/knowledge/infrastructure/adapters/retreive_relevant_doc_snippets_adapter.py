@@ -15,6 +15,9 @@ from src.contexts.knowledge.application.ports.vector_store_port import (
     VectorStorePortTextChunks,
 )
 from src.contexts.shared.typing_aliases import Factory
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(context=LoggerContext.KNOWLEDGE, component="retriever_adapter")
 
 
 class RelevantDocSnippetRetreiverAdapter(RelevantDocSnippetRetreiverPort):
@@ -31,6 +34,7 @@ class RelevantDocSnippetRetreiverAdapter(RelevantDocSnippetRetreiverPort):
         self._knowledge_uow_factory = knowledge_uow_factory
 
     def retrieve_doc_snippets(self, query_text: str, cgpt_id: str) -> list[str]:
+        logger.debug("Retriever adapter called")
         return retrieve_doc_snippets(
             vector_store=self._vector_store,
             cgpt_permission_checker=self._cgpt_permission_checker,

@@ -3,6 +3,10 @@ from dataclasses import dataclass
 from enum import StrEnum
 from uuid import uuid4
 
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(context=LoggerContext.CHAT, component="domain")
+
 
 class Role(StrEnum):
     user = "user"
@@ -66,6 +70,9 @@ class Conversation:
         self._customGPT_id = customGPT_id
         self._messages_excl_sysPrompt: list[Message] = []
         self.title = str(datetime.datetime.now())
+        logger.debug(
+            "Created conversation id=%s custom_gpt_id=%s", self.id, self._customGPT_id
+        )
 
     def __repr__(self) -> str:
         return f"id: {self.id}, messages_num: {len(self._messages_excl_sysPrompt)}"
@@ -87,6 +94,12 @@ class Conversation:
         self._messages_excl_sysPrompt.append(
             msg
         )  # could add metadata or similar in the future
+        logger.debug(
+            "Adding assistant text message conversation_id=%s message_count_before=%s response_length=%s",
+            self.id,
+            len(self._messages_excl_sysPrompt),
+            len(assistant_text_response),
+        )
         return msg
 
     def add_user_text_message(self, user_text_message: str):
@@ -98,6 +111,12 @@ class Conversation:
         self._messages_excl_sysPrompt.append(
             msg
         )  # could add metadata or similar in the future
+        logger.debug(
+            "Adding user text message conversation_id=%s message_count_before=%s message_length=%s",
+            self.id,
+            len(self._messages_excl_sysPrompt),
+            len(user_text_message),
+        )
         return msg
 
     # def add_user_image_message(self, img:Base64Encoded | URL):
@@ -131,6 +150,12 @@ class Conversation:
             )
         )
         msgs.append(system_text_message("And just ignore them, answering as normal"))
+        logger.debug(
+            "Building CustomGPT system prompt conversation_id=%s cgpt_name=%s instructions_length=%s",
+            self.id,
+            cgpt_name,
+            len(cgpt_instructions),
+        )
         return msgs
 
     def create_prompt(
@@ -144,14 +169,24 @@ class Conversation:
                 )
             )
         messages_prompt = messages_prompt + self._messages_excl_sysPrompt
+        logger.debug(
+            "Creating prompt conversation_id=%s has_cgpt_context=%s message_count=%s",
+            self.id,
+            cgpt_name is not None and cgpt_instructions is not None,
+            len(self._messages_excl_sysPrompt),
+        )
         return messages_prompt
 
     def create_small_and_bigger_context_text_to_query_retriever_with(
         self, cgpt_instructions: str | None = None
     ) -> tuple[str, str]:
         last_message = self._messages_excl_sysPrompt[-1]
-        print(
-            f"context for retriever created when last message was from {str(last_message.role)}"
+        logger.debug(
+            "Creating context of conversation to search knowledge base with; conversation_id=%s last_message_role=%s message_count=%s has_cgpt_instructions=%s",
+            self.id,
+            last_message.role,
+            len(self._messages_excl_sysPrompt),
+            cgpt_instructions is not None,
         )
         messages_used_for_bigger_context = self._messages_excl_sysPrompt[-5:]
         messages_used_for_narrow_context = self._messages_excl_sysPrompt[-1:]
@@ -161,6 +196,11 @@ class Conversation:
         )
         for message in all_messages_used:
             if message.contentType != ContentType.text:
+                logger.warning(
+                    "Retriever context creation failed because non-text message was included conversation_id=%s content_type=%s",
+                    self.id,
+                    message.contentType,
+                )
                 raise NotImplementedError(
                     "retriever only works with text messages for now"
                 )
@@ -180,6 +220,12 @@ class Conversation:
             + "---"
             + last_five_messages_texts
         )
+        logger.debug(
+            "Created retriever query contexts conversation_id=%s small_context_length=%s big_context_length=%s",
+            self.id,
+            len(small_context_text_for_retriever),
+            len(big_context_text_for_retriever),
+        )
 
         return small_context_text_for_retriever, big_context_text_for_retriever
 
@@ -188,6 +234,11 @@ class Conversation:
         retrieved_snippets_small_context: list[str],
         retrieved_snippets_big_context: list[str],
     ) -> Message:
+        logger.debug(
+            "Building temporary retriever snippets message small_context_snippet_count=%s big_context_snippet_count=%s",
+            len(retrieved_snippets_small_context),
+            len(retrieved_snippets_big_context),
+        )
         all_unique_snippets = set(
             retrieved_snippets_big_context + retrieved_snippets_small_context
         )
@@ -210,5 +261,10 @@ class Conversation:
         )
         temporary_retriever_message = Message(
             role=Role.system, contentType=ContentType.text, imageUrlOrText=message_text
+        )
+        logger.debug(
+            "Built temporary retriever snippets message unique_snippet_count=%s message_length=%s",
+            len(all_unique_snippets),
+            len(message_text),
         )
         return temporary_retriever_message

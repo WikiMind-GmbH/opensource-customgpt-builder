@@ -14,6 +14,14 @@ class InvalidEmbeddingDimension(RuntimeError):
     "The embedding dimension of passed vectors must match the one of the vevctorstore"
 
 
+class NoSnippetsForPassedFileIdsExistError(RuntimeError):
+    "There are no snippets from the given file ids"
+
+
+class FileIdsToIncludeMustNotBeEmptyError(RuntimeError):
+    "Can not query database meaningful for files that do not exist"
+
+
 class ParentOrChildDTO(StrEnum):
     parent = "parent"
     child = "child"
@@ -55,6 +63,10 @@ class VectorStorePortTextChunks(Protocol):
         max_snippets: int = 5,
         include_only_parent_or_child_chunks: ParentOrChildDTO | None = None,
     ) -> list[TextChunkReturnDTO]: ...
+
+    """
+    Raises FileIdsToIncludeMustNotBeEmptyError and NoSnippetsForPassedFileIdsExistError
+    """
 
     def add_chunks_with_corresponding_embeddings_and_metadata(
         self, chunk_embeddings_and_metadata_dtos: list[ChunkEmbeddingAndMetadataDTO]

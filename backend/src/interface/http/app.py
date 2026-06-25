@@ -21,12 +21,15 @@ from src.interface.http.routes.knowledge.knowledge_commands import (
 from src.interface.http.routes.knowledge.knowledge_queries import (
     knowledge_queries_router,
 )
+from src.runtime.logging import configure_logging
 
 DEBUG_MODE: bool = require_env("DEBUG_MODE").lower() == "true"
 if DEBUG_MODE:
     import debugpy
 
     debugpy.listen(("0.0.0.0", 5678))  # Debugger listens on port 5678
+
+configure_logging()
 
 
 @asynccontextmanager

@@ -7,6 +7,10 @@ class UserHasNoPermissionForCgptOrTheyDontExist(RuntimeError):
         super().__init__(message)
 
 
+class EmptyListToCheckPassedError(RuntimeError):
+    "The list to check must not be empty, as we want to avoid false-positive-esque assertions"
+
+
 class CgptPermissionCheckerPort(Protocol):
     def assure_user_has_access_to_cgpts(self, cgpt_ids_to_check: list[str]) -> None: ...
 

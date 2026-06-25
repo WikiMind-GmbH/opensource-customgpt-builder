@@ -11,11 +11,18 @@ from qdrant_client.models import (
 
 from src.contexts.knowledge.application.ports.vector_store_port import (
     ChunkEmbeddingAndMetadataDTO,
+    FileIdsToIncludeMustNotBeEmptyError,
     InvalidEmbeddingDimension,
     MetadataDTO,
+    NoSnippetsForPassedFileIdsExistError,
     ParentOrChildDTO,
     TextChunkReturnDTO,
     VectorStorePortTextChunks,
+)
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(
+    context=LoggerContext.KNOWLEDGE, component="qdrant_vector_store_adapter"
 )
 
 
@@ -34,11 +41,13 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
         )
         self._client = QdrantClient(url=db_url)
         self._ensure_collection_exists()
+        logger.debug("Adapter created")
 
     def _ensure_collection_exists(self) -> None:
         if self._client.collection_exists(
             collection_name=self._collection_name,
         ):
+            logger.debug(f"Collection{self._collection_name} already exists")
             return
 
         self._client.create_collection(
@@ -48,6 +57,7 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
                 distance=Distance.COSINE,
             ),
         )
+        logger.info(f"Collection{self._collection_name} created")
 
     @staticmethod
     def _qdrant_point_id_to_chunk_id(point_id: ExtendedPointId) -> UUID:
@@ -160,7 +170,7 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
                 for chunk_embedding_and_metadata_dto in chunk_embeddings_and_metadata_dtos
             ],
         )
-        print(update_result)  # PLACEHOLDRE FOR LOGGING LATER
+        logger.info(f"Chunk added to vectorstore: {update_result}")
 
     def return_relevant_text_snippets_ids_and_text(
         self,
@@ -173,7 +183,8 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
             raise InvalidEmbeddingDimension(
                 f"expected embedding dim {self.embedding_dimension}, got {len(embedding_to_match)}"
             )
-
+        if file_ids_to_include_in_filter == []:
+            raise FileIdsToIncludeMustNotBeEmptyError
         # class MetadataDTO:
         #     parent_or_child_chunk: ParentOrChildDTO
         #     id_of_corresponding_file: str
@@ -204,6 +215,8 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
             with_payload=True,
         )
         response_points = response.points
+        if response_points == []:
+            raise NoSnippetsForPassedFileIdsExistError
         text_chunk_return_dtos = [
             TextChunkReturnDTO(
                 id_of_chunk=self._qdrant_point_id_to_chunk_id(point.id),
@@ -211,6 +224,7 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
             )
             for point in response_points
         ]
+        logger.info(f"Returned {len(text_chunk_return_dtos)} text chunk ids")
         return text_chunk_return_dtos
 
     def get_metadata_of_chunk(self, id_of_chunk: str) -> MetadataDTO:

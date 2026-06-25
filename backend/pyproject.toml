@@ -3,8 +3,12 @@ markers = [
   "performance: performance tests (exclude with -m 'not performance')",
   "benchmark: benchmark-related tests",
 ]
+log_cli = true
+log_format = "%(asctime)s %(levelname)s [%(name)s] %(message)s"
+log_date_format = "%H:%M:%S"
 
 [tool.ruff]
 extend-include = ["*.ipynb"]
 [tool.ruff.lint]
 extend-select = ["FAST", "I"]  # https://docs.astral.sh/ruff/settings/#lint_extend-select https://docs.astral.sh/ruff/rules/
+
