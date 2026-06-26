@@ -7,7 +7,7 @@ from src.contexts.chat.application.ports.customgpt_instructions_retreiver import
 )
 
 
-def register_query_exception_handlers_cgpt_instruction_retreiver_port(
+def register_exception_handlers_cgpt_instruction_retreiver_port(
     app: FastAPI,
 ) -> None:
     @app.exception_handler(CgptNotFoundError)

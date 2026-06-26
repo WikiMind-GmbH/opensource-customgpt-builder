@@ -14,6 +14,9 @@ from src.contexts.chat.application.ports.retrieve_relevant_doc_snippets_port imp
 from src.contexts.chat.application.ports.uow import ConversationUOW
 from src.contexts.chat.domain.models import Conversation, Message
 from src.contexts.shared.typing_aliases import Factory
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(context=LoggerContext.CHAT, component="orchestration")
 
 
 def create_conversation(
@@ -22,6 +25,7 @@ def create_conversation(
     with conv_uow_factory() as uow:
         conv: Conversation = uow.conversation_repo.create_conversation(cgpt_id=cgpt_id)
         uow.commit()
+        logger.info(f"Conversation {conv.id} created")
         return conv.id
 
 
@@ -40,7 +44,18 @@ def continue_conversation(
 
     with conv_uow_factory() as uow:
         conv: Conversation = uow.conversation_repo.get(conv_id)
+
+        logger.debug(
+            f"Continue conversation called{conv.id}, use_rag={use_rag}, cgpt_id={conv.customGPT_id}"
+        )
+
+        if conv.customGPT_id is None and use_rag is True:
+            raise Conversation.CantUseRagIfNoCgptIsPassedError(
+                f"Conversation {conv.id} has no accociated cgpt and therefore can't access rag "
+            )
+
         conv.add_user_text_message(user_text_message=user_message)
+        logger.info(f"Conv {conv.id}: User message added")
         uow.commit()  # ToDo: <- no functionality exists to retry llm,
 
         cgpt_name: str | None = None
@@ -54,7 +69,7 @@ def continue_conversation(
             cgpt_name = cgpt_infos.name
             cgpt_instructions = cgpt_infos.instructions
 
-        if conv.customGPT_id is not None and use_rag:
+        if use_rag:
             (
                 small_context_to_query_retriever_with,
                 big_context_to_query_retriever_with,

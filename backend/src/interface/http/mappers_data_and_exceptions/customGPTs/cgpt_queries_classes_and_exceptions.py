@@ -15,7 +15,7 @@ from src.interface.http.schemas.customGPTs.customGPT_queries import (
 )
 
 
-def register_query_exception_handlers_cgpt_query_port(app: FastAPI) -> None:
+def register_exception_handlers_cgpt_query_port(app: FastAPI) -> None:
     @app.exception_handler(NotFoundError)
     async def _not_found(_, exc: NotFoundError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         return JSONResponse(

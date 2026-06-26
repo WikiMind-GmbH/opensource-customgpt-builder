@@ -6,7 +6,7 @@ from src.contexts.knowledge.application.ports.cgpt_permissions_port import (
 )
 
 
-def register_query_exception_handlers_cgpt_permission_port(app: FastAPI) -> None:
+def register_exception_handlers_cgpt_permission_port(app: FastAPI) -> None:
     @app.exception_handler(UserHasNoPermissionForCgptOrTheyDontExist)
     async def _not_found(_, exc: UserHasNoPermissionForCgptOrTheyDontExist):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         return JSONResponse(

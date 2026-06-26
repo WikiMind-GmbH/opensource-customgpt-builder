@@ -49,7 +49,7 @@ app.include_router(knowledge_queries_router)
 # include knowledge routers
 
 register_all_handlers(app)
-# ToDo: add other exception handlers
+
 origins = ["https://localhost"]
 app.add_middleware(
     CORSMiddleware,

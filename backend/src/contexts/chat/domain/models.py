@@ -65,6 +65,9 @@ class Conversation:
     # available_tools: list[Tool] | None = None
     # Rag I would leave open to activate/deactivate in the
 
+    class CantUseRagIfNoCgptIsPassedError(RuntimeError):
+        "Rag functionality is only given in the context of a customgpt. If there is no customgpt, no Rag can be used"
+
     def __init__(self, id: str | None = None, customGPT_id: str | None = None) -> None:
         self.id = id if id else str(uuid4())
         self._customGPT_id = customGPT_id

@@ -62,11 +62,12 @@ class VectorStorePortTextChunks(Protocol):
         file_ids_to_include_in_filter: list[UUID],
         max_snippets: int = 5,
         include_only_parent_or_child_chunks: ParentOrChildDTO | None = None,
-    ) -> list[TextChunkReturnDTO]: ...
-
-    """
-    Raises FileIdsToIncludeMustNotBeEmptyError and NoSnippetsForPassedFileIdsExistError
-    """
+    ) -> list[TextChunkReturnDTO]:
+        """
+        Raises FileIdsToIncludeMustNotBeEmptyError if passed list is empty
+        Raises NoSnippetsForPassedFileIdsExistError if there are no chunks of the corresponding file in the vectorstore
+        """
+        ...
 
     def add_chunks_with_corresponding_embeddings_and_metadata(
         self, chunk_embeddings_and_metadata_dtos: list[ChunkEmbeddingAndMetadataDTO]

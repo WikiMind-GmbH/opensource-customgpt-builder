@@ -6,7 +6,6 @@ from fastapi.testclient import TestClient
 
 from src.interface.http.schemas.chat.chat_commands import (
     AssistantMessage,
-    ContinueChatRequest,
     NewChatRequest,
 )
 from src.interface.http.schemas.common_command import CommandResult
@@ -38,7 +37,7 @@ class HelperMethods:
             )
 
 
-class RagNecessitacesChatWithCustomGPTWithUploadedFiles:
+class TestRagNecessitacesChatWithCustomGPTWithUploadedFiles:
     @staticmethod
     def test_use_rag_new_chat_with_no_cgpt_throws_error(
         test_client_fake_llm_adapter: TestClient,
@@ -61,33 +60,51 @@ class RagNecessitacesChatWithCustomGPTWithUploadedFiles:
             "/chat/send-user-message",
             json=jsonable_encoder(
                 NewChatRequest(
-                    request_message="request_message", use_rag=False, custom_gpt_id=None
+                    request_message="request_message", use_rag=True, custom_gpt_id=None
                 )
             ),
+        )
+        assert res.is_error, res.text
+
+    @staticmethod
+    def test_use_rag_with_conversation_with_cgpt_without_uploaded_files_throws_error(
+        test_client_fake_llm_adapter: TestClient,
+    ):
+        name = "name"
+        desc = "desc"
+        instructions = "Please answer questions in the shape provided."
+        cgpt_to_create: CustomGptToCreate = CustomGptToCreate(
+            custom_gpt_name=name,
+            custom_gpt_description=desc,
+            custom_gpt_instructions=instructions,
+        )
+        res: httpx.Response = test_client_fake_llm_adapter.post(
+            "/customgpts/create-custom-gpt", json=jsonable_encoder(cgpt_to_create)
         )
         assert res.status_code == 200, res.text
-        conv_id = AssistantMessage.model_validate(res.json()).conversation_id
+        cmd = CommandResult.model_validate(res.json())
+        cgpt_id: str | None = cmd.resource_id
+        assert isinstance(cgpt_id, str)
 
-        res = test_client_fake_llm_adapter.post(
-            "/chat/send-user-message",
-            json=jsonable_encoder(
-                ContinueChatRequest(
-                    request_message="u3", conversation_id=conv_id, use_rag=True
-                )
-            ),
+        new_chat_req = NewChatRequest(
+            request_message="request_message_1",
+            custom_gpt_id=cgpt_id,
+            use_rag=True,
         )
-        assert res.status_code == 422, res.text
 
-    # @staticmethod
-    # def test_use_rag_with_conversation_with_cgpt_without_uploaded_files_throws_error():
-    #     raise NotImplementedError
+        res: httpx.Response = test_client_fake_llm_adapter.post(
+            "/chat/send-user-message",
+            json=jsonable_encoder(new_chat_req),
+        )
+
+        assert res.is_error, res.text
 
     # @staticmethod
     # def test_use_rag_with_conversation_with_cgpt_necessitates_uploaded_files_continue_chat():
     #     raise NotImplementedError
 
 
-class TestEasyHappyPath:
+class EasyHappyPath:
     @staticmethod
     def test_context_retrieved_from_current_message_correctly(
         test_client_real_adapters: TestClient,

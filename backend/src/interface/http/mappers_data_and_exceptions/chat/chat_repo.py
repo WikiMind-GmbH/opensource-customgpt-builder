@@ -7,7 +7,7 @@ from src.contexts.chat.application.ports.chat_repo import (
 )
 
 
-def register_query_exception_handlers_chat_repo_port(app: FastAPI) -> None:
+def register_exception_handlers_chat_repo_port(app: FastAPI) -> None:
     @app.exception_handler(TemporaryConvRepoError)
     async def _tbd(_, exc: TemporaryConvRepoError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         return JSONResponse(

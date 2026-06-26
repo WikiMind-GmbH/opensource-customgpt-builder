@@ -31,7 +31,7 @@ PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
 
 
-.PHONY: generate-client-ts-frontend test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
+.PHONY: logs-filter generate-client-ts-frontend test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
 
 ## ----------------------DOCKER----------------------
 
@@ -76,6 +76,13 @@ restart-rebuild: ## Recreate containers + clean rebuild. Use for "it still uses 
 
 logs: ## Follow logs for the whole dev stack (ctrl+c to stop following).
 	$(COMPOSE_DEV) logs -f
+
+logs-filter:
+	@if [ -z "$(PATTERN)" ]; then \
+		echo "Usage: make logs-filter PATTERN=ERROR"; \
+		exit 1; \
+	fi
+	$(COMPOSE_DEV) logs | grep "$(PATTERN)"
 
 ps: ## Show container status for the dev stack.
 	$(COMPOSE_DEV) ps
