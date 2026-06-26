@@ -220,10 +220,10 @@ def create_sql_tables(sql_db_resources_of_contexts: SQLDBResourceOfContexts):
 
 def create_dependencies(
     sql_db_resources_of_contexts: SQLDBResourceOfContexts,
-    model_name: str,
-    vector_store_is_for_testing: bool,
-    embedding_model: str = "text-embedding-3-small",
-    embedding_dimension: int = 1536,
+    vector_store_is_for_testing: bool = False,
+    model_name: str = require_env("MODEL_NAME"),
+    embedding_model: str = require_env("EMBEDDING_MODEL"),
+    embedding_dimension: int = int(require_env("EMBEDDING_DIMENSION")),
     db_url_vectorstore: str = require_env("QDRANT_URL"),
 ) -> DependenciesContainer:
     def conversation_uow_factory() -> ConversationUOW:
