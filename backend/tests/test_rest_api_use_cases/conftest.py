@@ -1,7 +1,9 @@
-from collections.abc import Generator
-from dataclasses import replace
+from collections.abc import Generator, Iterator
+from contextlib import contextmanager
+from dataclasses import fields, replace
 
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from qdrant_client import QdrantClient
 from sqlalchemy import Connection, NullPool, RootTransaction, create_engine
@@ -127,181 +129,61 @@ def original_dependencies_container_but_with_test_databases(
             clean_up_client.close()
 
 
+@contextmanager
+def override_all_app_deps_with(
+    *,
+    app: FastAPI,
+    dependency_overrides_source: DependenciesContainer,
+) -> Iterator[FastAPI]:
+    from src.interface.http.composition import dependencies_container
+
+    original_overrides = app.dependency_overrides.copy()
+
+    try:
+        app.dependency_overrides.update(
+            {
+                getattr(dependencies_container, field.name): getattr(
+                    dependency_overrides_source,
+                    field.name,
+                )
+                for field in fields(DependenciesContainer)
+            }
+        )
+
+        yield app
+
+    finally:
+        app.dependency_overrides = original_overrides
+
+
 @pytest.fixture()
 def test_client_fake_llm_adapter(
     original_dependencies_container_but_with_test_databases: DependenciesContainer,
 ) -> Generator[TestClient, None, None]:
     from src.interface.http.app import app
-    from src.interface.http.composition import dependencies_container
 
-    original_dependencies_container_but_with_test_databases = replace(
+    deps_with_test_dbs_and_fake_llm: DependenciesContainer = replace(
         original_dependencies_container_but_with_test_databases,
         llm_adapter_factory=lambda: FakeLLMAdapter(),
     )
 
-    original_overrides = app.dependency_overrides.copy()
-
-    app.dependency_overrides[
-        dependencies_container.conversation_uow_factory_factory
-    ] = original_dependencies_container_but_with_test_databases.conversation_uow_factory_factory
-
-    app.dependency_overrides[dependencies_container.vector_store_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.vector_store_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.cgpt_uow_factory_factory] = (
-        original_dependencies_container_but_with_test_databases.cgpt_uow_factory_factory
-    )
-
-    app.dependency_overrides[dependencies_container.cgpt_retreiver_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.cgpt_retreiver_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.llm_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.llm_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.cgpt_queries_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.cgpt_queries_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.chat_queries_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.chat_queries_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.conversation_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.conversation_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.knowledge_uow_factory_factory] = (
-        original_dependencies_container_but_with_test_databases.knowledge_uow_factory_factory
-    )
-
-    app.dependency_overrides[
-        dependencies_container.cgpt_permissions_adapter_factory
-    ] = original_dependencies_container_but_with_test_databases.cgpt_permissions_adapter_factory
-
-    app.dependency_overrides[
-        dependencies_container.retrieve_doc_snippets_adapter_factory
-    ] = original_dependencies_container_but_with_test_databases.retrieve_doc_snippets_adapter_factory
-
-    with TestClient(app) as test_client:
-        yield test_client
-
-    app.dependency_overrides = original_overrides
+    with override_all_app_deps_with(
+        app=app,
+        dependency_overrides_source=deps_with_test_dbs_and_fake_llm,
+    ) as test_app:
+        with TestClient(test_app) as test_client:
+            yield test_client
 
 
-# -----
-# TODO: IMPROVE THIS STRUCTURE IN THE FUTURE, MAKING IT MORE READABLE
-# @pytest.fixture()
-# def original_dependencies_container_but_with_test_databases(
-#     test_sql_db_resources_of_contexts: SQLDBResourceOfContexts,
-# ) -> Generator[DependenciesContainer, None, None]:
-#     test_dependencies = create_dependencies(
-#         sql_db_resources_of_contexts=test_sql_db_resources_of_contexts,
-#         vector_store_is_for_testing=True,
-#     )
-
-#     collection_name = test_dependencies.vector_store_adapter_factory().collection_name
-
-#     try:
-#         yield test_dependencies
-#     finally:
-#         clean_up_client = QdrantClient(url=require_env("QDRANT_URL"))
-#         try:
-#             if clean_up_client.collection_exists(collection_name):
-#                 clean_up_client.delete_collection(collection_name=collection_name)
-#         finally:
-#             clean_up_client.close()
-
-
-# @pytest.fixture()
-# def app_with_test_dbs_overrides_and_original_deps(
-#     original_dependencies_container_but_with_test_databases: DependenciesContainer,
-# ) -> Generator[TestClient, None, None]:
-#     from src.interface.http.app import app
-
-#     original_overrides = app.dependency_overrides.copy()
-
-#     # override EVERY dependency, make sure that every dependency is overwritten by iterating in some way or shape over the Dependency container
-#     return app_with_test_dbs_overrides, original_overrides
-
-
-# @pytest.fixture()
-# def test_client_fake_llm_adapter(
-#     app_with_test_dbs_overrides_and_original_deps: tuple[
-#         FastAPI, DependenciesContainer
-#     ],
-# ) -> Generator[TestClient, None, None]:
-#     from src.interface.http.app import app
-#     from src.interface.http.composition import dependencies_container
-
-#     original_overrides = app.dependency_overrides.copy()
-
-#     app.dependency_overrides[dependencies_container.llm_adapter_factory] = (
-#         lambda: FakeLLMAdapter()
-#     )
-# WE HAVE NOW ALL THE USUAL DEPENDENCIES BUT ONLY WITH THE TEST DATABASES/ TEST COLLECTION
-#  NOW WE CAN OVERWRITE DEPENDENCIES THAT USE ONLY EXTERNAL DEPENDENCIES
-# WE HAVE TO REMEMBER THAT SOME ADAPTERS(DEPENDENCIES) USE *BOTH* DATABSES AND EXTERNAL DEPENDENCIES
-# - THIS MEANS THAT WE HAVE TO BUILD IT USING UOWS REPOS OR SIMILAR -BUT WE CAN EXTRACT THOSE DIRECTLY FROM THE TEST DEPENDENCIES
-
-#     with TestClient(app) as test_client:
-#         yield test_client
-
-#     app.dependency_overrides = original_overrides
-
-
-# ------------
 @pytest.fixture()
 def test_client_real_adapters(
     original_dependencies_container_but_with_test_databases: DependenciesContainer,
 ) -> Generator[TestClient, None, None]:
     from src.interface.http.app import app
-    from src.interface.http.composition import dependencies_container
 
-    original_overrides = app.dependency_overrides.copy()
-
-    app.dependency_overrides[dependencies_container.vector_store_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.vector_store_adapter_factory
-    )
-
-    app.dependency_overrides[
-        dependencies_container.conversation_uow_factory_factory
-    ] = original_dependencies_container_but_with_test_databases.conversation_uow_factory_factory
-
-    app.dependency_overrides[dependencies_container.cgpt_uow_factory_factory] = (
-        original_dependencies_container_but_with_test_databases.cgpt_uow_factory_factory
-    )
-
-    app.dependency_overrides[dependencies_container.cgpt_retreiver_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.cgpt_retreiver_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.cgpt_queries_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.cgpt_queries_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.chat_queries_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.chat_queries_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.conversation_adapter_factory] = (
-        original_dependencies_container_but_with_test_databases.conversation_adapter_factory
-    )
-
-    app.dependency_overrides[dependencies_container.knowledge_uow_factory_factory] = (
-        original_dependencies_container_but_with_test_databases.knowledge_uow_factory_factory
-    )
-    app.dependency_overrides[
-        dependencies_container.retrieve_doc_snippets_adapter_factory
-    ] = original_dependencies_container_but_with_test_databases.retrieve_doc_snippets_adapter_factory
-
-    app.dependency_overrides[
-        dependencies_container.cgpt_permissions_adapter_factory
-    ] = original_dependencies_container_but_with_test_databases.cgpt_permissions_adapter_factory
-
-    with TestClient(app) as test_client:
-        yield test_client
-
-    app.dependency_overrides = original_overrides
+    with override_all_app_deps_with(
+        app=app,
+        dependency_overrides_source=original_dependencies_container_but_with_test_databases,
+    ) as test_app:
+        with TestClient(test_app) as test_client:
+            yield test_client
