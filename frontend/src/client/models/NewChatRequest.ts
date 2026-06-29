@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type NewChatRequest = {
     request_message: string;
-    custom_gpt_id: (string | null);
+    custom_gpt_id?: (string | null);
+    use_rag?: boolean;
 };
 

@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ContinueChatRequest = {
-    request_message: string;
-    conversation_id: string;
-    use_rag?: boolean;
+export type Body_uploadFiles = {
+    uploadFile: string;
+    gpt_ids: Array<string>;
 };
 

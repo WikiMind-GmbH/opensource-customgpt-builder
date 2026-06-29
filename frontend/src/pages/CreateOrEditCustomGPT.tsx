@@ -33,7 +33,14 @@ const [files, setFiles] = useState<string[]>([]);
 
   async function createOrEditCustomGPT() {
     if (idOfCustomGptOrUndefinedStr === undefined) {
-      const body: CustomGptToCreate = { ...form };
+      const body: CustomGptToCreate = {
+        custom_gpt_name: form.custom_gpt_name,
+        custom_gpt_description:
+          form.custom_gpt_description.trim() === ""
+            ? undefined
+            : form.custom_gpt_description,
+        custom_gpt_instructions: form.custom_gpt_instructions,
+      };;
       const res: CommandResult =
         await CustomGpTsCommandsService.createCustomGpt(body);
       alert(res.message)
