@@ -2,6 +2,10 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(context=LoggerContext.INTERFACE, component="RequestValidation")
+
 
 def register_general_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
@@ -14,6 +18,7 @@ def register_general_exception_handlers(app: FastAPI) -> None:
         # error["loc"] is like ["body","custom_gpt_description"]
         field = ".".join(str(x) for x in error["loc"][1:])
         msg = f"{field}: {error['msg']}"
+        logger.warning(msg=f"Validation error, {msg}")
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={"error": msg},
