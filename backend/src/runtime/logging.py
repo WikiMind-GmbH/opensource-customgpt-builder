@@ -6,6 +6,7 @@ class LoggerContext(StrEnum):
     CUSTOMGPTS = "customgpts"
     CHAT = "chat"
     KNOWLEDGE = "knowledge"
+    INTERFACE = "interface"
 
 
 class HealthcheckFilter(logging.Filter):
@@ -23,6 +24,29 @@ def get_logger(
     return logging.getLogger(f"{context}.{component}")
 
 
+class ColorLevelFormatter(logging.Formatter):
+    RESET = "\033[0m"
+
+    COLORS = {
+        logging.DEBUG: "\033[90m",  # gray
+        logging.INFO: "\033[32m",  # green
+        logging.WARNING: "\033[33m",  # yellow
+        logging.ERROR: "\033[31m",  # red
+        logging.CRITICAL: "\033[1;31m",  # bold red
+    }
+
+    def format(self, record: logging.LogRecord) -> str:
+        original_levelname = record.levelname
+
+        color = self.COLORS.get(record.levelno, "")
+        record.levelname = f"{color}{record.levelname}{self.RESET}"
+
+        try:
+            return super().format(record)
+        finally:
+            record.levelname = original_levelname
+
+
 def configure_logging() -> None:
     root_log_level = "WARNING"
     knowledge_log_level = "DEBUG"
@@ -35,7 +59,8 @@ def configure_logging() -> None:
             "disable_existing_loggers": False,
             "formatters": {
                 "default": {
-                    "format": "%(asctime)s %(levelname)s [%(name)s] %(message)s",
+                    "()": ColorLevelFormatter,
+                    "format": "%(asctime)s %(levelname)s [%(name)s]:    %(message)s",
                     "datefmt": "%H:%M:%S",
                 },
             },
@@ -56,7 +81,9 @@ def configure_logging() -> None:
             },
             "loggers": {
                 "uvicorn.access": {
-                    "filters": ["ignore_healthcheck"],
+                    "filters": [
+                        "ignore_healthcheck"
+                    ],  # we don't want to see the logs of the healthcheck polluting our INFO logs
                     "propagate": True,
                 },
                 LoggerContext.KNOWLEDGE.value: {
@@ -68,6 +95,10 @@ def configure_logging() -> None:
                     "propagate": True,
                 },
                 LoggerContext.CUSTOMGPTS.value: {
+                    "level": customgpts_log_level,
+                    "propagate": True,
+                },
+                LoggerContext.INTERFACE.value: {
                     "level": customgpts_log_level,
                     "propagate": True,
                 },
