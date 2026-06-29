@@ -18,7 +18,7 @@ services:
       - default
       - locust-backend-share
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://0.0.0.0:5173/openapi.json"]
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:5173/maintenance/healthz"]
       interval: 60s
       timeout: 3s
       retries: 5

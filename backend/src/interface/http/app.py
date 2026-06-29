@@ -21,6 +21,7 @@ from src.interface.http.routes.knowledge.knowledge_commands import (
 from src.interface.http.routes.knowledge.knowledge_queries import (
     knowledge_queries_router,
 )
+from src.interface.http.routes.maintenance.maintenance import maintenance_router
 from src.runtime.logging import configure_logging
 
 DEBUG_MODE: bool = require_env("DEBUG_MODE").lower() == "true"
@@ -45,6 +46,7 @@ app.include_router(customgpt_commands_router)
 app.include_router(customgpt_queries_router)
 app.include_router(knowledge_commands_router)
 app.include_router(knowledge_queries_router)
+app.include_router(maintenance_router)
 
 # include knowledge routers
 

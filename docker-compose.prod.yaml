@@ -20,7 +20,7 @@ services:
         limits:
           memory: 1024MB  # Limit to 512MB RAM
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://${APP_DOMAIN}:8000/openapi.json"]
+      test: ["CMD", "curl", "-f", "http://${APP_DOMAIN}:8000/maintenance/healthz"]
       interval: 5s
       timeout: 3s
       retries: 5

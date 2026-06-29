@@ -8,6 +8,11 @@ class LoggerContext(StrEnum):
     KNOWLEDGE = "knowledge"
 
 
+class HealthcheckFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return "/maintenance/healthz" not in record.getMessage()
+
+
 def get_logger(
     context: LoggerContext,
     component: str,
@@ -34,6 +39,11 @@ def configure_logging() -> None:
                     "datefmt": "%H:%M:%S",
                 },
             },
+            "filters": {
+                "ignore_healthcheck": {
+                    "()": HealthcheckFilter,
+                },
+            },
             "handlers": {
                 "console": {
                     "class": "logging.StreamHandler",
@@ -45,6 +55,10 @@ def configure_logging() -> None:
                 "level": root_log_level,
             },
             "loggers": {
+                "uvicorn.access": {
+                    "filters": ["ignore_healthcheck"],
+                    "propagate": True,
+                },
                 LoggerContext.KNOWLEDGE.value: {
                     "level": knowledge_log_level,
                     "propagate": True,
