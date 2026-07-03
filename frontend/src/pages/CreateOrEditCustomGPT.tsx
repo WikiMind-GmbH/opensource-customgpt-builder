@@ -48,7 +48,12 @@ const [files, setFiles] = useState<string[]>([]);
     } else {
       const body: CustomGptToEdit = {
         custom_gpt_id: idOfCustomGptOrUndefinedStr,
-        ...form,
+        custom_gpt_name: form.custom_gpt_name,
+        custom_gpt_description:
+          form.custom_gpt_description.trim() === ""
+            ? undefined
+            : form.custom_gpt_description,
+        custom_gpt_instructions: form.custom_gpt_instructions,
       };
       const res: CommandResult =
         await CustomGpTsCommandsService.editCustomGpt(body);

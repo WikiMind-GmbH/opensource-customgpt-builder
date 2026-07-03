@@ -11,6 +11,9 @@ from src.contexts.customGPTs.application.ports.cgpt_queries import (
 )
 from src.contexts.customGPTs.infrastructure.db.orm import custom_gpts
 from src.contexts.shared.typing_aliases import Factory
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(context=LoggerContext.CUSTOMGPTS, component="query-adapter")
 
 
 class CgptQueriesImplementation(CgptQueries):

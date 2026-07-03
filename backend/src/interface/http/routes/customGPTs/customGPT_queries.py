@@ -1,4 +1,5 @@
 from typing import Annotated
+from venv import logger
 
 from fastapi import APIRouter, Depends
 
@@ -17,6 +18,9 @@ from src.interface.http.schemas.customGPTs.customGPT_queries import (
     CustomGPTInfosSchema,
     CustomGPTOverviewSchema,
 )
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(context=LoggerContext.CUSTOMGPTS, component="QueryRouter")
 
 dependencies_container: DependenciesContainer = dependencies_container
 
@@ -51,6 +55,7 @@ def get_custom_gpt_by_id(
         CgptQueries, Depends(dependencies_container.cgpt_queries_adapter_factory)
     ],
 ) -> CustomGPTInfosSchema:
+    logger.debug(msg=f"get-custom-gpt-infos called with id: `{custom_gpt_id}`")
     cgpt_dto: CustomGPTInfosDTO = cgpt_queries_adapter.get_custom_gpt_infos(
         cgpt_id=custom_gpt_id
     )

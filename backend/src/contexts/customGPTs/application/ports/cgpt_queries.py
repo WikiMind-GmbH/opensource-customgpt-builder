@@ -26,7 +26,7 @@ class CustomGPTInfosDTO(BaseModel):
     id: str
     name: str
     instructions: str
-    description: str
+    description: str | None = None
 
 
 class CgptQueries(Protocol):

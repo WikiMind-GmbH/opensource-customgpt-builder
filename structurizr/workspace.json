@@ -3,7 +3,8 @@
   "description" : "Use Chatgpt api with own customGPT implementation",
   "documentation" : { },
   "id" : 1,
-  "lastModifiedDate" : "2026-04-20T20:20:42Z",
+  "lastModifiedAgent" : "structurizr-ui",
+  "lastModifiedDate" : "2026-07-02T21:20:26Z",
   "model" : {
     "people" : [ {
       "description" : "A user of the system wanting to profit from customized llm chat functionality",
@@ -16,15 +17,15 @@
       "relationships" : [ {
         "description" : "Chats with LLM, creates or uses CustomGPTs using",
         "destinationId" : "3",
-        "id" : "41",
+        "id" : "42",
         "sourceId" : "1",
         "tags" : "Relationship",
         "technology" : "RestAPI"
       }, {
         "description" : "Chats with LLM, creates or uses CustomGPTs using",
         "destinationId" : "2",
-        "id" : "42",
-        "linkedRelationshipId" : "41",
+        "id" : "43",
+        "linkedRelationshipId" : "42",
         "sourceId" : "1",
         "technology" : "RestAPI"
       } ],
@@ -42,7 +43,7 @@
         "relationships" : [ {
           "description" : "creates, retrieves and chats with a llm or customGPTs, utilizing own files",
           "destinationId" : "4",
-          "id" : "43",
+          "id" : "44",
           "sourceId" : "3",
           "tags" : "Relationship",
           "technology" : "RESTApi"
@@ -60,55 +61,55 @@
         "relationships" : [ {
           "description" : "provides its chat functionality (create/continue/get) by utilizing endpoints defined in",
           "destinationId" : "5",
-          "id" : "44",
+          "id" : "45",
           "sourceId" : "4",
           "tags" : "Relationship"
         }, {
           "description" : "provides its functionality to create/continue/get/delete customgpts by utilizing endpoints of",
           "destinationId" : "15",
-          "id" : "45",
+          "id" : "46",
           "sourceId" : "4",
           "tags" : "Relationship"
         }, {
           "description" : "provides its functionality to upload documents and get infos on uploaded docs by utiliuzing the endpoints of",
           "destinationId" : "25",
-          "id" : "46",
+          "id" : "47",
           "sourceId" : "4",
           "tags" : "Relationship"
         }, {
           "description" : "gets conversational data and other get request by utilizing the endpoints in the",
           "destinationId" : "8",
-          "id" : "47",
+          "id" : "48",
           "sourceId" : "4",
           "tags" : "Relationship"
         }, {
           "description" : "provides the functionality to to start or continue a conversation by utilizing the endpoints of the",
           "destinationId" : "7",
-          "id" : "49",
+          "id" : "50",
           "sourceId" : "4",
           "tags" : "Relationship"
         }, {
           "description" : "gets conversational data and other get request by utilizing the endpoints in the",
           "destinationId" : "17",
-          "id" : "68",
+          "id" : "69",
           "sourceId" : "4",
           "tags" : "Relationship"
         }, {
           "description" : "provides the functionality to to change or delete customgpts by utilizing endpoints of",
           "destinationId" : "16",
-          "id" : "70",
+          "id" : "71",
           "sourceId" : "4",
           "tags" : "Relationship"
         }, {
           "description" : "get file names and other info on stored documents by utiliuzing the endpoints of",
           "destinationId" : "27",
-          "id" : "82",
+          "id" : "83",
           "sourceId" : "4",
           "tags" : "Relationship"
         }, {
           "description" : "provides the functionality to upload files by utilizing the endpoints of the",
           "destinationId" : "26",
-          "id" : "83",
+          "id" : "84",
           "sourceId" : "4",
           "tags" : "Relationship"
         } ],
@@ -125,44 +126,44 @@
           "relationships" : [ {
             "description" : "wraps in one transaction: create, store, delete, retrieve and change domain model objects",
             "destinationId" : "10",
-            "id" : "51",
+            "id" : "52",
             "sourceId" : "6",
             "tags" : "Relationship"
           }, {
             "description" : "add messages and create prompt by utilizing the models and their functions of the",
             "destinationId" : "9",
-            "id" : "54",
-            "sourceId" : "6",
-            "tags" : "Relationship"
-          }, {
-            "description" : "gets plain description and name of specific customgpts (for prompt composition) from",
-            "destinationId" : "23",
             "id" : "55",
             "sourceId" : "6",
             "tags" : "Relationship"
           }, {
             "description" : "gets plain description and name of specific customgpts (for prompt composition) from",
-            "destinationId" : "15",
+            "destinationId" : "23",
             "id" : "56",
-            "linkedRelationshipId" : "55",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          }, {
+            "description" : "gets plain description and name of specific customgpts (for prompt composition) from",
+            "destinationId" : "15",
+            "id" : "57",
+            "linkedRelationshipId" : "56",
             "sourceId" : "6"
           }, {
             "description" : "sends list of messages to gets llm assistant response to",
             "destinationId" : "12",
-            "id" : "59",
+            "id" : "60",
             "sourceId" : "6",
             "tags" : "Relationship"
           }, {
             "description" : "retrieve relevant file chunks to a passed text snippet",
             "destinationId" : "34",
-            "id" : "63",
+            "id" : "64",
             "sourceId" : "6",
             "tags" : "Relationship"
           }, {
             "description" : "retrieve relevant file chunks to a passed text snippet",
             "destinationId" : "25",
-            "id" : "64",
-            "linkedRelationshipId" : "63",
+            "id" : "65",
+            "linkedRelationshipId" : "64",
             "sourceId" : "6"
           } ],
           "tags" : "Element,Component"
@@ -177,7 +178,7 @@
           "relationships" : [ {
             "description" : "provides its functionality by utilizing the",
             "destinationId" : "6",
-            "id" : "50",
+            "id" : "51",
             "sourceId" : "7",
             "tags" : "Relationship"
           } ],
@@ -193,7 +194,7 @@
           "relationships" : [ {
             "description" : "gets conversational data efficiently via direct sql queries to",
             "destinationId" : "13",
-            "id" : "48",
+            "id" : "49",
             "sourceId" : "8",
             "tags" : "Relationship"
           } ],
@@ -218,7 +219,7 @@
           "relationships" : [ {
             "description" : "provides its ability by calling functions and properties of",
             "destinationId" : "11",
-            "id" : "52",
+            "id" : "53",
             "sourceId" : "10",
             "tags" : "Relationship"
           } ],
@@ -234,7 +235,7 @@
           "relationships" : [ {
             "description" : "Utilizes sqlalchemy and rom mapping to",
             "destinationId" : "13",
-            "id" : "53",
+            "id" : "54",
             "sourceId" : "11",
             "tags" : "Relationship"
           } ],
@@ -250,7 +251,7 @@
           "relationships" : [ {
             "description" : "provides its llm functionality by utilizing",
             "destinationId" : "40",
-            "id" : "60",
+            "id" : "61",
             "sourceId" : "12",
             "tags" : "Relationship",
             "technology" : "RestAPI"
@@ -277,7 +278,7 @@
           "relationships" : [ {
             "description" : "deletes chats by using the",
             "destinationId" : "10",
-            "id" : "67",
+            "id" : "68",
             "sourceId" : "14",
             "tags" : "Relationship"
           } ],
@@ -293,33 +294,33 @@
         "relationships" : [ {
           "description" : "gets plain description and name of specific customgpts (for prompt composition) from",
           "destinationId" : "23",
-          "id" : "57",
-          "linkedRelationshipId" : "55",
+          "id" : "58",
+          "linkedRelationshipId" : "56",
           "sourceId" : "5"
         }, {
           "description" : "gets plain description and name of specific customgpts (for prompt composition) from",
           "destinationId" : "15",
-          "id" : "58",
-          "linkedRelationshipId" : "55",
+          "id" : "59",
+          "linkedRelationshipId" : "56",
           "sourceId" : "5"
         }, {
           "description" : "provides its llm functionality by utilizing",
           "destinationId" : "40",
-          "id" : "61",
-          "linkedRelationshipId" : "60",
+          "id" : "62",
+          "linkedRelationshipId" : "61",
           "sourceId" : "5",
           "technology" : "RestAPI"
         }, {
           "description" : "retrieve relevant file chunks to a passed text snippet",
           "destinationId" : "34",
-          "id" : "65",
-          "linkedRelationshipId" : "63",
+          "id" : "66",
+          "linkedRelationshipId" : "64",
           "sourceId" : "5"
         }, {
           "description" : "retrieve relevant file chunks to a passed text snippet",
           "destinationId" : "25",
-          "id" : "66",
-          "linkedRelationshipId" : "63",
+          "id" : "67",
+          "linkedRelationshipId" : "64",
           "sourceId" : "5"
         } ],
         "tags" : "Element,Container"
@@ -335,7 +336,7 @@
           "relationships" : [ {
             "description" : "provides its functionality by utilizing the service functions of",
             "destinationId" : "18",
-            "id" : "71",
+            "id" : "72",
             "sourceId" : "16",
             "tags" : "Relationship"
           } ],
@@ -351,7 +352,7 @@
           "relationships" : [ {
             "description" : "gets customgpt data efficiently via direct sql queries to",
             "destinationId" : "22",
-            "id" : "69",
+            "id" : "70",
             "sourceId" : "17",
             "tags" : "Relationship"
           } ],
@@ -367,26 +368,26 @@
           "relationships" : [ {
             "description" : "wraps in one transaction: create, store, delete, retrieve and change domain model objects",
             "destinationId" : "20",
-            "id" : "72",
+            "id" : "73",
             "sourceId" : "18",
             "tags" : "Relationship"
           }, {
             "description" : "utilize the models of the",
             "destinationId" : "19",
-            "id" : "75",
-            "sourceId" : "18",
-            "tags" : "Relationship"
-          }, {
-            "description" : "delete all conversations associated with a specific cgpt",
-            "destinationId" : "14",
             "id" : "76",
             "sourceId" : "18",
             "tags" : "Relationship"
           }, {
             "description" : "delete all conversations associated with a specific cgpt",
-            "destinationId" : "5",
+            "destinationId" : "14",
             "id" : "77",
-            "linkedRelationshipId" : "76",
+            "sourceId" : "18",
+            "tags" : "Relationship"
+          }, {
+            "description" : "delete all conversations associated with a specific cgpt",
+            "destinationId" : "5",
+            "id" : "78",
+            "linkedRelationshipId" : "77",
             "sourceId" : "18"
           } ],
           "tags" : "Element,Component"
@@ -410,7 +411,7 @@
           "relationships" : [ {
             "description" : "provides its ability by calling functions and properties of",
             "destinationId" : "21",
-            "id" : "73",
+            "id" : "74",
             "sourceId" : "20",
             "tags" : "Relationship"
           } ],
@@ -426,7 +427,7 @@
           "relationships" : [ {
             "description" : "Utilizes sqlalchemy and rom mapping to",
             "destinationId" : "22",
-            "id" : "74",
+            "id" : "75",
             "sourceId" : "21",
             "tags" : "Relationship"
           } ],
@@ -452,7 +453,7 @@
           "relationships" : [ {
             "description" : "gets the description and name of a cgpt by using",
             "destinationId" : "20",
-            "id" : "81",
+            "id" : "82",
             "sourceId" : "23",
             "tags" : "Relationship"
           } ],
@@ -468,7 +469,7 @@
           "relationships" : [ {
             "description" : "use straight sql to check if user has access to specific cgpt",
             "destinationId" : "22",
-            "id" : "80",
+            "id" : "81",
             "sourceId" : "24",
             "tags" : "Relationship"
           } ],
@@ -484,14 +485,14 @@
         "relationships" : [ {
           "description" : "delete all conversations associated with a specific cgpt",
           "destinationId" : "14",
-          "id" : "78",
-          "linkedRelationshipId" : "76",
+          "id" : "79",
+          "linkedRelationshipId" : "77",
           "sourceId" : "15"
         }, {
           "description" : "delete all conversations associated with a specific cgpt",
           "destinationId" : "5",
-          "id" : "79",
-          "linkedRelationshipId" : "76",
+          "id" : "80",
+          "linkedRelationshipId" : "77",
           "sourceId" : "15"
         } ],
         "tags" : "Element,Container"
@@ -507,7 +508,7 @@
           "relationships" : [ {
             "description" : "provides its functionality by utilizing the",
             "destinationId" : "28",
-            "id" : "84",
+            "id" : "85",
             "sourceId" : "26",
             "tags" : "Relationship"
           } ],
@@ -532,49 +533,49 @@
           "relationships" : [ {
             "description" : "wraps in one transaction: create, store, delete, retrieve and change metadata",
             "destinationId" : "30",
-            "id" : "85",
+            "id" : "86",
             "sourceId" : "28",
             "tags" : "Relationship"
           }, {
             "description" : "pre-process text-like files to raw text",
             "destinationId" : "33",
-            "id" : "88",
+            "id" : "89",
             "sourceId" : "28",
             "tags" : "Relationship"
           }, {
             "description" : "get text chunk and file domain models with functions to chunk transformed text",
             "destinationId" : "29",
-            "id" : "90",
-            "sourceId" : "28",
-            "tags" : "Relationship"
-          }, {
-            "description" : "check if user has access to cgpt",
-            "destinationId" : "24",
             "id" : "91",
             "sourceId" : "28",
             "tags" : "Relationship"
           }, {
             "description" : "check if user has access to cgpt",
-            "destinationId" : "15",
+            "destinationId" : "24",
             "id" : "92",
-            "linkedRelationshipId" : "91",
+            "sourceId" : "28",
+            "tags" : "Relationship"
+          }, {
+            "description" : "check if user has access to cgpt",
+            "destinationId" : "15",
+            "id" : "93",
+            "linkedRelationshipId" : "92",
             "sourceId" : "28"
           }, {
             "description" : "save and retreive documents",
             "destinationId" : "37",
-            "id" : "95",
+            "id" : "96",
             "sourceId" : "28",
             "tags" : "Relationship"
           }, {
             "description" : "generates an embedding for a given text chunk",
             "destinationId" : "39",
-            "id" : "97",
+            "id" : "98",
             "sourceId" : "28",
             "tags" : "Relationship"
           }, {
             "description" : "store embeddings and retreive close embeddings",
             "destinationId" : "35",
-            "id" : "98",
+            "id" : "99",
             "sourceId" : "28",
             "tags" : "Relationship"
           } ],
@@ -599,7 +600,7 @@
           "relationships" : [ {
             "description" : "provides its ability by calling functions and properties of",
             "destinationId" : "31",
-            "id" : "86",
+            "id" : "87",
             "sourceId" : "30",
             "tags" : "Relationship"
           } ],
@@ -615,7 +616,7 @@
           "relationships" : [ {
             "description" : "Utilizes sqlalchemy and rom mapping to",
             "destinationId" : "32",
-            "id" : "87",
+            "id" : "88",
             "sourceId" : "31",
             "tags" : "Relationship"
           } ],
@@ -650,7 +651,7 @@
           "relationships" : [ {
             "description" : "calls retreival service function of",
             "destinationId" : "28",
-            "id" : "89",
+            "id" : "90",
             "sourceId" : "34",
             "tags" : "Relationship"
           } ],
@@ -666,10 +667,17 @@
           "relationships" : [ {
             "description" : "utilizes as db",
             "destinationId" : "36",
-            "id" : "99",
+            "id" : "100",
             "sourceId" : "35",
             "tags" : "Relationship",
             "technology" : "Qdrant"
+          }, {
+            "description" : "utilizes as embedding generator",
+            "destinationId" : "41",
+            "id" : "101",
+            "sourceId" : "35",
+            "tags" : "Relationship",
+            "technology" : "RestAPI"
           } ],
           "tags" : "Element,Component"
         }, {
@@ -693,7 +701,7 @@
           "relationships" : [ {
             "description" : "utilizes",
             "destinationId" : "38",
-            "id" : "96",
+            "id" : "97",
             "sourceId" : "37",
             "tags" : "Relationship"
           } ],
@@ -727,15 +735,22 @@
         "relationships" : [ {
           "description" : "check if user has access to cgpt",
           "destinationId" : "24",
-          "id" : "93",
-          "linkedRelationshipId" : "91",
+          "id" : "94",
+          "linkedRelationshipId" : "92",
           "sourceId" : "25"
         }, {
           "description" : "check if user has access to cgpt",
           "destinationId" : "15",
-          "id" : "94",
-          "linkedRelationshipId" : "91",
+          "id" : "95",
+          "linkedRelationshipId" : "92",
           "sourceId" : "25"
+        }, {
+          "description" : "utilizes as embedding generator",
+          "destinationId" : "41",
+          "id" : "102",
+          "linkedRelationshipId" : "101",
+          "sourceId" : "25",
+          "technology" : "RestAPI"
         } ],
         "tags" : "Element,Container"
       } ],
@@ -753,7 +768,7 @@
           "title" : " SWA documentation with Structurizr lite and C4+Arc42+ADRs"
         }, {
           "content" : "# Error Handling Pattern (Ports Own Errors, Global HTTP Translation)\n\n## Status\nSuperceded by [18. Error handling implementation](0018-error-handling-implementation)\n\n\n**Date:** 2025-10-03\n\n## Context\n!!!!!!!!! THIS IS A SKETCH ONLY AS OF NOW\n\n\nWe need a simple, consistent approach to error handling across multiple bounded contexts and layers.\n\nSee:\nhttps://chatgpt.com/s/t_68fa00d64ad48191802c77e5deccb544\n\nFor more details on how catch-all exceptions can be applied, and possible pitfalls,  see https://chatgpt.com/s/t_68fa149487a48191a5d18869845aba8b\nhttps://chatgpt.com/s/t_68faad13da78819190b985d0e0c62b4b\n\n\n\n#### Exception ownership by layer\n\n#### 1) Domain (Core)\n\n**What:** Business-rule & invariant errors.\n**Why:** They express domain semantics and are independent of infrastructure.\n**Examples:** `InvalidPrompt`, `QuotaExceeded`, `OperationNotAllowed`.\n**How used:** Raised by domain logic or services; handled in services or mapped to HTTP at the boundary.\n\n#### 2) Per-Port (Contract) — your key stability point\n\n**What:** The *declared failure modes* of a port (the interface your app calls).\n**Why:** Adapters may change tech, but callers rely on stable, domain-ish semantics.\n**Examples:** `CgptNotFoundError`, `RetrieverUnavailable`, `RetrieverError` (base).\n**How used:** **Adapters translate infra/library errors → these exceptions**. Callers see only port exceptions (and domain exceptions), never raw infra ones.\n\n#### 3) Service / Use-case layer (optional, be frugal)\n\n**When to create service exceptions:** Only if the service adds **new semantics** that don’t belong to a single port (e.g., orchestration/compensation failure, cross-port normalization).\n**Otherwise:** Use **domain + port exceptions directly**; catch/handle or let them bubble to HTTP.\n\n#### 4) Adapters / Infrastructure\n\n**What:** Implementation details stay here.\n**Rule:** Never leak infra exceptions upward. **Map to port exceptions** (specific first, then a *port-scoped* catch-all). Keep try-blocks tight.\n\n#### 5) HTTP Boundary\n\n**What:** Central exception handlers that map domain/port exceptions → HTTP (Problem Details).\n**Rule:** Keep HTTP knowledge here; the core remains transport-agnostic.\n\n---\n\n#### Handling & re-raising: rules that keep you safe\n\n* **Define exceptions per port** as part of the port interface; adapters raise only those.\n* **Raise instances, not classes:** `raise CgptNotFoundError(\"cgpt_id=...\")`.\n* **Preserve tracebacks:** `raise ... from e` for observability.\n* **Catch only when you add value:** translation, add context, adjust retryability, ensure cleanup.\n* **Keep try-scopes tight** so you don’t mask unrelated bugs.\n* **No blanket `except Exception`** *except* for a **final, port-scoped catch-all** that wraps to a generic port error and re-raises (with chaining).\n* **Don’t catch control-flow exceptions:** `KeyboardInterrupt`, `SystemExit`, `GeneratorExit`, `asyncio.CancelledError`.\n* **Expected absence vs exception:** if “not found” is common/acceptable, return `model | None`. If it violates an invariant for the operation, raise `NotFound`.\n* **Log once at the boundary** (HTTP/middleware). Inside adapters/services, prefer adding context and re-raising—avoid duplicate logs.\n\n---\n\n### Minimal shapes (concise patterns)\n\n#### Port contract (exceptions + protocol)\n\n```python\n# ports/cgpt_retriever.py\nfrom dataclasses import dataclass\nfrom enum import StrEnum\nfrom typing import Protocol\n\nclass CGPTRetrieverError(RuntimeError): ...\nclass CgptNotFoundError(CGPTRetrieverError): ...\nclass CGPTRetrieverUnavailable(CGPTRetrieverError): ...\nclass RetrieverUnexpectedError(CGPTRetrieverError): ...  # final catch-all type\n\nclass RoleDTO(StrEnum):\n    user = \"user\"\n    assistant = \"assistant\"\n    system = \"system\"\n\n@dataclass(frozen=True)\nclass MessageDTO:\n    role: RoleDTO\n    text_content: str\n\nclass CustomGPTInstructionsRetriever(Protocol):\n    def get_cgpt_sys_prompt(self, cgpt_id: str) -> list[MessageDTO]: ...\n```\n\n#### Adapter (specific mappings → final port-scoped catch-all)\n\n```python\n# adapters/cgpt_retriever_adapter.py\nimport asyncio\nfrom src.contexts.chat.ports.cgpt_retriever import (\n    CustomGPTInstructionsRetriever,\n    MessageDTO, CgptNotFoundError, CGPTRetrieverUnavailable, RetrieverUnexpectedError\n)\nfrom src.contexts.chat.domain.models import CustomGPT\nfrom src.contexts.chat.domain.uow import CgptUOW, CGPTNonExistentError\nfrom src.shared.types import Factory\n\ndef cgpt_infos_to_sysprompt(*, cgpt_name: str, cgpt_instructions: str) -> list[MessageDTO]:\n    ...\n\nclass CustomGPTInstructionsRetrieverAdapter(CustomGPTInstructionsRetriever):\n    def __init__(self, cgpt_uow_factory: Factory[CgptUOW]):\n        self._cgpt_uow_factory = cgpt_uow_factory\n\n    def get_cgpt_sys_prompt(self, cgpt_id: str) -> list[MessageDTO]:\n        try:\n            with self._cgpt_uow_factory() as uow:\n                try:\n                    cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)\n                except CGPTNonExistentError as e:\n                    raise CgptNotFoundError(f\"cgpt_id={cgpt_id}\") from e\n\n                return cgpt_infos_to_sysprompt(\n                    cgpt_name=cgpt.name,\n                    cgpt_instructions=cgpt.instructions,\n                )\n\n        # Map known transient/operational issues first\n        except (ConnectionError, TimeoutError) as e:\n            raise CGPTRetrieverUnavailable(f\"cgpt_id={cgpt_id}\") from e\n\n        # Preserve control-flow exceptions\n        except (KeyboardInterrupt, SystemExit, GeneratorExit, asyncio.CancelledError):\n            raise\n\n        # Final, port-scoped catch-all: wrap & chain (never swallow)\n        except Exception as e:\n            raise RetrieverUnexpectedError(f\"unexpected failure; cgpt_id={cgpt_id}\") from e\n```\n\n#### Service layer use domain/port exceptions\n\n```python\ndef build_system_prompt(retriever: CustomGPTInstructionsRetriever, cgpt_id: str) -> list[MessageDTO]:\n    try:\n        return retriever.get_cgpt_sys_prompt(cgpt_id)\n    except CgptNotFoundError:\n        # Either handle (e.g., default prompt) or bubble unchanged\n        raise\n    # Add service-level exceptions only if this function introduces\n    # a new, higher-level failure not captured by the port/domain types.\n```\n\n#### HTTP boundary (Problem Details mapping)\n\n```python\nfrom fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\nfrom src.contexts.chat.ports.cgpt_retriever import (\n    CgptNotFoundError, CGPTRetrieverUnavailable, RetrieverUnexpectedError\n)\n\napp = FastAPI()\n\ndef problem(status: int, type_: str, title: str, detail: str | None = None):\n    return JSONResponse(\n        status_code=status,\n        content={\"type\": type_, \"title\": title, \"status\": status, \"detail\": detail},\n        headers={\"Cache-Control\": \"no-store\"},\n    )\n\n@app.exception_handler(CgptNotFoundError)\ndef _not_found(_: Request, exc: CgptNotFoundError):\n    return problem(404, \"urn:problem:cgpt-not-found\", \"Custom GPT not found\", str(exc))\n\n@app.exception_handler(CGPTRetrieverUnavailable)\ndef _unavailable(_: Request, exc: CGPTRetrieverUnavailable):\n    return problem(503, \"urn:problem:retriever-unavailable\", \"Retriever unavailable\", str(exc))\n\n@app.exception_handler(RetrieverUnexpectedError)\ndef _unexpected(_: Request, exc: RetrieverUnexpectedError):\n    return problem(500, \"urn:problem:unexpected\", \"Unexpected error\", \"An unexpected error occurred.\")\n```\n\n---\n\n### Should you have a blanket per-port catch-all?\n\n**Yes**, at the adapter boundary—**one per port**—implemented as the *final* `except Exception as e` that **wraps into a generic port error** and **re-raises with chaining**.\nThis ensures no unknown infra errors leak outside the adapter while preserving debuggability.\n\n---\n\n### Quick checklist\n\n* **Domain exceptions:** business rules; raised/handled in core/services.\n* **Per-port exceptions:** part of the port contract; adapters only raise these.\n* **Service exceptions:** only when you invent new cross-port semantics; otherwise reuse domain/port.\n* **Adapters:** map known errors specifically; add a **port-scoped catch-all**; no swallowing; tight try-scopes; chain with `from e`.\n* **HTTP:** central Problem Details mapping; log at the boundary.\n\nIf you want, paste another port’s methods + typical failures and I’ll suggest the minimal exception set and its adapter mapping table.\n\n\n## Decision\nOLD:\n\n1. **Error classes per context & layer combo**\n\n   * Each bounded context defines its own **domain error classes** (business-focused).\n   * Each **port** (e.g., repository/gateway interface) defines its own **port error classes** for that context.\n\n2. **Ports define errors; adapters only raise those**\n\n   * Adapters must translate vendor/ORM exceptions into the **port-defined** errors and **never** leak vendor exceptions.\n   * Include a single catch-all mapping for anything not explicitly handled:\n\n   ```python\n   # inside the adapter\n   from sqlalchemy.exc import IntegrityError, OperationalError, StaleDataError\n\n   class RepoError(Exception): ...\n   class UniqueViolation(RepoError): ...\n   class ConcurrencyConflict(RepoError): ...\n   class RepoUnavailable(RepoError): ...\n\n   def _map_sa(e: Exception) -> RepoError:\n       if isinstance(e, IntegrityError):   return UniqueViolation(str(e))\n       if isinstance(e, StaleDataError):   return ConcurrencyConflict(str(e))\n       if isinstance(e, OperationalError): return RepoUnavailable(str(e))\n       return RepoError(str(e))  # catch-all\n   ```\n\nAdapter can use an explicit translator:\n```\nfrom sqlalchemy.exc import IntegrityError, OperationalError, StaleDataError\nfrom .ports import RepoError, UniqueViolation, ConcurrencyConflict, RepoUnavailable\n\ndef _map_sa(e: Exception) -> RepoError:\n   if isinstance(e, IntegrityError):   return UniqueViolation(str(e))\n   if isinstance(e, StaleDataError):   return ConcurrencyConflict(str(e))\n   if isinstance(e, OperationalError): return RepoUnavailable(str(e))\n   return RepoError(str(e))  # catch-all\n```\n\n3. **Service/Application layer**\n\n   * We will **not** manually translate domain or port errors in the service layer.\n   * Services allow **domain** and **port** errors to bubble up unchanged to keep the application layer simpler.\n\n4. **HTTP layer (FastAPI)**\n\n   * FastAPI **exception handlers** must handle and translate **all** domain and application/port errors to `HTTPException` responses.\n   * Centralize this translation with global handlers; better: an explicit translator function that handlers call\n```\none handler catching all exception types, then calling the translator function to return the correct translation.\nNeed one global catch-all again, here: take care not to overwrite important errors that fastapi would throw for validation for example. So maybe just return all errors not explicitly translated as-is\n```\n   * If using an explicit translator, it maps known domain/port/app errors to HTTP status codes; unknowns become 500.\n\n\n## Consequences\n\n* **Pros:** Clear boundaries; no vendor leaks; minimal service-layer boilerplate; one place for HTTP mapping; predictable failure semantics.\n* **Cons:** HTTP layer must know the set of domain/port/app error types to translate.\n\n\n",
-          "date" : "2026-04-20T20:20:42Z",
+          "date" : "2026-07-02T21:18:35Z",
           "format" : "Markdown",
           "id" : "10",
           "status" : "Superseded",
@@ -834,7 +849,7 @@
           "status" : "ACCEPTED",
           "title" : " Structurizr lite as http (no s!) root app"
         }, {
-          "content" : "# 20. testing the backend\n\nDate: 2025-11-21\n\n## Status\n\nOPEN\n\n## Context\n\nIntegrating tests into the software development process is an established process with many benefits.  The downsides of initially more time investment quickly pay off and a net plus is reached fast. Other benefits like direct feedback if something accidentally was broken, tests working as documentation and so on not even included.\n\nOur hexagonal architecture is also made for easy testing, with the possibility of faking ones own adapters where needed and other benefits.   \n\nWe want e2e, unit, contract tests. Some tests are more detail oriented (adapter tests) while other fake some adapter and test the functionality of a layer further up.\nIn this way, we can create tests on different scopes:  \nTesting the functionality of an adapter in detail at the outer layer of our app.   \nDue to this we know how it works in detail.   \nAs such, we can go one layer inward, fake it and test the functionality in this layer with abstractions/fake adapters.\n\n## Decision\n\nWe require tests: \n\n- e2e tests utilizing a Fastapi test client For all the important use cases \n- service layer tests for every function\n- tests for each adapter\n- tests for dto mappers -i.e. from port dto to fastapi schema\n\n**If we find a (non-trivial) bug, we MUST write a test that catches it, and then fix it**\nIn this way we know that this edge case or behaviour is checked by our test and will be checked by our tests.\n\n*NON FINAL VERSION OF DOCUMENT*\n\n## Consequences\n\nWhat becomes easier or more difficult to do and any risks introduced by the change that will need to be mitigated.\n",
+          "content" : "# 20. testing the backend\n\nDate: 2025-11-21\n\n## Status\n\nOPEN\n\n## Context\n\nIntegrating tests into the software development process is an established process with many benefits.  The downsides of initially more time investment quickly pay off and a net plus is reached fast. Other benefits like direct feedback if something accidentally was broken, tests working as documentation and so on not even included.\n\nOur hexagonal architecture is also made for easy testing, with the possibility of faking ones own adapters where needed and other benefits.   \n\nWe want e2e, unit, contract tests. Some tests are more detail oriented (adapter tests) while other fake some adapter and test the functionality of a layer further up.\nIn this way, we can create tests on different scopes:  \nTesting the functionality of an adapter in detail at the outer layer of our app.   \nDue to this we know how it works in detail.   \nAs such, we can go one layer inward, fake it and test the functionality in this layer with abstractions/fake adapters.\n\nA better test folder structure must als be used! See Alberts notes for stlye considerations and practical constraints (e2e <>> other tests: conftest vs bootstrap)\n\n## Decision\n\nWe require tests: \n\n- e2e tests utilizing a Fastapi test client For all the important use cases \n- service layer tests for every function\n- tests for each adapter\n- tests for dto mappers -i.e. from port dto to fastapi schema\n\n**If we find a (non-trivial) bug, we MUST write a test that catches it, and then fix it**\nIn this way we know that this edge case or behaviour is checked by our test and will be checked by our tests.\n\n*NON FINAL VERSION OF DOCUMENT*\n\n## Consequences\n\nWhat becomes easier or more difficult to do and any risks introduced by the change that will need to be mitigated.\n",
           "date" : "2025-11-21T00:00:00Z",
           "format" : "Markdown",
           "id" : "20",
@@ -842,7 +857,7 @@
           "title" : "testing the backend"
         }, {
           "content" : "# 21. Dependency factories vs. singletons\n\n# Status\nAccepted\n\n## Context\n\nWe use Hexagonal Architecture (ports & adapters) and per-request **Unit of Work (UoW)** to manage DB sessions/transactions.\nSome adapters are **request-scoped** (e.g., UoW), while others can be **process-scoped** (e.g., LLM client) if safe.\n\nCreating all dependencies as factories (per request) is always safe but can be wasteful (e.g., repeatedly constructing heavyweight SDK clients). Using singletons reduces overhead but introduces concurrency concerns if adapters hold mutable or request-specific state.\n\n### Forces / Constraints\n\n* **Correctness & isolation:** UoW/DB `Session` must be per request.\n* **Simplicity:** Prefer decisions that are easy to apply consistently.\n* **Performance:** Avoid unnecessary construction of heavy clients.\n* **Safety:** Avoid subtle concurrency bugs in multi-threaded workers.\n\n## Decision\n\nAdopt a **conservative default**:\n\n1. **Must be a factory (per request)** if an adapter:\n\n   * Holds **request / UoW / transaction** state (e.g., SQLAlchemy `Session`, UoW).\n   * Keeps **mutable state** that isn’t explicitly concurrency-safe.\n   * Needs **per-user/tenant credentials** on the instance.\n   * Uses an SDK that is **not thread-safe**.\n\n2. **May be a singleton (per process)** if an adapter:\n\n   * Is **stateless / immutable**, **or**\n   * Only holds **thread-safe shared resources** (e.g., HTTP client connection pool, SDK documented as thread-safe), **and**\n   * Stores **no per-request state** on the instance.\n\n3. **Bias to factories.** We will default to factories unless we are **confident** a singleton is safe. We will **avoid adding concurrency control** (locks, etc.) in adapters for now; if that becomes necessary, we will revisit.\n\n### Rationale\n\n* Factories guarantee isolation and avoid shared mutable state across requests.\n* Singletons reduce overhead for heavy clients but require proof of thread safety and no per-request state.\n* A strict rule (“singletons only if immutable/stateless”) is easy to apply and error-resistant; we can relax it later case-by-case.\n\n### Considered Options\n\n* **Factories everywhere:** Safest, simplest; potentially wasteful for heavy clients.\n* **Singletons wherever possible:** Best performance; high risk without strict review and thread-safety guarantees.\n* **Hybrid (chosen):** Default to factories; allow singletons for immutable/stateless or documented thread-safe adapters.\n\n## Consequences\n\n**Positive**\n\n* Clear, low-cognitive-load rule for new dependencies.\n* Minimizes concurrency bugs from shared mutable state.\n* Keeps UoW semantics correct (new `Session` per request).\n\n**Negative / Trade-offs**\n\n* May incur extra object creation overhead (e.g., recreating external SDK clients) until we explicitly allow singletons.\n* Developers must occasionally recognize when performance warrants an exception and document it.\n\n### Risks & Mitigations\n\n* **Risk:** Overhead from factories for heavy clients.\n  **Mitigation:** Promote specific adapters to singletons when proven safe (documented thread safety, no per-request state).\n\n* **Risk:** Subtle shared-state bugs if a non-immutable adapter is mistakenly made singleton.\n  **Mitigation:** Code review checklist item (“lifetime: factory vs singleton?”) and ADR reference.\n\n### Examples / Rules of Thumb\n\n* **Always factory:** UoW, Repositories that wrap a `Session`, anything that holds request context.\n* **Singleton OK:** LLM/OpenAI client configured once; shared HTTP client with connection pooling; read-only config providers.\n\n### Future Work\n\n* Add a **lifetime annotation** to dependency factories (e.g., `@lifetime(\"request\")` vs `@lifetime(\"process\")`) to make intent explicit.\n* Provide a **bench + profiling** guide to justify promoting specific adapters to singletons.\n* If/when needed, introduce **concurrency control** inside specific adapters to enable safe singleton usage.\n* Document thread-safety guarantees for any SDKs we rely on.\n",
-          "date" : "2026-04-20T20:20:42Z",
+          "date" : "2026-07-02T21:18:35Z",
           "format" : "Markdown",
           "id" : "21",
           "status" : "Proposed",
@@ -863,20 +878,20 @@
           "title" : "pragmatic performance tests"
         }, {
           "content" : "# 24. Reason Required When Ignoring Type Checker Warnings\n\n## Status\n\nOPEN\n\n\n## Created by\n\nAlbert Sandritter\n\n\n## Decision Maker\n\n(To be filled)\n\n\n## Scope\n\nThis ADR applies to all Python code in this repository that is checked with our static type checker (e.g., Pyright/Pylance).\n\nIt governs how and when type checker warnings may be ignored.\n\n\n## Context\n\nWe have established the rule that the type checker should not report unresolved problems in our codebase.\nWe already configure it to ignore issues originating from untyped third-party libraries.\n\nHowever, static type checkers are inherently limited. They analyze code syntactically and structurally, but they do not always have full semantic context.\n\nIn some cases, the type checker reports warnings that are technically correct from a syntactic perspective, but semantically incorrect in our actual program behavior.\n\nExample:\nWhen registering exception handlers via decorators, the type checker may report that the handler function is unused. In reality, the function is used indirectly because the decorator performs registration as a side effect. The tool cannot infer this mechanism.\n\nIn such cases:\n\n* The warning is not indicating a real defect.\n* Refactoring may be possible, but sometimes there is no clean or idiomatic alternative.\n* Attempting to “satisfy” the type checker may reduce clarity rather than improve correctness.\n\nThe type checker is a means to improve code quality — not an end in itself.\n\nWe therefore need clear criteria for deciding:\n\n* When a warning must be resolved\n* When it is acceptable to explicitly ignore it\n* How such ignores must be documented\n* How they are revisited during refactoring\n\nWithout a process, we risk either:\n\n* Over-engineering solutions to non-problems, or\n* Accumulating careless ignore statements that hide real issues.\n\n\n## Alternatives Considered\n\n### 1. Never ignore any warning\n\nStrictly enforce zero ignores and require refactoring in all cases.\n\n**Pros**\n\n* Maximum theoretical strictness\n* No hidden warnings\n\n**Cons**\n\n* Can lead to convoluted or unnatural code\n* Encourages workarounds that reduce readability\n* Does not acknowledge tooling limitations\n\n\n### 2. Allow arbitrary ignores without documentation\n\nDevelopers may ignore warnings at their discretion.\n\n**Pros**\n\n* Fast\n* Low friction\n\n**Cons**\n\n* High risk of masking real problems\n* No accountability\n* Technical debt accumulates silently\n\n\n### 3. Allow controlled, documented, line-specific ignores (Proposed)\n\nAllow ignoring warnings under strict criteria and documentation requirements.\n\n**Pros**\n\n* Balances pragmatism and discipline\n* Preserves code clarity\n* Maintains accountability\n* Keeps ignores visible and reviewable\n\n**Cons**\n\n* Requires discipline and periodic review\n* Adds minor overhead when ignoring a warning\n\n\n## Decision\n\nWe adopt a controlled and documented approach to ignoring type checker warnings.\n\nA warning may only be ignored if:\n\n* The type checker is misidentifying a problem that is not semantically present.\n* The relevant information is explicit in the code but not inferable by the tool.\n* A reasonable effort has been made to find a clean and idiomatic solution.\n* No better solution was found within reasonable time.\n\nIf the decision is made to ignore a warning, the following rules apply:\n\n1. The ignore must apply to exactly one error type on exactly one line.\n\n   * Never ignore globally.\n   * Never ignore multiple error types at once.\n\n2. A short inline explanation must be added next to the ignore statement explaining why the warning is intentionally suppressed.\n\n3. During refactoring sessions, all instances of\n   `# pyright: ignore[ErrorType]`\n   must be reviewed and briefly re-evaluated.\n\nThe burden of justification lies with the developer introducing the ignore.\n\n\n## Consequences\n\n### Positive\n\n* Prevents unnecessary refactoring driven solely by tooling limitations.\n* Maintains readability and architectural clarity.\n* Keeps ignores explicit and reviewable.\n* Encourages conscious, documented decisions.\n\n### Negative / Risks\n\n* Ignored warnings may remain in the code even after better solutions become available.\n* Without regular review, justified ignores may turn into unnoticed technical debt.\n* **We do not have a regular review policy in place as of now!**\n* Refactoring opportunities may be missed if ignore statements are not revisited.\n\nTo mitigate these risks:\n\n* Ignore statements must always include an explanation.\n* Refactoring efforts must explicitly review existing ignore directives.\n\n#### When ignoring at badly typed libraries boundaries\nUsing ignores where it is mostly lazily pragmatic at untyped library boundaries:\none should rather Seal Unknown/Any at the boundary:\ncast once right after you call the framework/untyped lib\nthen keep everything inside your app strongly typed",
-          "date" : "2026-04-20T20:20:42Z",
+          "date" : "2026-07-02T21:18:35Z",
           "format" : "Markdown",
           "id" : "24",
           "status" : "OPEN",
           "title" : "Reason Required When Ignoring Type Checker Warnings"
         }, {
           "content" : "# typing guidelines\n\nNot having the type checker throw errors is a great sign. However, it does not mean that everything was done cleanly and that the types chosen guarantee best readability.\n\n## Status\nOPEN \n\n## Created by\n\nAlbert Sandritter\n\n## Decision Maker\n\nAlbert Sandritter\n\n\n\n## Scope\n\nBackend typechecking with pyright / vscode pylance. Always in the context of the currently selected settings.json.\n\n\n\n## Context\n\nNot having the type checker throw errors is a great sign. However, it does not mean that everything was done cleanly and that the types chosen guarantee best readability.\n\n\n\n## Alternatives Considered\n\nMultiple Aspects where we need to make a decision:\n\n### 1. When to choose more general or specific types\n\n\n\n## Decision\n### 1. Prefer Precise Types Over General Types if meaningful\n\nAlways prefer the most specific, semantically meaningful type available instead of widening to a more generic one (e.g. `Callable`, `Any`, or overly abstract aliases).\n\nConcrete library types carry more information, improve readability, and allow the type checker to enforce stronger guarantees.\n\n**Example**\n\n```python\nT = TypeVar(\"T\")\nFactory = Callable[[], T]\n\n# Too generic\ndef build_session(factory: Factory[Session]) -> Session:\n    return factory()\n\n# Prefer the concrete type\ndef build_session(factory: sessionmaker[Session]) -> Session:\n    return factory()\n```\n\nAlthough `sessionmaker[Session]` is callable and compatible with `Callable[[], Session]`, it conveys stronger intent and preserves SQLAlchemy-specific typing information.\n\n**Rule of thumb:**\nIf a richer or domain-specific type exists, use it instead of a structurally compatible but more general type.\n\n### Current version of settings.py for reference\n```\npython.analysis.typeCheckingMode\": \"strict\",\n  \"python.analysis.diagnosticMode\": \"workspace\",\n  \"python.analysis.include\": [\"backend\"],\n  \"python.analysis.autoImportCompletions\": true, // Improves auto-import suggestions\n  \"python.analysis.useLibraryCodeForTypes\": true, //Use library source when stubs are missing\n  \n  \"python.analysis.diagnosticSeverityOverrides\": {\n    \"reportMissingTypeStubs\": \"none\", //Stops warnings like “Library X has no type information”.\n    \"reportUnknownParameterType\": \"none\", // Stops complaints when a library gives you Unknown types.\n    \"reportUnknownArgumentType\": \"none\", // Stops the cascade of errors when passing those Unknowns around.\n    // ---- Optional noise reducers at dynamic/framework boundaries ----\n    \n    \"reportUnknownMemberType\": \"none\", // Stops \"member access on Unknown\" chains from ORMs / frameworks\n    // \"reportUnknownVariableType\": \"none\", // Prevents warnings about locals inferred as Unknown in glue code\n    // \"reportUnknownLambdaType\": \"none\" // Useful if you use many lambdas (factories, callbacks)\n  }\n```\n\n\n\n## Consequences\n\nDescribe the impact of this decision, including:\n\n* Benefits introduced\n* Trade-offs accepted\n* New limitations or constraints\n* Risks and how they may be mitigated\n* Follow-up work required (if any)\n\nBe explicit about what becomes easier and what becomes harder as a result.\n",
-          "date" : "2026-04-20T20:20:42Z",
+          "date" : "2026-07-02T21:18:36Z",
           "format" : "Markdown",
           "id" : "25",
           "status" : "OPEN",
           "title" : " typing guidelines"
         }, {
-          "content" : "# 26. DTOs at boundaries: contract data must be independent from internal models\n\nDate: 2026-03-10\n\nBoundary contracts must use DTOs that belong to the contract (not to either side’s internal models), and mapping between DTOs and internal models must happen outside the port module.\n\n## Status\n\nAccepted\n\nSupercedes [Utilizing DTOs in cross-context ports](#14)\n\n## Created by\n\nList all contributors who have meaningfully edited this ADR.\nVersion history in Git provides the authoritative change log.\n\n## Decision Maker\n\nThe person responsible for approving this ADR and moving it from OPEN/PROPOSED to ACCEPTED.\n\nThis should be the person accountable for software architecture decisions.\nOnly this person may mark the ADR as ACCEPTED.\n\n\n\n## Scope\n\nApplies to **all boundaries** in this repository, including:\n- cross-bounded-context calls inside the modulith\n- calls across layers/modules within a context (e.g., domain ↔ infrastructure, domain ↔ external APIs)\n- any Port/Adapter integration, regardless of whether it is “consumer→provider” or “provider→consumer”\n\nDoes **not** prescribe concrete DTO field schemas. It defines **rules and responsibilities**, not payload shapes.\n\nDoes **not** define runtime error-handling behavior (logging, retries, HTTP mapping, etc.).\n\n## Context\n\nWe want clear separation and long-term maintainability. A common failure mode is structural coupling caused by passing internal models across boundaries:\n\n- Internal domain models change for internal reasons; coupling contracts to them creates ripple effects.\n- Internal models often contain more data and invariants than a boundary should expose.\n- Exposing internal models leaks details and reduces autonomy of the owning part.\n- “Renaming leakage” (DTOs that are structurally identical to another side’s model) creates the same coupling under a different name.\n\nThis problem is independent of direction and topology:\n- whether the boundary is between bounded contexts or layers/modules\n- whether the integration is in-process (modulith) or remote\n- whether one side is considered “consumer” or “provider”\n\nWe need a stable, explicit boundary contract that protects internal models from each other and keeps responsibilities clear.\n\n## Alternatives Considered\n\n1) **Use internal domain models directly in boundary contracts**\n- Advantages:\n  - Less mapping code up front\n  - Fast initial development\n- Disadvantages:\n  - High coupling; internal refactors become cross-cutting changes\n  - Leaks internals and increases blast radius of domain evolution\n  - Encourages “God models” traveling across the system\n- Not chosen because it undermines bounded context autonomy and maintainability.\n\n2) **Use provider domain models as the shared contract**\n- Advantages:\n  - Provider remains “source of truth”\n  - Less duplication than mapping on both sides\n- Disadvantages:\n  - Still binds consumers to provider internals\n  - Prevents consumer from evolving independently\n  - Breaks when multiple consumers need different shapes/semantics\n- Not chosen because a contract must be stable and externalized, not an internal domain surface.\n\n3) **Use consumer domain models as the shared contract**\n- Advantages:\n  - Fits consumer use cases directly\n  - Less mapping inside consumer\n- Disadvantages:\n  - Forces provider to model the consumer’s concepts (reverse dependency)\n  - Creates implicit coupling and semantic confusion at the boundary\n- Not chosen because providers must not depend on consumer domain language.\n\n4) **Use contract-owned DTOs + explicit mapping (chosen)**\n- Advantages:\n  - Stable contracts with minimal coupling\n  - Internal refactors stay local\n  - Clear separation of responsibilities\n- Disadvantages:\n  - Requires mapping code and discipline\n  - Requires explicit evolution/versioning of DTOs\n\n## Decision\n\n1) **All boundary data is expressed via contract-owned DTOs**\n- Data crossing a boundary must use DTOs that belong to the **contract**, not internal models.\n- DTOs must not be:\n  - internal domain entities\n  - persistence/ORM models\n  - structurally identical “renamed” versions of another side’s internal model\n\n2) **Port module contents are contractual**\nWhere a boundary is represented as a Port module, that module contains:\n- the Port interface (Protocol) describing operations\n- the DTOs used by the contract (inputs/outputs)\n- the contract-level error types exposed to callers\n\n3) **Mappers live outside the Port module**\n- Mapping between DTOs and internal models happens outside the Port module.\n- Each side maps contract DTOs into its own internal representations.\n- The Port module must not import internal domain or infrastructure.\n\n4) **Dependencies do not leak into the contract**\n- Port functions must not require internal dependencies (e.g., UoW/DB/session/client objects) as parameters.\n- Adapters may receive such dependencies via construction/DI as implementation details.\n\n## Consequences\n\nBenefits:\n- Clear, stable boundary contracts with reduced coupling.\n- Internal refactors (domain/persistence/external libraries) are less likely to ripple across the system.\n- Contracts become easier to test and reason about.\n- Port modules become predictable and reviewable: Protocol + DTOs + contract errors.\n\nTrade-offs / costs:\n- Additional mapping code and maintenance overhead.\n- DTO evolution must be handled intentionally (compatibility considerations).\n\nConstraints introduced:\n- “No internal models across boundaries” is now an explicit rule.\n- “No dependency objects in port signatures” is now an explicit rule.\n\nRisks and mitigations:\n- Risk: DTOs drift into “renamed internal models”.\n  - Mitigation: code reviews check DTO semantics; DTO names must reflect boundary concepts, not internal model names.\n- Risk: mapping becomes scattered or duplicated.\n  - Mitigation: keep mappers close to the owning internal model (per context/layer) and treat them as first-class code.\n",
+          "content" : "# 26. DTOs at boundaries: contract data must be independent from internal models\n\nDate: 2026-03-10\n\nBoundary contracts must use DTOs that belong to the contract (not to either side’s internal models), and mapping between DTOs and internal models must happen outside the port module.\n\n## Status\n\nAccepted\n\nSupercedes [Utilizing DTOs in cross-context ports](#14)\n\n## Created by\n\nAlbert Sandritter\n\n\n## Decision Maker\n\nAlbert Sandritter\n\n\n\n## Scope\n\nApplies to **all boundaries** in this repository, including:\n- cross-bounded-context calls inside the modulith\n- calls across layers/modules within a context EXCEPT DOMAIN MODEL ORM REPOSITORY\n- any Port/Adapter integration, regardless of whether it is “consumer→provider” or “provider→consumer”\n\nDoes **not** prescribe concrete DTO field schemas. It defines **rules and responsibilities**, not payload shapes.\n\nDoes **not** define runtime error-handling behavior (logging, retries, HTTP mapping, etc.).\n\n## Context\n\nWe want clear separation and long-term maintainability. A common failure mode is structural coupling caused by passing internal models across boundaries:\n\n- Internal domain models change for internal reasons; coupling contracts to them creates ripple effects.\n- Internal models often contain more data and invariants than a boundary should expose.\n- Exposing internal models leaks details and reduces autonomy of the owning part.\n- “Renaming leakage” (DTOs that are structurally identical to another side’s model) creates the same coupling under a different name.\n\nThis problem is independent of direction and topology:\n- whether the boundary is between bounded contexts or layers/modules\n- whether the integration is in-process (modulith) or remote\n- whether one side is considered “consumer” or “provider”\n\nWe need a stable, explicit boundary contract that protects internal models from each other and keeps responsibilities clear.\n\n## Alternatives Considered\n\n1) **Use internal domain models directly in boundary contracts**\n- Advantages:\n  - Less mapping code up front\n  - Fast initial development\n- Disadvantages:\n  - High coupling; internal refactors become cross-cutting changes\n  - Leaks internals and increases blast radius of domain evolution\n  - Encourages “God models” traveling across the system\n- Not chosen because it undermines bounded context autonomy and maintainability.\n\n2) **Use provider domain models as the shared contract**\n- Advantages:\n  - Provider remains “source of truth”\n  - Less duplication than mapping on both sides\n- Disadvantages:\n  - Still binds consumers to provider internals\n  - Prevents consumer from evolving independently\n  - Breaks when multiple consumers need different shapes/semantics\n- Not chosen because a contract must be stable and externalized, not an internal domain surface.\n\n3) **Use consumer domain models as the shared contract**\n- Advantages:\n  - Fits consumer use cases directly\n  - Less mapping inside consumer\n- Disadvantages:\n  - Forces provider to model the consumer’s concepts (reverse dependency)\n  - Creates implicit coupling and semantic confusion at the boundary\n- Not chosen because providers must not depend on consumer domain language.\n\n4) **Use contract-owned DTOs + explicit mapping except between domain model and orm repo(chosen)**\n- Advantages:\n  - Stable contracts with minimal coupling\n  - Internal refactors stay local\n  - Clear separation of responsibilities\n- Disadvantages:\n  - Requires mapping code and discipline\n  - Requires explicit evolution/versioning of DTOs\n\n## Decision\n\n1) **All boundary data is expressed via contract-owned DTOs except between domain model and orm repo**\n- Data crossing a boundary must use DTOs that belong to the **contract**, not internal models.\n- DTOs must not be:\n  - internal domain entities\n  - persistence/ORM models\n  - structurally identical “renamed” versions of another side’s internal model\n\n2) **Port module contents are contractual**\nWhere a boundary is represented as a Port module, that module contains:\n- the Port interface (Protocol) describing operations (including property functions where necessary)\n- the DTOs used by the contract (inputs/outputs)\n- the contract-level error types exposed to callers\n\n3) **Mappers live outside the Port module**\n- Mapping between DTOs and internal models happens outside the Port module.\n- Each side maps contract DTOs into its own internal representations.\n- The Port module must not import internal domain or infrastructure.\n\n4) **Dependencies do not leak into the contract**\n- Port functions must not require internal dependencies (e.g., UoW/DB/session/client objects) as parameters.\n- Adapters may receive such dependencies via construction/DI as implementation details.\n\n## Consequences\n\nBenefits:\n- Clear, stable boundary contracts with reduced coupling.\n- Internal refactors (domain/persistence/external libraries) are less likely to ripple across the system.\n- Contracts become easier to test and reason about.\n- Port modules become predictable and reviewable: Protocol + DTOs + contract errors.\n\nTrade-offs / costs:\n- Additional mapping code and maintenance overhead.\n- DTO evolution must be handled intentionally (compatibility considerations).\n\nConstraints introduced:\n- “No internal models across boundaries” is now an explicit rule.\n- “No dependency objects in port signatures” is now an explicit rule.\n\nRisks and mitigations:\n- Risk: DTOs drift into “renamed internal models”.\n  - Mitigation: code reviews check DTO semantics; DTO names must reflect boundary concepts, not internal model names.\n- Risk: mapping becomes scattered or duplicated.\n  - Mitigation: keep mappers close to the owning internal model (per context/layer) and treat them as first-class code.\n",
           "date" : "2026-03-10T00:00:00Z",
           "format" : "Markdown",
           "id" : "26",
@@ -908,7 +923,7 @@
           "status" : ">Accepted",
           "title" : "domain invariants with private attributes and invariant safe setter functions"
         }, {
-          "content" : "# 29. hashing for file duplication evaluation\n\nDate: 2026-04-15\n\nWe must design a process on how we can use hashing best to achieve a system that correctly determines if a file with the same pure document content has been uploaded before.\n\n\n## Status\n\nOpen\n\n## Created by\n\n<!-- List all contributors who have meaningfully edited this ADR.\nVersion history in Git provides the authoritative change log. -->\n\n## Decision Maker\n\n<!-- The person responsible for approving this ADR and moving it from OPEN/PROPOSED to ACCEPTED.\n\nThis should be the person accountable for software architecture decisions.\nOnly this person may mark the ADR as ACCEPTED. -->\n\n\n\n## Scope\n\n<!-- Clearly define what this decision applies to (e.g., specific service, repository, bounded context, infrastructure component, or the entire system).\n\nExplicitly state if the decision does **not** apply to certain areas to avoid ambiguity. -->\n\n\n\n## Context\nThere are functional requirements - like avoiding false negatives and false positives and non functional requirements - lower computational cost.\n\n### Non funcional requirement: Computational cost\n\nWe need a hashing algorithm that is not too slow. Because we do not use them for cryptographic reasons, we do not have requirements for security features of hashing algorithms that were designed for cryptography, making our field of canditates wider.\n\n### Avoiding false positives\nWe must assure that our hash is long enought to avoid false positive duplicates.\n\n### Avoiding false negatives\nA lot of file formats also save metadata. E.g. word or pdf. So while the metadata may be different, the actual file contents may be the same. \nHashing the whole file, instead of 'unzipping' a word document and only hashing the document content can therefore produce false negatives.\nThere could/should be ways to only hash the \n\n<!-- Describe:\n\n* The problem or need motivating this decision\n* Relevant technical, organizational, or business constraints\n* Assumptions made at the time of writing\n* Any background information necessary to understand the trade-offs\n\nThis section should make it clear *why* a decision is required. -->\n\n\n\n## Alternatives Considered\n\n```\nOptional format-aware logical deduplication for selected file types where metadata-only differences are common and business-relevant.\n\nFor the hashing function itself, prefer:\n\nBLAKE3 if you want best performance and a modern strong hash\nSHA-256 if you want maximum standard-library simplicity and zero extra dependency\nxxHash only if you explicitly accept a non-cryptographic hash and pair it with a verification step\n\nFor most Python backends, the practical choice is:\n\nSHA-256 for simplicity and strong safety\nBLAKE3 if performance is important enough to justify one dependency\n```\n\n\n\n<!-- List the viable alternatives that were evaluated.\n\nFor each alternative, briefly describe:\n\n* The approach\n* Its advantages\n* Its disadvantages\n* Why it was not chosen (if applicable)\n\nIf the decision was not a simple this-or-that choice, describe the key dimensions and trade-offs that were considered. -->\n\n\n\n## Decision\n\nDescribe the chosen solution clearly and unambiguously.\n\nThis section should state:\n\n* What will be implemented\n* Any key design constraints or rules introduced\n* Any standards, technologies, or patterns that must be followed\n\nThe decision should be actionable and leave minimal room for interpretation.\n\n\n\n## Consequences\n\nDescribe the impact of this decision, including:\n\n* Benefits introduced\n* Trade-offs accepted\n* New limitations or constraints\n* Risks and how they may be mitigated\n* Follow-up work required (if any)\n\nBe explicit about what becomes easier and what becomes harder as a result.\n",
+          "content" : "# 29. hashing for file duplication evaluation\n\nDate: 2026-04-15\n\nWe must design a process on how we can use hashing best to achieve a system that correctly determines if a file with the same pure document content has been uploaded before.\n\n\n## Status\n\nOpen\n\n## Created by\n\n<!-- List all contributors who have meaningfully edited this ADR.\nVersion history in Git provides the authoritative change log. -->\n\n## Decision Maker\n\n<!-- The person responsible for approving this ADR and moving it from OPEN/PROPOSED to ACCEPTED.\n\nThis should be the person accountable for software architecture decisions.\nOnly this person may mark the ADR as ACCEPTED. -->\n\n\n\n## Scope\n\n<!-- Clearly define what this decision applies to (e.g., specific service, repository, bounded context, infrastructure component, or the entire system).\n\nExplicitly state if the decision does **not** apply to certain areas to avoid ambiguity. -->\n\n\n\n## Context\nThere are functional requirements - like avoiding false negatives and false positives and non functional requirements - lower computational cost.\n\nSee [here](https://jszym.com/blog/short_input_hash/) for slightly anecdotal research on python hashing function speed \n\n### Non funcional requirement: Computational cost\n\nWe need a hashing algorithm that is not too slow. Because we do not use them for cryptographic reasons, we do not have requirements for security features of hashing algorithms that were designed for cryptography, making our field of canditates wider.\n\n### Avoiding false positives\nWe must assure that our hash is long enought to avoid false positive duplicates.\n\n### Avoiding false negatives\nA lot of file formats also save metadata. E.g. word or pdf. So while the metadata may be different, the actual file contents may be the same. \nHashing the whole file, instead of 'unzipping' a word document and only hashing the document content can therefore produce false negatives.\nThere could/should be ways to only hash the \n\n<!-- Describe:\n\n* The problem or need motivating this decision\n* Relevant technical, organizational, or business constraints\n* Assumptions made at the time of writing\n* Any background information necessary to understand the trade-offs\n\nThis section should make it clear *why* a decision is required. -->\n\n\n\n## Alternatives Considered\n\n```\nOptional format-aware logical deduplication for selected file types where metadata-only differences are common and business-relevant.\n\nFor the hashing function itself, prefer:\n\nBLAKE3 if you want best performance and a modern strong hash\nSHA-256 if you want maximum standard-library simplicity and zero extra dependency\nxxHash only if you explicitly accept a non-cryptographic hash and pair it with a verification step\n\nFor most Python backends, the practical choice is:\n\nSHA-256 for simplicity and strong safety\nBLAKE3 if performance is important enough to justify one dependency\n```\n\n\n\n<!-- List the viable alternatives that were evaluated.\n\nFor each alternative, briefly describe:\n\n* The approach\n* Its advantages\n* Its disadvantages\n* Why it was not chosen (if applicable)\n\nIf the decision was not a simple this-or-that choice, describe the key dimensions and trade-offs that were considered. -->\n\n\n\n## Decision\n\nDescribe the chosen solution clearly and unambiguously.\n\nThis section should state:\n\n* What will be implemented\n* Any key design constraints or rules introduced\n* Any standards, technologies, or patterns that must be followed\n\nThe decision should be actionable and leave minimal room for interpretation.\n\n\n\n## Consequences\n\nDescribe the impact of this decision, including:\n\n* Benefits introduced\n* Trade-offs accepted\n* New limitations or constraints\n* Risks and how they may be mitigated\n* Follow-up work required (if any)\n\nBe explicit about what becomes easier and what becomes harder as a result.\n",
           "date" : "2026-04-15T00:00:00Z",
           "format" : "Markdown",
           "id" : "29",
@@ -925,6 +940,20 @@
           } ],
           "status" : "Superseded",
           "title" : " Microservices Architecture"
+        }, {
+          "content" : "# 30. Shared Vector Collection with File-Permission Filtering for RAG\n\nDate: 2026-04-28\n\nRAG stores file embeddings once in a shared vector collection and filters retrieval by the file permissions of the current CustomGPT.\n\n## Status\n\nPROPOSED -chatgpt prompt to create adr for this decision\n\n## Created by\n\nAlbert Sandritter\n\n## Decision Maker\n\nAlbert Sandritter\n\n## Scope\n\nApplies to RAG retrieval for CustomGPT-accessible uploaded files.\n\nApplies to:\n* file chunk embeddings\n* vector-store collection structure\n* CustomGPT-to-file permission handling during retrieval\n\nDoes not decide:\n* concrete chunking strategy\n* embedding model choice\n* concrete Qdrant index configuration beyond requiring an indexable `file_id` payload field\n\n## Context\n\nFiles can be attached to CustomGPTs. The same file may be usable by multiple CustomGPTs.\n\nCreating chunks and embeddings repeatedly per CustomGPT would waste compute and storage. At the same time, RAG retrieval must only return chunks from files the current CustomGPT may access.\n\nPermissions can change over time, so the system needs a clear source of truth and a retrieval strategy that avoids stale authorization data.\n\n## Alternatives Considered\n\n### 1. Shared vector collection filtered by accessible file IDs\n\nStore each file’s chunks and embeddings once. Store permissions in the relational database. At retrieval time, load accessible file IDs for the CustomGPT and query the vector store with a `file_id` filter.\n\nPros:\n* embeddings are not duplicated\n* permission source of truth stays in the relational database\n* permission changes do not require updating existing vectors\n* simple consistency model\n\nCons:\n* RAG retrieval needs one permission lookup before vector search\n* vector search uses a potentially long filter\n\nChosen.\n\n### 2. Store CustomGPT IDs in vector payload\n\nStore permitted CustomGPT IDs directly on each vector and filter by CustomGPT ID.\n\nPros:\n* vector query filter is simple\n* no pre-query file ID lookup needed\n\nCons:\n* duplicates permission state in the vector store\n* permission changes require updating all affected chunk vectors\n* stale payload data could cause incorrect retrieval authorization\n\nNot chosen initially.\n\n### 3. One vector collection per CustomGPT\n\nCreate a separate vector collection for each CustomGPT.\n\nPros:\n* retrieval logic is simple\n* no permission filter needed\n\nCons:\n* duplicates chunks and embeddings for shared files\n* increases storage and embedding cost\n* file updates/deletes become more complex\n* many collections increase operational overhead\n\nNot chosen.\n\n## Decision\n\nUse one shared vector collection per embedding model/vector dimension.\n\nEach file is chunked and embedded once. Each vector point stores at least:\n\n* `file_id`\n* chunk metadata needed for retrieval\n\nThe relational database permission table remains the source of truth for which CustomGPT may access which file.\n\nRAG retrieval works as follows:\n\n1. Resolve all file IDs accessible to the current CustomGPT from the relational database.\n2. Query the vector store with a filter restricting results to those `file_id`s.\n3. Return only matching chunks.\n\nThe vector-store adapter must support filtered search by `file_id`.\n\nThe `file_id` payload field must be suitable for indexing in the vector store.\n\n## Consequences\n\nBenefits:\n* avoids duplicate embeddings for files shared by multiple CustomGPTs\n* keeps permission truth in one place\n* permission changes do not require vector payload updates\n* keeps vector store as a retrieval index, not an authorization source of truth\n\nTrade-offs:\n* each RAG retrieval requires a permission lookup\n* vector queries include a potentially long `file_id` filter\n* performance must be validated with realistic file and chunk counts\n\nRisks:\n* very large permission sets may make filtered vector search slower\n* missing or incorrect vector-store payload indexing may hurt retrieval performance\n\nMitigations:\n* index the `file_id` payload field\n* add performance tests with realistic numbers of files, chunks, and accessible file IDs\n* only consider denormalizing CustomGPT permissions into vector payload if benchmarks show the chosen design is insufficient",
+          "date" : "2026-04-28T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "30",
+          "status" : "PROPOSED",
+          "title" : "Shared Vector Collection with File-Permission Filtering for RAG"
+        }, {
+          "content" : "# 31. Logging\n\nDate: 2026-06-25\n\n## Status\n\nAccepted\n\n## Created by\n\nAlbert\n\n## Decision Maker\n\nAlbert\n\n## Scope\n\nComplete backend, including production, development, and pytest-based testing.\n\n## Context\n\nWe need a logging setup that is useful in production, development, and tests.\n\nThe backend has several internal contexts, currently:\n\n* `customgpts`\n* `chat`\n* `knowledge`\n\nWe want to see detailed logs for our own code when needed, while keeping logs from external libraries less noisy. In pytest, our logs should also be visible and captured correctly without duplicate output.\n\n## Alternatives Considered\n\n### Use module-based logger names with `logging.getLogger(__name__)`\n\nThis is the standard Python approach and automatically creates hierarchical logger names based on module paths.\n\nIt was not chosen because the resulting names are less readable for our use case. We prefer names based on application context and component responsibility.\n\n### Use fully manual logger names everywhere\n\nThis gives readable names, but it is error-prone. A logger can easily be named outside the intended hierarchy and then only receive the root log level, which is meant for external libraries.\n\n### Use context-based logger names created through a helper\n\nThis keeps names readable while ensuring all internal loggers are grouped under known context roots.\n\nThis was chosen.\n\n## Decision\n\nWe use context-based logger names.\n\nEach internal logger must be created through the shared helper:\n\n```python\nclass LoggerContext(StrEnum):\n    CUSTOMGPTS = \"customgpts\"\n    CHAT = \"chat\"\n    KNOWLEDGE = \"knowledge\"\n\n\ndef get_logger(\n    context: LoggerContext,\n    component: str,\n) -> logging.Logger:\n    if not component:\n        raise ValueError(\"Logger component must not be empty\")\n\n    return logging.getLogger(f\"{context.value}.{component}\")\n```\n\nLogger names follow this structure:\n\n```text\n{context}.{component}\n```\n\nExamples:\n\n```text\nchat.domain\nknowledge.retriever_adapter\ncustomgpts.permission_checker\n```\n\nEach context root is configured explicitly:\n\n```python\n\"loggers\": {\n    LoggerContext.KNOWLEDGE.value: {\n        \"level\": knowledge_log_level,\n        \"propagate\": True,\n    },\n    LoggerContext.CHAT.value: {\n        \"level\": chat_log_level,\n        \"propagate\": True,\n    },\n    LoggerContext.CUSTOMGPTS.value: {\n        \"level\": customgpts_log_level,\n        \"propagate\": True,\n    },\n}\n```\n\nThe root logger owns the console handler. Internal context loggers propagate to the root handler but keep their own log levels.\n\nThis allows configurations such as:\n\n```text\nchat.*        -> DEBUG\nknowledge.*   -> DEBUG\ncustomgpts.*  -> DEBUG\nexternal libs -> INFO\n```\n\nThe root logger level controls external library loggers. Context logger levels control our own backend logs.\n\n## Consequences\n\nThis makes internal logs readable, predictable, and easy to configure per backend context.\n\nIt avoids orphan internal loggers accidentally falling back to the root log level intended for external libraries.\n\nIt also avoids duplicate log output because context loggers propagate to the root handler instead of defining their own handlers.\n\nThe trade-off is that developers must use `get_logger(...)` instead of directly calling `logging.getLogger(...)`. This is intentional and should be treated as the project convention.\n",
+          "date" : "2026-06-25T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "31",
+          "status" : "Accepted",
+          "title" : "Logging"
         }, {
           "content" : "# RAG, CustomGPT serve raw data to Chatservice instead of conversationsnippets\n\nDate: 2025-08-04\n\n## Status\n\nSuperceded by [27. Chat context owns prompt and conversation composition](#27)  \n\n## Context\n\nWe want single responsibility and clear boundaries between our different sub-domains.\nEach context of our modulith must have clear responisbilities.\nThe rag service and chat service context must be cleanly seperated with their responsibilities\n \nWhen composing a text, we will not only take into account the user input but also relevant data of the rag system as well as the data stored in the customgpt service.   \nNow theoretically, the RAG Service or customgpt service could process their raw data before giving it back to the chatservice.   \nI.e. the customgpt service could return not just the values of the description, name, id of the customgpt. It could already process this data and transform it into a conversation object for the chatservice -i.e. a system prompt.   \nSame for the Rag Service.\n\nResponsibility, cohesion and coupling are swa concepts which measure how well a system can be maintained and read.  \nWe now have to decide where these functionalities make the most sense.   \n\n\n## Decision\nIf the chat service composes conversations of the user message, previouse history and so on, it would be fitting that it also composes the messages from the other raw data as well.   \nIn this way, the chatservice is soley for composition of the conversation out of raw data and the customgptservice as well as the RAG Service are soley responsible for providing the raw data.   \nIn this way, the responsibility of prompt engineering is not split across services and the sole resposnibility of the chatservice.   \nThis also makes the services more cohesive: The RAG and customgpt service are only responsible for data management and not prompt engineering. Also the domain model of conversations should be found in the chatservice, it is no concept related to RAG nor CustomGPT.  \n\n(We will also lessen the coupling between these services by enabling the chatservice to still respond, even if the other services are not reachable. However, then the user will be notified)\n\n\n\n\n## Consequences\n\nThe interfaces/apis of the customgpt as well as the RAG service will provide the 'raw' data in a well readable format. They will not return conversation-snippets or do any kind of prompt-compositioin.   \nAny Prompt-engineering is the responsibility of the chatservice.",
           "date" : "2025-08-04T00:00:00Z",
@@ -1055,8 +1084,15 @@
       "relationships" : [ {
         "description" : "provides its llm functionality by utilizing",
         "destinationId" : "40",
-        "id" : "62",
-        "linkedRelationshipId" : "60",
+        "id" : "63",
+        "linkedRelationshipId" : "61",
+        "sourceId" : "2",
+        "technology" : "RestAPI"
+      }, {
+        "description" : "utilizes as embedding generator",
+        "destinationId" : "41",
+        "id" : "103",
+        "linkedRelationshipId" : "101",
         "sourceId" : "2",
         "technology" : "RestAPI"
       } ],
@@ -1071,11 +1107,21 @@
         "structurizr.dsl.identifier" : "openaiapi"
       },
       "tags" : "Element,Software System,External System"
+    }, {
+      "description" : "Creates embeddings for text chunks",
+      "documentation" : { },
+      "id" : "41",
+      "location" : "Unspecified",
+      "name" : "OpenAI Embedding API",
+      "properties" : {
+        "structurizr.dsl.identifier" : "openaiembeddingapi"
+      },
+      "tags" : "Element,Software System,External System"
     } ]
   },
   "name" : "CustomGPT",
   "properties" : {
-    "structurizr.dsl" : "d29ya3NwYWNlICJDdXN0b21HUFQiICJVc2UgQ2hhdGdwdCBhcGkgd2l0aCBvd24gY3VzdG9tR1BUIGltcGxlbWVudGF0aW9uInsKICAgIC8vIHRoaXMgZW5hYmxlcyB1cyB0byB3cml0ZSBzcy5jb250YWluZXJuYW1lIGluc3RlYWQgb2YganVzdCBjb250YWluZXJuYW1lIC0KICAgICFpZGVudGlmaWVycyBoaWVyYXJjaGljYWwgCgoKICAgIG1vZGVsIHsKICAgICAgICB1ID0gcGVyc29uICJVc2VyIiAiQSB1c2VyIG9mIHRoZSBzeXN0ZW0gd2FudGluZyB0byBwcm9maXQgZnJvbSBjdXN0b21pemVkIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkiICJQZXJzb24iCiAgICAgICAgc3MgPSBzb2Z0d2FyZVN5c3RlbSAiT3BlbnNvdXJjZSBDdXN0b21HUFQgYnVpbGRlciJ7CiAgICAgICAgICAgIHJlYWN0ID0gY29udGFpbmVyICJGcm9udGVuZCIgIkEgd2ViIGFwcCBmb3IgY2hhdCB3aXRoIGN1c3RvbSBncHRzIGFuZCB5b3VyIGRhdGEiICJSZWFjdCArIFRTIiAiV2ViIEJyb3dzZXIiCiAgICAgICAgICAgIGZhc3RhcGlFbnRyeXBvaW50ID0gY29udGFpbmVyICJGYXN0YXBpRW50cnlwb2ludCIgIkVudHJ5cG9pbnQgaW50byBiYWNrZW5kIGZvciBmcm9udGVuZCwgaW1wb3J0cyBhbGwgcm91dGVycyAmIGV4Y2VwdGlvbiBoYW5kbGVycyIKICAgICAgICAgICAgY2hhdENvbnRleHQgPSBjb250YWluZXIgIkNoYXRDb250ZXh0IiAiUHJvdmlkZXMgY2hhdCBmdW5jdGlvbmFsaXR5LiBIYW5kbGVzIHByb21wdCBjb21wb3NpdGlvbiB1dGlsaXppbmcgb3RoZXIgY29udGV4dHMgYWRhcHRlcnMiewogICAgICAgICAgICAgICAgb3JjaGVyc3RyYXRpb25MYXllciA9IGNvbXBvbmVudCAiT2NoZXN0cmF0aW9uIExheWVyIiAicHJvdmlkZXMgdXNlIGNhc2UgZnVuY3Rpb25hbGl0eSAoY3JlYXRlL2NvbnRpbnVlIGNvbnZlcnNhdGlvbikgYnkgb3JjaGVzdHJhdGluZyBkb21haW4gYW5kIGFkYXB0ZXJzIgogICAgICAgICAgICAgICAgQ29tbWFuZHNSb3V0ZXIgPSBjb21wb25lbnQgImNoYXRDb21tYW5kcyBSb3V0ZXIiICJBUEkgcHJvdmlkaW5nIGFsbCBjb21tYW5kcyIKICAgICAgICAgICAgICAgIFF1ZXJpZXNSb3V0ZXIgPSBjb21wb25lbnQgImNoYXRRdWVyaWVzIFJvdXRlciIgIkFQSSBwcm92aWRpbmcgYWxsIHF1ZXJpZXMiCiAgICAgICAgICAgICAgICBEb21haW4gPSBjb21wb25lbnQgIkNoYXQgRG9tYWluIHwgT1JNIE1BUFBFRCIgInByb3ZpZGVzIGNvbnZlcnNhdGlvbiBtb2RlbHMsIGFuZCBmdW5jdGlvbnMgbGlrZSBhZGRpbmcgbWVzc2FnZXMgYW5kIGNvbXBvc2luZyB0aGUgcHJvbXB0IHwgT1JNIG1hcHBlZCIKCiAgICAgICAgICAgICAgICB1b3dBZGFwdGVyID0gY29tcG9uZW50ICJDb252ZXJzYXRpb24gVU9XIEFkYXB0ZXIiICJXcmFwcyBkYiBvcGVyYXRpb25zIGluIGEgc2FmZSBzdGF0ZSB3YXksIG9ubHkgd2F5IHRvIGNvbW1pdCB8IHJldHVybnMgb3JtIG1hcHBlZCBvYmplY3RzIgogICAgICAgICAgICAgICAgcmVwb3NpdG9yeUFkYXB0ZXIgPSBjb21wb25lbnQgIkNvbnZlcnNhdGlvbiByZXBvIEFkYXB0ZXIiICJDcmVhdGUsIGFkZCBhbmQgZGVsZXRlIGNvbnZlcnNhdGlvbnMgaW4gREIuIHwgcmV0dXJucyBvcm0gbWFwcGVkIG9iamVjdHMiCiAgICAgICAgICAgICAgICBsbG1BZGFwdGVyID0gY29tcG9uZW50ICJMTE1BZGFwdGVyIiAiUHJvdmlkZXMgdGhlIGZ1bmN0aW9uYWxpdHkgdG8gcXVlcnkgYW4gbGxtIGZvciBhbiBhc3Npc3RlbnQgbWVzc2FnZSwgZ2l2ZW4gYSBwcm9tcHQoPWxpc3Qgb2YgbWVzc2FnZXMpLCBpbXBsZW1lbnRpbmcgdGhlIExMTVBvcnQiCiAgICAgICAgICAgICAgICBkYiA9IGNvbXBvbmVudCAiQ29udmVyc2F0aW9uREIiICJTdG9yZXMgdGhlIGNvbnZlcnNhdGlvbiBoaXN0b3JpZXMgYW5kIG1ldGFkYXRhIG9mIHRoZSBjb252ZXJzYXRpb24iewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlBvc3RncmVTUUwiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAvLyBBZGFwdGVycyBwcm92aWRpbmcgZm9yIG90aGVyIGNvbnRleHRzCiAgICAgICAgICAgICAgICBEZWxldGVDb252c1dpdGhDR1BUQWRhcHRlciA9IGNvbXBvbmVudCAiRGVsZXRlQ29udnNXaXRoQ0dQVCBBZGFwdGVyIiAicHJvdmlkZXMgZnVuY3Rpb24gdG8gZGVsZXRlIGFsbCBjb252ZXJzYXRpb25zIGFzc29jaWF0ZWQgd2l0aCBzcGVjaWZpYyBjZ3B0IgogICAgICAgICAgICB9CiAgICAgICAgICAgIGN1c3RvbWdwdENvbnRleHQgPSBjb250YWluZXIgIkN1c3RvbUdQVENvbnRleHQiICJTdG9yZXMgYW5kIFNlcnZlcyBiYXNpYyBDdXN0b21HUFQgaW5mb3JtYXRpb24iewogICAgICAgICAgICAgICAgQ29tbWFuZHNSb3V0ZXIgPSBjb21wb25lbnQgImN1c3RvbWdwdENvbW1hbmRzIFJvdXRlciIgIkFQSSBwcm92aWRpbmcgYWxsIGNvbW1hbmRzIgogICAgICAgICAgICAgICAgUXVlcmllc1JvdXRlciA9IGNvbXBvbmVudCAiY3VzdG9tZ3B0UXVlcmllcyBSb3V0ZXIiICJBUEkgcHJvdmlkaW5nIGFsbCBxdWVyaWVzIgogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBvcmNoZXJzdHJhdGlvbkxheWVyID0gY29tcG9uZW50ICJPY2hlc3RyYXRpb24gTGF5ZXIiICJwcm92aWRlcyB1c2UgY2FzZSBmdW5jdGlvbmFsaXR5IChjcmVhdGUvZWRpdC9kZWxldGUgY3VzdG9tZ3B0KSBieSBvcmNoZXN0cmF0aW5nIGRvbWFpbiBhbmQgYWRhcHRlcnMiCiAgICAgICAgICAgICAgICBEb21haW4gPSBjb21wb25lbnQgIkN1c3RvbUdQVCBEb21haW4gfCBPUk0gTUFQUEVEIiAicHJvdmlkZXMgQ3VzdG9tR1BUIG1vZGVsLCBubyBmdW5jdGlvbnMgfCBPUk0gbWFwcGVkIgogICAgICAgICAgICAgICAgdW93QWRhcHRlciA9IGNvbXBvbmVudCAiQ29udmVyc2F0aW9uIFVPVyBBZGFwdGVyIiAiV3JhcHMgZGIgb3BlcmF0aW9ucyBpbiBhIHNhZmUgc3RhdGUgd2F5LCBvbmx5IHdheSB0byBjb21taXQgfCByZXR1cm5zIG9ybSBtYXBwZWQgb2JqZWN0cyIKICAgICAgICAgICAgICAgIHJlcG9zaXRvcnlBZGFwdGVyID0gY29tcG9uZW50ICJDb252ZXJzYXRpb24gcmVwbyBBZGFwdGVyIiAiQ3JlYXRlLCBhZGQgYW5kIGRlbGV0ZSBjb252ZXJzYXRpb25zIGluIERCLiB8IHJldHVybnMgb3JtIG1hcHBlZCBvYmplY3RzIgogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBkYiA9IGNvbXBvbmVudCAiQ3VzdG9tR3B0REIiICJTdG9yZXMgdGhlIGluZm9ybWF0aW9uIG9mIHRoZSBDdXN0b21HUFRzInsKICAgICAgICAgICAgICAgICAgICB0YWdzICJEYXRhYmFzZSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJQb3N0Z3JlU1FMIgogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgICAgIC8vIEFkYXB0ZXJzIHByb3ZpZGluZyBmb3Igb3RoZXIgY29udGV4dHMKICAgICAgICAgICAgICAgIGNncHRJbmZvQWRhcHRlciA9IGNvbXBvbmVudCAiY2dwdEluZm9BZGFwdGVyIiAicHJvdmlkZXMgZnVuY3Rpb25hbGl0eSB0byByZXR1cm4gaW5zdHJ1Y3Rpb24gYW5kIG5hbWUgb2YgYSBzcGVjaWZpYyBncHQsIGltcGxlbWVudGluZyBhIFBvcnQgaW4gdGhlIGNoYXRDb250ZXh0IgogICAgICAgICAgICAgICAgY2dwdF9wZXJtaXNzaW9uX2FkYXB0ZXIgPSBjb21wb25lbnQgImNncHRfcGVybWlzc2lvbl9hZGFwdGVyIiAicHJvdmlkZXMgZnVuY3Rpb25hbGl0eSB0byBjaGVjayBpZiBhIHVzZXIgaGFzIGFjY2VzcyB0byBhIGN1c3RvbSBncHQgKGFuZCBpZiBpdCBleGlzdHMpIHwgSW1wbGVtZW50aW5nIFBvcnQgb2Yga25vd2xlZGdlIGNvbnRleHQiCiAgICAgICAgICAgIH0KICAgICAgICAgICAga25vd2xlZGdlQ29udGV4dCA9IGNvbnRhaW5lciAia25vd2xlZGdlQ29udGV4dCIgInJldHJpZXZlIGZpdHRpbmcgZG9jdW1lbnQgY2h1bmtzIGFuZCBwcm92aWRlIGFuIGFwaSB0byBtYW5hZ2UgZGF0YSJ7CiAgICAgICAgICAgICAgICBDb21tYW5kc1JvdXRlciA9IGNvbXBvbmVudCAia25vd2xlZGdlQ29udGV4dENvbW1hbmRzIFJvdXRlciIgIkFQSSBwcm92aWRpbmcgYWxsIGNvbW1hbmRzIgogICAgICAgICAgICAgICAgUXVlcmllc1JvdXRlciA9IGNvbXBvbmVudCAia25vd2xlZGdlQ29udGV4dFF1ZXJpZXMgUm91dGVyIiAiQVBJIHByb3ZpZGluZyBhbGwgcXVlcmllcyIKICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgb3JjaGVyc3RyYXRpb25MYXllciA9IGNvbXBvbmVudCAiT2NoZXN0cmF0aW9uIExheWVyIiAicHJvdmlkZXMgdXNlIGNhc2UgZnVuY3Rpb25hbGl0eSAocHJvY2VzcyBmaWxlcy9yZXRyaWV2ZSByZWxldmFudCBjaHVua3MvLi4uKSBieSBvcmNoZXN0cmF0aW5nIGRvbWFpbiBhbmQgYWRhcHRlcnMiCiAgICAgICAgICAgICAgICBEb21haW4gPSBjb21wb25lbnQgIktub3dsZWRnZSBEb21haW4iICJjb3JlIGJ1c2luZXNzIGxvZ2ljOiBjaHVua2tpbmcsIHJldHJpZXZhbCBzdGF0ZWdpZXMsIG1vZGVscyBvZiBjaHVua3Mgd2l0aCBtZXRhZGF0YSwgZmlsZXMgd2l0aCBtZXRhZGF0YSwgZXRjICB8IE9STSBtYXBwZWQiCiAgICAgICAgICAgICAgICBtZXRhZGF0YVVvd0FkYXB0ZXIgPSBjb21wb25lbnQgIk1ldGFkYiBVT1cgQWRhcHRlciIgIldyYXBzIGRiIG9wZXJhdGlvbnMgaW4gYSBzYWZlIHN0YXRlIHdheSwgb25seSB3YXkgdG8gY29tbWl0IHwgcmV0dXJucyBvcm0gbWFwcGVkIG9iamVjdHMiCiAgICAgICAgICAgICAgICBtZXRhZGF0YVJlcG9zaXRvcnlBZGFwdGVyID0gY29tcG9uZW50ICJNZXRhZGIgcmVwbyBBZGFwdGVyIiAiQ3JlYXRlLCBhZGQgYW5kIGRlbGV0ZSBjb252ZXJzYXRpb25zIGluIERCLiB8IHJldHVybnMgb3JtIG1hcHBlZCBvYmplY3RzIgogICAgICAgICAgICAgICAgbWV0YWRhdGFEQiA9IGNvbXBvbmVudCAiTWV0YWRhdGFEQiIgIlN0b3JlIHJlbGV2YW50IG1ldGFkYXRhIHBlciBjaHVuaywgZS5nLiBmaWxlX2lkLCBjZ3B0X2lkcywgdXNlciwgZmlsZV9tZXRhZGF0YSwgLi4uInsKICAgICAgICAgICAgICAgICAgICB0YWdzICJEYXRhYmFzZSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJQb3N0Z3Jlc3FsIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgcHJlUHJvY2Vzc1RleHRBbGlrZXNBZGFwdGVyID0gY29tcG9uZW50ICJQcmVwcm9jZXNzIHRleHQgYWxpa2VzIGFkYXB0ZXIiICJQcmUgcHJvY2Vzc2VzIHJhdyBmaWxlcyBtb3N0eWwgY29udGFpbmluZyB0ZXh0KHdvcmQvcGRmKSB0byByYXcgc3RyaW5nIHxjb21wbGV0ZWx5IGlnbm9yZXMgaW1hZ2VzKSIKICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgLy8gQVRURU5USU9OOiBEbyBub3Qgb3V0c291cmNlIHRoZSBjb3JlIGRlc2lnbiBkZWNpc2lvbnMgaW50byB0aGUgYWRhcHRlci4gCiAgICAgICAgICAgICAgICAvLyBJZiB3ZSB1c2UgYWR2YW5jZWQgc3RyYXRlZ2llcyBsaWtlICBtdWx0aSBxdWVyeSByZXRyaWV2YWwgb3IgYXV0by1tZXJnaW5nIHJldHJpZXZlciwgd2UgZG8gbm90IHdhbnQgdG8gaGlkZSB0aGlzIGJlaGluZCB0aGUgYWRhcHRlciBidXQgaW50ZWdyYXRlIGl0IGludG8gb3VyIGRvbWFpbi9zZXJ2aWNlIGxheWVyIGFzIGZhciBhcyBwb3NzaWJsZQogICAgICAgICAgICAgICAgcmV0cmVpdmVSZWxldmFudERvY3VtZW50U25pcHBldHNBZGFwdGVyID0gY29tcG9uZW50ICJSZWxldmFudCBEb2Mgc25pcHBldHMgcmV0cmVpdmVyIEFkYXB0ZXIiICJDT1JFIEZVTkNUSU9OQUxJVFkgcmV0cmlldmUgYW5kIHN0b3JlIGNodW5rcytlbWJlZGRpbmdzOyBDT1JFOiByZXRyaWV2YWwgc3RyYXRlZ3kiCiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIHZlY3RvcnN0b3JlQWRhcHRlciA9IGNvbXBvbmVudCAidmVjdG9yc3RvcmVBZGFwdGVyIiAiU3RvcmUgYW5kIHJldHJlaXZlIGNodW5rcytlbWJlZGRpbmdzK21ldGFkYXRhKGZvciBmaWx0ZXJpbmcpIDsgdXNlcyBkb21haW4gbW9kZWwgY2h1bmsgd2l0aCBtZXRhZGF0YSArIGVtYmVkZGluZyBmb3Igc3RvcmUiCiAgICAgICAgICAgICAgICB2ZWN0b3JEQiA9IGNvbXBvbmVudCAidmVjdG9yREIiICJVc2VkIHRvIHN0b3JlIHRleHQgY2h1bmtzIHdpdGggY29ycmVzcG9uZGluZyBlbWJlZGRpbmcgYW5kIG1ldGFkYXRhInsKICAgICAgICAgICAgICAgICAgICB0YWdzICJEYXRhYmFzZSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJRZHJhbnQiCiAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAgICAgZmlsZVN0b3JhZ2VBZGFwdGVybG9jYWxGUyA9IGNvbXBvbmVudCAiRmlsZSBzdG9yYWdlIGFkYXB0ZXIgdXRpbGl6aW5nIExvY2FsRlMiICJVc2VkIHRvIHN0b3JlIG5vbi1wcm9jZXNzZWQgYW5kIHByZS1wcm9jZXNzZXNlZCB3aG9sZSBkb2N1bWVudHMiCiAgICAgICAgICAgICAgICBmaWxlU3lzdGVtID0gY29tcG9uZW50ICJMb2NhbCBGaWxlIHN5c3RlbSIgIlVzZWQgYXMgZmlsZSBzdG9yYWdlIGZvciByYXcgYW5kIHByZS1wcm9jZXNzZWQgZG9jdW1lbnRzIHVwbG9hZGVkIGJ5IHVzZXIiIHsKICAgICAgICAgICAgICAgICAgICB0YWdzIExvY2FsRlMKICAgICAgICAgICAgICAgIH0KCiAgICAgICAgICAgICAgICB0ZXh0RW1iZWRkaW5nR2VuQWRhcHRlciA9IGNvbXBvbmVudCAiVGV4dEVtYmVkZGluZ0dlbmVyYXRvckFkYXB0ZXIiICJnZW5lcmF0ZXMgZW1iZWRkaW5ncyBvZiBzdHJpbmdzIgoKICAgICAgICAgICAgICAgIC8vIGJhY2tncm91bmRUYXNrID0gY29tcG9uZW50ICJCYWNrZ3JvdW5kIFRhc2siICJRdWV1ZSB0YXNrcyB0byBjb250aW51ZSBkaXJlY3RseSBhZnRlciByZXNwb25kaW5nIgogICAgICAgICAgICAgICAgLy8gZ2l0aHViRGF0YUNvbnRleHQgPSBjb21wb25lbnQgImdpdGh1YkRhdGFDb250ZXh0IiAiTGlzdGVucyBmb3Igbm90aWZpY2F0aW9uIHVwZGF0ZXMgZnJvbSBnaXRodWIgYW5kIHVwZGF0ZXMgdGhlIGNvcnJlc3BvbmRpbmcgZGF0YSBpbiB0aGUgdmVjdG9yREIiCiAgICAgICAgICAgIH0KIAogICAgICAgICAgICAhZG9jcyBkb2NzCiAgICAgICAgICAgICFhZHJzIGFkcnMKICAgICAgICAgICAgCiAgICAgICAgfQogICAgICAgIG9wZW5haWFwaSA9IHNvZnR3YXJlU3lzdGVtICJPcGVuQUlBcGkiICJQYXNzIGNvbnZlcnNhdGlvbiBhbmQgcmV0cmlldmUgYXNzaXN0YW50IG1lc3NhZ2VzIG9mIE9wZW5BSSBMTE1zIiAiRXh0ZXJuYWwgU3lzdGVtIgogICAgICAgIC8vIGdpdGh1YiA9IHNvZnR3YXJlU3lzdGVtICJnaXRodWIiICJTZW5kcyBhIFBvc3QgbWVzc2FnZSB0byBhbGwgc3Vic2NyaWJlcnMgd2hlbmV2ZXIgYSBuZXcgY29tbWl0IHdhcyBtYWRlIiAiRXh0ZXJuYWwgU3lzdGVtIiB7CiAgICAgICAgLy8gICAgIHdlYmhvb2sgPSBjb250YWluZXIgImdpdGh1YldlYmhvb2siICJMaXN0ZW5zIGZvciBuZXcgY29tbWl0cyBhbmQgc2VuZHMgUG9zdCBjYWxsIHRvIHNwZWNpZmljIHVybCIKICAgICAgICAvLyAgICAgYXBpID0gY29udGFpbmVyICJHaXRodWJBUEkiICJQcm92aWRlcyBhcGkgZm9yIGludGVyYWN0aW5nIHdpdGggZ2l0aHViIHJlcG9zLCBlLmcuIHJldHJpZXZpbmcgZGF0YSIKICAgICAgICAvLyB9CiAgICAgICAgLy8gVE9QIExFVkVMIChUTyBLRUVQIElUIENMRUFOKS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAgIHUgLT4gc3MucmVhY3QgIkNoYXRzIHdpdGggTExNLCBjcmVhdGVzIG9yIHVzZXMgQ3VzdG9tR1BUcyB1c2luZyIgIlJlc3RBUEkiCiAgICAgICAgc3MucmVhY3QgLT4gc3MuZmFzdGFwaUVudHJ5cG9pbnQgImNyZWF0ZXMsIHJldHJpZXZlcyBhbmQgY2hhdHMgd2l0aCBhIGxsbSBvciBjdXN0b21HUFRzLCB1dGlsaXppbmcgb3duIGZpbGVzIiAiUkVTVEFwaSIKCiAgICAgICAgc3MuZmFzdGFwaUVudHJ5cG9pbnQgLT4gc3MuY2hhdENvbnRleHQgInByb3ZpZGVzIGl0cyBjaGF0IGZ1bmN0aW9uYWxpdHkgKGNyZWF0ZS9jb250aW51ZS9nZXQpIGJ5IHV0aWxpemluZyBlbmRwb2ludHMgZGVmaW5lZCBpbiIKICAgICAgICBzcy5mYXN0YXBpRW50cnlwb2ludCAtPiBzcy5jdXN0b21HUFRDb250ZXh0ICJwcm92aWRlcyBpdHMgZnVuY3Rpb25hbGl0eSB0byBjcmVhdGUvY29udGludWUvZ2V0L2RlbGV0ZSBjdXN0b21ncHRzIGJ5IHV0aWxpemluZyBlbmRwb2ludHMgb2YiCiAgICAgICAgc3MuZmFzdGFwaUVudHJ5cG9pbnQgLT4gc3Mua25vd2xlZGdlQ29udGV4dCAicHJvdmlkZXMgaXRzIGZ1bmN0aW9uYWxpdHkgdG8gdXBsb2FkIGRvY3VtZW50cyBhbmQgZ2V0IGluZm9zIG9uIHVwbG9hZGVkIGRvY3MgYnkgdXRpbGl1emluZyB0aGUgZW5kcG9pbnRzIG9mIgoKCiAgICAgICAgLy8gQ0hBVCBDT05URVhUIEFORCBBREFQVEVSUyBQUk9WSURJTkcgRk9SIElULS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KICAgICAgICBzcy5mYXN0YXBpRW50cnlwb2ludCAtPiBzcy5jaGF0Q29udGV4dC5RdWVyaWVzUm91dGVyICJnZXRzIGNvbnZlcnNhdGlvbmFsIGRhdGEgYW5kIG90aGVyIGdldCByZXF1ZXN0IGJ5IHV0aWxpemluZyB0aGUgZW5kcG9pbnRzIGluIHRoZSIKICAgICAgICBzcy5jaGF0Q29udGV4dC5RdWVyaWVzUm91dGVyIC0+IHNzLmNoYXRDb250ZXh0LmRiICJnZXRzIGNvbnZlcnNhdGlvbmFsIGRhdGEgZWZmaWNpZW50bHkgdmlhIGRpcmVjdCBzcWwgcXVlcmllcyB0byIKICAgICAgICBzcy5mYXN0YXBpRW50cnlwb2ludCAtPiBzcy5jaGF0Q29udGV4dC5Db21tYW5kc1JvdXRlciAicHJvdmlkZXMgdGhlIGZ1bmN0aW9uYWxpdHkgdG8gdG8gc3RhcnQgb3IgY29udGludWUgYSBjb252ZXJzYXRpb24gYnkgdXRpbGl6aW5nIHRoZSBlbmRwb2ludHMgb2YgdGhlIiAKICAgICAgICBzcy5jaGF0Q29udGV4dC5Db21tYW5kc1JvdXRlciAtPiBzcy5jaGF0Q29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyICJwcm92aWRlcyBpdHMgZnVuY3Rpb25hbGl0eSBieSB1dGlsaXppbmcgdGhlIgogICAgICAgIHNzLmNoYXRDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3MuY2hhdENvbnRleHQudW93QWRhcHRlciAid3JhcHMgaW4gb25lIHRyYW5zYWN0aW9uOiBjcmVhdGUsIHN0b3JlLCBkZWxldGUsIHJldHJpZXZlIGFuZCBjaGFuZ2UgZG9tYWluIG1vZGVsIG9iamVjdHMiCiAgICAgICAgc3MuY2hhdENvbnRleHQudW93QWRhcHRlciAtPiBzcy5jaGF0Q29udGV4dC5yZXBvc2l0b3J5QWRhcHRlciAicHJvdmlkZXMgaXRzIGFiaWxpdHkgYnkgY2FsbGluZyBmdW5jdGlvbnMgYW5kIHByb3BlcnRpZXMgb2YiCiAgICAgICAgc3MuY2hhdENvbnRleHQucmVwb3NpdG9yeUFkYXB0ZXIgLT4gc3MuY2hhdENvbnRleHQuZGIgIlV0aWxpemVzIHNxbGFsY2hlbXkgYW5kIHJvbSBtYXBwaW5nIHRvIgoKICAgICAgICBzcy5jaGF0Q29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmNoYXRDb250ZXh0LmRvbWFpbiAiYWRkIG1lc3NhZ2VzIGFuZCBjcmVhdGUgcHJvbXB0IGJ5IHV0aWxpemluZyB0aGUgbW9kZWxzIGFuZCB0aGVpciBmdW5jdGlvbnMgb2YgdGhlIgoKICAgICAgICBzcy5jaGF0Q29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmN1c3RvbWdwdENvbnRleHQuY2dwdEluZm9BZGFwdGVyICJnZXRzIHBsYWluIGRlc2NyaXB0aW9uIGFuZCBuYW1lIG9mIHNwZWNpZmljIGN1c3RvbWdwdHMgKGZvciBwcm9tcHQgY29tcG9zaXRpb24pIGZyb20iCgogICAgICAgIC8vIHNzLmNoYXRDb250ZXh0LmNvcmUgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlICJTZW5kcyB0ZXh0LXNuaXBldCBhbmQgZ2V0cyByZWxldmFudCBkb2N1bWVudCBjaHVua3MgYW5kIHRoZWlyIG1ldGFkYXRhIGZyb20iCiAgICAgICAgc3MuY2hhdENvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5jaGF0Q29udGV4dC5sbG1BZGFwdGVyICJzZW5kcyBsaXN0IG9mIG1lc3NhZ2VzIHRvIGdldHMgbGxtIGFzc2lzdGFudCByZXNwb25zZSB0byIKICAgICAgICBzcy5jaGF0Q29udGV4dC5sbG1BZGFwdGVyIC0+IG9wZW5haWFwaSAicHJvdmlkZXMgaXRzIGxsbSBmdW5jdGlvbmFsaXR5IGJ5IHV0aWxpemluZyIgIlJlc3RBUEkiCiAgICAgICAgc3MuQ2hhdENvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LnJldHJlaXZlUmVsZXZhbnREb2N1bWVudFNuaXBwZXRzQWRhcHRlciAicmV0cmlldmUgcmVsZXZhbnQgZmlsZSBjaHVua3MgdG8gYSBwYXNzZWQgdGV4dCBzbmlwcGV0IgogICAgICAgIHNzLmNoYXRDb250ZXh0LkRlbGV0ZUNvbnZzV2l0aENHUFRBZGFwdGVyIC0+IHNzLmNoYXRDb250ZXh0LnVvd0FkYXB0ZXIgImRlbGV0ZXMgY2hhdHMgYnkgdXNpbmcgdGhlIgogICAgICAgIC8vLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgICAgICAgCiAgICAgICAgLy8gQ1VTVE9NR1BUIENPTlRFWFQgQU5EIEFEQVBURVJTIFBST1ZJRElORyBGT1IgSVQtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAgIHNzLmZhc3RhcGlFbnRyeXBvaW50IC0+IHNzLmN1c3RvbUdQVENvbnRleHQuUXVlcmllc1JvdXRlciAiZ2V0cyBjb252ZXJzYXRpb25hbCBkYXRhIGFuZCBvdGhlciBnZXQgcmVxdWVzdCBieSB1dGlsaXppbmcgdGhlIGVuZHBvaW50cyBpbiB0aGUiCiAgICAgICAgc3MuY3VzdG9tR1BUQ29udGV4dC5RdWVyaWVzUm91dGVyIC0+IHNzLmN1c3RvbUdQVENvbnRleHQuZGIgImdldHMgY3VzdG9tZ3B0IGRhdGEgZWZmaWNpZW50bHkgdmlhIGRpcmVjdCBzcWwgcXVlcmllcyB0byIKICAgICAgICBzcy5mYXN0YXBpRW50cnlwb2ludCAtPiBzcy5jdXN0b21HUFRDb250ZXh0LkNvbW1hbmRzUm91dGVyICJwcm92aWRlcyB0aGUgZnVuY3Rpb25hbGl0eSB0byB0byBjaGFuZ2Ugb3IgZGVsZXRlIGN1c3RvbWdwdHMgYnkgdXRpbGl6aW5nIGVuZHBvaW50cyBvZiIgCiAgICAgICAgc3MuY3VzdG9tR1BUQ29udGV4dC5Db21tYW5kc1JvdXRlciAtPiBzcy5jdXN0b21HUFRDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgInByb3ZpZGVzIGl0cyBmdW5jdGlvbmFsaXR5IGJ5IHV0aWxpemluZyB0aGUgc2VydmljZSBmdW5jdGlvbnMgb2YiCiAgICAgICAgc3MuY3VzdG9tR1BUQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmN1c3RvbUdQVENvbnRleHQudW93QWRhcHRlciAid3JhcHMgaW4gb25lIHRyYW5zYWN0aW9uOiBjcmVhdGUsIHN0b3JlLCBkZWxldGUsIHJldHJpZXZlIGFuZCBjaGFuZ2UgZG9tYWluIG1vZGVsIG9iamVjdHMiCiAgICAgICAgc3MuY3VzdG9tR1BUQ29udGV4dC51b3dBZGFwdGVyIC0+IHNzLmN1c3RvbUdQVENvbnRleHQucmVwb3NpdG9yeUFkYXB0ZXIgInByb3ZpZGVzIGl0cyBhYmlsaXR5IGJ5IGNhbGxpbmcgZnVuY3Rpb25zIGFuZCBwcm9wZXJ0aWVzIG9mIgogICAgICAgIHNzLmN1c3RvbUdQVENvbnRleHQucmVwb3NpdG9yeUFkYXB0ZXIgLT4gc3MuY3VzdG9tR1BUQ29udGV4dC5kYiAiVXRpbGl6ZXMgc3FsYWxjaGVteSBhbmQgcm9tIG1hcHBpbmcgdG8iCgogICAgICAgIHNzLmN1c3RvbUdQVENvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5jdXN0b21HUFRDb250ZXh0LmRvbWFpbiAidXRpbGl6ZSB0aGUgbW9kZWxzIG9mIHRoZSIKCiAgICAgICAgc3MuY3VzdG9tZ3B0Q29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmNoYXRDb250ZXh0LkRlbGV0ZUNvbnZzV2l0aENHUFRBZGFwdGVyICJkZWxldGUgYWxsIGNvbnZlcnNhdGlvbnMgYXNzb2NpYXRlZCB3aXRoIGEgc3BlY2lmaWMgY2dwdCIKCiAgICAgICAgc3MuY3VzdG9tZ3B0Q29udGV4dC5jZ3B0X3Blcm1pc3Npb25fYWRhcHRlciAtPiBzcy5jdXN0b21HUFRDb250ZXh0LmRiICJ1c2Ugc3RyYWlnaHQgc3FsIHRvIGNoZWNrIGlmIHVzZXIgaGFzIGFjY2VzcyB0byBzcGVjaWZpYyBjZ3B0IgogICAgICAgIHNzLmN1c3RvbWdwdENvbnRleHQuY2dwdEluZm9BZGFwdGVyIC0+IHNzLmN1c3RvbUdQVENvbnRleHQudW93QWRhcHRlciAiZ2V0cyB0aGUgZGVzY3JpcHRpb24gYW5kIG5hbWUgb2YgYSBjZ3B0IGJ5IHVzaW5nIgogICAgICAgIC8vIHNzLmN1c3RvbWdwdENvbnRleHQuY29yZSAtPiBzcy5jdXN0b21ncHRDb250ZXh0LmRiICJTdG9yZXMgYW5kIHJldHJpZXZlcyBDdXN0b21HUFQgaW5mb3JtYXRpb24gLWluY2x1ZGluZyBtZXRhZGF0YS0gdG8gYW5kIGZyb20iICJTUUxNb2RlbCIKICAgICAgICAvLy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKICAgICAgICAvLyBLTk9XTEVER0UgQ09OVEVYVCBBTkQgQURBUFRFUlMgUFJPVklESU5HIEZPUiBJVC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgogICAgICAgIHNzLmZhc3RhcGlFbnRyeXBvaW50IC0+IHNzLmtub3dsZWRnZUNvbnRleHQuUXVlcmllc1JvdXRlciAiZ2V0IGZpbGUgbmFtZXMgYW5kIG90aGVyIGluZm8gb24gc3RvcmVkIGRvY3VtZW50cyBieSB1dGlsaXV6aW5nIHRoZSBlbmRwb2ludHMgb2YiCiAgICAgICAgCiAgICAgICAgLy8gYmVsb3c6IG5vdCBwb3NzaWJsZSBpZiBjZ3B0IGNvbnRleHQgYWRhcHRlciBpcyBuZWVkZWQgdG8gY2hlY2sgcGVybWlzc2lvbnMgCiAgICAgICAgLy8gc3Mua25vd2xlZGdlQ29udGV4dC5RdWVyaWVzUm91dGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFEQiAiZ2V0cyBtZXRhZGF0YSBlZmZpY2llbnRseSB2aWEgZGlyZWN0IHNxbCBxdWVyaWVzIHRvIgogICAgICAgIC8vIHNzLmtub3dsZWRnZUNvbnRleHQuUXVlcmllc1JvdXRlciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmZpbGVTdG9yYWdlQWRhcHRlcmxvY2FsRlMgInJldHJpZXZlIHRoZSBvcmlnaW5hbCBmaWxlcyBmcm9tIgoKICAgICAgICBzcy5mYXN0YXBpRW50cnlwb2ludCAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LkNvbW1hbmRzUm91dGVyICJwcm92aWRlcyB0aGUgZnVuY3Rpb25hbGl0eSB0byB1cGxvYWQgZmlsZXMgYnkgdXRpbGl6aW5nIHRoZSBlbmRwb2ludHMgb2YgdGhlIiAKICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LkNvbW1hbmRzUm91dGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAicHJvdmlkZXMgaXRzIGZ1bmN0aW9uYWxpdHkgYnkgdXRpbGl6aW5nIHRoZSIKICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgIndyYXBzIGluIG9uZSB0cmFuc2FjdGlvbjogY3JlYXRlLCBzdG9yZSwgZGVsZXRlLCByZXRyaWV2ZSBhbmQgY2hhbmdlIG1ldGFkYXRhIgogICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFSZXBvc2l0b3J5QWRhcHRlciAicHJvdmlkZXMgaXRzIGFiaWxpdHkgYnkgY2FsbGluZyBmdW5jdGlvbnMgYW5kIHByb3BlcnRpZXMgb2YiCiAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVJlcG9zaXRvcnlBZGFwdGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFEQiAiVXRpbGl6ZXMgc3FsYWxjaGVteSBhbmQgcm9tIG1hcHBpbmcgdG8iCgogICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LnByZVByb2Nlc3NUZXh0QWxpa2VzQWRhcHRlciAicHJlLXByb2Nlc3MgdGV4dC1saWtlIGZpbGVzIHRvIHJhdyB0ZXh0IgogICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQucmV0cmVpdmVSZWxldmFudERvY3VtZW50U25pcHBldHNBZGFwdGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAiY2FsbHMgcmV0cmVpdmFsIHNlcnZpY2UgZnVuY3Rpb24gb2YiCgogICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmRvbWFpbiAiZ2V0IHRleHQgY2h1bmsgYW5kIGZpbGUgZG9tYWluIG1vZGVscyB3aXRoIGZ1bmN0aW9ucyB0byBjaHVuayB0cmFuc2Zvcm1lZCB0ZXh0IgogICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5jdXN0b21HUFRDb250ZXh0LmNncHRfcGVybWlzc2lvbl9hZGFwdGVyICJjaGVjayBpZiB1c2VyIGhhcyBhY2Nlc3MgdG8gY2dwdCIKICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5maWxlU3RvcmFnZUFkYXB0ZXJsb2NhbEZTICJzYXZlIGFuZCByZXRyZWl2ZSBkb2N1bWVudHMiCiAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5maWxlU3RvcmFnZUFkYXB0ZXJsb2NhbEZTIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuZmlsZVN5c3RlbSAidXRpbGl6ZXMiCiAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQudGV4dEVtYmVkZGluZ0dlbkFkYXB0ZXIgImdlbmVyYXRlcyBhbiBlbWJlZGRpbmcgZm9yIGEgZ2l2ZW4gdGV4dCBjaHVuayIKICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC52ZWN0b3JzdG9yZUFkYXB0ZXIgInN0b3JlIGVtYmVkZGluZ3MgYW5kIHJldHJlaXZlIGNsb3NlIGVtYmVkZGluZ3MiCiAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC52ZWN0b3JzdG9yZUFkYXB0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC52ZWN0b3JEQiAidXRpbGl6ZXMgYXMgZGIiICJRZHJhbnQiCiAgICAgICAgCiAgICAgICAgLy8tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCiAgICAgICAgLy8gc3MuaW50ZXJmYWNlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAiU2VuZHMgZG9jdW1lbnRzIHRvIHByb2Nlc3MgYW5kIGVtYmVkZCBhbmQgcmV0cmlldmVzIHJlbGV2YW50IGRvY3VtZW50IGNodW5rcyB0byBhIGdpdmVuIHRleHQgZnJvbSIKICAgICAgICAvLyBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5sb2NhbEZTICJzdG9yZSB1bnByb2Nlc3NlZCBhbmQgcHJvY2Vzc2VkIHdob2xlIGRvY3VtZW50cyBvbiIKICAgICAgICAvLyBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5iYWNrZ3JvdW5kVGFzayAicXVlcnkgcHJvY2Vzc2luZyB0YXNrcyIKICAgICAgICAvLyBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gb3BlbmFpYXBpICJjcmVhdGUgZW1iZWRkaW5ncyBmb3IgY2h1bmtzIG9mIGRvY3VtZW50cyB1dGlsaXppbmciCiAgICAgICAgLy8gc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQudmVjdG9yREIgInN0b3JlIGFuZCByZXRyaWV2ZSAoc2ltaWxhcikgZG9jdW1lbnQgY2h1bmtzIGVtYmVkZGluZ3MiCiAgICAgICAgLy8gc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFEQiAic3RvcmUgbWV0YWRhdGEgaW5mb3JtYXRpb24gYWJvdXQgZG9jdW1lbnRzIHN0b3JlZCBpbiB0aGUgVmVjdG9yREIiCgogICAgICAgIC8vIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5pbnRlcmZhY2UgIlNlbmRzIG1lc3NhZ2VzIHdoZW4gdGhlIHByb2Nlc3Npbmcgc3RhdHVzIG9mIHVwbG9hZGVkIGRvY3VtZW50cyBoYXMgY2hhbmdlZCIgIlJFU1RBcGkiCiAgICAgICAgLy8gc3MuaW50ZXJmYWNlIC0+IHNzLnJlYWN0ICJTZW5kcyBtZXNzYWdlcyB3aGVuIHRoZSBwcm9jZXNzaW5nIHN0YXR1cyBvZiB1cGxvYWRlZCBkb2N1bWVudHMgaGFzIGNoYW5nZWQgdG8iICJXU01lc3NhZ2UiCiAgICAgICAgCiAgICAgICAgLy8gZ2l0aHViLndlYmhvb2sgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5naXRodWJEYXRhQ29udGV4dCAiTm90aWZpZXMgYWJvdXQgbmV3IGNvbW1pdHMiICJQT1NUIENhbGwiCiAgICAgICAgLy8gc3Mua25vd2xlZGdlQ29udGV4dC5naXRodWJEYXRhQ29udGV4dCAtPiBnaXRodWIuY29yZSAicmV0cmlldmVzIHJlcG9zaXRvcnkgY29udGVudCBmcm9tIgogICAgICAgIC8vIHNzLmtub3dsZWRnZUNvbnRleHQuZ2l0aHViRGF0YUNvbnRleHQgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlICJ1cGRhdGVzIG91dGRhdGUgZ2l0aHViIHJlcG8gZGF0YSBpbiIKICAgICAgICAKICAgICAgICAKCgoKICAgICAgICAKICAgIH0KCiAgICB2aWV3cyB7CiAgICAgICAgc3lzdGVtQ29udGV4dCBzcyAiU3lzdGVtQ29udGV4InsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIC8vIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CiAgICAgICAgY29udGFpbmVyIHNzICJDb250YWluZXJWaWV3InsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIC8vIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CiAgICAgICAgY29tcG9uZW50IHNzLmNoYXRDb250ZXh0ICJjaGF0Q29udGV4dFZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0gLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0iCiAgICAgICAgICAgIC8vIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBzcy5rbm93bGVkZ2VDb250ZXh0ICJrbm93bGVkZ2VDb250ZXh0VmlldyJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSIKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgY29tcG9uZW50IHNzLmN1c3RvbUdQVENvbnRleHQgImN1c3RvbUdQVENvbnRleHRWaWV3InsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICAvLyBkeW5hbWljIHNzICJ3c01lc3NhZ2UiewogICAgICAgIC8vICAgICB0aXRsZSAiY2xpZW50IHN1YnNjaWJlcyB0byB3ZWJzb2NrZXRNc2ciCiAgICAgICAgLy8gICAgIHNzLnJlYWN0IC0+IHNzLmludGVyZmFjZSAic3Vic2NyaWJlcyB0byB3ZWJzb2NrZXRtZXNzYWdlcyIKICAgICAgICAvLyB9CiAgICAgICAgZHluYW1pYyBzcy5rbm93bGVkZ2VDb250ZXh0ICJ1cGxvYWRBbmRQcmVwcm9jZXNzVGV4dExpa2VEb2MiewogICAgICAgICAgICB0aXRsZSAiQ0hFQ0sgSU4gQ09ERTogVXBsb2FkIGFuZCBwcmUtcHJvY2VzcyB0ZXh0IGxpa2UgZG9jdW1lbnQgKG1pc3Npbmc6IHJldHJ5IGxvZ2ljIGZvciBlYWNoIMKxVHJhbnNhY3Rpb24pIgogICAgICAgICAgICB1IC0+IHNzLnJlYWN0ICJVcGxvYWRzIGRvY3VtZW50IHRvIgogICAgICAgICAgICBzcy5yZWFjdCAtPiBzcy5mYXN0YXBpRW50cnlwb2ludCAic2VuZHMgZG9jdW1lbnQgZmlsZSB0byIKICAgICAgICAgICAgc3MuZmFzdGFwaUVudHJ5cG9pbnQgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5Db21tYW5kc1JvdXRlciAicm91dGVzIGNhbGwgdG8gZW5kcG9pbnQgdXBsb2FkVGV4dExpa2VEb2Mgb2YiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQuQ29tbWFuZHNSb3V0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyICJjYWxsIHNlcnZpY2UgZnVuY3Rpb24gJE5BTUUgb2YiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5jdXN0b21HUFRDb250ZXh0LmNncHRfcGVybWlzc2lvbl9hZGFwdGVyICJhc3N1cmUgdGhhdCB1c2VyIGhhcyBhY2Nlc3MgdG8gY2dwdCB8IElGIE5PVDogVEhST1cgNDA0IGVycm9yIGJhY2sgdG8gZnJvbnRlbmQiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmRvbWFpbiAiYXNzdXJlIHRoYXQgdGhlIGZpbGUgdHlwZSBpcyBzdXBwb3J0ZWQgKGluZmVycmVkIGZyb20gZmlsZW5hbWUpIHwgSUYgTk9UOiBUSFJPVyA0MDQgZXJyb3IgYmFjayB0byBmcm9udGVuZCIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyICJUUkFOU0FDVElPTiBPTkU6IG9wZW4gVU9XIgogICAgICAgICAgICAvLyBzaG91bGRuJ3Qgd2UgbWFrZSBsb2NhbCBmcyAmIHZlY3RvciBzdG9yZSBhbHNvIGEgdW93IHN1Y2ggdGhhdCB3ZSBjYW4gcm9sbGJhY2sgaS5lLiBkZWxldGU/CiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmRvbWFpbiAiQ2FsY3VsYXRlIGhhc2ggYmFzZWQgb24gZmlsZS10eXBlKGluZmVycmVkIGZyb20gZmlsZW5hbSBzdWZmaXgpIC0+IFJFVFVSTiBoYXNoLCBieXRlIGNvbnRlbnQgb2YgZmlsZSwgZmlsZS10eXBlIHxJRiBVTlNVUFBPUlRFRCBGSUxFIFRZUEU6IHRocm93IGVycm9yIGJhY2sgdG8gZnJvbnRlbmQoZG9tYWluIGVycm9yIC1vcmNoc3RyYXRpb24gbGV2ZWwgZXJyb3IgbWFwcGVycy0+IGh0dHBzIGVycm9yKSIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVJlcG9zaXRvcnlBZGFwdGVyICJUUkFOU0FDVElPTiBPTkU6IGNoZWNrIGlmIGZpbGUgd2l0aCB0aGlzIGhhc2ggZXhpc3RzIGFscmVhZHkiCiAgICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBzcy5rbm93bGVkZ2VDb250ZXh0ICJ1cGxvYWRBbmRQcmVwcm9jZXNzVGV4dExpa2VEb2NIYXNoRG9lc0V4aXN0InsKICAgICAgICAgICAgdGl0bGUgIkNIRUNLIElOIENPREU6IFVwbG9hZCBhbmQgcHJlLXByb2Nlc3MgdGV4dCBsaWtlIGRvY3VtZW50IHxCUkFOQ0g6IEhBU0ggRE9FUyBFWElTVCBBTFJFQURZIChtaXNzaW5nOiByZXRyeSBsb2dpYyBmb3IgZWFjaCDCsVRyYW5zYWN0aW9uKSIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuZG9tYWluICJUUkFOU0FDVElPTiBPTkU6IChJZiBhbHJlYWR5IGV4aXN0KSB2aWEgbW9kZWwgZnVuY3Rpb25zOiBhZGQgY2dwdCBpZCB0byBwZXJtaXNzaW9uIGxpc3Qgb2YgZmlsZTsgRE9ORSIKICAgICAgICB9CiAgICAgICAgZHluYW1pYyBzcy5rbm93bGVkZ2VDb250ZXh0ICJ1cGxvYWRBbmRQcmVwcm9jZXNzVGV4dExpa2VEb2NIYXNoRG9lc05vdEV4aXN0InsKICAgICAgICAgICAgdGl0bGUgIkNIRUNLIElOIENPREU6IFVwbG9hZCBhbmQgcHJlLXByb2Nlc3MgdGV4dCBsaWtlIGRvY3VtZW50IHxCUkFOQ0g6IEhBU0ggRE9FUyBOT1QgRVhJU1QgWUVUIChtaXNzaW5nOiByZXRyeSBsb2dpYyBmb3IgZWFjaCDCsVRyYW5zYWN0aW9uKSIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVJlcG9zaXRvcnlBZGFwdGVyICJUUkFOU0FDVElPTiBPTkU6IGNoZWNrIGlmIGZpbGUgd2l0aCB0aGlzIGhhc2ggZXhpc3RzIGFscmVhZHkgfCBET0VTIE5PVCIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVJlcG9zaXRvcnlBZGFwdGVyICJUUkFOU0FDVElPTiBPTkU6IGNyZWF0ZSBuZXcgZmlsZSBkb21haW4gbW9kZWwoIGZpbGVfdHlwZSwgbmFtZSB1c2VkIGZvciBpbml0fCBpZD11dWlkOykiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmZpbGVTdG9yYWdlQWRhcHRlcmxvY2FsRlMgIlRSQU5TQUNUSU9OIE9ORTogU3RvcmUgcmF3IHVucHJvY2Vzc2VkIGZpbGUgKHBhc3M6IHVwbG9hZGZpbGUuaWQsIGJ5dGVzX2NvbnRlbnQpIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5kb21haW4gIlRSQU5TQUNUSU9OIE9ORTogdmlhIGRvbWFpbiBtb2RlbCBvYmplY3QgZnVuY3Rpb246IHNldCBzdGF0dXMgdG8gcmF3X2ZpbGVfdXBsb2FkZWQiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhVW93QWRhcHRlciAiVFJBTlNBQ1RJT04gT05FOiBjb21taXQiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LkNvbW1hbmRzUm91dGVyICJyZXRydXJuIGh0dHAgcmVzcG9uc2UgdXBsb2FkIHN1Y2Nlc2Z1bGwsIHByb2Nlc3NpbmcgcXVldWVkLyBvciBmaW5pc2hlZCBpZiBmaWxlIGFscmVhZHkgZXhpc3QgaW4gZGIiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LnByZVByb2Nlc3NUZXh0QWxpa2VzQWRhcHRlciAicHJlcHJvY2VzcyB0aGUgcmF3IGRvY3VtZW50IGJhc2VkIG9uIGZpbGVfdHlwZSwgcmV0dXJucyBzdHJpbmcgfCBQQVNTOiBieXRlc19jb250ZW50LCBmaWxlX3R5cGUiIAogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgIlRSQU5TQUNUSU9OIFRXTzogb3BlbiBVT1ciCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmRvbWFpbiAiVFJBTlNBQ1RJT04gVFdPOiBjaGFuZ2UgZmlsZSBkb21haW4gbW9kZWw6IHByZXByb2Nlc3NlZCB0ZXh0PSByYXcgc3RyaW5nLCBbY2hhbmdlIHN0YXR1cyB0byBwcmVwcm9jZXNzZWQoPyldIiAKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyICJUUkFOU0FDVElPTiBUV086IGNvbW1pdCIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyICJUUkFOU0FDVElPTiBUSFJFRTogb3BlbiBVT1ciCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmRvbWFpbiAiVFJBTlNBQ1RJT04gVEhSRUU6IGNyZWF0ZSBhbGwgZG9jdW1lbnQgY2h1bmtzIHZpYSBtb2RlbCBmbnggfCBkb2N1bWVudCBjaHVua3MgYXJlIGRvbWFpbiBtb2RlbDsgdXVpZCwgcmVmIGZpbCwgcmF3X3RleHQsIGluY2x1ZGUgbWV0YWRhdGEgcHJvcGVydGllcyB1c2VkIGZvciByZXRyaWV2YWwgbG9naWMiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmRvbWFpbiAiVFJBTlNBQ1RJT04gVEhSRUU6IHVwZGF0ZSBkb2N1bWVudCBmaWxlIGRvbWFpbiBtb2RlbCB0byBmdWxseSBjaHVua2VkIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgIlRSQU5TQUNUSU9OIFRIUkVFOiBjb21taXQgKGlmIGFueSBlcnJvcnMgaGFkIG9jY3VyZWQgLXJvbGxiYWNrIGFsbCBjaGFuZ2VzOyBuZWVkIHRvIGZ1bGx5IHJlY2h1bmspIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC50ZXh0RW1iZWRkaW5nR2VuQWRhcHRlciAiTE9PUCBUSUxMIEFMTCBDSFVOS1MgRU1CRURERUQgT0YgRE9DOiBjcmVhdGUgZW1iZWRkaW5nIGZvciB0ZXh0IGNodW5rIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC52ZWN0b3JzdG9yZUFkYXB0ZXIgIkxPT1AgVElMTCBBTEwgQ0hVTktTIEVNQkVEREVEIE9GIERPQzogcGFzcyBlbWJlZGRpbmcgd2l0aCBjaHVuayBkb21haW4gbW9kZWwgaW5jbC4gbWV0YWRhdGEgcHJvcGVydGllcyIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC52ZWN0b3JzdG9yZUFkYXB0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC52ZWN0b3JEQiAiTE9PUCBUSUxMIEFMTCBDSFVOS1MgRU1CRURERUQgT0YgRE9DOiBzdG9yZSBlbWJlZGRpbmcsIHVzZSBpZCwgbWV0YWRhdGEgZmllbGRzIGFzIGpzb24iCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhVW93QWRhcHRlciAiTE9PUCBUSUxMIEFMTCBDSFVOS1MgRU1CRURERUQgT0YgRE9DOiBPcGVuIHVvdyIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuZG9tYWluICJMT09QIFRJTEwgQUxMIENIVU5LUyBFTUJFRERFRCBPRiBET0M6IGNoYW5nZSBjaHVuayBzdGF0dXMgdG86IGVtYmVkZGVkIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgIkxPT1AgVElMTCBBTEwgQ0hVTktTIEVNQkVEREVEIE9GIERPQzogY29tbWl0IgogICAgICAgICAgICAvLyBzZW5kIHRvIGNsaWVudC8gdXBkYXRlIGpvYiB0byAgZW1iZWRkZWQKICAgICAgICB9CiAgICAgICAgCiAgICAgICAgZHluYW1pYyBzcy5rbm93bGVkZ2VDb250ZXh0ICJyZXRyZWl2ZURvY3VtZW50Q2h1bmtzVW5zdWNjZXNmdWxsInsKICAgICAgICAgICAgdGl0bGUgIkNIRUNLIElOIENPREU6IHJldHJlaXZlIHJlbGV2YW50IGNodW5rcyB1bnN1Y2Nlc3NmdWx8IG1pc3Npbmc6IHJldHJ5IGxvZ2ljIGZvciBlYWNoIMKxVHJhbnNhY3Rpb24iCiAgICAgICAgICAgIHNzLmNoYXRDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5yZXRyZWl2ZVJlbGV2YW50RG9jdW1lbnRTbmlwcGV0c0FkYXB0ZXIgInNlbmRzIHRleHQgc25pcHBldCArIGdwdCBpZCB0byIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmN1c3RvbUdQVENvbnRleHQuY2dwdF9wZXJtaXNzaW9uX2FkYXB0ZXIgImNoZWNrIGlmIHVzZXIgaGFzIGFjY2VzcyB0byB0aGlzIGNncHQgLT4gZG9lcyBub3QiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LkNvbW1hbmRzUm91dGVyICJSZXR1cm4gaHR0cCBlcnJvciA0MDQgbm90IGZvdW5kIgogICAgICAgIH0KCgogICAgICAgIC8vIGR5bmFtaWMgc3Mua25vd2xlZGdlQ29udGV4dCAidXBsb2FkRG9jdW1lbnQiewogICAgICAgIC8vICAgICB0aXRsZSAidXBsb2FkIGRvY3VtZW50IGFuZCBzdGFydCBwcm9jZXNzaW5nIiAKICAgICAgICAvLyAgICAgc3MuaW50ZXJmYWNlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAic2VuZCBkb2N1bWVudCB0byIKICAgICAgICAvLyAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubG9jYWxGUyAic3RvcmUgb3JpZ2luYWwgZG9jdW1lbnQgaW4iCiAgICAgICAgLy8gICAgIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhREIgImFkZHMgZG9jdW1lbnQgaW5mb21hdGlvbiB0byBhbmQgc2V0IHN0YXR1cyB0byB1cGxvYWRlZCIKICAgICAgICAvLyAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuYmFja2dyb3VuZFRhc2sgInF1ZXVlIHByb2Nlc3NpbmcgYmFja2dyb3VuZCB0YXNrIgogICAgICAgIC8vICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gc3MuaW50ZXJmYWNlICJub3RpZmllcyBhYm91dCB0aGUgc3VjY2Vzc2Z1bCB1cGxvYWQgb2YgdGhlIGRvY3VtZW50IgogICAgICAgIC8vICAgICBzcy5pbnRlcmZhY2UgLT4gc3MucmVhY3QgIm5vdGlmaWVzIGFib3V0IHRoZSBzdWNjZXNzZnVsIHVwbG9hZCBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgLy8gfQoKICAgICAgICAvLyBkeW5hbWljIHNzLmtub3dsZWRnZUNvbnRleHQgInByb2Nlc3NEb2N1bWVudCJ7CiAgICAgICAgLy8gICAgIHRpdGxlICJ1cGxvYWRlZCBkb2N1bWVudCBmaW5pc2hlZCBwcm9jZXNzaW5nIgogICAgICAgIC8vICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LmJhY2tncm91bmRUYXNrIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAidHJpZ2dlciBwcmVwcm9jZXNzaW5nIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICAvLyAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubG9jYWxGUyAic2F2ZSBwcmVwcm9jZXNzZWQgKHdob2xlKSBkb2N1bWVudCIKICAgICAgICAvLyAgICAgewogICAgICAgIC8vICAgICAgICAgewogICAgICAgIC8vICAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhREIgInVwZGF0ZSBtZXRhZGF0YSBpbmZvcm1hdGlvbiB0byBub3RlIHByZXByb2Nlc3NlZCBkb2N1bWVudCIKICAgICAgICAvLyAgICAgICAgIH0KICAgICAgICAvLyAgICAgICAgIHsKICAgICAgICAvLyAgICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gb3BlbmFpYXBpICJjcmVhdGUgZW1iZWRkaW5ncyBmb3IgY3JlYXRlZCBkb2N1bWVudCBjaHVua3MgdXRpbGl6aW5nIgogICAgICAgIC8vICAgICAgICAgfQogICAgICAgIC8vICAgICB9CiAgICAgICAgLy8gICAgIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LnZlY3RvckRCICJzdG9yZSBlbWJlZGRpbmdzIGluIgogICAgICAgIC8vICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YURCICJzZXRzIGRvY3VtZW50IHN0YXR1cyB0byBhdmFpbGFibGUgYW5kIHVwZGF0ZXMgb3RoZXIgbWV0YWRhdGEgaW5mb3JtYXRpb24iCiAgICAgICAgLy8gICAgIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5pbnRlcmZhY2UgIm5vdGlmaWVzIGFib3V0IHRoZSBzdWNjZXNzZnVsIHByb2NjZXNpbmcgb2YgdGhlIGRvY3VtZW50IgogICAgICAgIC8vICAgICBzcy5pbnRlcmZhY2UgLT4gc3MucmVhY3QgInNlbmQgbm90aWZpY2F0aW9uIGFib3V0IGF2YWlsYWJpbGl0eSBvZiB0aGUgZG9jdW1lbnQgdG8gc3Vic2NyaWJlZCIgIldTTWVzc2FnZSIKICAgICAgICAvLyB9CgogICAgICAgIAoKICAgICAgICAvLyBkeW5hbWljIHNzLmN1c3RvbWdwdENvbnRleHQgImN1c3RvbUdQVENyZWF0ZU9yRWRpdCJ7CiAgICAgICAgLy8gICAgIHRpdGxlICJjcmVhdGUgb3IgZWRpdCBjdXN0b20gZ3B0IgogICAgICAgIC8vICAgICBzcy5yZWFjdCAtPiBzcy5mYXN0YXBpRW50cnlwb2ludCAic2VuZCBjdXN0b21ncHQgZm9ybSBkYXRhIHRvIgogICAgICAgIC8vICAgICBzcy5mYXN0YXBpRW50cnlwb2ludCAtPiBzcy5jdXN0b21ncHRDb250ZXh0LkNvbW1hbmRzUm91dGVyICJ1dGlsaXplcyByb3V0ZXIiCiAgICAgICAgLy8gICAgIHNzLmludGVyZmFjZSAtPiBzcy5jdXN0b21HUFRDb250ZXh0LmNvcmUgImZvcndhZCBwb3N0IGNhbGwgdG8iCiAgICAgICAgLy8gICAgIHNzLmN1c3RvbUdQVENvbnRleHQuY29yZSAtPiBzcy5jdXN0b21HUFRDb250ZXh0LmRiICJzYXZlIGRhdGEgYW5kIG1ldGFkYXRhIGluIgogICAgICAgIC8vICAgICBzcy5jdXN0b21HUFRDb250ZXh0LmNvcmUgLT4gIHNzLmludGVyZmFjZSAic3VjY2VzcyByZXNwb25zZSIKICAgICAgICAvLyAgICAgc3MuaW50ZXJmYWNlIC0+IHNzLnJlYWN0ICJzdWNjZXNzIHJlc3BvbnNlIgogICAgICAgIC8vIH0KCgogICAgICAgIHN0eWxlcyB7CiAgICAgICAgICAgIGVsZW1lbnQgIlBlcnNvbiIgewogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICAgICAgZm9udFNpemUgMjIKICAgICAgICAgICAgICAgIHNoYXBlIFBlcnNvbgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIlNvZnR3YXJlIFN5c3RlbSIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjMTE2OGJkCiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRXh0ZXJuYWwgU3lzdGVtIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM5OTk5OTkKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJDb250YWluZXIiIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzQzOGRkNQogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIldlYiBCcm93c2VyIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBXZWJCcm93c2VyCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgIHNoYXBlIEN5bGluZGVyCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29tcG9uZW50IiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM4NWJiZjAKICAgICAgICAgICAgICAgIGNvbG9yICMwMDAwMDAKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJGYWlsb3ZlciIgewogICAgICAgICAgICAgICAgb3BhY2l0eSAyNQogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkxvY2FsRlMiewogICAgICAgICAgICAgICAgc2hhcGUgRm9sZGVyCiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9Cn0="
+    "structurizr.dsl" : "d29ya3NwYWNlICJDdXN0b21HUFQiICJVc2UgQ2hhdGdwdCBhcGkgd2l0aCBvd24gY3VzdG9tR1BUIGltcGxlbWVudGF0aW9uInsKICAgIC8vIHRoaXMgZW5hYmxlcyB1cyB0byB3cml0ZSBzcy5jb250YWluZXJuYW1lIGluc3RlYWQgb2YganVzdCBjb250YWluZXJuYW1lIC0KICAgICFpZGVudGlmaWVycyBoaWVyYXJjaGljYWwgCgoKICAgIG1vZGVsIHsKICAgICAgICB1ID0gcGVyc29uICJVc2VyIiAiQSB1c2VyIG9mIHRoZSBzeXN0ZW0gd2FudGluZyB0byBwcm9maXQgZnJvbSBjdXN0b21pemVkIGxsbSBjaGF0IGZ1bmN0aW9uYWxpdHkiICJQZXJzb24iCiAgICAgICAgc3MgPSBzb2Z0d2FyZVN5c3RlbSAiT3BlbnNvdXJjZSBDdXN0b21HUFQgYnVpbGRlciJ7CiAgICAgICAgICAgIHJlYWN0ID0gY29udGFpbmVyICJGcm9udGVuZCIgIkEgd2ViIGFwcCBmb3IgY2hhdCB3aXRoIGN1c3RvbSBncHRzIGFuZCB5b3VyIGRhdGEiICJSZWFjdCArIFRTIiAiV2ViIEJyb3dzZXIiCiAgICAgICAgICAgIGZhc3RhcGlFbnRyeXBvaW50ID0gY29udGFpbmVyICJGYXN0YXBpRW50cnlwb2ludCIgIkVudHJ5cG9pbnQgaW50byBiYWNrZW5kIGZvciBmcm9udGVuZCwgaW1wb3J0cyBhbGwgcm91dGVycyAmIGV4Y2VwdGlvbiBoYW5kbGVycyIKICAgICAgICAgICAgY2hhdENvbnRleHQgPSBjb250YWluZXIgIkNoYXRDb250ZXh0IiAiUHJvdmlkZXMgY2hhdCBmdW5jdGlvbmFsaXR5LiBIYW5kbGVzIHByb21wdCBjb21wb3NpdGlvbiB1dGlsaXppbmcgb3RoZXIgY29udGV4dHMgYWRhcHRlcnMiewogICAgICAgICAgICAgICAgb3JjaGVyc3RyYXRpb25MYXllciA9IGNvbXBvbmVudCAiT2NoZXN0cmF0aW9uIExheWVyIiAicHJvdmlkZXMgdXNlIGNhc2UgZnVuY3Rpb25hbGl0eSAoY3JlYXRlL2NvbnRpbnVlIGNvbnZlcnNhdGlvbikgYnkgb3JjaGVzdHJhdGluZyBkb21haW4gYW5kIGFkYXB0ZXJzIgogICAgICAgICAgICAgICAgQ29tbWFuZHNSb3V0ZXIgPSBjb21wb25lbnQgImNoYXRDb21tYW5kcyBSb3V0ZXIiICJBUEkgcHJvdmlkaW5nIGFsbCBjb21tYW5kcyIKICAgICAgICAgICAgICAgIFF1ZXJpZXNSb3V0ZXIgPSBjb21wb25lbnQgImNoYXRRdWVyaWVzIFJvdXRlciIgIkFQSSBwcm92aWRpbmcgYWxsIHF1ZXJpZXMiCiAgICAgICAgICAgICAgICBEb21haW4gPSBjb21wb25lbnQgIkNoYXQgRG9tYWluIHwgT1JNIE1BUFBFRCIgInByb3ZpZGVzIGNvbnZlcnNhdGlvbiBtb2RlbHMsIGFuZCBmdW5jdGlvbnMgbGlrZSBhZGRpbmcgbWVzc2FnZXMgYW5kIGNvbXBvc2luZyB0aGUgcHJvbXB0IHwgT1JNIG1hcHBlZCIKCiAgICAgICAgICAgICAgICB1b3dBZGFwdGVyID0gY29tcG9uZW50ICJDb252ZXJzYXRpb24gVU9XIEFkYXB0ZXIiICJXcmFwcyBkYiBvcGVyYXRpb25zIGluIGEgc2FmZSBzdGF0ZSB3YXksIG9ubHkgd2F5IHRvIGNvbW1pdCB8IHJldHVybnMgb3JtIG1hcHBlZCBvYmplY3RzIgogICAgICAgICAgICAgICAgcmVwb3NpdG9yeUFkYXB0ZXIgPSBjb21wb25lbnQgIkNvbnZlcnNhdGlvbiByZXBvIEFkYXB0ZXIiICJDcmVhdGUsIGFkZCBhbmQgZGVsZXRlIGNvbnZlcnNhdGlvbnMgaW4gREIuIHwgcmV0dXJucyBvcm0gbWFwcGVkIG9iamVjdHMiCiAgICAgICAgICAgICAgICBsbG1BZGFwdGVyID0gY29tcG9uZW50ICJMTE1BZGFwdGVyIiAiUHJvdmlkZXMgdGhlIGZ1bmN0aW9uYWxpdHkgdG8gcXVlcnkgYW4gbGxtIGZvciBhbiBhc3Npc3RlbnQgbWVzc2FnZSwgZ2l2ZW4gYSBwcm9tcHQoPWxpc3Qgb2YgbWVzc2FnZXMpLCBpbXBsZW1lbnRpbmcgdGhlIExMTVBvcnQiCiAgICAgICAgICAgICAgICBkYiA9IGNvbXBvbmVudCAiQ29udmVyc2F0aW9uREIiICJTdG9yZXMgdGhlIGNvbnZlcnNhdGlvbiBoaXN0b3JpZXMgYW5kIG1ldGFkYXRhIG9mIHRoZSBjb252ZXJzYXRpb24iewogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGFiYXNlIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlBvc3RncmVTUUwiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAvLyBBZGFwdGVycyBwcm92aWRpbmcgZm9yIG90aGVyIGNvbnRleHRzCiAgICAgICAgICAgICAgICBEZWxldGVDb252c1dpdGhDR1BUQWRhcHRlciA9IGNvbXBvbmVudCAiRGVsZXRlQ29udnNXaXRoQ0dQVCBBZGFwdGVyIiAicHJvdmlkZXMgZnVuY3Rpb24gdG8gZGVsZXRlIGFsbCBjb252ZXJzYXRpb25zIGFzc29jaWF0ZWQgd2l0aCBzcGVjaWZpYyBjZ3B0IgogICAgICAgICAgICB9CiAgICAgICAgICAgIGN1c3RvbWdwdENvbnRleHQgPSBjb250YWluZXIgIkN1c3RvbUdQVENvbnRleHQiICJTdG9yZXMgYW5kIFNlcnZlcyBiYXNpYyBDdXN0b21HUFQgaW5mb3JtYXRpb24iewogICAgICAgICAgICAgICAgQ29tbWFuZHNSb3V0ZXIgPSBjb21wb25lbnQgImN1c3RvbWdwdENvbW1hbmRzIFJvdXRlciIgIkFQSSBwcm92aWRpbmcgYWxsIGNvbW1hbmRzIgogICAgICAgICAgICAgICAgUXVlcmllc1JvdXRlciA9IGNvbXBvbmVudCAiY3VzdG9tZ3B0UXVlcmllcyBSb3V0ZXIiICJBUEkgcHJvdmlkaW5nIGFsbCBxdWVyaWVzIgogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBvcmNoZXJzdHJhdGlvbkxheWVyID0gY29tcG9uZW50ICJPY2hlc3RyYXRpb24gTGF5ZXIiICJwcm92aWRlcyB1c2UgY2FzZSBmdW5jdGlvbmFsaXR5IChjcmVhdGUvZWRpdC9kZWxldGUgY3VzdG9tZ3B0KSBieSBvcmNoZXN0cmF0aW5nIGRvbWFpbiBhbmQgYWRhcHRlcnMiCiAgICAgICAgICAgICAgICBEb21haW4gPSBjb21wb25lbnQgIkN1c3RvbUdQVCBEb21haW4gfCBPUk0gTUFQUEVEIiAicHJvdmlkZXMgQ3VzdG9tR1BUIG1vZGVsLCBubyBmdW5jdGlvbnMgfCBPUk0gbWFwcGVkIgogICAgICAgICAgICAgICAgdW93QWRhcHRlciA9IGNvbXBvbmVudCAiQ29udmVyc2F0aW9uIFVPVyBBZGFwdGVyIiAiV3JhcHMgZGIgb3BlcmF0aW9ucyBpbiBhIHNhZmUgc3RhdGUgd2F5LCBvbmx5IHdheSB0byBjb21taXQgfCByZXR1cm5zIG9ybSBtYXBwZWQgb2JqZWN0cyIKICAgICAgICAgICAgICAgIHJlcG9zaXRvcnlBZGFwdGVyID0gY29tcG9uZW50ICJDb252ZXJzYXRpb24gcmVwbyBBZGFwdGVyIiAiQ3JlYXRlLCBhZGQgYW5kIGRlbGV0ZSBjb252ZXJzYXRpb25zIGluIERCLiB8IHJldHVybnMgb3JtIG1hcHBlZCBvYmplY3RzIgogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBkYiA9IGNvbXBvbmVudCAiQ3VzdG9tR3B0REIiICJTdG9yZXMgdGhlIGluZm9ybWF0aW9uIG9mIHRoZSBDdXN0b21HUFRzInsKICAgICAgICAgICAgICAgICAgICB0YWdzICJEYXRhYmFzZSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJQb3N0Z3JlU1FMIgogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgICAgIC8vIEFkYXB0ZXJzIHByb3ZpZGluZyBmb3Igb3RoZXIgY29udGV4dHMKICAgICAgICAgICAgICAgIGNncHRJbmZvQWRhcHRlciA9IGNvbXBvbmVudCAiY2dwdEluZm9BZGFwdGVyIiAicHJvdmlkZXMgZnVuY3Rpb25hbGl0eSB0byByZXR1cm4gaW5zdHJ1Y3Rpb24gYW5kIG5hbWUgb2YgYSBzcGVjaWZpYyBncHQsIGltcGxlbWVudGluZyBhIFBvcnQgaW4gdGhlIGNoYXRDb250ZXh0IgogICAgICAgICAgICAgICAgY2dwdF9wZXJtaXNzaW9uX2FkYXB0ZXIgPSBjb21wb25lbnQgImNncHRfcGVybWlzc2lvbl9hZGFwdGVyIiAicHJvdmlkZXMgZnVuY3Rpb25hbGl0eSB0byBjaGVjayBpZiBhIHVzZXIgaGFzIGFjY2VzcyB0byBhIGN1c3RvbSBncHQgKGFuZCBpZiBpdCBleGlzdHMpIHwgSW1wbGVtZW50aW5nIFBvcnQgb2Yga25vd2xlZGdlIGNvbnRleHQiCiAgICAgICAgICAgIH0KICAgICAgICAgICAga25vd2xlZGdlQ29udGV4dCA9IGNvbnRhaW5lciAia25vd2xlZGdlQ29udGV4dCIgInJldHJpZXZlIGZpdHRpbmcgZG9jdW1lbnQgY2h1bmtzIGFuZCBwcm92aWRlIGFuIGFwaSB0byBtYW5hZ2UgZGF0YSJ7CiAgICAgICAgICAgICAgICBDb21tYW5kc1JvdXRlciA9IGNvbXBvbmVudCAia25vd2xlZGdlQ29udGV4dENvbW1hbmRzIFJvdXRlciIgIkFQSSBwcm92aWRpbmcgYWxsIGNvbW1hbmRzIgogICAgICAgICAgICAgICAgUXVlcmllc1JvdXRlciA9IGNvbXBvbmVudCAia25vd2xlZGdlQ29udGV4dFF1ZXJpZXMgUm91dGVyIiAiQVBJIHByb3ZpZGluZyBhbGwgcXVlcmllcyIKICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgb3JjaGVyc3RyYXRpb25MYXllciA9IGNvbXBvbmVudCAiT2NoZXN0cmF0aW9uIExheWVyIiAicHJvdmlkZXMgdXNlIGNhc2UgZnVuY3Rpb25hbGl0eSAocHJvY2VzcyBmaWxlcy9yZXRyaWV2ZSByZWxldmFudCBjaHVua3MvLi4uKSBieSBvcmNoZXN0cmF0aW5nIGRvbWFpbiBhbmQgYWRhcHRlcnMiCiAgICAgICAgICAgICAgICBEb21haW4gPSBjb21wb25lbnQgIktub3dsZWRnZSBEb21haW4iICJjb3JlIGJ1c2luZXNzIGxvZ2ljOiBjaHVua2tpbmcsIHJldHJpZXZhbCBzdGF0ZWdpZXMsIG1vZGVscyBvZiBjaHVua3Mgd2l0aCBtZXRhZGF0YSwgZmlsZXMgd2l0aCBtZXRhZGF0YSwgZXRjICB8IE9STSBtYXBwZWQiCiAgICAgICAgICAgICAgICBtZXRhZGF0YVVvd0FkYXB0ZXIgPSBjb21wb25lbnQgIk1ldGFkYiBVT1cgQWRhcHRlciIgIldyYXBzIGRiIG9wZXJhdGlvbnMgaW4gYSBzYWZlIHN0YXRlIHdheSwgb25seSB3YXkgdG8gY29tbWl0IHwgcmV0dXJucyBvcm0gbWFwcGVkIG9iamVjdHMiCiAgICAgICAgICAgICAgICBtZXRhZGF0YVJlcG9zaXRvcnlBZGFwdGVyID0gY29tcG9uZW50ICJNZXRhZGIgcmVwbyBBZGFwdGVyIiAiQ3JlYXRlLCBhZGQgYW5kIGRlbGV0ZSBjb252ZXJzYXRpb25zIGluIERCLiB8IHJldHVybnMgb3JtIG1hcHBlZCBvYmplY3RzIgogICAgICAgICAgICAgICAgbWV0YWRhdGFEQiA9IGNvbXBvbmVudCAiTWV0YWRhdGFEQiIgIlN0b3JlIHJlbGV2YW50IG1ldGFkYXRhIHBlciBjaHVuaywgZS5nLiBmaWxlX2lkLCBjZ3B0X2lkcywgdXNlciwgZmlsZV9tZXRhZGF0YSwgLi4uInsKICAgICAgICAgICAgICAgICAgICB0YWdzICJEYXRhYmFzZSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJQb3N0Z3Jlc3FsIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgcHJlUHJvY2Vzc1RleHRBbGlrZXNBZGFwdGVyID0gY29tcG9uZW50ICJQcmVwcm9jZXNzIHRleHQgYWxpa2VzIGFkYXB0ZXIiICJQcmUgcHJvY2Vzc2VzIHJhdyBmaWxlcyBtb3N0eWwgY29udGFpbmluZyB0ZXh0KHdvcmQvcGRmKSB0byByYXcgc3RyaW5nIHxjb21wbGV0ZWx5IGlnbm9yZXMgaW1hZ2VzKSIKICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgLy8gQVRURU5USU9OOiBEbyBub3Qgb3V0c291cmNlIHRoZSBjb3JlIGRlc2lnbiBkZWNpc2lvbnMgaW50byB0aGUgYWRhcHRlci4gCiAgICAgICAgICAgICAgICAvLyBJZiB3ZSB1c2UgYWR2YW5jZWQgc3RyYXRlZ2llcyBsaWtlICBtdWx0aSBxdWVyeSByZXRyaWV2YWwgb3IgYXV0by1tZXJnaW5nIHJldHJpZXZlciwgd2UgZG8gbm90IHdhbnQgdG8gaGlkZSB0aGlzIGJlaGluZCB0aGUgYWRhcHRlciBidXQgaW50ZWdyYXRlIGl0IGludG8gb3VyIGRvbWFpbi9zZXJ2aWNlIGxheWVyIGFzIGZhciBhcyBwb3NzaWJsZQogICAgICAgICAgICAgICAgcmV0cmVpdmVSZWxldmFudERvY3VtZW50U25pcHBldHNBZGFwdGVyID0gY29tcG9uZW50ICJSZWxldmFudCBEb2Mgc25pcHBldHMgcmV0cmVpdmVyIEFkYXB0ZXIiICJDT1JFIEZVTkNUSU9OQUxJVFkgcmV0cmlldmUgYW5kIHN0b3JlIGNodW5rcytlbWJlZGRpbmdzOyBDT1JFOiByZXRyaWV2YWwgc3RyYXRlZ3kiCiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIHZlY3RvcnN0b3JlQWRhcHRlciA9IGNvbXBvbmVudCAidmVjdG9yc3RvcmVBZGFwdGVyIiAiU3RvcmUgYW5kIHJldHJlaXZlIGNodW5rcytlbWJlZGRpbmdzK21ldGFkYXRhKGZvciBmaWx0ZXJpbmcpIDsgdXNlcyBkb21haW4gbW9kZWwgY2h1bmsgd2l0aCBtZXRhZGF0YSArIGVtYmVkZGluZyBmb3Igc3RvcmUiCiAgICAgICAgICAgICAgICB2ZWN0b3JEQiA9IGNvbXBvbmVudCAidmVjdG9yREIiICJVc2VkIHRvIHN0b3JlIHRleHQgY2h1bmtzIHdpdGggY29ycmVzcG9uZGluZyBlbWJlZGRpbmcgYW5kIG1ldGFkYXRhInsKICAgICAgICAgICAgICAgICAgICB0YWdzICJEYXRhYmFzZSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJRZHJhbnQiCiAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAgICAgZmlsZVN0b3JhZ2VBZGFwdGVybG9jYWxGUyA9IGNvbXBvbmVudCAiRmlsZSBzdG9yYWdlIGFkYXB0ZXIgdXRpbGl6aW5nIExvY2FsRlMiICJVc2VkIHRvIHN0b3JlIG5vbi1wcm9jZXNzZWQgYW5kIHByZS1wcm9jZXNzZXNlZCB3aG9sZSBkb2N1bWVudHMiCiAgICAgICAgICAgICAgICBmaWxlU3lzdGVtID0gY29tcG9uZW50ICJMb2NhbCBGaWxlIHN5c3RlbSIgIlVzZWQgYXMgZmlsZSBzdG9yYWdlIGZvciByYXcgYW5kIHByZS1wcm9jZXNzZWQgZG9jdW1lbnRzIHVwbG9hZGVkIGJ5IHVzZXIiIHsKICAgICAgICAgICAgICAgICAgICB0YWdzIExvY2FsRlMKICAgICAgICAgICAgICAgIH0KCiAgICAgICAgICAgICAgICB0ZXh0RW1iZWRkaW5nR2VuQWRhcHRlciA9IGNvbXBvbmVudCAiVGV4dEVtYmVkZGluZ0dlbmVyYXRvckFkYXB0ZXIiICJnZW5lcmF0ZXMgZW1iZWRkaW5ncyBvZiBzdHJpbmdzIgoKICAgICAgICAgICAgICAgIC8vIGJhY2tncm91bmRUYXNrID0gY29tcG9uZW50ICJCYWNrZ3JvdW5kIFRhc2siICJRdWV1ZSB0YXNrcyB0byBjb250aW51ZSBkaXJlY3RseSBhZnRlciByZXNwb25kaW5nIgogICAgICAgICAgICAgICAgLy8gZ2l0aHViRGF0YUNvbnRleHQgPSBjb21wb25lbnQgImdpdGh1YkRhdGFDb250ZXh0IiAiTGlzdGVucyBmb3Igbm90aWZpY2F0aW9uIHVwZGF0ZXMgZnJvbSBnaXRodWIgYW5kIHVwZGF0ZXMgdGhlIGNvcnJlc3BvbmRpbmcgZGF0YSBpbiB0aGUgdmVjdG9yREIiCiAgICAgICAgICAgIH0KIAogICAgICAgICAgICAhZG9jcyBkb2NzCiAgICAgICAgICAgICFhZHJzIGFkcnMKICAgICAgICAgICAgCiAgICAgICAgfQogICAgICAgIG9wZW5haWFwaSA9IHNvZnR3YXJlU3lzdGVtICJPcGVuQUlBcGkiICJQYXNzIGNvbnZlcnNhdGlvbiBhbmQgcmV0cmlldmUgYXNzaXN0YW50IG1lc3NhZ2VzIG9mIE9wZW5BSSBMTE1zIiAiRXh0ZXJuYWwgU3lzdGVtIgogICAgICAgIG9wZW5haUVtYmVkZGluZ0FQSSA9IHNvZnR3YXJlU3lzdGVtICJPcGVuQUkgRW1iZWRkaW5nIEFQSSIgIkNyZWF0ZXMgZW1iZWRkaW5ncyBmb3IgdGV4dCBjaHVua3MiICJFeHRlcm5hbCBTeXN0ZW0iCiAgICAgICAgLy8gZ2l0aHViID0gc29mdHdhcmVTeXN0ZW0gImdpdGh1YiIgIlNlbmRzIGEgUG9zdCBtZXNzYWdlIHRvIGFsbCBzdWJzY3JpYmVycyB3aGVuZXZlciBhIG5ldyBjb21taXQgd2FzIG1hZGUiICJFeHRlcm5hbCBTeXN0ZW0iIHsKICAgICAgICAvLyAgICAgd2ViaG9vayA9IGNvbnRhaW5lciAiZ2l0aHViV2ViaG9vayIgIkxpc3RlbnMgZm9yIG5ldyBjb21taXRzIGFuZCBzZW5kcyBQb3N0IGNhbGwgdG8gc3BlY2lmaWMgdXJsIgogICAgICAgIC8vICAgICBhcGkgPSBjb250YWluZXIgIkdpdGh1YkFQSSIgIlByb3ZpZGVzIGFwaSBmb3IgaW50ZXJhY3Rpbmcgd2l0aCBnaXRodWIgcmVwb3MsIGUuZy4gcmV0cmlldmluZyBkYXRhIgogICAgICAgIC8vIH0KICAgICAgICAvLyBUT1AgTEVWRUwgKFRPIEtFRVAgSVQgQ0xFQU4pLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgICAgICAgdSAtPiBzcy5yZWFjdCAiQ2hhdHMgd2l0aCBMTE0sIGNyZWF0ZXMgb3IgdXNlcyBDdXN0b21HUFRzIHVzaW5nIiAiUmVzdEFQSSIKICAgICAgICBzcy5yZWFjdCAtPiBzcy5mYXN0YXBpRW50cnlwb2ludCAiY3JlYXRlcywgcmV0cmlldmVzIGFuZCBjaGF0cyB3aXRoIGEgbGxtIG9yIGN1c3RvbUdQVHMsIHV0aWxpemluZyBvd24gZmlsZXMiICJSRVNUQXBpIgoKICAgICAgICBzcy5mYXN0YXBpRW50cnlwb2ludCAtPiBzcy5jaGF0Q29udGV4dCAicHJvdmlkZXMgaXRzIGNoYXQgZnVuY3Rpb25hbGl0eSAoY3JlYXRlL2NvbnRpbnVlL2dldCkgYnkgdXRpbGl6aW5nIGVuZHBvaW50cyBkZWZpbmVkIGluIgogICAgICAgIHNzLmZhc3RhcGlFbnRyeXBvaW50IC0+IHNzLmN1c3RvbUdQVENvbnRleHQgInByb3ZpZGVzIGl0cyBmdW5jdGlvbmFsaXR5IHRvIGNyZWF0ZS9jb250aW51ZS9nZXQvZGVsZXRlIGN1c3RvbWdwdHMgYnkgdXRpbGl6aW5nIGVuZHBvaW50cyBvZiIKICAgICAgICBzcy5mYXN0YXBpRW50cnlwb2ludCAtPiBzcy5rbm93bGVkZ2VDb250ZXh0ICJwcm92aWRlcyBpdHMgZnVuY3Rpb25hbGl0eSB0byB1cGxvYWQgZG9jdW1lbnRzIGFuZCBnZXQgaW5mb3Mgb24gdXBsb2FkZWQgZG9jcyBieSB1dGlsaXV6aW5nIHRoZSBlbmRwb2ludHMgb2YiCgoKICAgICAgICAvLyBDSEFUIENPTlRFWFQgQU5EIEFEQVBURVJTIFBST1ZJRElORyBGT1IgSVQtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogICAgICAgIHNzLmZhc3RhcGlFbnRyeXBvaW50IC0+IHNzLmNoYXRDb250ZXh0LlF1ZXJpZXNSb3V0ZXIgImdldHMgY29udmVyc2F0aW9uYWwgZGF0YSBhbmQgb3RoZXIgZ2V0IHJlcXVlc3QgYnkgdXRpbGl6aW5nIHRoZSBlbmRwb2ludHMgaW4gdGhlIgogICAgICAgIHNzLmNoYXRDb250ZXh0LlF1ZXJpZXNSb3V0ZXIgLT4gc3MuY2hhdENvbnRleHQuZGIgImdldHMgY29udmVyc2F0aW9uYWwgZGF0YSBlZmZpY2llbnRseSB2aWEgZGlyZWN0IHNxbCBxdWVyaWVzIHRvIgogICAgICAgIHNzLmZhc3RhcGlFbnRyeXBvaW50IC0+IHNzLmNoYXRDb250ZXh0LkNvbW1hbmRzUm91dGVyICJwcm92aWRlcyB0aGUgZnVuY3Rpb25hbGl0eSB0byB0byBzdGFydCBvciBjb250aW51ZSBhIGNvbnZlcnNhdGlvbiBieSB1dGlsaXppbmcgdGhlIGVuZHBvaW50cyBvZiB0aGUiIAogICAgICAgIHNzLmNoYXRDb250ZXh0LkNvbW1hbmRzUm91dGVyIC0+IHNzLmNoYXRDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgInByb3ZpZGVzIGl0cyBmdW5jdGlvbmFsaXR5IGJ5IHV0aWxpemluZyB0aGUiCiAgICAgICAgc3MuY2hhdENvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5jaGF0Q29udGV4dC51b3dBZGFwdGVyICJ3cmFwcyBpbiBvbmUgdHJhbnNhY3Rpb246IGNyZWF0ZSwgc3RvcmUsIGRlbGV0ZSwgcmV0cmlldmUgYW5kIGNoYW5nZSBkb21haW4gbW9kZWwgb2JqZWN0cyIKICAgICAgICBzcy5jaGF0Q29udGV4dC51b3dBZGFwdGVyIC0+IHNzLmNoYXRDb250ZXh0LnJlcG9zaXRvcnlBZGFwdGVyICJwcm92aWRlcyBpdHMgYWJpbGl0eSBieSBjYWxsaW5nIGZ1bmN0aW9ucyBhbmQgcHJvcGVydGllcyBvZiIKICAgICAgICBzcy5jaGF0Q29udGV4dC5yZXBvc2l0b3J5QWRhcHRlciAtPiBzcy5jaGF0Q29udGV4dC5kYiAiVXRpbGl6ZXMgc3FsYWxjaGVteSBhbmQgcm9tIG1hcHBpbmcgdG8iCgogICAgICAgIHNzLmNoYXRDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3MuY2hhdENvbnRleHQuZG9tYWluICJhZGQgbWVzc2FnZXMgYW5kIGNyZWF0ZSBwcm9tcHQgYnkgdXRpbGl6aW5nIHRoZSBtb2RlbHMgYW5kIHRoZWlyIGZ1bmN0aW9ucyBvZiB0aGUiCgogICAgICAgIHNzLmNoYXRDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3MuY3VzdG9tZ3B0Q29udGV4dC5jZ3B0SW5mb0FkYXB0ZXIgImdldHMgcGxhaW4gZGVzY3JpcHRpb24gYW5kIG5hbWUgb2Ygc3BlY2lmaWMgY3VzdG9tZ3B0cyAoZm9yIHByb21wdCBjb21wb3NpdGlvbikgZnJvbSIKCiAgICAgICAgLy8gc3MuY2hhdENvbnRleHQuY29yZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgIlNlbmRzIHRleHQtc25pcGV0IGFuZCBnZXRzIHJlbGV2YW50IGRvY3VtZW50IGNodW5rcyBhbmQgdGhlaXIgbWV0YWRhdGEgZnJvbSIKICAgICAgICBzcy5jaGF0Q29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmNoYXRDb250ZXh0LmxsbUFkYXB0ZXIgInNlbmRzIGxpc3Qgb2YgbWVzc2FnZXMgdG8gZ2V0cyBsbG0gYXNzaXN0YW50IHJlc3BvbnNlIHRvIgogICAgICAgIHNzLmNoYXRDb250ZXh0LmxsbUFkYXB0ZXIgLT4gb3BlbmFpYXBpICJwcm92aWRlcyBpdHMgbGxtIGZ1bmN0aW9uYWxpdHkgYnkgdXRpbGl6aW5nIiAiUmVzdEFQSSIKICAgICAgICBzcy5DaGF0Q29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQucmV0cmVpdmVSZWxldmFudERvY3VtZW50U25pcHBldHNBZGFwdGVyICJyZXRyaWV2ZSByZWxldmFudCBmaWxlIGNodW5rcyB0byBhIHBhc3NlZCB0ZXh0IHNuaXBwZXQiCiAgICAgICAgc3MuY2hhdENvbnRleHQuRGVsZXRlQ29udnNXaXRoQ0dQVEFkYXB0ZXIgLT4gc3MuY2hhdENvbnRleHQudW93QWRhcHRlciAiZGVsZXRlcyBjaGF0cyBieSB1c2luZyB0aGUiCiAgICAgICAgLy8tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KICAgICAgICAKICAgICAgICAvLyBDVVNUT01HUFQgQ09OVEVYVCBBTkQgQURBUFRFUlMgUFJPVklESU5HIEZPUiBJVC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAgICAgICAgc3MuZmFzdGFwaUVudHJ5cG9pbnQgLT4gc3MuY3VzdG9tR1BUQ29udGV4dC5RdWVyaWVzUm91dGVyICJnZXRzIGNvbnZlcnNhdGlvbmFsIGRhdGEgYW5kIG90aGVyIGdldCByZXF1ZXN0IGJ5IHV0aWxpemluZyB0aGUgZW5kcG9pbnRzIGluIHRoZSIKICAgICAgICBzcy5jdXN0b21HUFRDb250ZXh0LlF1ZXJpZXNSb3V0ZXIgLT4gc3MuY3VzdG9tR1BUQ29udGV4dC5kYiAiZ2V0cyBjdXN0b21ncHQgZGF0YSBlZmZpY2llbnRseSB2aWEgZGlyZWN0IHNxbCBxdWVyaWVzIHRvIgogICAgICAgIHNzLmZhc3RhcGlFbnRyeXBvaW50IC0+IHNzLmN1c3RvbUdQVENvbnRleHQuQ29tbWFuZHNSb3V0ZXIgInByb3ZpZGVzIHRoZSBmdW5jdGlvbmFsaXR5IHRvIHRvIGNoYW5nZSBvciBkZWxldGUgY3VzdG9tZ3B0cyBieSB1dGlsaXppbmcgZW5kcG9pbnRzIG9mIiAKICAgICAgICBzcy5jdXN0b21HUFRDb250ZXh0LkNvbW1hbmRzUm91dGVyIC0+IHNzLmN1c3RvbUdQVENvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAicHJvdmlkZXMgaXRzIGZ1bmN0aW9uYWxpdHkgYnkgdXRpbGl6aW5nIHRoZSBzZXJ2aWNlIGZ1bmN0aW9ucyBvZiIKICAgICAgICBzcy5jdXN0b21HUFRDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3MuY3VzdG9tR1BUQ29udGV4dC51b3dBZGFwdGVyICJ3cmFwcyBpbiBvbmUgdHJhbnNhY3Rpb246IGNyZWF0ZSwgc3RvcmUsIGRlbGV0ZSwgcmV0cmlldmUgYW5kIGNoYW5nZSBkb21haW4gbW9kZWwgb2JqZWN0cyIKICAgICAgICBzcy5jdXN0b21HUFRDb250ZXh0LnVvd0FkYXB0ZXIgLT4gc3MuY3VzdG9tR1BUQ29udGV4dC5yZXBvc2l0b3J5QWRhcHRlciAicHJvdmlkZXMgaXRzIGFiaWxpdHkgYnkgY2FsbGluZyBmdW5jdGlvbnMgYW5kIHByb3BlcnRpZXMgb2YiCiAgICAgICAgc3MuY3VzdG9tR1BUQ29udGV4dC5yZXBvc2l0b3J5QWRhcHRlciAtPiBzcy5jdXN0b21HUFRDb250ZXh0LmRiICJVdGlsaXplcyBzcWxhbGNoZW15IGFuZCByb20gbWFwcGluZyB0byIKCiAgICAgICAgc3MuY3VzdG9tR1BUQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmN1c3RvbUdQVENvbnRleHQuZG9tYWluICJ1dGlsaXplIHRoZSBtb2RlbHMgb2YgdGhlIgoKICAgICAgICBzcy5jdXN0b21ncHRDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3MuY2hhdENvbnRleHQuRGVsZXRlQ29udnNXaXRoQ0dQVEFkYXB0ZXIgImRlbGV0ZSBhbGwgY29udmVyc2F0aW9ucyBhc3NvY2lhdGVkIHdpdGggYSBzcGVjaWZpYyBjZ3B0IgoKICAgICAgICBzcy5jdXN0b21ncHRDb250ZXh0LmNncHRfcGVybWlzc2lvbl9hZGFwdGVyIC0+IHNzLmN1c3RvbUdQVENvbnRleHQuZGIgInVzZSBzdHJhaWdodCBzcWwgdG8gY2hlY2sgaWYgdXNlciBoYXMgYWNjZXNzIHRvIHNwZWNpZmljIGNncHQiCiAgICAgICAgc3MuY3VzdG9tZ3B0Q29udGV4dC5jZ3B0SW5mb0FkYXB0ZXIgLT4gc3MuY3VzdG9tR1BUQ29udGV4dC51b3dBZGFwdGVyICJnZXRzIHRoZSBkZXNjcmlwdGlvbiBhbmQgbmFtZSBvZiBhIGNncHQgYnkgdXNpbmciCiAgICAgICAgLy8gc3MuY3VzdG9tZ3B0Q29udGV4dC5jb3JlIC0+IHNzLmN1c3RvbWdwdENvbnRleHQuZGIgIlN0b3JlcyBhbmQgcmV0cmlldmVzIEN1c3RvbUdQVCBpbmZvcm1hdGlvbiAtaW5jbHVkaW5nIG1ldGFkYXRhLSB0byBhbmQgZnJvbSIgIlNRTE1vZGVsIgogICAgICAgIC8vLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgogICAgICAgIC8vIEtOT1dMRURHRSBDT05URVhUIEFORCBBREFQVEVSUyBQUk9WSURJTkcgRk9SIElULS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCiAgICAgICAgc3MuZmFzdGFwaUVudHJ5cG9pbnQgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5RdWVyaWVzUm91dGVyICJnZXQgZmlsZSBuYW1lcyBhbmQgb3RoZXIgaW5mbyBvbiBzdG9yZWQgZG9jdW1lbnRzIGJ5IHV0aWxpdXppbmcgdGhlIGVuZHBvaW50cyBvZiIKICAgICAgICAKICAgICAgICAvLyBiZWxvdzogbm90IHBvc3NpYmxlIGlmIGNncHQgY29udGV4dCBhZGFwdGVyIGlzIG5lZWRlZCB0byBjaGVjayBwZXJtaXNzaW9ucyAKICAgICAgICAvLyBzcy5rbm93bGVkZ2VDb250ZXh0LlF1ZXJpZXNSb3V0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YURCICJnZXRzIG1ldGFkYXRhIGVmZmljaWVudGx5IHZpYSBkaXJlY3Qgc3FsIHF1ZXJpZXMgdG8iCiAgICAgICAgLy8gc3Mua25vd2xlZGdlQ29udGV4dC5RdWVyaWVzUm91dGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuZmlsZVN0b3JhZ2VBZGFwdGVybG9jYWxGUyAicmV0cmlldmUgdGhlIG9yaWdpbmFsIGZpbGVzIGZyb20iCgogICAgICAgIHNzLmZhc3RhcGlFbnRyeXBvaW50IC0+IHNzLmtub3dsZWRnZUNvbnRleHQuQ29tbWFuZHNSb3V0ZXIgInByb3ZpZGVzIHRoZSBmdW5jdGlvbmFsaXR5IHRvIHVwbG9hZCBmaWxlcyBieSB1dGlsaXppbmcgdGhlIGVuZHBvaW50cyBvZiB0aGUiIAogICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQuQ29tbWFuZHNSb3V0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyICJwcm92aWRlcyBpdHMgZnVuY3Rpb25hbGl0eSBieSB1dGlsaXppbmcgdGhlIgogICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhVW93QWRhcHRlciAid3JhcHMgaW4gb25lIHRyYW5zYWN0aW9uOiBjcmVhdGUsIHN0b3JlLCBkZWxldGUsIHJldHJpZXZlIGFuZCBjaGFuZ2UgbWV0YWRhdGEiCiAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVJlcG9zaXRvcnlBZGFwdGVyICJwcm92aWRlcyBpdHMgYWJpbGl0eSBieSBjYWxsaW5nIGZ1bmN0aW9ucyBhbmQgcHJvcGVydGllcyBvZiIKICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhUmVwb3NpdG9yeUFkYXB0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YURCICJVdGlsaXplcyBzcWxhbGNoZW15IGFuZCByb20gbWFwcGluZyB0byIKCiAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQucHJlUHJvY2Vzc1RleHRBbGlrZXNBZGFwdGVyICJwcmUtcHJvY2VzcyB0ZXh0LWxpa2UgZmlsZXMgdG8gcmF3IHRleHQiCiAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5yZXRyZWl2ZVJlbGV2YW50RG9jdW1lbnRTbmlwcGV0c0FkYXB0ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyICJjYWxscyByZXRyZWl2YWwgc2VydmljZSBmdW5jdGlvbiBvZiIKCiAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuZG9tYWluICJnZXQgdGV4dCBjaHVuayBhbmQgZmlsZSBkb21haW4gbW9kZWxzIHdpdGggZnVuY3Rpb25zIHRvIGNodW5rIHRyYW5zZm9ybWVkIHRleHQiCiAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmN1c3RvbUdQVENvbnRleHQuY2dwdF9wZXJtaXNzaW9uX2FkYXB0ZXIgImNoZWNrIGlmIHVzZXIgaGFzIGFjY2VzcyB0byBjZ3B0IgogICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmZpbGVTdG9yYWdlQWRhcHRlcmxvY2FsRlMgInNhdmUgYW5kIHJldHJlaXZlIGRvY3VtZW50cyIKICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LmZpbGVTdG9yYWdlQWRhcHRlcmxvY2FsRlMgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5maWxlU3lzdGVtICJ1dGlsaXplcyIKICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC50ZXh0RW1iZWRkaW5nR2VuQWRhcHRlciAiZ2VuZXJhdGVzIGFuIGVtYmVkZGluZyBmb3IgYSBnaXZlbiB0ZXh0IGNodW5rIgogICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LnZlY3RvcnN0b3JlQWRhcHRlciAic3RvcmUgZW1iZWRkaW5ncyBhbmQgcmV0cmVpdmUgY2xvc2UgZW1iZWRkaW5ncyIKICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LnZlY3RvcnN0b3JlQWRhcHRlciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LnZlY3RvckRCICJ1dGlsaXplcyBhcyBkYiIgIlFkcmFudCIKICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LnZlY3RvcnN0b3JlQWRhcHRlciAtPiBvcGVuYWlFbWJlZGRpbmdBUEkgInV0aWxpemVzIGFzIGVtYmVkZGluZyBnZW5lcmF0b3IiICJSZXN0QVBJIgogICAgICAgIAogICAgICAgIC8vLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgogICAgICAgIC8vIHNzLmludGVyZmFjZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgIlNlbmRzIGRvY3VtZW50cyB0byBwcm9jZXNzIGFuZCBlbWJlZGQgYW5kIHJldHJpZXZlcyByZWxldmFudCBkb2N1bWVudCBjaHVua3MgdG8gYSBnaXZlbiB0ZXh0IGZyb20iCiAgICAgICAgLy8gc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubG9jYWxGUyAic3RvcmUgdW5wcm9jZXNzZWQgYW5kIHByb2Nlc3NlZCB3aG9sZSBkb2N1bWVudHMgb24iCiAgICAgICAgLy8gc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuYmFja2dyb3VuZFRhc2sgInF1ZXJ5IHByb2Nlc3NpbmcgdGFza3MiCiAgICAgICAgLy8gc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IG9wZW5haWFwaSAiY3JlYXRlIGVtYmVkZGluZ3MgZm9yIGNodW5rcyBvZiBkb2N1bWVudHMgdXRpbGl6aW5nIgogICAgICAgIC8vIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LnZlY3RvckRCICJzdG9yZSBhbmQgcmV0cmlldmUgKHNpbWlsYXIpIGRvY3VtZW50IGNodW5rcyBlbWJlZGRpbmdzIgogICAgICAgIC8vIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhREIgInN0b3JlIG1ldGFkYXRhIGluZm9ybWF0aW9uIGFib3V0IGRvY3VtZW50cyBzdG9yZWQgaW4gdGhlIFZlY3RvckRCIgoKICAgICAgICAvLyBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gc3MuaW50ZXJmYWNlICJTZW5kcyBtZXNzYWdlcyB3aGVuIHRoZSBwcm9jZXNzaW5nIHN0YXR1cyBvZiB1cGxvYWRlZCBkb2N1bWVudHMgaGFzIGNoYW5nZWQiICJSRVNUQXBpIgogICAgICAgIC8vIHNzLmludGVyZmFjZSAtPiBzcy5yZWFjdCAiU2VuZHMgbWVzc2FnZXMgd2hlbiB0aGUgcHJvY2Vzc2luZyBzdGF0dXMgb2YgdXBsb2FkZWQgZG9jdW1lbnRzIGhhcyBjaGFuZ2VkIHRvIiAiV1NNZXNzYWdlIgogICAgICAgIAogICAgICAgIC8vIGdpdGh1Yi53ZWJob29rIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuZ2l0aHViRGF0YUNvbnRleHQgIk5vdGlmaWVzIGFib3V0IG5ldyBjb21taXRzIiAiUE9TVCBDYWxsIgogICAgICAgIC8vIHNzLmtub3dsZWRnZUNvbnRleHQuZ2l0aHViRGF0YUNvbnRleHQgLT4gZ2l0aHViLmNvcmUgInJldHJpZXZlcyByZXBvc2l0b3J5IGNvbnRlbnQgZnJvbSIKICAgICAgICAvLyBzcy5rbm93bGVkZ2VDb250ZXh0LmdpdGh1YkRhdGFDb250ZXh0IC0+IHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAidXBkYXRlcyBvdXRkYXRlIGdpdGh1YiByZXBvIGRhdGEgaW4iCiAgICAgICAgCiAgICAgICAgCgoKCiAgICAgICAgCiAgICB9CgogICAgdmlld3MgewogICAgICAgIHN5c3RlbUNvbnRleHQgc3MgIlN5c3RlbUNvbnRleCJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQogICAgICAgIGNvbnRhaW5lciBzcyAiQ29udGFpbmVyVmlldyJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQogICAgICAgIGNvbXBvbmVudCBzcy5jaGF0Q29udGV4dCAiY2hhdENvbnRleHRWaWV3InsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIC0+IGVsZW1lbnQudHlwZT09Q29udGFpbmVyIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PVNvZnR3YXJlU3lzdGVtIgogICAgICAgICAgICAvLyBhdXRvTGF5b3V0IGxyCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgc3Mua25vd2xlZGdlQ29udGV4dCAia25vd2xlZGdlQ29udGV4dFZpZXciewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0gLT4gZWxlbWVudC50eXBlPT1Db250YWluZXIiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudHlwZT09Q29udGFpbmVyIC0+IGVsZW1lbnQudHlwZT09U29mdHdhcmVTeXN0ZW0iCiAgICAgICAgICAgIC8vIGF1dG9MYXlvdXQgbHIKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBzcy5jdXN0b21HUFRDb250ZXh0ICJjdXN0b21HUFRDb250ZXh0VmlldyJ7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnR5cGU9PUNvbnRhaW5lciAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSAtPiBlbGVtZW50LnR5cGU9PUNvbnRhaW5lciIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50eXBlPT1Db250YWluZXIgLT4gZWxlbWVudC50eXBlPT1Tb2Z0d2FyZVN5c3RlbSIKICAgICAgICAgICAgLy8gYXV0b0xheW91dCBscgogICAgICAgIH0KCiAgICAgICAgLy8gZHluYW1pYyBzcyAid3NNZXNzYWdlInsKICAgICAgICAvLyAgICAgdGl0bGUgImNsaWVudCBzdWJzY2liZXMgdG8gd2Vic29ja2V0TXNnIgogICAgICAgIC8vICAgICBzcy5yZWFjdCAtPiBzcy5pbnRlcmZhY2UgInN1YnNjcmliZXMgdG8gd2Vic29ja2V0bWVzc2FnZXMiCiAgICAgICAgLy8gfQogICAgICAgIGR5bmFtaWMgc3Mua25vd2xlZGdlQ29udGV4dCAidXBsb2FkQW5kUHJlcHJvY2Vzc1RleHRMaWtlRG9jInsKICAgICAgICAgICAgdGl0bGUgIkNIRUNLIElOIENPREU6IFVwbG9hZCBhbmQgcHJlLXByb2Nlc3MgdGV4dCBsaWtlIGRvY3VtZW50IChtaXNzaW5nOiByZXRyeSBsb2dpYyBmb3IgZWFjaCDCsVRyYW5zYWN0aW9uKSIKICAgICAgICAgICAgdSAtPiBzcy5yZWFjdCAiVXBsb2FkcyBkb2N1bWVudCB0byIKICAgICAgICAgICAgc3MucmVhY3QgLT4gc3MuZmFzdGFwaUVudHJ5cG9pbnQgInNlbmRzIGRvY3VtZW50IGZpbGUgdG8iCiAgICAgICAgICAgIHNzLmZhc3RhcGlFbnRyeXBvaW50IC0+IHNzLmtub3dsZWRnZUNvbnRleHQuQ29tbWFuZHNSb3V0ZXIgInJvdXRlcyBjYWxsIHRvIGVuZHBvaW50IHVwbG9hZFRleHRMaWtlRG9jIG9mIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LkNvbW1hbmRzUm91dGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAiY2FsbCBzZXJ2aWNlIGZ1bmN0aW9uICROQU1FIG9mIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3MuY3VzdG9tR1BUQ29udGV4dC5jZ3B0X3Blcm1pc3Npb25fYWRhcHRlciAiYXNzdXJlIHRoYXQgdXNlciBoYXMgYWNjZXNzIHRvIGNncHQgfCBJRiBOT1Q6IFRIUk9XIDQwNCBlcnJvciBiYWNrIHRvIGZyb250ZW5kIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5kb21haW4gImFzc3VyZSB0aGF0IHRoZSBmaWxlIHR5cGUgaXMgc3VwcG9ydGVkIChpbmZlcnJlZCBmcm9tIGZpbGVuYW1lKSB8IElGIE5PVDogVEhST1cgNDA0IGVycm9yIGJhY2sgdG8gZnJvbnRlbmQiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhVW93QWRhcHRlciAiVFJBTlNBQ1RJT04gT05FOiBvcGVuIFVPVyIKICAgICAgICAgICAgLy8gc2hvdWxkbid0IHdlIG1ha2UgbG9jYWwgZnMgJiB2ZWN0b3Igc3RvcmUgYWxzbyBhIHVvdyBzdWNoIHRoYXQgd2UgY2FuIHJvbGxiYWNrIGkuZS4gZGVsZXRlPwogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5kb21haW4gIkNhbGN1bGF0ZSBoYXNoIGJhc2VkIG9uIGZpbGUtdHlwZShpbmZlcnJlZCBmcm9tIGZpbGVuYW0gc3VmZml4KSAtPiBSRVRVUk4gaGFzaCwgYnl0ZSBjb250ZW50IG9mIGZpbGUsIGZpbGUtdHlwZSB8SUYgVU5TVVBQT1JURUQgRklMRSBUWVBFOiB0aHJvdyBlcnJvciBiYWNrIHRvIGZyb250ZW5kKGRvbWFpbiBlcnJvciAtb3JjaHN0cmF0aW9uIGxldmVsIGVycm9yIG1hcHBlcnMtPiBodHRwcyBlcnJvcikiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFSZXBvc2l0b3J5QWRhcHRlciAiVFJBTlNBQ1RJT04gT05FOiBjaGVjayBpZiBmaWxlIHdpdGggdGhpcyBoYXNoIGV4aXN0cyBhbHJlYWR5IgogICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgc3Mua25vd2xlZGdlQ29udGV4dCAidXBsb2FkQW5kUHJlcHJvY2Vzc1RleHRMaWtlRG9jSGFzaERvZXNFeGlzdCJ7CiAgICAgICAgICAgIHRpdGxlICJDSEVDSyBJTiBDT0RFOiBVcGxvYWQgYW5kIHByZS1wcm9jZXNzIHRleHQgbGlrZSBkb2N1bWVudCB8QlJBTkNIOiBIQVNIIERPRVMgRVhJU1QgQUxSRUFEWSAobWlzc2luZzogcmV0cnkgbG9naWMgZm9yIGVhY2ggwrFUcmFuc2FjdGlvbikiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmRvbWFpbiAiVFJBTlNBQ1RJT04gT05FOiAoSWYgYWxyZWFkeSBleGlzdCkgdmlhIG1vZGVsIGZ1bmN0aW9uczogYWRkIGNncHQgaWQgdG8gcGVybWlzc2lvbiBsaXN0IG9mIGZpbGU7IERPTkUiCiAgICAgICAgfQogICAgICAgIGR5bmFtaWMgc3Mua25vd2xlZGdlQ29udGV4dCAidXBsb2FkQW5kUHJlcHJvY2Vzc1RleHRMaWtlRG9jSGFzaERvZXNOb3RFeGlzdCJ7CiAgICAgICAgICAgIHRpdGxlICJDSEVDSyBJTiBDT0RFOiBVcGxvYWQgYW5kIHByZS1wcm9jZXNzIHRleHQgbGlrZSBkb2N1bWVudCB8QlJBTkNIOiBIQVNIIERPRVMgTk9UIEVYSVNUIFlFVCAobWlzc2luZzogcmV0cnkgbG9naWMgZm9yIGVhY2ggwrFUcmFuc2FjdGlvbikiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFSZXBvc2l0b3J5QWRhcHRlciAiVFJBTlNBQ1RJT04gT05FOiBjaGVjayBpZiBmaWxlIHdpdGggdGhpcyBoYXNoIGV4aXN0cyBhbHJlYWR5IHwgRE9FUyBOT1QiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFSZXBvc2l0b3J5QWRhcHRlciAiVFJBTlNBQ1RJT04gT05FOiBjcmVhdGUgbmV3IGZpbGUgZG9tYWluIG1vZGVsKCBmaWxlX3R5cGUsIG5hbWUgdXNlZCBmb3IgaW5pdHwgaWQ9dXVpZDspIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5maWxlU3RvcmFnZUFkYXB0ZXJsb2NhbEZTICJUUkFOU0FDVElPTiBPTkU6IFN0b3JlIHJhdyB1bnByb2Nlc3NlZCBmaWxlIChwYXNzOiB1cGxvYWRmaWxlLmlkLCBieXRlc19jb250ZW50KSIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQuZG9tYWluICJUUkFOU0FDVElPTiBPTkU6IHZpYSBkb21haW4gbW9kZWwgb2JqZWN0IGZ1bmN0aW9uOiBzZXQgc3RhdHVzIHRvIHJhd19maWxlX3VwbG9hZGVkIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgIlRSQU5TQUNUSU9OIE9ORTogY29tbWl0IgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5Db21tYW5kc1JvdXRlciAicmV0cnVybiBodHRwIHJlc3BvbnNlIHVwbG9hZCBzdWNjZXNmdWxsLCBwcm9jZXNzaW5nIHF1ZXVlZC8gb3IgZmluaXNoZWQgaWYgZmlsZSBhbHJlYWR5IGV4aXN0IGluIGRiIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5wcmVQcm9jZXNzVGV4dEFsaWtlc0FkYXB0ZXIgInByZXByb2Nlc3MgdGhlIHJhdyBkb2N1bWVudCBiYXNlZCBvbiBmaWxlX3R5cGUsIHJldHVybnMgc3RyaW5nIHwgUEFTUzogYnl0ZXNfY29udGVudCwgZmlsZV90eXBlIiAKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyICJUUkFOU0FDVElPTiBUV086IG9wZW4gVU9XIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5kb21haW4gIlRSQU5TQUNUSU9OIFRXTzogY2hhbmdlIGZpbGUgZG9tYWluIG1vZGVsOiBwcmVwcm9jZXNzZWQgdGV4dD0gcmF3IHN0cmluZywgW2NoYW5nZSBzdGF0dXMgdG8gcHJlcHJvY2Vzc2VkKD8pXSIgCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhVW93QWRhcHRlciAiVFJBTlNBQ1RJT04gVFdPOiBjb21taXQiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0Lm1ldGFkYXRhVW93QWRhcHRlciAiVFJBTlNBQ1RJT04gVEhSRUU6IG9wZW4gVU9XIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5kb21haW4gIlRSQU5TQUNUSU9OIFRIUkVFOiBjcmVhdGUgYWxsIGRvY3VtZW50IGNodW5rcyB2aWEgbW9kZWwgZm54IHwgZG9jdW1lbnQgY2h1bmtzIGFyZSBkb21haW4gbW9kZWw7IHV1aWQsIHJlZiBmaWwsIHJhd190ZXh0LCBpbmNsdWRlIG1ldGFkYXRhIHByb3BlcnRpZXMgdXNlZCBmb3IgcmV0cmlldmFsIGxvZ2ljIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5kb21haW4gIlRSQU5TQUNUSU9OIFRIUkVFOiB1cGRhdGUgZG9jdW1lbnQgZmlsZSBkb21haW4gbW9kZWwgdG8gZnVsbHkgY2h1bmtlZCIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyICJUUkFOU0FDVElPTiBUSFJFRTogY29tbWl0IChpZiBhbnkgZXJyb3JzIGhhZCBvY2N1cmVkIC1yb2xsYmFjayBhbGwgY2hhbmdlczsgbmVlZCB0byBmdWxseSByZWNodW5rKSIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQudGV4dEVtYmVkZGluZ0dlbkFkYXB0ZXIgIkxPT1AgVElMTCBBTEwgQ0hVTktTIEVNQkVEREVEIE9GIERPQzogY3JlYXRlIGVtYmVkZGluZyBmb3IgdGV4dCBjaHVuayIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQudmVjdG9yc3RvcmVBZGFwdGVyICJMT09QIFRJTEwgQUxMIENIVU5LUyBFTUJFRERFRCBPRiBET0M6IHBhc3MgZW1iZWRkaW5nIHdpdGggY2h1bmsgZG9tYWluIG1vZGVsIGluY2wuIG1ldGFkYXRhIHByb3BlcnRpZXMiCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQudmVjdG9yc3RvcmVBZGFwdGVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQudmVjdG9yREIgIkxPT1AgVElMTCBBTEwgQ0hVTktTIEVNQkVEREVEIE9GIERPQzogc3RvcmUgZW1iZWRkaW5nLCB1c2UgaWQsIG1ldGFkYXRhIGZpZWxkcyBhcyBqc29uIgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YVVvd0FkYXB0ZXIgIkxPT1AgVElMTCBBTEwgQ0hVTktTIEVNQkVEREVEIE9GIERPQzogT3BlbiB1b3ciCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmRvbWFpbiAiTE9PUCBUSUxMIEFMTCBDSFVOS1MgRU1CRURERUQgT0YgRE9DOiBjaGFuZ2UgY2h1bmsgc3RhdHVzIHRvOiBlbWJlZGRlZCIKICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFVb3dBZGFwdGVyICJMT09QIFRJTEwgQUxMIENIVU5LUyBFTUJFRERFRCBPRiBET0M6IGNvbW1pdCIKICAgICAgICAgICAgLy8gc2VuZCB0byBjbGllbnQvIHVwZGF0ZSBqb2IgdG8gIGVtYmVkZGVkCiAgICAgICAgfQogICAgICAgIAogICAgICAgIGR5bmFtaWMgc3Mua25vd2xlZGdlQ29udGV4dCAicmV0cmVpdmVEb2N1bWVudENodW5rc1Vuc3VjY2VzZnVsbCJ7CiAgICAgICAgICAgIHRpdGxlICJDSEVDSyBJTiBDT0RFOiByZXRyZWl2ZSByZWxldmFudCBjaHVua3MgdW5zdWNjZXNzZnVsfCBtaXNzaW5nOiByZXRyeSBsb2dpYyBmb3IgZWFjaCDCsVRyYW5zYWN0aW9uIgogICAgICAgICAgICBzcy5jaGF0Q29udGV4dC5vcmNoZXJzdHJhdGlvbkxheWVyIC0+IHNzLmtub3dsZWRnZUNvbnRleHQucmV0cmVpdmVSZWxldmFudERvY3VtZW50U25pcHBldHNBZGFwdGVyICJzZW5kcyB0ZXh0IHNuaXBwZXQgKyBncHQgaWQgdG8iCiAgICAgICAgICAgIHNzLmtub3dsZWRnZUNvbnRleHQub3JjaGVyc3RyYXRpb25MYXllciAtPiBzcy5jdXN0b21HUFRDb250ZXh0LmNncHRfcGVybWlzc2lvbl9hZGFwdGVyICJjaGVjayBpZiB1c2VyIGhhcyBhY2Nlc3MgdG8gdGhpcyBjZ3B0IC0+IGRvZXMgbm90IgogICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0Lm9yY2hlcnN0cmF0aW9uTGF5ZXIgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5Db21tYW5kc1JvdXRlciAiUmV0dXJuIGh0dHAgZXJyb3IgNDA0IG5vdCBmb3VuZCIKICAgICAgICB9CgoKICAgICAgICAvLyBkeW5hbWljIHNzLmtub3dsZWRnZUNvbnRleHQgInVwbG9hZERvY3VtZW50InsKICAgICAgICAvLyAgICAgdGl0bGUgInVwbG9hZCBkb2N1bWVudCBhbmQgc3RhcnQgcHJvY2Vzc2luZyIgCiAgICAgICAgLy8gICAgIHNzLmludGVyZmFjZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgInNlbmQgZG9jdW1lbnQgdG8iCiAgICAgICAgLy8gICAgIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmxvY2FsRlMgInN0b3JlIG9yaWdpbmFsIGRvY3VtZW50IGluIgogICAgICAgIC8vICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YURCICJhZGRzIGRvY3VtZW50IGluZm9tYXRpb24gdG8gYW5kIHNldCBzdGF0dXMgdG8gdXBsb2FkZWQiCiAgICAgICAgLy8gICAgIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmJhY2tncm91bmRUYXNrICJxdWV1ZSBwcm9jZXNzaW5nIGJhY2tncm91bmQgdGFzayIKICAgICAgICAvLyAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IHNzLmludGVyZmFjZSAibm90aWZpZXMgYWJvdXQgdGhlIHN1Y2Nlc3NmdWwgdXBsb2FkIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICAvLyAgICAgc3MuaW50ZXJmYWNlIC0+IHNzLnJlYWN0ICJub3RpZmllcyBhYm91dCB0aGUgc3VjY2Vzc2Z1bCB1cGxvYWQgb2YgdGhlIGRvY3VtZW50IgogICAgICAgIC8vIH0KCiAgICAgICAgLy8gZHluYW1pYyBzcy5rbm93bGVkZ2VDb250ZXh0ICJwcm9jZXNzRG9jdW1lbnQiewogICAgICAgIC8vICAgICB0aXRsZSAidXBsb2FkZWQgZG9jdW1lbnQgZmluaXNoZWQgcHJvY2Vzc2luZyIKICAgICAgICAvLyAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5iYWNrZ3JvdW5kVGFzayAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgInRyaWdnZXIgcHJlcHJvY2Vzc2luZyBvZiB0aGUgZG9jdW1lbnQiCiAgICAgICAgLy8gICAgIHNzLmtub3dsZWRnZUNvbnRleHQuY29yZSAtPiBzcy5rbm93bGVkZ2VDb250ZXh0LmxvY2FsRlMgInNhdmUgcHJlcHJvY2Vzc2VkICh3aG9sZSkgZG9jdW1lbnQiCiAgICAgICAgLy8gICAgIHsKICAgICAgICAvLyAgICAgICAgIHsKICAgICAgICAvLyAgICAgICAgICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gc3Mua25vd2xlZGdlQ29udGV4dC5tZXRhZGF0YURCICJ1cGRhdGUgbWV0YWRhdGEgaW5mb3JtYXRpb24gdG8gbm90ZSBwcmVwcm9jZXNzZWQgZG9jdW1lbnQiCiAgICAgICAgLy8gICAgICAgICB9CiAgICAgICAgLy8gICAgICAgICB7CiAgICAgICAgLy8gICAgICAgICAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IG9wZW5haWFwaSAiY3JlYXRlIGVtYmVkZGluZ3MgZm9yIGNyZWF0ZWQgZG9jdW1lbnQgY2h1bmtzIHV0aWxpemluZyIKICAgICAgICAvLyAgICAgICAgIH0KICAgICAgICAvLyAgICAgfQogICAgICAgIC8vICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gc3Mua25vd2xlZGdlQ29udGV4dC52ZWN0b3JEQiAic3RvcmUgZW1iZWRkaW5ncyBpbiIKICAgICAgICAvLyAgICAgc3Mua25vd2xlZGdlQ29udGV4dC5jb3JlIC0+IHNzLmtub3dsZWRnZUNvbnRleHQubWV0YWRhdGFEQiAic2V0cyBkb2N1bWVudCBzdGF0dXMgdG8gYXZhaWxhYmxlIGFuZCB1cGRhdGVzIG90aGVyIG1ldGFkYXRhIGluZm9ybWF0aW9uIgogICAgICAgIC8vICAgICBzcy5rbm93bGVkZ2VDb250ZXh0LmNvcmUgLT4gc3MuaW50ZXJmYWNlICJub3RpZmllcyBhYm91dCB0aGUgc3VjY2Vzc2Z1bCBwcm9jY2VzaW5nIG9mIHRoZSBkb2N1bWVudCIKICAgICAgICAvLyAgICAgc3MuaW50ZXJmYWNlIC0+IHNzLnJlYWN0ICJzZW5kIG5vdGlmaWNhdGlvbiBhYm91dCBhdmFpbGFiaWxpdHkgb2YgdGhlIGRvY3VtZW50IHRvIHN1YnNjcmliZWQiICJXU01lc3NhZ2UiCiAgICAgICAgLy8gfQoKICAgICAgICAKCiAgICAgICAgLy8gZHluYW1pYyBzcy5jdXN0b21ncHRDb250ZXh0ICJjdXN0b21HUFRDcmVhdGVPckVkaXQiewogICAgICAgIC8vICAgICB0aXRsZSAiY3JlYXRlIG9yIGVkaXQgY3VzdG9tIGdwdCIKICAgICAgICAvLyAgICAgc3MucmVhY3QgLT4gc3MuZmFzdGFwaUVudHJ5cG9pbnQgInNlbmQgY3VzdG9tZ3B0IGZvcm0gZGF0YSB0byIKICAgICAgICAvLyAgICAgc3MuZmFzdGFwaUVudHJ5cG9pbnQgLT4gc3MuY3VzdG9tZ3B0Q29udGV4dC5Db21tYW5kc1JvdXRlciAidXRpbGl6ZXMgcm91dGVyIgogICAgICAgIC8vICAgICBzcy5pbnRlcmZhY2UgLT4gc3MuY3VzdG9tR1BUQ29udGV4dC5jb3JlICJmb3J3YWQgcG9zdCBjYWxsIHRvIgogICAgICAgIC8vICAgICBzcy5jdXN0b21HUFRDb250ZXh0LmNvcmUgLT4gc3MuY3VzdG9tR1BUQ29udGV4dC5kYiAic2F2ZSBkYXRhIGFuZCBtZXRhZGF0YSBpbiIKICAgICAgICAvLyAgICAgc3MuY3VzdG9tR1BUQ29udGV4dC5jb3JlIC0+ICBzcy5pbnRlcmZhY2UgInN1Y2Nlc3MgcmVzcG9uc2UiCiAgICAgICAgLy8gICAgIHNzLmludGVyZmFjZSAtPiBzcy5yZWFjdCAic3VjY2VzcyByZXNwb25zZSIKICAgICAgICAvLyB9CgoKICAgICAgICBzdHlsZXMgewogICAgICAgICAgICBlbGVtZW50ICJQZXJzb24iIHsKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgICAgIGZvbnRTaXplIDIyCiAgICAgICAgICAgICAgICBzaGFwZSBQZXJzb24KICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJTb2Z0d2FyZSBTeXN0ZW0iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzExNjhiZAogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkV4dGVybmFsIFN5c3RlbSIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjOTk5OTk5CiAgICAgICAgICAgICAgICBjb2xvciAjZmZmZmZmCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiQ29udGFpbmVyIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM0MzhkZDUKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJXZWIgQnJvd3NlciIgewogICAgICAgICAgICAgICAgc2hhcGUgV2ViQnJvd3NlcgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkRhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBDeWxpbmRlcgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkNvbXBvbmVudCIgewogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAjODViYmYwCiAgICAgICAgICAgICAgICBjb2xvciAjMDAwMDAwCiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxlbWVudCAiRmFpbG92ZXIiIHsKICAgICAgICAgICAgICAgIG9wYWNpdHkgMjUKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJMb2NhbEZTInsKICAgICAgICAgICAgICAgIHNoYXBlIEZvbGRlcgogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQp9"
   },
   "views" : {
     "componentViews" : [ {
@@ -1141,8 +1187,6 @@
       "key" : "chatContextView",
       "order" : 3,
       "relationships" : [ {
-        "id" : "47"
-      }, {
         "id" : "48"
       }, {
         "id" : "49"
@@ -1157,17 +1201,19 @@
       }, {
         "id" : "54"
       }, {
-        "id" : "56"
+        "id" : "55"
       }, {
-        "id" : "59"
+        "id" : "57"
       }, {
         "id" : "60"
       }, {
-        "id" : "64"
+        "id" : "61"
       }, {
-        "id" : "67"
+        "id" : "65"
       }, {
-        "id" : "78"
+        "id" : "68"
+      }, {
+        "id" : "79"
       } ]
     }, {
       "containerId" : "25",
@@ -1185,8 +1231,8 @@
         "y" : 125
       }, {
         "id" : "15",
-        "x" : 170,
-        "y" : -65
+        "x" : 565,
+        "y" : 135
       }, {
         "id" : "26",
         "x" : 1856,
@@ -1243,26 +1289,32 @@
         "id" : "39",
         "x" : 205,
         "y" : 530
+      }, {
+        "id" : "41",
+        "x" : 2385,
+        "y" : 2160
       } ],
       "externalContainerBoundariesVisible" : false,
       "key" : "knowledgeContextView",
       "order" : 4,
       "relationships" : [ {
-        "id" : "65"
+        "id" : "100"
       }, {
-        "id" : "82",
+        "id" : "101"
+      }, {
+        "id" : "66"
+      }, {
+        "id" : "83",
         "vertices" : [ {
           "x" : 2591,
           "y" : 1852
         } ]
       }, {
-        "id" : "83",
+        "id" : "84",
         "vertices" : [ {
           "x" : 2606,
           "y" : 1122
         } ]
-      }, {
-        "id" : "84"
       }, {
         "id" : "85"
       }, {
@@ -1276,20 +1328,19 @@
       }, {
         "id" : "90"
       }, {
-        "id" : "92",
+        "id" : "91"
+      }, {
+        "id" : "93",
         "vertices" : [ {
           "x" : 940,
           "y" : 765
-        }, {
-          "x" : 630,
-          "y" : 125
         } ]
-      }, {
-        "id" : "95"
       }, {
         "id" : "96"
       }, {
-        "id" : "97",
+        "id" : "97"
+      }, {
+        "id" : "98",
         "vertices" : [ {
           "x" : 790,
           "y" : 990
@@ -1297,8 +1348,6 @@
           "x" : 781,
           "y" : 737
         } ]
-      }, {
-        "id" : "98"
       }, {
         "id" : "99"
       } ]
@@ -1361,13 +1410,11 @@
       "key" : "customGPTContextView",
       "order" : 5,
       "relationships" : [ {
-        "id" : "57",
+        "id" : "58",
         "vertices" : [ {
           "x" : 515,
           "y" : 1575
         } ]
-      }, {
-        "id" : "68"
       }, {
         "id" : "69"
       }, {
@@ -1383,18 +1430,21 @@
       }, {
         "id" : "75"
       }, {
-        "id" : "77"
+        "id" : "76"
       }, {
-        "id" : "80"
+        "id" : "78"
       }, {
         "id" : "81"
       }, {
-        "id" : "93"
+        "id" : "82"
+      }, {
+        "id" : "94"
       } ]
     } ],
     "configuration" : {
       "branding" : { },
-      "lastSavedView" : "chatContextView",
+      "lastSavedView" : "knowledgeContextView",
+      "metadataSymbols" : "SquareBrackets",
       "styles" : {
         "elements" : [ {
           "color" : "#ffffff",
@@ -1435,81 +1485,94 @@
     },
     "containerViews" : [ {
       "dimensions" : {
-        "height" : 1736,
-        "width" : 3145
+        "height" : 2540,
+        "width" : 2481
       },
       "elements" : [ {
         "id" : "1",
-        "x" : 2499,
-        "y" : 165
+        "x" : 1775,
+        "y" : 15
       }, {
         "id" : "3",
-        "x" : 1749,
-        "y" : 215
+        "x" : 1750,
+        "y" : 665
       }, {
         "id" : "4",
-        "x" : 994,
-        "y" : 225
+        "x" : 995,
+        "y" : 675
       }, {
         "id" : "5",
-        "x" : 1810,
-        "y" : 1105
+        "x" : 1811,
+        "y" : 1555
       }, {
         "id" : "15",
-        "x" : 964,
-        "y" : 795
+        "x" : 965,
+        "y" : 1245
       }, {
         "id" : "25",
-        "x" : 219,
-        "y" : 1105
+        "x" : 220,
+        "y" : 1555
       }, {
         "id" : "40",
-        "x" : 2494,
-        "y" : 1120
+        "x" : 1800,
+        "y" : 2025
+      }, {
+        "id" : "41",
+        "x" : 625,
+        "y" : 2075
       } ],
       "externalSoftwareSystemBoundariesVisible" : false,
       "key" : "ContainerView",
       "order" : 2,
       "relationships" : [ {
-        "id" : "41"
-      }, {
-        "id" : "43"
-      }, {
-        "id" : "44",
+        "id" : "102",
         "vertices" : [ {
-          "x" : 1859,
-          "y" : 685
+          "x" : 675,
+          "y" : 1865
+        }, {
+          "x" : 740,
+          "y" : 2073
         } ]
       }, {
-        "id" : "45"
+        "id" : "42"
       }, {
-        "id" : "46",
+        "id" : "44"
+      }, {
+        "id" : "45",
         "vertices" : [ {
-          "x" : 604,
-          "y" : 675
+          "x" : 1860,
+          "y" : 1135
         } ]
       }, {
-        "id" : "58",
+        "id" : "46"
+      }, {
+        "id" : "47",
         "vertices" : [ {
-          "x" : 1579,
-          "y" : 940
+          "x" : 605,
+          "y" : 1125
         } ]
       }, {
-        "id" : "61"
-      }, {
-        "id" : "66",
+        "id" : "59",
         "vertices" : [ {
-          "x" : 1249,
-          "y" : 1265
+          "x" : 1580,
+          "y" : 1390
         } ]
       }, {
-        "id" : "79",
+        "id" : "62"
+      }, {
+        "id" : "67",
         "vertices" : [ {
-          "x" : 1554,
-          "y" : 1150
+          "x" : 1250,
+          "y" : 1715
         } ]
       }, {
-        "id" : "94"
+        "id" : "80",
+        "vertices" : [ {
+          "x" : 1555,
+          "y" : 1600
+        } ]
+      }, {
+        "id" : "95"
       } ],
       "softwareSystemId" : "2"
     } ],
@@ -1562,22 +1625,22 @@
       "paperSize" : "A2_Landscape",
       "relationships" : [ {
         "description" : "Uploads document to",
-        "id" : "41",
+        "id" : "42",
         "order" : "1",
         "response" : false
       }, {
         "description" : "sends document file to",
-        "id" : "43",
+        "id" : "44",
         "order" : "2",
         "response" : false
       }, {
         "description" : "routes call to endpoint uploadTextLikeDoc of",
-        "id" : "83",
+        "id" : "84",
         "order" : "3",
         "response" : false
       }, {
         "description" : "call service function $NAME of",
-        "id" : "84",
+        "id" : "85",
         "order" : "4",
         "response" : false,
         "vertices" : [ {
@@ -1586,22 +1649,22 @@
         } ]
       }, {
         "description" : "assure that user has access to cgpt | IF NOT: THROW 404 error back to frontend",
-        "id" : "91",
+        "id" : "92",
         "order" : "5",
         "response" : false
       }, {
         "description" : "assure that the file type is supported (inferred from filename) | IF NOT: THROW 404 error back to frontend",
-        "id" : "90",
+        "id" : "91",
         "order" : "6",
         "response" : false
       }, {
         "description" : "TRANSACTION ONE: open UOW",
-        "id" : "85",
+        "id" : "86",
         "order" : "7",
         "response" : false
       }, {
         "description" : "Calculate hash based on file-type(inferred from filenam suffix) -> RETURN hash, byte content of file, file-type |IF UNSUPPORTED FILE TYPE: throw error back to frontend(domain error -orchstration level error mappers-> https error)",
-        "id" : "90",
+        "id" : "91",
         "order" : "8",
         "response" : false,
         "vertices" : [ {
@@ -1610,7 +1673,7 @@
         } ]
       }, {
         "description" : "TRANSACTION ONE: check if file with this hash exists already",
-        "id" : "86",
+        "id" : "87",
         "order" : "9",
         "response" : false
       } ],
@@ -1636,7 +1699,7 @@
       "paperSize" : "A2_Landscape",
       "relationships" : [ {
         "description" : "TRANSACTION ONE: (If already exist) via model functions: add cgpt id to permission list of file; DONE",
-        "id" : "90",
+        "id" : "91",
         "order" : "1",
         "response" : false
       } ],
@@ -1694,27 +1757,27 @@
       "paperSize" : "A2_Landscape",
       "relationships" : [ {
         "description" : "TRANSACTION ONE: check if file with this hash exists already | DOES NOT",
-        "id" : "86",
+        "id" : "87",
         "order" : "1",
         "response" : false
       }, {
         "description" : "TRANSACTION ONE: create new file domain model( file_type, name used for init| id=uuid;)",
-        "id" : "86",
+        "id" : "87",
         "order" : "2",
         "response" : false
       }, {
         "description" : "TRANSACTION ONE: Store raw unprocessed file (pass: uploadfile.id, bytes_content)",
-        "id" : "95",
+        "id" : "96",
         "order" : "3",
         "response" : false
       }, {
         "description" : "TRANSACTION ONE: via domain model object function: set status to raw_file_uploaded",
-        "id" : "90",
+        "id" : "91",
         "order" : "4",
         "response" : false
       }, {
         "description" : "TRANSACTION ONE: commit",
-        "id" : "85",
+        "id" : "86",
         "order" : "5",
         "response" : false,
         "vertices" : [ {
@@ -1723,42 +1786,42 @@
         } ]
       }, {
         "description" : "retrurn http response upload succesfull, processing queued/ or finished if file already exist in db",
-        "id" : "84",
+        "id" : "85",
         "order" : "6",
         "response" : true
       }, {
         "description" : "preprocess the raw document based on file_type, returns string | PASS: bytes_content, file_type",
-        "id" : "88",
+        "id" : "89",
         "order" : "7",
         "response" : false
       }, {
         "description" : "TRANSACTION TWO: open UOW",
-        "id" : "85",
+        "id" : "86",
         "order" : "8",
         "response" : false
       }, {
         "description" : "TRANSACTION TWO: change file domain model: preprocessed text= raw string, [change status to preprocessed(?)]",
-        "id" : "90",
+        "id" : "91",
         "order" : "9",
         "response" : false
       }, {
         "description" : "TRANSACTION TWO: commit",
-        "id" : "85",
+        "id" : "86",
         "order" : "10",
         "response" : false
       }, {
         "description" : "TRANSACTION THREE: open UOW",
-        "id" : "85",
+        "id" : "86",
         "order" : "11",
         "response" : false
       }, {
         "description" : "TRANSACTION THREE: create all document chunks via model fnx | document chunks are domain model; uuid, ref fil, raw_text, include metadata properties used for retrieval logic",
-        "id" : "90",
+        "id" : "91",
         "order" : "12",
         "response" : false
       }, {
         "description" : "TRANSACTION THREE: update document file domain model to fully chunked",
-        "id" : "90",
+        "id" : "91",
         "order" : "13",
         "response" : false,
         "vertices" : [ {
@@ -1767,7 +1830,7 @@
         } ]
       }, {
         "description" : "TRANSACTION THREE: commit (if any errors had occured -rollback all changes; need to fully rechunk)",
-        "id" : "85",
+        "id" : "86",
         "order" : "14",
         "response" : false,
         "vertices" : [ {
@@ -1776,22 +1839,22 @@
         } ]
       }, {
         "description" : "LOOP TILL ALL CHUNKS EMBEDDED OF DOC: create embedding for text chunk",
-        "id" : "97",
+        "id" : "98",
         "order" : "15",
         "response" : false
       }, {
         "description" : "LOOP TILL ALL CHUNKS EMBEDDED OF DOC: pass embedding with chunk domain model incl. metadata properties",
-        "id" : "98",
+        "id" : "99",
         "order" : "16",
         "response" : false
       }, {
         "description" : "LOOP TILL ALL CHUNKS EMBEDDED OF DOC: store embedding, use id, metadata fields as json",
-        "id" : "99",
+        "id" : "100",
         "order" : "17",
         "response" : false
       }, {
         "description" : "LOOP TILL ALL CHUNKS EMBEDDED OF DOC: Open uow",
-        "id" : "85",
+        "id" : "86",
         "order" : "18",
         "response" : false,
         "vertices" : [ {
@@ -1800,12 +1863,12 @@
         } ]
       }, {
         "description" : "LOOP TILL ALL CHUNKS EMBEDDED OF DOC: change chunk status to: embedded",
-        "id" : "90",
+        "id" : "91",
         "order" : "19",
         "response" : false
       }, {
         "description" : "LOOP TILL ALL CHUNKS EMBEDDED OF DOC: commit",
-        "id" : "85",
+        "id" : "86",
         "order" : "20",
         "response" : false
       } ],
@@ -1843,17 +1906,17 @@
       "paperSize" : "A2_Landscape",
       "relationships" : [ {
         "description" : "sends text snippet + gpt id to",
-        "id" : "63",
+        "id" : "64",
         "order" : "1",
         "response" : false
       }, {
         "description" : "check if user has access to this cgpt -> does not",
-        "id" : "91",
+        "id" : "92",
         "order" : "2",
         "response" : false
       }, {
         "description" : "Return http error 404 not found",
-        "id" : "84",
+        "id" : "85",
         "order" : "3",
         "response" : true,
         "vertices" : [ {
@@ -1880,14 +1943,20 @@
         "id" : "40",
         "x" : 920,
         "y" : 865
+      }, {
+        "id" : "41",
+        "x" : 0,
+        "y" : 0
       } ],
       "enterpriseBoundaryVisible" : true,
       "key" : "SystemContex",
       "order" : 1,
       "relationships" : [ {
-        "id" : "42"
+        "id" : "103"
       }, {
-        "id" : "62"
+        "id" : "43"
+      }, {
+        "id" : "63"
       } ],
       "softwareSystemId" : "2"
     } ]

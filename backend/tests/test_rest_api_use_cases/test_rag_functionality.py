@@ -99,10 +99,6 @@ class TestRagNecessitacesChatWithCustomGPTWithUploadedFiles:
 
         assert res.is_error, res.text
 
-    # @staticmethod
-    # def test_use_rag_with_conversation_with_cgpt_necessitates_uploaded_files_continue_chat():
-    #     raise NotImplementedError
-
 
 class EasyHappyPath:
     @staticmethod

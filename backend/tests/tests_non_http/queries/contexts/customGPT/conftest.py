@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
+from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries_adapter import (
     CgptQueriesImplementation,
 )
 from src.contexts.customGPTs.infrastructure.db.orm import metadata

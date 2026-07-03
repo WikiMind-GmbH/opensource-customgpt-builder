@@ -42,7 +42,7 @@ from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
 from src.contexts.customGPTs.infrastructure.adapters.cgpt_permissions_adapter import (
     CgptPermissionCheckerAdapter,
 )
-from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
+from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries_adapter import (
     CgptQueriesImplementation,
 )
 from src.contexts.customGPTs.infrastructure.adapters.retreive_instructions import (

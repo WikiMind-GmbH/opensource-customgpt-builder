@@ -5,7 +5,7 @@ from src.contexts.customGPTs.application.ports.cgpt_queries import (
     CustomGPTInfosDTO,
     CustomGPTOverviewDTO,
 )
-from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
+from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries_adapter import (
     NotFoundError,
     QueryError,
 )

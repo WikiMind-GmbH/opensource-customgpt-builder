@@ -82,6 +82,7 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
             
         }
         openaiapi = softwareSystem "OpenAIApi" "Pass conversation and retrieve assistant messages of OpenAI LLMs" "External System"
+        openaiEmbeddingAPI = softwareSystem "OpenAI Embedding API" "Creates embeddings for text chunks" "External System"
         // github = softwareSystem "github" "Sends a Post message to all subscribers whenever a new commit was made" "External System" {
         //     webhook = container "githubWebhook" "Listens for new commits and sends Post call to specific url"
         //     api = container "GithubAPI" "Provides api for interacting with github repos, e.g. retrieving data"
@@ -157,6 +158,7 @@ workspace "CustomGPT" "Use Chatgpt api with own customGPT implementation"{
         ss.knowledgeContext.orcherstrationLayer -> ss.knowledgeContext.textEmbeddingGenAdapter "generates an embedding for a given text chunk"
         ss.knowledgeContext.orcherstrationLayer -> ss.knowledgeContext.vectorstoreAdapter "store embeddings and retreive close embeddings"
         ss.knowledgeContext.vectorstoreAdapter -> ss.knowledgeContext.vectorDB "utilizes as db" "Qdrant"
+        ss.knowledgeContext.vectorstoreAdapter -> openaiEmbeddingAPI "utilizes as embedding generator" "RestAPI"
         
         //---------------------------------------------------------------------------------------------------------------------
 

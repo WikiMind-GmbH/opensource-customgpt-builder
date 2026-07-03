@@ -4,7 +4,7 @@ from sqlalchemy import Engine, update
 from sqlalchemy.orm import Session
 
 from src.contexts.customGPTs.application.ports.cgpt_queries import CustomGPTInfosDTO
-from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries import (
+from src.contexts.customGPTs.infrastructure.adapters.cgpt_queries_adapter import (
     CgptQueriesImplementation,
 )
 from src.contexts.customGPTs.infrastructure.db.customgpt_repo_implmementations import (
