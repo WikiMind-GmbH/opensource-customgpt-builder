@@ -126,7 +126,7 @@ This one-to-one mapping between subdomains and bounded contexts may evolve as th
 
 This enforces dependency inversion and prevents direct model sharing.
 
-#### Target State (Planned Evolution)
+#### Possible Target State (Planned Evolution)
 
 We plan to evolve toward a stricter bounded-context integration model:
 

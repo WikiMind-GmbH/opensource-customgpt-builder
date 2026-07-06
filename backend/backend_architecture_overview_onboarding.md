@@ -155,9 +155,10 @@ Goal:
 
 ### “I want to add a new feature / endpoint”
 - Add/modify endpoint in `src/interface/http/`
-- Implement the use case in `src/contexts/<context>/application/service_functions.py`
-- Put business rules in `src/contexts/<context>/domain/`
-- Add/modify adapters in `src/contexts/<context>/infrastructure/`
+- Implement the use case in `src/contexts/<context_a>/application/service_functions.py`
+- Put business rules in `src/contexts/<context_a>/domain/`
+- Add (/modify) port in `src/contexts/<contex_at>/infrastructure/`
+- Add (/modify) adapter in `src/contexts/<context_a_or_other>/infrastructure/`
 - Wire the adapter in `src/bootstrap.py` and `src/interface/http/composition.py` if needed
 
 ### “I want to change a business rule”
