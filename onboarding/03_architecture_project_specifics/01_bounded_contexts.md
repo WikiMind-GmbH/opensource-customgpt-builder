@@ -13,6 +13,9 @@ Knowledge
 Each of them owns a different part of the business problem.
 
 Check the C4-Diagrams illustrating our projects_architecture
+![Project Container view illustrating contexts](structurizr-1-ContainerView.png)
+
+For more information on the architecture, start the project with `make up` (see backend/README.md) and check the structurizr diagrams available under http://localhost:8080/workspace/diagrams#ContainerView
 
 ---
 
