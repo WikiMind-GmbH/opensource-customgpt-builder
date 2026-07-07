@@ -1,2 +1,0 @@
-see heft, 
-other things
