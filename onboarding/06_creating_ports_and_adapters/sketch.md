@@ -1,58 +1,9 @@
-I do want this more in a constructed tutorial way:
-
-So not when what has to be done, but as an introduction to learning the skill to write ports and adapters.
-
-So a follow along/ "tutorial-exercise" -kind of.
-
-Where there are code snippets which need to be completed.
-
-I think about doing it either like this:
-
-using a ipynb which contains all the relevant classes and modules snippets.
-
-At the start we have the Port already defined. 
-
-Then the task for the one onboarded is to write an adapter.
-
-
-
-Then there is a cell where the adapter is input and tests are run to confirm:
-
-The functionality that is expected is provided, the errors that are expected are thrown.
-
-
-
-----
-General to-do per new Port/adapter combo:
-
-### Checklist
-WIRING
-- orchestration function which depend on this Port(or Factory of this Port) exist
-- endpoints call orchestration functions with correct parameters - including Port/Port/factory
-- dependencies container class has an attribute which is typed as this Port factory/ Port factory factory
-- endpoints calling the orchestration function Depend on this dependenciescontainer attribute
-(due to how Fastapi depends work, we need the the dependenciescontainer attribute to be  Factory[Factory[Port]] if the orchestration function needs the type Factory[Port])
-- in the bootstrap function, the adapter is created (and maybe also a factory (or factory factory)) and used in the returned dependencies container
-- if the adapters init needs access to env variables, the bootstrap function takes those as parameter, and in composition.py, require_env() is used to fetch the needed env variable to pass it to the bootstrap() function
-
-MAPPERS INTERFACE
-- An exception handler module for this Port is created which maps the Port errors to http errors
-
-MAPPERS APPLICATION
-- If applicable, there is a mapper which maps between DTOs and domain data classes
-
-TESTING
-- A unit test for the adapter exists which checks functionality incl. custom errors be thrown correctly
-- for orchestration layer tests, either the adapter is used (created in conftest) or a fake Adapter was created in the folder `backend/tests/fake_adapters` and used instead
-- for e2e integration tests, the previous adapter is used -except if it utilizes a costing external api, where now a fake adapter is used that exists in `backend/tests/fake_adapters`
-
 # All parts making an adapter work
 
 ## Wiring
 An adapter implements a specific Port. 
-Our orchestration function parameters are never typed with Adapter Classes, but Port Classes
-In our interface layer, the adapter can get injected into the endpoint function because it is in the dependenciescontainer object created in `composition.py`.
-Because of that, we can pass it to the orchestration function that expects a parameter typed as the corresponding Port.
+The endpoint and orchestration functions are typed with this Port and are adapter agnostic.
+The specific adapters of those ports get injected into the endpoint function as dependency because it is in the dependenciescontainer object created in `composition.py` which we import into every router.
 
 BOOTSTRAP
 ```py
@@ -95,7 +46,7 @@ def create_custom_gpt(
 
 ## Changing the wiring 
 If we want to change the adapter for a specific port that our app is using to another one, we need to change the wiring:
-Our dependenciescontainer object created in composition.py now needs the attribute of the corresponding Port to be using the other adapter, therefore we need to change the bootstrap function. 
+Our dependenciescontainer object created in composition.py now needs the attribute of the corresponding Port to be using the other adapter, therefor we need to change the bootstrap function. 
 E.g.
 From
 ```py
@@ -120,12 +71,72 @@ def bootstrap(some_variables)-> DependenciesContainer:
 
 No changes are needed to be made in the orchestration functions or the endpoint functions.
 ## Tests related to a specific adapter
+
 ### Testing the adapter itself
 Testing is central to how we keep our app maintainable.
 For each adapter, there is at least one unit test module.
-There are two types of test modules which focus soley on a specific adapter:
-1. adapter specific tests
-2. adapter agnostic tests, which function similar to orchestration functions, working soley with the functions defined by the Port of the adapter. The specific adapter is then 'injected' by the pytest fixture.
+If the adapter test utilizes external systems like a db, it is an integration test and therefore in the integration test folder.
+<!-- evaluate: further clarification between integration test itself being port specific & adapter agnostic (current vectorstore test). vs adapter specific (uow/repo) with direct access to db-->
+
+If not, it is a unit test and in the unit test folder
+
+#### Adapter agnostic tests, fixture injecting specific adapter
+The prefered way to write adapter tests are adapter agnostic tests, which utilize soley the functionality of the adapter specified by the port. The specific adapter is then 'injected' by the pytest fixture. Every test that is possible to be (re)written in this way should be. 
+```py
+def test_add_file_and_get_file_roundtrip(
+    file_storage_adapter: RawFileStorePort,
+) -> None:
+    file_id = uuid4()
+    file_contents = b"hello world"
+
+    file_storage_adapter.add_file(
+        file_id=file_id,
+        file_contents=file_contents,
+    )
+
+    result = file_storage_adapter.get_file(file_id)
+
+    assert result == file_contents
+
+def test_delete_file_removes_file(
+    file_storage_adapter: RawFileStorePort,
+) -> None:
+    file_id = uuid4()
+    file_contents = b"hello world"
+
+    file_storage_adapter.add_file(
+        file_id=file_id,
+        file_contents=file_contents,
+    )
+
+    file_storage_adapter.delete_file(file_id)
+
+    with pytest.raises(FileNotFoundError):
+        file_storage_adapter.get_file(file_id)
+
+
+def test_get_file_raises_when_file_does_not_exist(
+    file_storage_adapter: RawFileStorePort,
+) -> None:
+    with pytest.raises(FileNotFoundError):
+        file_storage_adapter.get_file(uuid4())
+```
+
+we can then use this test with whatever adapter we want to, we can then inject the specific via the pytest fixture in conftest.
+```py
+@pytest.fixture()
+def file_storage_adapter(tmp_path: Path) -> Iterator[RawFileStorePort]:
+    adapter = RawFileStoreLocalFsAdapter(tmp_path)
+
+    yield adapter
+```
+
+#### Adapter specific tests
+Some tests of an adapter can not be done agnostically.   
+This can 
+
+And this is especially true for db adapters, where we need to inject rows into the specific db via sql statements
+
 If the adapter uses a live db, these types of tests can be found in the integration-tests folder, otherwise in the unit test folder.
 
 ### orchestration layer tests utililizing either the adapter or a fake
@@ -262,6 +273,64 @@ def knowledge_uow_factory(session_factory: sessionmaker[Session]):
 
 
 #### e2e tests
+
+---
+---
+---
+
+
+
+I do want this more in a constructed tutorial way:
+
+So not when what has to be done, but as an introduction to learning the skill to write ports and adapters.
+
+So a follow along/ "tutorial-exercise" -kind of.
+
+Where there are code snippets which need to be completed.
+
+I think about doing it either like this:
+
+using a ipynb which contains all the relevant classes and modules snippets.
+
+At the start we have the Port already defined. 
+
+Then the task for the one onboarded is to write an adapter.
+
+
+
+Then there is a cell where the adapter is input and tests are run to confirm:
+
+The functionality that is expected is provided, the errors that are expected are thrown.
+
+
+
+----
+General to-do per new Port/adapter combo:
+
+### Checklist
+WIRING
+- orchestration function which depend on this Port(or Factory of this Port) exist
+- endpoints call orchestration functions with correct parameters - including Port/Port/factory
+- dependencies container class has an attribute which is typed as this Port factory/ Port factory factory
+- endpoints calling the orchestration function Depend on this dependenciescontainer attribute
+(due to how Fastapi depends work, we need the the dependenciescontainer attribute to be  Factory[Factory[Port]] if the orchestration function needs the type Factory[Port])
+- in the bootstrap function, the adapter is created (and maybe also a factory (or factory factory)) and used in the returned dependencies container
+- if the adapters init needs access to env variables, the bootstrap function takes those as parameter, and in composition.py, require_env() is used to fetch the needed env variable to pass it to the bootstrap() function
+
+MAPPERS INTERFACE
+- An exception handler module for this Port is created which maps the Port errors to http errors
+
+MAPPERS APPLICATION
+- If applicable, there is a mapper which maps between DTOs and domain data classes
+
+TESTING
+- A unit test for the adapter exists which checks functionality incl. custom errors be thrown correctly
+- for orchestration layer tests, either the adapter is used (created in conftest) or a fake Adapter was created in the folder `backend/tests/fake_adapters` and used instead
+- for e2e integration tests, the previous adapter is used -except if it utilizes a costing external api, where now a fake adapter is used that exists in `backend/tests/fake_adapters`
+
+
+
+
 
 
 
