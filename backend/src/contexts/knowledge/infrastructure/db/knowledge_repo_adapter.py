@@ -33,7 +33,7 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
     def get_file(self, file_id: UUID) -> UploadedTextLikeFile:
         result = self.session.get(UploadedTextLikeFile, file_id)
         if result is None:
-            raise FileDoesNotExistError
+            raise FileDoesNotExistError(f"No file exists with id {file_id}")
         return result
 
     def get_file_ids_of_cgpt(self, cgpt_id: str) -> list[UUID]:
@@ -53,12 +53,16 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
         self, ids: list[UUID]
     ) -> set[TextFileChunk]:
         if len(set(ids)) != len(ids):
-            raise ChunkIdsAreNotUniqueError
+            raise ChunkIdsAreNotUniqueError(
+                f"Chunk lookup requires unique ids, received {ids}"
+            )
 
         stmt = select(TextFileChunk).where(text_chunks_of_files.c._id.in_(ids))
         chunks = set(self.session.scalars(stmt).all())
         if len(chunks) != len(ids):
-            raise ChunkNotFoundError
+            found_ids = {chunk.id for chunk in chunks}
+            missing_ids = [chunk_id for chunk_id in ids if chunk_id not in found_ids]
+            raise ChunkNotFoundError(f"No chunks exist with ids {missing_ids}")
 
         return chunks
 
@@ -79,7 +83,9 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
             stmt
         ).all()  # scalars() unwraps the first selected value from each SQLAlchemy Row.
         if len(chunks) == 0:
-            raise NoChunksExistForThisFileIDErrror
+            raise NoChunksExistForThisFileIDErrror(
+                f"No chunks exist for file id {file_id}"
+            )
         return list(chunks)
 
     def create_new_file_if_hash_doesnt_exist_yet(
@@ -90,7 +96,9 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
         )
         result = self.session.execute(stmt).all()
         if len(result) > 0:
-            raise CantCreateFileThatAlreadyExistsError
+            raise CantCreateFileThatAlreadyExistsError(
+                f"A file with hash {hash} already exists"
+            )
 
         new_uploaded_text_like_file = UploadedTextLikeFile(
             name=filename, file_type=file_type, hash_of_raw_file=hash
@@ -106,12 +114,14 @@ class SQLAlchemyKnowledgeRepository(KnowledgeRepo):
         )
         try:
             result = self.session.execute(stmt_get_id_of_file_with_hash).one()
-        except NoResultFound:
-            raise FileDoesNotExistError
-        except MultipleResultsFound:  #
+        except NoResultFound as exc:
+            raise FileDoesNotExistError(
+                f"No file exists with hash {hash_of_file}"
+            ) from exc
+        except MultipleResultsFound as exc:
             raise InvalidDatabaseStateError(
-                "More than one file with the same hash exists"
-            )
+                f"More than one file exists with hash {hash_of_file}"
+            ) from exc
         id_of_file: UUID = result[0]
         stmt_permissions_of_this_file = select(CgptPermissionsToFile).where(
             cgpt_permissions_to_files.c.file_id == id_of_file

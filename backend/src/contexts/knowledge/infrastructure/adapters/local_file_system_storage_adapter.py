@@ -3,6 +3,9 @@ from uuid import UUID
 
 from backend_spanning_helpers import require_env
 from src.contexts.knowledge.application.ports.file_storage_port import (
+    FileNotFoundError as PortFileNotFoundError,
+)
+from src.contexts.knowledge.application.ports.file_storage_port import (
     RawFileStorePort,
 )
 
@@ -20,9 +23,15 @@ class RawFileStoreLocalFsAdapter(RawFileStorePort):
 
     def get_file(self, file_id: UUID) -> bytes:
         file_path: Path = self._file_storage_folder.joinpath(str(file_id))
-        with open(file_path, "rb") as file:
-            return file.read()
+        try:
+            with open(file_path, "rb") as file:
+                return file.read()
+        except FileNotFoundError as exc:
+            raise PortFileNotFoundError(f"File {file_id} was not found") from exc
 
     def delete_file(self, file_id: UUID) -> None:
         file_path: Path = self._file_storage_folder.joinpath(str(file_id))
-        Path.unlink(file_path)
+        try:
+            Path.unlink(file_path)
+        except FileNotFoundError as exc:
+            raise PortFileNotFoundError(f"File {file_id} was not found") from exc

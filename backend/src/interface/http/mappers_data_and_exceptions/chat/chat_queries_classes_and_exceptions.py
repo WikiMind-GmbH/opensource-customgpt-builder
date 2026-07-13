@@ -13,16 +13,18 @@ from src.interface.http.schemas.chat.chat_queries import (
     RoleQuery,
     SimplifiedMessageQueries,
 )
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(context=LoggerContext.INTERFACE, component="ChatQueriesPort")
 
 
 def register_query_exception_handlers_queries_port(app: FastAPI) -> None:
     @app.exception_handler(NotFoundError)
     async def _not_found(_, exc: NotFoundError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
+        logger.warning("Conversation query found no matching conversation: %s", exc)
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content={
-                "detail": f"Conversation not found: {getattr(exc, 'args', [''])[0]}"
-            },
+            content={"detail": "Conversation not found"},
         )
 
 

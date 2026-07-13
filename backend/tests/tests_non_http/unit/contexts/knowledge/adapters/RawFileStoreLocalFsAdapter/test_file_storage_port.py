@@ -2,7 +2,10 @@ from uuid import uuid4
 
 import pytest
 
-from src.contexts.knowledge.application.ports.file_storage_port import RawFileStorePort
+from src.contexts.knowledge.application.ports.file_storage_port import (
+    FileNotFoundError,
+    RawFileStorePort,
+)
 
 
 def test_add_file_and_get_file_roundtrip(

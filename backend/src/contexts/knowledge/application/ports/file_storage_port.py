@@ -1,8 +1,9 @@
+from builtins import FileNotFoundError as BuiltinFileNotFoundError
 from typing import Protocol
 from uuid import UUID
 
 
-class FileNotFoundError:
+class FileNotFoundError(BuiltinFileNotFoundError):
     "File was not found"
 
 

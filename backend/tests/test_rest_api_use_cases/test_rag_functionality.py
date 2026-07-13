@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from src.interface.http.schemas.chat.chat_commands import (
     AssistantMessage,
+    ContinueChatRequest,
     NewChatRequest,
 )
 from src.interface.http.schemas.common_command import CommandResult
@@ -56,15 +57,33 @@ class TestRagNecessitacesChatWithCustomGPTWithUploadedFiles:
     def test_use_rag_continue_conversation_without_cgpt_throws_error(
         test_client_fake_llm_adapter: TestClient,
     ):
-        res: httpx.Response = test_client_fake_llm_adapter.post(
+        new_chat_response: httpx.Response = test_client_fake_llm_adapter.post(
             "/chat/send-user-message",
             json=jsonable_encoder(
                 NewChatRequest(
-                    request_message="request_message", use_rag=True, custom_gpt_id=None
+                    request_message="request_message",
+                    use_rag=False,
+                    custom_gpt_id=None,
                 )
             ),
         )
-        assert res.is_error, res.text
+        assert new_chat_response.status_code == 200, new_chat_response.text
+        conversation_id = AssistantMessage.model_validate(
+            new_chat_response.json()
+        ).conversation_id
+
+        res: httpx.Response = test_client_fake_llm_adapter.post(
+            "/chat/send-user-message",
+            json=jsonable_encoder(
+                ContinueChatRequest(
+                    request_message="request_message",
+                    conversation_id=conversation_id,
+                    use_rag=True,
+                )
+            ),
+        )
+        assert res.status_code == 422, res.text
+        assert res.json() == {"detail": "RAG requires a custom GPT"}
 
     @staticmethod
     def test_use_rag_with_conversation_with_cgpt_without_uploaded_files_throws_error(
@@ -97,7 +116,8 @@ class TestRagNecessitacesChatWithCustomGPTWithUploadedFiles:
             json=jsonable_encoder(new_chat_req),
         )
 
-        assert res.is_error, res.text
+        assert res.status_code == 400, res.text
+        assert res.json() == {"detail": "At least one file id must be supplied"}
 
 
 class EasyHappyPath:

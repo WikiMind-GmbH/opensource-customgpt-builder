@@ -374,6 +374,7 @@ def test_cant_chat_with_non_existent_conv_or_cgpt(
         "/chat/send-user-message", json=jsonable_encoder(continue_chat_req)
     )
     assert res.status_code == 404
+    assert res.json() == {"detail": "Conversation not found"}
 
     request_message_1: str = "User message 1"
     new_chat_req: NewChatRequest = NewChatRequest(
@@ -383,3 +384,4 @@ def test_cant_chat_with_non_existent_conv_or_cgpt(
         "/chat/send-user-message", json=jsonable_encoder(new_chat_req)
     )
     assert res.status_code == 404
+    assert res.json() == {"detail": "The custom GPT was not found or is not accessible"}

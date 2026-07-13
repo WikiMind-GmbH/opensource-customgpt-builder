@@ -5,19 +5,24 @@ from src.contexts.chat.application.ports.llm_port import (
     ErrorWhileCallingAPI,
     NoAssistantResponse,
 )
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(context=LoggerContext.INTERFACE, component="LlmPort")
 
 
 def register_exception_handlers_llm_port(app: FastAPI) -> None:
     @app.exception_handler(NoAssistantResponse)
     async def _not_found(_, exc: NoAssistantResponse):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
+        logger.error("LLM returned no assistant response", exc_info=exc)
         return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"detail": "API of LLM returned without an assistant response"},
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            content={"detail": "Service temporarily unavailable"},
         )
 
     @app.exception_handler(ErrorWhileCallingAPI)
     async def _tbd(_, exc: ErrorWhileCallingAPI):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
+        logger.error("LLM provider call failed", exc_info=exc)
         return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={"detail": "An unspecified error happened when callin the llm API"},
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            content={"detail": "Service temporarily unavailable"},
         )

@@ -13,23 +13,26 @@ from src.interface.http.schemas.customGPTs.customGPT_queries import (
     CustomGPTInfosSchema,
     CustomGPTOverviewSchema,
 )
+from src.runtime.logging import LoggerContext, get_logger
+
+logger = get_logger(context=LoggerContext.INTERFACE, component="CustomGPTQueriesPort")
 
 
 def register_exception_handlers_cgpt_query_port(app: FastAPI) -> None:
     @app.exception_handler(NotFoundError)
     async def _not_found(_, exc: NotFoundError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
+        logger.warning("Custom GPT query found no accessible resource: %s", exc)
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content={
-                "detail": f"Conversation not found: {getattr(exc, 'args', [''])[0]}"
-            },
+            content={"detail": "The custom GPT was not found or is not accessible"},
         )
 
     @app.exception_handler(QueryError)
     async def _query_error(_, exc: QueryError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
+        logger.error("Custom GPT query failed", exc_info=exc)
         return JSONResponse(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            content={"detail": "Query failed"},
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "An unexpected error occurred"},
         )
 
 

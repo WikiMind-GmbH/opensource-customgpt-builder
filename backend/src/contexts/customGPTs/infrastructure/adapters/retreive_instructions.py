@@ -21,12 +21,9 @@ class CustomGPTInstructionsRetreiverAdapter(CustomGPTInstructionsRetreiver):
     ):  # ToDo: add exception GPTDoesNotExist and add management here
         try:
             with self._cgpt_uow_factory() as uow:
-                try:
-                    cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)
-                    return CustomGPTInfosDTO(
-                        name=cgpt.name, instructions=cgpt.instructions
-                    )
-                except CgptNotFound:
-                    raise CgptNotFoundError
-        except Exception:
-            raise DefaultCGPTRetreiverError
+                cgpt: CustomGPT = uow.cgpt_repo.get(cgpt_id=cgpt_id)
+                return CustomGPTInfosDTO(name=cgpt.name, instructions=cgpt.instructions)
+        except CgptNotFound as exc:
+            raise CgptNotFoundError(f"Custom GPT {cgpt_id} was not found") from exc
+        except Exception as exc:
+            raise DefaultCGPTRetreiverError from exc

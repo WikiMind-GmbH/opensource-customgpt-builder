@@ -4,6 +4,9 @@ import pytest
 from qdrant_client import QdrantClient
 
 from backend_spanning_helpers import require_env
+from src.contexts.knowledge.application.ports.vector_store_port import (
+    VectorStorePortTextChunks,
+)
 from src.contexts.knowledge.infrastructure.adapters.qdrant_vector_store_adapter import (
     QdrantVectorStoreTextChunksAdapter,
 )
@@ -32,3 +35,10 @@ def fresh_qdrant_vector_store_adapter() -> Generator[
         clean_up_client = QdrantClient(url=db_url)
         clean_up_client.delete_collection(collection_name=collection_name)
         clean_up_client.close()
+
+
+@pytest.fixture()
+def vector_store_adapter(
+    fresh_qdrant_vector_store_adapter: QdrantVectorStoreTextChunksAdapter,
+) -> VectorStorePortTextChunks:
+    return fresh_qdrant_vector_store_adapter
