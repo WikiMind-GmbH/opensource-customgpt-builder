@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export enum DocumentStatusDTO {
-    NON_EXISTING = 'non_existing',
     INITIALIZED = 'initialized',
     RAW_DOCUMENT_WAS_STORED = 'raw_document_was_stored',
     TEXT_EXTRACTED_BUT_NOT_CHUNKED = 'text_extracted_but_not_chunked',
