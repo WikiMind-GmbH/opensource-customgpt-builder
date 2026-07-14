@@ -1,4 +1,5 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
@@ -6,14 +7,15 @@ from src.bootstrap import DependenciesContainer
 from src.contexts.knowledge.application.ports.cgpt_permissions_port import (
     CgptPermissionCheckerPort,
 )
-from src.contexts.knowledge.application.ports.knowledge_db_queries import DocumentStatus
+from src.contexts.knowledge.application.ports.knowledge_db_queries import (
+    DocumentStatusDTO,
+    KnowledgeDBQueriesPort,
+)
 from src.interface.http.composition import dependencies_container
 
 dependencies_container: DependenciesContainer = dependencies_container
 
 knowledge_queries_router = APIRouter(prefix="/knowledge", tags=["knowledge: Queries"])
-
-dependencies_container: DependenciesContainer = dependencies_container
 
 
 @knowledge_queries_router.get(
@@ -25,9 +27,18 @@ def check_status_of_document(
         CgptPermissionCheckerPort,
         Depends(dependencies_container.cgpt_permissions_adapter_factory),
     ],
+    knowledge_db_queries_adapter: Annotated[
+        KnowledgeDBQueriesPort,
+        Depends(dependencies_container.knowledge_db_queries_adapter_factory),
+    ],
+    document_id: UUID,
     cgpt_id: str,
-) -> DocumentStatus:
-    raise NotImplementedError
+) -> DocumentStatusDTO:
+    cgpt_permissions_adapter.assure_user_has_access_to_cgpts([cgpt_id])
+    return knowledge_db_queries_adapter.check_status_of_document(
+        document_id=document_id,
+        cgpt_id=cgpt_id,
+    )
 
 
 # @customgpt_queries_router.get(

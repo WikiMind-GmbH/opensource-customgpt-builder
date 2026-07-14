@@ -17,7 +17,7 @@ export type { CustomGPTInfosSchema } from './models/CustomGPTInfosSchema';
 export type { CustomGPTOverviewSchema } from './models/CustomGPTOverviewSchema';
 export type { CustomGptToCreate } from './models/CustomGptToCreate';
 export type { CustomGptToEdit } from './models/CustomGptToEdit';
-export { DocumentStatus } from './models/DocumentStatus';
+export { DocumentStatusDTO } from './models/DocumentStatusDTO';
 export type { HTTPValidationError } from './models/HTTPValidationError';
 export type { NewChatRequest } from './models/NewChatRequest';
 export { RoleCmd } from './models/RoleCmd';

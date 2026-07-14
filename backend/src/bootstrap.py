@@ -67,6 +67,9 @@ from src.contexts.knowledge.application.ports.extract_text_from_document_port im
     ExtractTextFromDocumentPort,
 )
 from src.contexts.knowledge.application.ports.file_storage_port import RawFileStorePort
+from src.contexts.knowledge.application.ports.knowledge_db_queries import (
+    KnowledgeDBQueriesPort,
+)
 from src.contexts.knowledge.application.ports.knowledge_uow import KnowledgeUOW
 from src.contexts.knowledge.application.ports.task_scheduler_port import (
     TaskSchedulerPort,
@@ -82,6 +85,9 @@ from src.contexts.knowledge.infrastructure.adapters.extract_text_from_document_a
 )
 from src.contexts.knowledge.infrastructure.adapters.fastapi_task_scheduler_adapter import (
     FastAPITaskSchedulerAdapter,
+)
+from src.contexts.knowledge.infrastructure.adapters.knowledge_db_queries_adapter import (
+    KnowledgeDBQueriesSQAlchemyAdapter,
 )
 from src.contexts.knowledge.infrastructure.adapters.local_file_system_storage_adapter import (
     RawFileStoreLocalFsAdapter,
@@ -121,6 +127,7 @@ class DependenciesContainer:
 
     # knowledge
     knowledge_uow_factory_factory: Factory[Factory[KnowledgeUOW]]
+    knowledge_db_queries_adapter_factory: Factory[KnowledgeDBQueriesPort]
     extract_text_from_document_adapter_factory: Factory[ExtractTextFromDocumentPort]
     cgpt_permissions_adapter_factory: Factory[CgptPermissionCheckerPort]
     file_storage_adapter_factory: Factory[RawFileStorePort]
@@ -268,6 +275,11 @@ def create_dependencies(
             session_factory=sql_db_resources_of_contexts.knowledge_resources.session_factory
         )
 
+    def knowledge_db_queries_adapter_factory() -> KnowledgeDBQueriesPort:
+        return KnowledgeDBQueriesSQAlchemyAdapter(
+            knowledge_session_factory=sql_db_resources_of_contexts.knowledge_resources.session_factory
+        )
+
     def embedding_generator_adapter_factory() -> EmbeddingGeneratorPort:
         return EmbeddingGeneratorOpenAIAdapter(
             embedding_dimension=embedding_dimension,
@@ -313,6 +325,7 @@ def create_dependencies(
         retrieve_doc_snippets_adapter_factory=retrieve_doc_snippets_adapter_factory,
         conversation_adapter_factory=conversation_adapter_factory,
         knowledge_uow_factory_factory=knowledge_uow_factory_factory,
+        knowledge_db_queries_adapter_factory=knowledge_db_queries_adapter_factory,
         extract_text_from_document_adapter_factory=extract_text_from_document_adapter_factory,
         cgpt_permissions_adapter_factory=cgpt_permissions_adapter_factory,
         file_storage_adapter_factory=file_storage_adapter_factory,

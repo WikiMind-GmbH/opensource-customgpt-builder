@@ -3,6 +3,9 @@ from typing import assert_never
 from src.contexts.knowledge.application.ports.extract_text_from_document_port import (
     SupportedFileTypesEnum,
 )
+from src.contexts.knowledge.application.ports.knowledge_db_queries import (
+    DocumentStatusDTO,
+)
 from src.contexts.knowledge.application.ports.vector_store_port import (
     ChunkEmbeddingAndMetadataDTO,
     MetadataDTO,
@@ -12,7 +15,28 @@ from src.contexts.knowledge.domain.models import (
     ParentOrChild,
     TextFileChunk,
     TextFileTypeEnum,
+    UploadedTextLikeFileProcessingStatus,
 )
+
+
+class KnowledgeDBQueriesMapper:
+    @staticmethod
+    def document_status_domain_to_dto(
+        status: UploadedTextLikeFileProcessingStatus,
+    ) -> DocumentStatusDTO:
+        match status:
+            case UploadedTextLikeFileProcessingStatus.created:
+                return DocumentStatusDTO.initialized
+            case UploadedTextLikeFileProcessingStatus.raw_file_stored:
+                return DocumentStatusDTO.raw_document_was_stored
+            case UploadedTextLikeFileProcessingStatus.stored_original_preprocessed_to_text:
+                return DocumentStatusDTO.text_extracted_but_not_chunked
+            case UploadedTextLikeFileProcessingStatus.stored_original_and_preprocessed_and_chunked:
+                return DocumentStatusDTO.chunked_but_not_embedded
+            case UploadedTextLikeFileProcessingStatus.stored_preprocessed_chunked_and_embeddings_stored_in_vectorstore:
+                return DocumentStatusDTO.chunks_embedded_and_ready
+            case _:
+                assert_never(status)
 
 
 class PreProcessTextLikesPortMapper:

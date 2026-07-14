@@ -40,6 +40,9 @@ from src.contexts.knowledge.application.ports.extract_text_from_document_port im
     NotUTF8TxtFileError,
 )
 from src.contexts.knowledge.application.ports.file_storage_port import FileNotFoundError
+from src.contexts.knowledge.application.ports.knowledge_db_queries import (
+    NotFoundError as KnowledgeDBQueriesNotFoundError,
+)
 from src.contexts.knowledge.application.ports.knowledge_repo import (
     CantCreateFileThatAlreadyExistsError,
     ChunkIdsAreNotUniqueError,
@@ -79,6 +82,7 @@ PORT_ERRORS: tuple[type[BaseException], ...] = (
     EmbeddingProviderError,
     NotUTF8TxtFileError,
     FileNotFoundError,
+    KnowledgeDBQueriesNotFoundError,
     CantCreateFileThatAlreadyExistsError,
     ChunkIdsAreNotUniqueError,
     ChunkNotFoundError,

@@ -36,6 +36,9 @@ from src.interface.http.mappers_data_and_exceptions.knowledge.ports.embedding_ge
 from src.interface.http.mappers_data_and_exceptions.knowledge.ports.file_storage_port_exceptions import (
     register_exception_handlers_file_storage_port,
 )
+from src.interface.http.mappers_data_and_exceptions.knowledge.ports.knowledge_db_queries_port_exceptions import (
+    register_exception_handlers_knowledge_db_queries_port,
+)
 from src.interface.http.mappers_data_and_exceptions.knowledge.ports.knowledge_repo_port_exceptions import (
     register_exception_handlers_knowledge_repo_port,
 )
@@ -59,6 +62,7 @@ def register_all_handlers(app: FastAPI):
     register_exception_handlers_cgpt_permission_port(app)
     register_exception_handlers_embedding_generator_port(app)
     register_exception_handlers_file_storage_port(app)
+    register_exception_handlers_knowledge_db_queries_port(app)
     register_exception_handlers_knowledge_repo_port(app)
     register_query_exception_handlers_pre_processing_port(app)
     register_exception_handlers_chat_domain(app)

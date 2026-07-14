@@ -14,7 +14,7 @@ logger = get_logger(context=LoggerContext.INTERFACE, component="VectorStorePort"
 
 def register_exception_handlers_vector_store_port(app: FastAPI) -> None:
     @app.exception_handler(FileIdsToIncludeMustNotBeEmptyError)
-    async def _not_found(_, exc: FileIdsToIncludeMustNotBeEmptyError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
+    async def _invalid_data(_, exc: FileIdsToIncludeMustNotBeEmptyError):  # pyright: ignore [reportUnusedFunction] ; REASON: 'false flag' function is used by the decorator
         logger.info("Vector store query rejected an empty file id filter")
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
