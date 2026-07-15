@@ -8,8 +8,8 @@ WORKDIR /app
 
 # Copy package management files and install dependencies
 # For rebuilt optimization, this partial copy + install is done before the whole copy
-COPY ./frontend/package.json .
-RUN npm install
+COPY ./frontend/package.json ./frontend/package-lock.json ./
+RUN npm ci
 
 COPY frontend/ .
 

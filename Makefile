@@ -31,7 +31,7 @@ PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
 
 
-.PHONY: logs-filter generate-client-ts-frontend generate-client-ts-frontend-deprecated test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
+.PHONY: logs-filter generate-client-ts-frontend generate-client-ts-frontend-deprecated check-frontend-deps update-frontend-deps add-frontend-dep add-frontend-dep-exact add-frontend-dev-dep add-frontend-dev-dep-exact audit-frontend-deps verify-frontend test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
 
 ## ----------------------DOCKER----------------------
 
@@ -184,6 +184,44 @@ locust-local-debugging: ## run locust for debugging - no results html is generat
 	$(COMPOSE_DEV) up -d
 	$(COMPOSE_LOCUST_LOCAL) up -d locust
 	$(COMPOSE_LOCUST_LOCAL) exec locust sh -c "locust -f locustfile.py"
+
+## ----------------------FRONTEND DEPENDENCIES----------------------
+check-frontend-deps: ## Show installed, compatible, and latest frontend dependency versions
+	$(COMPOSE_DEV) up -d frontend
+	$(COMPOSE_DEV) exec frontend sh -c 'npm outdated || [ "$$?" -eq 1 ]'
+
+update-frontend-deps: ## Update frontend dependencies within package.json version ranges
+	$(COMPOSE_DEV) up -d frontend
+	$(COMPOSE_DEV) exec frontend npm update
+
+add-frontend-dep: ## Add a runtime dependency; usage: make add-frontend-dep PACKAGE=date-fns
+	@if [ -z "$(PACKAGE)" ]; then echo "Usage: make add-frontend-dep PACKAGE=<name[@version]>"; exit 1; fi
+	$(COMPOSE_DEV) up -d frontend
+	$(COMPOSE_DEV) exec frontend npm install "$(PACKAGE)"
+
+add-frontend-dep-exact: ## Add an exactly pinned runtime dependency; requires PACKAGE=name[@version]
+	@if [ -z "$(PACKAGE)" ]; then echo "Usage: make add-frontend-dep-exact PACKAGE=<name[@version]>"; exit 1; fi
+	$(COMPOSE_DEV) up -d frontend
+	$(COMPOSE_DEV) exec frontend npm install --save-exact "$(PACKAGE)"
+
+add-frontend-dev-dep: ## Add a development dependency; requires PACKAGE=name[@version]
+	@if [ -z "$(PACKAGE)" ]; then echo "Usage: make add-frontend-dev-dep PACKAGE=<name[@version]>"; exit 1; fi
+	$(COMPOSE_DEV) up -d frontend
+	$(COMPOSE_DEV) exec frontend npm install --save-dev "$(PACKAGE)"
+
+add-frontend-dev-dep-exact: ## Add an exactly pinned development dependency; requires PACKAGE=name[@version]
+	@if [ -z "$(PACKAGE)" ]; then echo "Usage: make add-frontend-dev-dep-exact PACKAGE=<name[@version]>"; exit 1; fi
+	$(COMPOSE_DEV) up -d frontend
+	$(COMPOSE_DEV) exec frontend npm install --save-dev --save-exact "$(PACKAGE)"
+
+audit-frontend-deps: ## Check frontend dependencies for known vulnerabilities
+	$(COMPOSE_DEV) up -d frontend
+	$(COMPOSE_DEV) exec frontend npm audit
+
+verify-frontend: ## Type-check and build the frontend
+	$(COMPOSE_DEV) up -d frontend
+	$(COMPOSE_DEV) exec frontend npx tsc --noEmit -p tsconfig.json
+	$(COMPOSE_DEV) exec frontend npm run build
 
 ## ----------------------LINTING, TYPECHECKING AND CO----------------------
 ruff: ## run ruff, incl. formatting
