@@ -31,7 +31,7 @@ PYTEST_FLAGS_PERFORMANCE := -q -s --maxfail=1 -m performance
 
 
 
-.PHONY: logs-filter generate-client-ts-frontend test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
+.PHONY: logs-filter generate-client-ts-frontend generate-client-ts-frontend-deprecated test test-unit test-integration test-unit-exec test-integration-exec test-clean up down restart logs ps rebuild clean-restart-db
 
 ## ----------------------DOCKER----------------------
 
@@ -195,24 +195,39 @@ ruff-fix-save: ## run ruff, incl. formatting and auto-apply fixes where save
 
 
 ## ----------------------GENERATING FRONTEND CLIENT----------------------
-generate-client-ts-frontend: ## creates the typescript client based on the openaipi provided by the backend
-	@echo "🔄 Starting containers..."
-	docker-compose -f docker-compose.dev.yaml up -d
+generate-client-ts-frontend: ## Generate the TypeScript client with Hey API
+	@echo "Starting containers..."
+	$(COMPOSE_DEV) up -d
 
-	@echo "⏳ Waiting for backend to be marked healthy..."
+	@echo "Waiting for backend to be marked healthy..."
 	until [ "$$(docker inspect --format='{{.State.Health.Status}}' backend)" = "healthy" ]; do \
-		echo "⏳ Backend not healthy yet..."; \
+		echo "Backend not healthy yet..."; \
 		sleep 2; \
 	done
 
-	@echo "⚙️  Backend is healthy. Generating client..."
-	docker-compose -f docker-compose.dev.yaml exec frontend \
-	npx openapi-typescript-codegen \
+	@echo "Backend is healthy. Generating client with Hey API..."
+	$(COMPOSE_DEV) exec frontend npx openapi-ts
+
+	@echo "Client generated successfully"
+
+generate-client-ts-frontend-deprecated: ## Generate the TypeScript client with the deprecated generator
+	@echo "Starting containers..."
+	$(COMPOSE_DEV) up -d
+
+	@echo "Waiting for backend to be marked healthy..."
+	until [ "$$(docker inspect --format='{{.State.Health.Status}}' backend)" = "healthy" ]; do \
+		echo "Backend not healthy yet..."; \
+		sleep 2; \
+	done
+
+	@echo "Backend is healthy. Generating client with the deprecated generator..."
+	$(COMPOSE_DEV) exec frontend \
+	npx --yes --package openapi-typescript-codegen@0.29.0 openapi \
 	--input http://backend:5173/openapi.json \
 	--output src/client \
 	--client axios
 
-	@echo "✅ Client generated successfully"
+	@echo "Client generated successfully with the deprecated generator"
 
 
 

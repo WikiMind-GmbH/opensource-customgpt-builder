@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import "./CreateOrEditCustomGPT.css";
 import { CreateOrEditCustomGPTForm } from "../interfaces/interfaces";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  CustomGpTsCommandsService,
-  CustomGpTsQueriesService,
+  createCustomGpt,
+  editCustomGpt,
+  getCustomGptInfos,
+} from "../client";
+import type {
+  CommandResult,
+  CustomGptInfosSchema,
   CustomGptToCreate,
   CustomGptToEdit,
-  CustomGPTInfosSchema,
-  CommandResult,
 } from "../client";
 // import FileUploadZone from "../components/FileUploadZone";
 
@@ -26,7 +29,9 @@ const [files, setFiles] = useState<string[]>([]);
 
   const navigate = useNavigate();
   // ToDo: add Endpoint for this, functions
-  function handleChangeToFormFields(e) {
+  function handleChangeToFormFields(
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
@@ -41,8 +46,8 @@ const [files, setFiles] = useState<string[]>([]);
             : form.custom_gpt_description,
         custom_gpt_instructions: form.custom_gpt_instructions,
       };;
-      const res: CommandResult =
-        await CustomGpTsCommandsService.createCustomGpt(body);
+      const { data: res }: { data: CommandResult } =
+        await createCustomGpt({ body });
       alert(res.message)
       navigate(`/createOrEditCustomGPT/${res.resource_id}`);
     } else {
@@ -55,8 +60,8 @@ const [files, setFiles] = useState<string[]>([]);
             : form.custom_gpt_description,
         custom_gpt_instructions: form.custom_gpt_instructions,
       };
-      const res: CommandResult =
-        await CustomGpTsCommandsService.editCustomGpt(body);
+      const { data: res }: { data: CommandResult } =
+        await editCustomGpt({ body });
       alert(res.message)
       
     }
@@ -67,18 +72,17 @@ const [files, setFiles] = useState<string[]>([]);
       if (idOfCustomGptOrUndefinedStr) {
         // const files: string[] = await CustomGpTsQueriesService.listFilesToGpt(Number(idOfCustomGptOrUndefinedStr))
         // setFiles(files)
-        const infosOfCustomGpt: CustomGPTInfosSchema =
-          await CustomGpTsQueriesService.getCustomGptInfos(
-            //ToDo: display "does not exist" page if customgpt does not exist
-            idOfCustomGptOrUndefinedStr
-          ); // ⬅️ adjust endpoint
+        const { data: infosOfCustomGpt }: { data: CustomGptInfosSchema } =
+          await getCustomGptInfos({
+            query: { custom_gpt_id: idOfCustomGptOrUndefinedStr },
+          });
         const customGptInfosForForms: CreateOrEditCustomGPTForm = (({
           custom_gpt_name,
           custom_gpt_description,
           custom_gpt_instructions,
-        }: CustomGPTInfosSchema) => ({
+        }: CustomGptInfosSchema) => ({
           custom_gpt_name,
-          custom_gpt_description,
+          custom_gpt_description: custom_gpt_description ?? "",
           custom_gpt_instructions,
         }))(infosOfCustomGpt);
         setForm(customGptInfosForForms);

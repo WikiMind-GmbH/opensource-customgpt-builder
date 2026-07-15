@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./DisplayCustomGPTs.css";
 import {
-  CustomGpTsCommandsService,
-  CustomGpTsQueriesService,
-  CustomGPTOverviewSchema,
+  deleteCustomGpt,
+  retreiveAllCustomGpts,
 } from "../client";
+import type { CustomGptOverviewSchema } from "../client";
 import { CustomGptInfo } from "../interfaces/interfaces";
 
 export default function DisplayCustomGPTs() {
@@ -18,8 +18,8 @@ export default function DisplayCustomGPTs() {
   useEffect(() => {
     async function load() {
       try {
-        const existingGPTList: CustomGPTOverviewSchema[] =
-          await CustomGpTsQueriesService.retreiveAllCustomGpts(); // ⬅️ adjust endpoint
+        const { data: existingGPTList }: { data: CustomGptOverviewSchema[] } =
+          await retreiveAllCustomGpts();
         const customGptInfos: CustomGptInfo[] = existingGPTList.map(
           ({
             custom_gpt_id: customgptIdOrNullIfDefault,
@@ -43,8 +43,7 @@ export default function DisplayCustomGPTs() {
     if (!confirm("Delete this GPT?")) return;
 
     try {
-      const res: CustomGpTsCommandsService =
-        await CustomGpTsCommandsService.deleteCustomGpt(id);
+      await deleteCustomGpt({ query: { gpt_id: id } });
       setGpts((prev) =>
         prev.filter((g) => g.customgptIdOrNullIfDefault !== id)
       );

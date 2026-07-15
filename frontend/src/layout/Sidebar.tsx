@@ -1,7 +1,8 @@
 // Sidebar.tsx
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ChatQueriesService, ChatSummary } from "../client";
+import { getChatSummaries } from "../client";
+import type { ChatSummary } from "../client";
 // import "./Sidebar.css";
 
 export default function Sidebar() {
@@ -12,7 +13,7 @@ export default function Sidebar() {
   useEffect(() => {
     async function loadSummaries() {
       try {
-        const data = await ChatQueriesService.getChatSummaries();
+        const { data } = await getChatSummaries();
         setSummaries(data);
       } catch (err: any) {
         setError(err.message ?? "Failed to load chats");

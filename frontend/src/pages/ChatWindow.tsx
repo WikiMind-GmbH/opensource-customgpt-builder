@@ -3,16 +3,17 @@ import { useEffect, useState } from "react";
 import "./ChatWindow.css";
 import { List } from "lodash";
 import {
+  chatHistoryById,
+  getCustomGptInfos,
+  sendUserMessage,
+} from "../client";
+import type {
   AssistantMessage,
   ChatHistory,
-  ChatCommandsService,
-  ChatQueriesService,
-  CustomGpTsQueriesService,
-  CustomGPTInfosSchema,
-  RoleQuery,
-  SimplifiedMessageQueries,
-  NewChatRequest,
   ContinueChatRequest,
+  CustomGptInfosSchema,
+  NewChatRequest,
+  SimplifiedMessageQueries,
 } from "../client";
 import { ChatLocationState } from "../interfaces/interfaces";
 
@@ -40,10 +41,10 @@ export default function ChatWindow() {
   async function loadChatContentIfExisting() {
     if (conversationIdOrUndefinedfNewConversation !== undefined)
       try {
-        const conversation: ChatHistory =
-          await ChatQueriesService.chatHistoryById(
-            conversationIdOrUndefinedfNewConversation
-          );
+        const { data: conversation }: { data: ChatHistory } =
+          await chatHistoryById({
+            query: { chat_id: conversationIdOrUndefinedfNewConversation },
+          });
         setMessages(conversation.messages);
         setGptId(conversation.custom_gpt_id);
       } catch (err: unknown) {
@@ -56,8 +57,10 @@ export default function ChatWindow() {
   async function setNameOfGPT() {
     if (gptIdOrNull) {
       try {
-        const gptInfos: CustomGPTInfosSchema =
-          await CustomGpTsQueriesService.getCustomGptInfos(gptIdOrNull);
+        const { data: gptInfos }: { data: CustomGptInfosSchema } =
+          await getCustomGptInfos({
+            query: { custom_gpt_id: gptIdOrNull },
+          });
         setCurrentGptName(gptInfos.custom_gpt_name);
       } catch (err: unknown) {
         setError((err as Error).message);
@@ -90,7 +93,7 @@ export default function ChatWindow() {
     if (!input.trim()) return;
 
     // push user message
-    setMessages((prev) => [...prev, { role: RoleQuery.USER, message: input }]);
+    setMessages((prev) => [...prev, { role: "user", message: input }]);
     setInput("");
 
     const req: ContinueChatRequest | NewChatRequest =
@@ -104,14 +107,14 @@ export default function ChatWindow() {
             custom_gpt_id: gptIdOrNull,
           };
 
-    const response: AssistantMessage =
-      await ChatCommandsService.sendUserMessage(req);
+    const { data: response }: { data: AssistantMessage } =
+      await sendUserMessage({ body: req });
     const response_text: string = response.response_message.message;
     const convId = response.conversation_id;
     if (conversationIdOrUndefinedfNewConversation !== undefined) {
       setMessages((prev) => [
         ...prev,
-        { role: RoleQuery.ASSISTANT, message: response_text },
+        { role: "assistant", message: response_text },
       ]);
     } else {
       navigate(`/chatWindow/${convId}`, {
@@ -135,7 +138,7 @@ export default function ChatWindow() {
           <div
             key={i}
             className={`chat-msg ${
-              m.role === RoleQuery.USER ? "right" : "left"
+              m.role === "user" ? "right" : "left"
             }`}
           >
             {m.message}
