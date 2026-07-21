@@ -1,8 +1,8 @@
 # bootstrap.py
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 from fastapi import BackgroundTasks
 from sqlalchemy import create_engine
@@ -23,7 +23,9 @@ from src.contexts.chat.infrastructure.adapters.chat_queries_sqlalchemy import (
     ChatQueriesAdapter,
 )
 from src.contexts.chat.infrastructure.adapters.conv_adapter import ConversationAdapter
-from src.contexts.chat.infrastructure.adapters.openai_adapter import OpenaiAdapter
+from src.contexts.chat.infrastructure.adapters.openai_api_compatible_adapter import (
+    OpenaiAPICompatibleAdapter,
+)
 from src.contexts.chat.infrastructure.db.events import register_last_message_at_events
 from src.contexts.chat.infrastructure.db.orm import (
     metadata as chat_metadata,
@@ -131,7 +133,7 @@ class DependenciesContainer:
     extract_text_from_document_adapter_factory: Factory[ExtractTextFromDocumentPort]
     cgpt_permissions_adapter_factory: Factory[CgptPermissionCheckerPort]
     file_storage_adapter_factory: Factory[RawFileStorePort]
-    task_scheduler_factory: Callable[..., TaskSchedulerPort]
+    task_scheduler_factory: Callable[[BackgroundTasks], TaskSchedulerPort]
     vector_store_adapter_factory: Factory[VectorStorePortTextChunks]
     embedding_generator_adapter_factory: Factory[EmbeddingGeneratorPort]
 
@@ -232,6 +234,8 @@ def create_dependencies(
     embedding_model: str = require_env("EMBEDDING_MODEL"),
     embedding_dimension: int = int(require_env("EMBEDDING_DIMENSION")),
     db_url_vectorstore: str = require_env("QDRANT_URL"),
+    llm_base_url: str | None = None,
+    llm_api_key: str | None = None,
 ) -> DependenciesContainer:
     def conversation_uow_factory() -> ConversationUOW:
         return SQLAlchemyConversationUOW(
@@ -243,7 +247,11 @@ def create_dependencies(
 
     # Stateless LLM adapter can be a singleton or a factory; both fine.
     def llm_adapter_factory() -> LlmPort:
-        return OpenaiAdapter(model_name=model_name)
+        return OpenaiAPICompatibleAdapter(
+            model_name=model_name,
+            base_url=llm_base_url,
+            api_key=llm_api_key,
+        )
 
     def cgpt_uow_factory() -> CgptUOW:
         return SQLAlchemyCgptUOW(
@@ -312,7 +320,9 @@ def create_dependencies(
     def file_storage_adapter_factory() -> RawFileStorePort:
         return RawFileStoreLocalFsAdapter()
 
-    def task_scheduler_factory(background_tasks: BackgroundTasks) -> TaskSchedulerPort:
+    def task_scheduler_factory(
+        background_tasks: BackgroundTasks,
+    ) -> TaskSchedulerPort:
         return FastAPITaskSchedulerAdapter(background_tasks=background_tasks)
 
     return DependenciesContainer(
@@ -337,6 +347,8 @@ def create_dependencies(
 
 def bootstrap(
     model_name: str,
+    llm_base_url: str,
+    llm_api_key: str,
     db_url_chat: str,
     db_url_cgpt: str,
     db_url_knowledge: str,
@@ -359,6 +371,8 @@ def bootstrap(
     return create_dependencies(
         sql_db_resources_of_contexts=sql_db_resources_of_contexts,
         model_name=model_name,
+        llm_base_url=llm_base_url,
+        llm_api_key=llm_api_key,
         embedding_dimension=embedding_dimension,
         embedding_model=embedding_model,
         db_url_vectorstore=db_url_vectorstore,

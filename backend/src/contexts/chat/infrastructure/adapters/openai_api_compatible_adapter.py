@@ -21,10 +21,15 @@ from src.contexts.chat.application.ports.llm_port import (
 )
 
 
-class OpenaiAdapter(LlmPort):
-    def __init__(self, model_name: str) -> None:
+class OpenaiAPICompatibleAdapter(LlmPort):
+    def __init__(
+        self,
+        model_name: str,
+        base_url: str | None = None,
+        api_key: str | None = None,
+    ) -> None:
         self.model_name: str = model_name
-        self.client: OpenAI = OpenAI()
+        self.client: OpenAI = OpenAI(base_url=base_url, api_key=api_key)
 
     def transform_message_dto_llm_to_message_openai_chat_completion(
         self, msg: MessageDTOllm

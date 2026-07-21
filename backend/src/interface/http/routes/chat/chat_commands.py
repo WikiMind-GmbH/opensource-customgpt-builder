@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from src.bootstrap import DependenciesContainer
+from src.composition import dependencies_container
 from src.contexts.chat.application.orchestration import (
     continue_conversation,
     create_conversation,
@@ -16,7 +17,6 @@ from src.contexts.chat.application.ports.retrieve_relevant_doc_snippets_port imp
 )
 from src.contexts.chat.application.ports.uow import ConversationUOW
 from src.contexts.shared.typing_aliases import Factory
-from src.interface.http.composition import dependencies_container
 from src.interface.http.schemas.chat.chat_commands import (
     AssistantMessage,
     NewChatRequest,

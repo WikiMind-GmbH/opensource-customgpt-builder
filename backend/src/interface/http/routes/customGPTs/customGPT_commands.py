@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from src.bootstrap import DependenciesContainer
+from src.composition import dependencies_container
 from src.contexts.customGPTs.application.ports.conversation_port import ConversationPort
 from src.contexts.customGPTs.application.ports.customgpt_uow import CgptUOW
 from src.contexts.customGPTs.application.service_functions import (
@@ -11,7 +12,6 @@ from src.contexts.customGPTs.application.service_functions import (
     edit_custom_gpt_service,
 )
 from src.contexts.shared.typing_aliases import Factory
-from src.interface.http.composition import dependencies_container
 from src.interface.http.schemas.common_command import CommandResult
 from src.interface.http.schemas.customGPTs.customGPT_commands import (
     CustomGptToCreate,
