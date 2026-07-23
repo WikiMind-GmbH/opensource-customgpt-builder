@@ -178,6 +178,24 @@ class QdrantVectorStoreTextChunksAdapter(VectorStorePortTextChunks):
             f"{len(chunk_embeddings_and_metadata_dtos)} Chunks of files {set(file_ids_of_chunks)} added to vectorstore: {update_result}"
         )
 
+    def delete_embeddings_of_file(self, file_id: UUID) -> None:
+        file_filter = models.Filter(
+            must=[
+                models.FieldCondition(
+                    key="id_of_corresponding_file",
+                    match=models.MatchValue(value=str(file_id)),
+                )
+            ]
+        )
+        update_result = self._client.delete(
+            collection_name=self._collection_name,
+            points_selector=models.FilterSelector(filter=file_filter),
+            wait=True,
+        )
+        logger.info(
+            "Deleted vector-store chunks for file %s: %s", file_id, update_result
+        )
+
     def return_relevant_text_snippets_ids_and_text(
         self,
         embedding_to_match: list[float],

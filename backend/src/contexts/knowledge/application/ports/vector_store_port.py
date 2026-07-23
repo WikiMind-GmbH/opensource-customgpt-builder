@@ -73,6 +73,8 @@ class VectorStorePortTextChunks(Protocol):
         self, chunk_embeddings_and_metadata_dtos: list[ChunkEmbeddingAndMetadataDTO]
     ) -> None: ...
 
+    def delete_embeddings_of_file(self, file_id: UUID) -> None: ...
+
     def return_first_thousand_embeddings_of_file_id(
         self,
         file_id: UUID,
