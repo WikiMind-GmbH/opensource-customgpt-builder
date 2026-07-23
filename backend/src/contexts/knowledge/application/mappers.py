@@ -4,6 +4,7 @@ from src.contexts.knowledge.application.ports.extract_text_from_document_port im
     SupportedFileTypesEnum,
 )
 from src.contexts.knowledge.application.ports.knowledge_db_queries import (
+    DocumentOverviewDTO,
     DocumentStatusDTO,
 )
 from src.contexts.knowledge.application.ports.vector_store_port import (
@@ -15,6 +16,7 @@ from src.contexts.knowledge.domain.models import (
     ParentOrChild,
     TextFileChunk,
     TextFileTypeEnum,
+    UploadedTextLikeFile,
     UploadedTextLikeFileProcessingStatus,
 )
 
@@ -37,6 +39,17 @@ class KnowledgeDBQueriesMapper:
                 return DocumentStatusDTO.chunks_embedded_and_ready
             case _:
                 assert_never(status)
+
+    @classmethod
+    def document_overview_domain_to_dto(
+        cls, document: UploadedTextLikeFile
+    ) -> DocumentOverviewDTO:
+        return DocumentOverviewDTO(
+            document_id=document.id,
+            name=document.name,
+            file_type=document.file_type.value,
+            status=cls.document_status_domain_to_dto(document.status),
+        )
 
 
 class PreProcessTextLikesPortMapper:
