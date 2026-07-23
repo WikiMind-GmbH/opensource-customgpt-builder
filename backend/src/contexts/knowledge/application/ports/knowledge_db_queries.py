@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import StrEnum
 from typing import Protocol
 from uuid import UUID
@@ -15,7 +16,23 @@ class DocumentStatusDTO(StrEnum):
     chunks_embedded_and_ready = "chunks_embedded_and_ready"
 
 
+@dataclass(frozen=True)
+class DocumentOverviewDTO:
+    document_id: UUID
+    name: str
+    file_type: str
+    status: DocumentStatusDTO
+
+
+@dataclass(frozen=True)
+class FileCgptAssociationsDTO:
+    file_id: UUID
+    cgpt_ids: list[str]
+
+
 class KnowledgeDBQueriesPort(Protocol):
     def check_status_of_document(
         self, document_id: UUID, cgpt_id: str
     ) -> DocumentStatusDTO: ...
+    def get_documents_for_cgpt(self, cgpt_id: str) -> list[DocumentOverviewDTO]: ...
+    def get_file_cgpt_associations(self) -> list[FileCgptAssociationsDTO]: ...

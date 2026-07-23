@@ -3,16 +3,23 @@
 from sqlalchemy import (
     UUID,
     Column,
+    DateTime,
     Enum,
     ForeignKey,
+    Index,
+    Integer,
     MetaData,
     String,
     Table,
+    func,
 )
 
 # from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import registry, relationship
 
+from src.contexts.knowledge.application.ports.background_work import (
+    DurableBackgroundJobState,
+)
 from src.contexts.knowledge.domain.models import (
     CgptPermissionsToFile,
     ChunkingStrategy,
@@ -72,6 +79,91 @@ cgpt_permissions_to_files = Table(
     Column("_id", String, primary_key=True),
     Column("file_id", UUID, ForeignKey("uploaded_text_like_file._id"), nullable=False),
     Column("cgpt_id", String, nullable=False),
+)
+
+document_deletion_jobs = Table(
+    "document_deletion_jobs",
+    metadata,
+    Column("file_id", UUID, primary_key=True),
+    Column(
+        "state",
+        Enum(
+            DurableBackgroundJobState,
+            name="DocumentDeletionJobState",
+            native_enum=False,
+            validate_strings=True,
+        ),
+        nullable=False,
+    ),
+    Column("attempt_count", Integer, nullable=False, default=0),
+    Column("next_attempt_at", DateTime(timezone=True), nullable=False),
+    Column("lease_token", UUID, nullable=True),
+    Column("lease_expires_at", DateTime(timezone=True), nullable=True),
+    Column("last_failure_category", String, nullable=True),
+    Column("last_failure_at", DateTime(timezone=True), nullable=True),
+    Column(
+        "created_at",
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    ),
+    Column(
+        "updated_at",
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+    ),
+)
+
+document_processing_jobs = Table(
+    "document_processing_jobs",
+    metadata,
+    Column("file_id", UUID, primary_key=True),
+    Column(
+        "state",
+        Enum(
+            DurableBackgroundJobState,
+            name="DocumentProcessingJobState",
+            native_enum=False,
+            validate_strings=True,
+        ),
+        nullable=False,
+    ),
+    Column("attempt_count", Integer, nullable=False, default=0),
+    Column("next_attempt_at", DateTime(timezone=True), nullable=False),
+    Column("lease_token", UUID, nullable=True),
+    Column("lease_expires_at", DateTime(timezone=True), nullable=True),
+    Column("last_failure_category", String, nullable=True),
+    Column("last_failure_at", DateTime(timezone=True), nullable=True),
+    Column(
+        "created_at",
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    ),
+    Column(
+        "updated_at",
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+    ),
+)
+
+Index(
+    "ix_document_deletion_jobs_claimable",
+    document_deletion_jobs.c.state,
+    document_deletion_jobs.c.next_attempt_at,
+    document_deletion_jobs.c.lease_expires_at,
+    document_deletion_jobs.c.created_at,
+)
+Index(
+    "ix_document_processing_jobs_claimable",
+    document_processing_jobs.c.state,
+    document_processing_jobs.c.next_attempt_at,
+    document_processing_jobs.c.lease_expires_at,
+    document_processing_jobs.c.created_at,
 )
 
 # _id: str
@@ -138,7 +230,6 @@ def start_mappers() -> None:
                 == uploaded_text_like_file.c._id,
                 backref=None,
                 cascade="all, delete-orphan",
-                passive_deletes=True,
             )
         },
     )
