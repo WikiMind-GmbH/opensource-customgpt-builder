@@ -120,7 +120,7 @@ def file_store(tmp_path: Path) -> RawFileStoreLocalFsAdapter:
 
 
 @pytest.fixture()
-def fake_task_scheduler():
+def fake_task_scheduler() -> FakeTaskScheduler:
     return FakeTaskScheduler()
 
 

@@ -1,4 +1,5 @@
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from fastapi import BackgroundTasks
 
@@ -13,7 +14,7 @@ class FastAPITaskSchedulerAdapter(TaskSchedulerPort):
 
     def add_task(
         self,
-        func: Callable[..., None],
+        func: Callable[..., object],
         *args: Any,
         **kwargs: Any,
     ) -> None:

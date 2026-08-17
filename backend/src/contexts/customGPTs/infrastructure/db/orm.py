@@ -8,10 +8,7 @@ from src.contexts.customGPTs.domain.models import CustomGPT
 
 metadata = MetaData()
 mapper_registry = registry(metadata=metadata)
-id: str
-name: str
-instruction: str
-description: str | None = None
+
 custom_gpts = Table(
     "custom_gpts",
     metadata,

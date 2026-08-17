@@ -5,7 +5,7 @@ from typing import Any
 
 @dataclass(frozen=True)
 class ScheduledTask:
-    func: Callable[..., None]
+    func: Callable[..., object]
     args: tuple[Any, ...]
     kwargs: dict[str, Any]
 
@@ -16,17 +16,11 @@ class FakeTaskScheduler:
 
     def add_task(
         self,
-        func: Callable[..., None],
+        func: Callable[..., object],
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        self.tasks.append(
-            ScheduledTask(
-                func=func,
-                args=args,
-                kwargs=kwargs,
-            )
-        )
+        self.tasks.append(ScheduledTask(func=func, args=args, kwargs=kwargs))
 
     def run_all(self) -> None:
         for task in self.tasks:
